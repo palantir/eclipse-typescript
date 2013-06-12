@@ -67,9 +67,7 @@
       <property name="allowStaticMemberImports" value="true"/>
     </module>
     <module name="RedundantImport"/>
-    <module name="ConstantName">
-      <property name="applyToPrivate" value="false"/>
-    </module>
+    <module name="ConstantName"/>
   </module>
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
