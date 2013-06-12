@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: TypeScript
+Bundle-SymbolicName: com.palantir.typescript;singleton:=true
+Bundle-Version: 1.0.0.alpha
+Bundle-Activator: com.palantir.typescript.Activator
+Bundle-Vendor: Palantir Technologies
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
