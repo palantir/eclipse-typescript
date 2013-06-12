@@ -1,3 +1,4 @@
+
 package com.palantir.typescript.editors;
 
 import org.eclipse.jface.text.rules.IWhitespaceDetector;

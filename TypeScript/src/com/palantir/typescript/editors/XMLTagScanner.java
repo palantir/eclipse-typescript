@@ -1,3 +1,4 @@
+
 package com.palantir.typescript.editors;
 
 import org.eclipse.jface.text.TextAttribute;
@@ -12,8 +13,8 @@ public class XMLTagScanner extends RuleBasedScanner {
 
     public XMLTagScanner(ColorManager manager) {
         IToken string =
-            new Token(
-                new TextAttribute(manager.getColor(IXMLColorConstants.STRING)));
+                new Token(
+                    new TextAttribute(manager.getColor(IXMLColorConstants.STRING)));
 
         IRule[] rules = new IRule[3];
 

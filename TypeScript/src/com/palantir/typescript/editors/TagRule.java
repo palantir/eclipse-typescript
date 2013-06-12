@@ -1,3 +1,4 @@
+
 package com.palantir.typescript.editors;
 
 import org.eclipse.jface.text.rules.ICharacterScanner;
@@ -9,11 +10,12 @@ public class TagRule extends MultiLineRule {
     public TagRule(IToken token) {
         super("<", ">", token);
     }
+
     @Override
     protected boolean sequenceDetected(
-        ICharacterScanner scanner,
-        char[] sequence,
-        boolean eofAllowed) {
+            ICharacterScanner scanner,
+            char[] sequence,
+            boolean eofAllowed) {
         int c = scanner.read();
         if (sequence[0] == '<') {
             if (c == '?') {
