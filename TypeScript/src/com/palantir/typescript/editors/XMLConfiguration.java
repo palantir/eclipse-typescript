@@ -19,12 +19,14 @@ public class XMLConfiguration extends SourceViewerConfiguration {
     public XMLConfiguration(ColorManager colorManager) {
         this.colorManager = colorManager;
     }
+    @Override
     public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
         return new String[] {
             IDocument.DEFAULT_CONTENT_TYPE,
             XMLPartitionScanner.XML_COMMENT,
             XMLPartitionScanner.XML_TAG };
     }
+    @Override
     public ITextDoubleClickStrategy getDoubleClickStrategy(
         ISourceViewer sourceViewer,
         String contentType) {
@@ -55,6 +57,7 @@ public class XMLConfiguration extends SourceViewerConfiguration {
         return tagScanner;
     }
 
+    @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         PresentationReconciler reconciler = new PresentationReconciler();
 

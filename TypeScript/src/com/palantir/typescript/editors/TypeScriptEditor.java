@@ -11,6 +11,7 @@ public class TypeScriptEditor extends TextEditor {
         setSourceViewerConfiguration(new XMLConfiguration(colorManager));
         setDocumentProvider(new XMLDocumentProvider());
     }
+    @Override
     public void dispose() {
         colorManager.dispose();
         super.dispose();

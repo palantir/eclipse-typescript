@@ -9,6 +9,7 @@ public class TagRule extends MultiLineRule {
     public TagRule(IToken token) {
         super("<", ">", token);
     }
+    @Override
     protected boolean sequenceDetected(
         ICharacterScanner scanner,
         char[] sequence,

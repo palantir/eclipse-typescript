@@ -8,6 +8,7 @@ import org.eclipse.ui.editors.text.FileDocumentProvider;
 
 public class XMLDocumentProvider extends FileDocumentProvider {
 
+    @Override
     protected IDocument createDocument(Object element) throws CoreException {
         IDocument document = super.createDocument(element);
         if (document != null) {
