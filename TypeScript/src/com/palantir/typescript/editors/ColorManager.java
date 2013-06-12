@@ -10,10 +10,10 @@ import org.eclipse.swt.widgets.Display;
 
 public class ColorManager {
 
-    protected Map fColorTable = new HashMap(10);
+    private Map<RGB, Color> fColorTable = new HashMap<>(10);
 
     public void dispose() {
-        Iterator e = fColorTable.values().iterator();
+        Iterator<Color> e = fColorTable.values().iterator();
         while (e.hasNext())
              ((Color) e.next()).dispose();
     }
