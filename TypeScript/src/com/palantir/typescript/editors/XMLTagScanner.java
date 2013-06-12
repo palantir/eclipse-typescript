@@ -1,7 +1,12 @@
 package com.palantir.typescript.editors;
 
-import org.eclipse.jface.text.*;
-import org.eclipse.jface.text.rules.*;
+import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.rules.IRule;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.RuleBasedScanner;
+import org.eclipse.jface.text.rules.SingleLineRule;
+import org.eclipse.jface.text.rules.Token;
+import org.eclipse.jface.text.rules.WhitespaceRule;
 
 public class XMLTagScanner extends RuleBasedScanner {
 

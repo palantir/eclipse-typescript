@@ -10,12 +10,13 @@ import org.eclipse.swt.widgets.Display;
 
 public class ColorManager {
 
-    private Map<RGB, Color> fColorTable = new HashMap<>(10);
+    private Map<RGB, Color> fColorTable = new HashMap<>();
 
     public void dispose() {
         Iterator<Color> e = fColorTable.values().iterator();
-        while (e.hasNext())
+        while (e.hasNext()) {
              ((Color) e.next()).dispose();
+        }
     }
     public Color getColor(RGB rgb) {
         Color color = (Color) fColorTable.get(rgb);
