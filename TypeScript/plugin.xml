@@ -7,7 +7,7 @@
       <editor
             name="TypeScript Editor"
             extensions="ts"
-            icon="icons/sample.gif"
+            icon="icons/typeScript.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="com.palantir.typescript.editors.TypeScriptEditor"
             id="com.palantir.typescript.editors.TypeScriptEditor">
