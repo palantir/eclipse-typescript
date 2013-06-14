@@ -4,6 +4,7 @@ Eclipse TypeScript Plug-in
 An Eclipse plug-in for developing in the TypeScript language.
 
 Roadmap
+-------
 * syntax highlighting
 * auto-completion
 * organize references (similar to organizing imports for Java code)
