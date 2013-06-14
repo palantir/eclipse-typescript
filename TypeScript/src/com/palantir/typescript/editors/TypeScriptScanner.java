@@ -44,7 +44,7 @@ public final class TypeScriptScanner implements ITokenScanner {
 
         this.manager = manager;
         this.defaultAttribute = new TextAttribute(manager.getColor(ITypeScriptColorConstants.DEFAULT));
-        this.defaultToken = new Token(defaultAttribute);
+        this.defaultToken = new Token(this.defaultAttribute);
     }
 
     @Override

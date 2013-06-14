@@ -36,7 +36,7 @@ public final class ColorManager {
     private final Map<RGB, Color> fColorTable = Maps.newHashMap();
 
     public void dispose() {
-        Iterator<Color> e = fColorTable.values().iterator();
+        Iterator<Color> e = this.fColorTable.values().iterator();
         while (e.hasNext()) {
             e.next().dispose();
         }
@@ -44,10 +44,10 @@ public final class ColorManager {
 
     public Color getColor(RGB rgb) {
         Preconditions.checkNotNull(rgb);
-        Color color = fColorTable.get(rgb);
+        Color color = this.fColorTable.get(rgb);
         if (color == null) {
             color = new Color(Display.getCurrent(), rgb);
-            fColorTable.put(rgb, color);
+            this.fColorTable.put(rgb, color);
         }
         return color;
     }

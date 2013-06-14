@@ -37,7 +37,7 @@ public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStra
             return;
         }
 
-        textViewer = part;
+        this.textViewer = part;
 
         if (!selectComment(position)) {
             selectWord(position);
@@ -52,7 +52,7 @@ public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStra
      * @return whether the act was successful or not
      */
     protected boolean selectComment(int caretPosition) {
-        IDocument document = textViewer.getDocument();
+        IDocument document = this.textViewer.getDocument();
         int startPosition;
         int endPosition;
 
@@ -110,7 +110,7 @@ public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStra
      */
     protected boolean selectWord(int caretPosition) {
 
-        IDocument document = textViewer.getDocument();
+        IDocument document = this.textViewer.getDocument();
         int startPosition;
         int endPosition;
 
@@ -153,6 +153,6 @@ public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStra
     private void selectRange(int startPos, int stopPos) {
         int offset = startPos + 1;
         int length = stopPos - offset;
-        textViewer.setSelectedRange(offset, length);
+        this.textViewer.setSelectedRange(offset, length);
     }
 }

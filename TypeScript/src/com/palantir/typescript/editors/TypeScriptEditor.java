@@ -29,7 +29,7 @@ public final class TypeScriptEditor extends TextEditor {
 
     public TypeScriptEditor() {
         this.colorManager = new ColorManager();
-        this.setSourceViewerConfiguration(new TypeScriptConfiguration(colorManager));
+        this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
         this.setDocumentProvider(new TypeScriptDocumentProvider());
     }
 
@@ -39,7 +39,7 @@ public final class TypeScriptEditor extends TextEditor {
      */
     @Override
     public void dispose() {
-        colorManager.dispose();
+        this.colorManager.dispose();
         super.dispose();
     }
 

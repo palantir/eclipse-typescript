@@ -38,8 +38,8 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
     public TypeScriptConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
-        scanner = new TypeScriptScanner(colorManager);
-        doubleClickStrategy = new TypeScriptDoubleClickStrategy();
+        this.scanner = new TypeScriptScanner(colorManager);
+        this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
 
     @Override
@@ -49,11 +49,11 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
     @Override
     public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
-        return doubleClickStrategy;
+        return this.doubleClickStrategy;
     }
 
     protected TypeScriptScanner getTypeScriptScanner() {
-        return scanner;
+        return this.scanner;
     }
 
     @Override
