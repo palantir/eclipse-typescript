@@ -33,10 +33,10 @@ import com.google.common.collect.Maps;
  */
 public final class ColorManager {
 
-    private final Map<RGB, Color> fColorTable = Maps.newHashMap();
+    private final Map<RGB, Color> colorTable = Maps.newHashMap();
 
     public void dispose() {
-        Iterator<Color> e = this.fColorTable.values().iterator();
+        Iterator<Color> e = this.colorTable.values().iterator();
         while (e.hasNext()) {
             e.next().dispose();
         }
@@ -44,10 +44,10 @@ public final class ColorManager {
 
     public Color getColor(RGB rgb) {
         Preconditions.checkNotNull(rgb);
-        Color color = this.fColorTable.get(rgb);
+        Color color = this.colorTable.get(rgb);
         if (color == null) {
             color = new Color(Display.getCurrent(), rgb);
-            this.fColorTable.put(rgb, color);
+            this.colorTable.put(rgb, color);
         }
         return color;
     }
