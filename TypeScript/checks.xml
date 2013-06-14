@@ -33,6 +33,42 @@
     <module name="EmptyStatement"/>
     <module name="SimplifyBooleanReturn"/>
     <module name="ArrayTypeStyle"/>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.ArrayList"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Lists or ImmutableList factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.HashMap"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Maps or ImmutableMap factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.HashSet"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Sets or ImmutableSet factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.LinkedHashSet"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Sets or ImmutableSet factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.LinkedHashMap"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Maps or ImmutableMap factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.TreeMap"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Maps or ImmutableSortedMap factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.TreeSet"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Sets or ImmutableSortedSet factory methods instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.concurrent.ConcurrentHashMap"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Maps factory method or MapMaker instead."/>
+    </module>
+    <module name="IllegalInstantiation">
+      <property name="classes" value="java.util.concurrent.CopyOnWriteArrayList"/>
+      <message key="instantiation.avoid" value="Direct instantiation of {0} should be avoided. Use Google Guava's Lists factory methods instead."/>
+    </module>
     <module name="EmptyForInitializerPad"/>
     <module name="SimplifyBooleanExpression"/>
     <module name="LeftCurly">

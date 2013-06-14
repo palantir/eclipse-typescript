@@ -16,11 +16,12 @@
 
 package com.palantir.typescript.editors;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+
+import com.google.common.collect.Lists;
 
 /**
  * Determines the rules used to divide source files into different Partitions.
@@ -30,7 +31,7 @@ import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
 public final class TypeScriptPartitionScanner extends RuleBasedPartitionScanner {
 
     public TypeScriptPartitionScanner() {
-        List<IPredicateRule> rulesList = new ArrayList<>();
+        List<IPredicateRule> rulesList = Lists.newArrayList();
 
         IPredicateRule[] rules = new IPredicateRule[rulesList.size()];
         rulesList.toArray(rules);

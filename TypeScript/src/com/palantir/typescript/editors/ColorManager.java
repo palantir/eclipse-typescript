@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.editors;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -25,6 +24,7 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 /**
  * Converts RGB values into Colors.
@@ -33,7 +33,7 @@ import com.google.common.base.Preconditions;
  */
 public final class ColorManager {
 
-    private final Map<RGB, Color> fColorTable = new HashMap<>();
+    private final Map<RGB, Color> fColorTable = Maps.newHashMap();
 
     public void dispose() {
         Iterator<Color> e = fColorTable.values().iterator();
