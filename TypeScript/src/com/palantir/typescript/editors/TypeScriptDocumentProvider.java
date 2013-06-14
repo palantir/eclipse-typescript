@@ -22,18 +22,21 @@ import org.eclipse.jface.text.IDocumentPartitioner;
 import org.eclipse.jface.text.rules.FastPartitioner;
 import org.eclipse.ui.editors.text.FileDocumentProvider;
 
-public class XMLDocumentProvider extends FileDocumentProvider {
+/**
+ * The Document Provider manages the actual documents and how they're processed (i.e. partitioned)
+ * in the editor.
+ *
+ * @author tyleradams
+ */
+public final class TypeScriptDocumentProvider extends FileDocumentProvider {
 
     @Override
     protected IDocument createDocument(Object element) throws CoreException {
         IDocument document = super.createDocument(element);
         if (document != null) {
-            IDocumentPartitioner partitioner =
-                    new FastPartitioner(
-                        new XMLPartitionScanner(),
-                        new String[] {
-                                XMLPartitionScanner.XML_TAG,
-                                XMLPartitionScanner.XML_COMMENT });
+            String[] partitionTypes = {};
+            TypeScriptPartitionScanner partitionScanner = new TypeScriptPartitionScanner();
+            IDocumentPartitioner partitioner = new FastPartitioner(partitionScanner, partitionTypes);
             partitioner.connect(document);
             document.setDocumentPartitioner(partitioner);
         }

@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.editors;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
@@ -28,22 +27,30 @@ import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.presentation.IPresentationDamager;
 import org.eclipse.jface.text.presentation.IPresentationRepairer;
 import org.eclipse.swt.custom.StyleRange;
+import org.eclipse.swt.graphics.Color;
 
-public class NonRuleBasedDamagerRepairer
-        implements IPresentationDamager, IPresentationRepairer {
+import com.google.common.base.Preconditions;
+
+/**
+ * This is used to detect the damage and repair multiline comments' text attributes.
+ *
+ * @author tyleradams
+ */
+public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, IPresentationRepairer {
 
     /** The document this object works on */
-    protected IDocument fDocument;
+    private IDocument document;
     /** The default text attribute if non is returned as data by the current token */
-    protected TextAttribute fDefaultTextAttribute;
+    private TextAttribute defaultTextAttribute;
 
     /**
      * Constructor for NonRuleBasedDamagerRepairer.
      */
     public NonRuleBasedDamagerRepairer(TextAttribute defaultTextAttribute) {
-        Assert.isNotNull(defaultTextAttribute);
+        Preconditions.checkNotNull(defaultTextAttribute);
 
-        fDefaultTextAttribute = defaultTextAttribute;
+        this.defaultTextAttribute = defaultTextAttribute;
+
     }
 
     /**
@@ -51,7 +58,7 @@ public class NonRuleBasedDamagerRepairer
      */
     @Override
     public void setDocument(IDocument document) {
-        fDocument = document;
+        this.document = document;
     }
 
     /**
@@ -66,17 +73,17 @@ public class NonRuleBasedDamagerRepairer
      */
     protected int endOfLineOf(int offset) throws BadLocationException {
 
-        IRegion info = fDocument.getLineInformationOfOffset(offset);
+        IRegion info = this.document.getLineInformationOfOffset(offset);
         if (offset <= info.getOffset() + info.getLength()) {
             return info.getOffset() + info.getLength();
         }
 
-        int line = fDocument.getLineOfOffset(offset);
+        int line = this.document.getLineOfOffset(offset);
         try {
-            info = fDocument.getLineInformation(line + 1);
+            info = this.document.getLineInformation(line + 1);
             return info.getOffset() + info.getLength();
-        } catch (BadLocationException x) {
-            return fDocument.getLength();
+        } catch (BadLocationException e) {
+            return this.document.getLength();
         }
     }
 
@@ -84,38 +91,25 @@ public class NonRuleBasedDamagerRepairer
      * @see IPresentationDamager#getDamageRegion(ITypedRegion, DocumentEvent, boolean)
      */
     @Override
-    public IRegion getDamageRegion(
-            ITypedRegion partition,
-            DocumentEvent event,
-            boolean documentPartitioningChanged) {
+    public IRegion getDamageRegion(ITypedRegion partition, DocumentEvent event, boolean documentPartitioningChanged) {
         if (!documentPartitioningChanged) {
             try {
 
-                IRegion info =
-                        fDocument.getLineInformationOfOffset(event.getOffset());
+                IRegion info = this.document.getLineInformationOfOffset(event.getOffset());
                 int start = Math.max(partition.getOffset(), info.getOffset());
 
-                int end =
-                        event.getOffset()
-                                + (event.getText() == null
-                                        ? event.getLength()
-                                        : event.getText().length());
+                int end = event.getOffset() + (event.getText() == null ? event.getLength() : event.getText().length());
 
-                if (info.getOffset() <= end
-                        && end <= info.getOffset() + info.getLength()) {
+                if (info.getOffset() <= end && end <= info.getOffset() + info.getLength()) {
                     // optimize the case of the same line
                     end = info.getOffset() + info.getLength();
                 } else {
                     end = endOfLineOf(end);
                 }
 
-                end =
-                        Math.min(
-                            partition.getOffset() + partition.getLength(),
-                            end);
+                end = Math.min(partition.getOffset() + partition.getLength(), end);
                 return new Region(start, end - start);
-
-            } catch (BadLocationException x) {
+            } catch (BadLocationException e) {
             }
         }
 
@@ -126,14 +120,8 @@ public class NonRuleBasedDamagerRepairer
      * @see IPresentationRepairer#createPresentation(TextPresentation, ITypedRegion)
      */
     @Override
-    public void createPresentation(
-            TextPresentation presentation,
-            ITypedRegion region) {
-        addRange(
-            presentation,
-            region.getOffset(),
-            region.getLength(),
-            fDefaultTextAttribute);
+    public void createPresentation(TextPresentation presentation, ITypedRegion region) {
+        addRange(presentation, region.getOffset(), region.getLength(), this.defaultTextAttribute);
     }
 
     /**
@@ -145,22 +133,17 @@ public class NonRuleBasedDamagerRepairer
      *            the offset of the range to be styled
      * @param length
      *            the length of the range to be styled
-     * @param attr
+     * @param attribute
      *            the attribute describing the style of the range to be styled
      */
-    protected void addRange(
-            TextPresentation presentation,
-            int offset,
-            int length,
-            TextAttribute attr) {
-        if (attr != null) {
-            presentation.addStyleRange(
-                new StyleRange(
-                    offset,
-                    length,
-                    attr.getForeground(),
-                    attr.getBackground(),
-                    attr.getStyle()));
+    protected void addRange(TextPresentation presentation, int offset, int length, TextAttribute attribute) {
+        Preconditions.checkArgument(length >= 0);
+
+        if (attribute != null) {
+            Color foreground = attribute.getForeground();
+            Color background = attribute.getForeground();
+            int style = attribute.getStyle();
+            presentation.addStyleRange(new StyleRange(offset, length, foreground, background, style));
         }
     }
 }

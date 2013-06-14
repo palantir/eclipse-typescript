@@ -24,9 +24,16 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
-public class ColorManager {
+import com.google.common.base.Preconditions;
 
-    private Map<RGB, Color> fColorTable = new HashMap<>();
+/**
+ * Converts RGB values into Colors.
+ *
+ * @author tyleradams
+ */
+public final class ColorManager {
+
+    private final Map<RGB, Color> fColorTable = new HashMap<>();
 
     public void dispose() {
         Iterator<Color> e = fColorTable.values().iterator();
@@ -36,6 +43,7 @@ public class ColorManager {
     }
 
     public Color getColor(RGB rgb) {
+        Preconditions.checkNotNull(rgb);
         Color color = fColorTable.get(rgb);
         if (color == null) {
             color = new Color(Display.getCurrent(), rgb);
