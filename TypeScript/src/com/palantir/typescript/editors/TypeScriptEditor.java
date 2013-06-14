@@ -18,16 +18,25 @@ package com.palantir.typescript.editors;
 
 import org.eclipse.ui.editors.text.TextEditor;
 
-public class TypeScriptEditor extends TextEditor {
+/**
+ * The entry point of this eclipse plugin.
+ *
+ * @author tyleradams
+ */
+public final class TypeScriptEditor extends TextEditor {
 
-    private ColorManager colorManager;
+    private final ColorManager colorManager;
 
     public TypeScriptEditor() {
-        colorManager = new ColorManager();
-        setSourceViewerConfiguration(new XMLConfiguration(colorManager));
-        setDocumentProvider(new XMLDocumentProvider());
+        this.colorManager = new ColorManager();
+        this.setSourceViewerConfiguration(new TypeScriptConfiguration(colorManager));
+        this.setDocumentProvider(new TypeScriptDocumentProvider());
     }
 
+    /**
+     * The dispose method for TextEditors follows the same pattern where super.dispose() is called
+     * at the very end, so we use that style here as well.
+     */
     @Override
     public void dispose() {
         colorManager.dispose();
