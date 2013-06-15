@@ -42,7 +42,7 @@ public final class Activator extends AbstractUIPlugin {
     }
 
     /**
-     * Returns the shared instance
+     * Returns the shared instance.
      *
      * @return the shared instance
      */
@@ -51,7 +51,7 @@ public final class Activator extends AbstractUIPlugin {
     }
 
     /**
-     * Returns an image descriptor for the image file at the given plug-in relative path
+     * Returns an image descriptor for the image file at the given plug-in relative path.
      *
      * @param path
      *            the path

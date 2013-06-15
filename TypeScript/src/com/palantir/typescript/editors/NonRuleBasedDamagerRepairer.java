@@ -38,9 +38,9 @@ import com.google.common.base.Preconditions;
  */
 public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, IPresentationRepairer {
 
-    /** The document this object works on */
+    /** The document this object works on. */
     private IDocument document;
-    /** The default text attribute if non is returned as data by the current token */
+    /** The default text attribute if non is returned as data by the current token. */
     private final TextAttribute defaultTextAttribute;
 
     /**

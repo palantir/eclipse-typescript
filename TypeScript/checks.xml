@@ -18,6 +18,7 @@
       <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z][A-Z0-9]*)*$"/>
     </module>
     <module name="DefaultComesLast"/>
+    <module name="JavadocStyle"/>
     <module name="MissingDeprecated"/>
     <module name="ModifierOrder"/>
     <module name="OuterTypeFilename"/>
