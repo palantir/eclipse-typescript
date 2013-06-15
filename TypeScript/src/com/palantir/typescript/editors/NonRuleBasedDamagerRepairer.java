@@ -41,7 +41,7 @@ public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, 
     /** The document this object works on */
     private IDocument document;
     /** The default text attribute if non is returned as data by the current token */
-    private TextAttribute defaultTextAttribute;
+    private final TextAttribute defaultTextAttribute;
 
     /**
      * Constructor for NonRuleBasedDamagerRepairer.
@@ -50,7 +50,6 @@ public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, 
         Preconditions.checkNotNull(defaultTextAttribute);
 
         this.defaultTextAttribute = defaultTextAttribute;
-
     }
 
     /**

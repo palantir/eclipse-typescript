@@ -33,6 +33,7 @@ public final class TypeScriptDocumentProvider extends FileDocumentProvider {
     @Override
     protected IDocument createDocument(Object element) throws CoreException {
         IDocument document = super.createDocument(element);
+
         if (document != null) {
             String[] partitionTypes = {};
             TypeScriptPartitionScanner partitionScanner = new TypeScriptPartitionScanner();
@@ -40,6 +41,7 @@ public final class TypeScriptDocumentProvider extends FileDocumentProvider {
             partitioner.connect(document);
             document.setDocumentPartitioner(partitioner);
         }
+
         return document;
     }
 }

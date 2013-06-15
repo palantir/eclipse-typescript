@@ -31,8 +31,9 @@ import com.google.common.base.Preconditions;
  * @author tyleradams
  */
 public final class TypeScriptScanner implements ITokenScanner {
+
     @SuppressWarnings("unused")
-    private final ColorManager manager; //will be used in nextToken in future commits.
+    private final ColorManager manager; // will be used in nextToken in future commits.
     private final TextAttribute defaultAttribute;
     private final Token defaultToken;
     private int tokenIndex;
@@ -73,5 +74,4 @@ public final class TypeScriptScanner implements ITokenScanner {
     public int getTokenLength() {
         return this.length;
     }
-
 }

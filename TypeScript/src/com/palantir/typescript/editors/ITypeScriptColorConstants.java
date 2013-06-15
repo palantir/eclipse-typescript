@@ -27,5 +27,4 @@ public interface ITypeScriptColorConstants {
     RGB BLACK = new RGB(0, 0, 0);
 
     RGB DEFAULT = BLACK;
-
 }

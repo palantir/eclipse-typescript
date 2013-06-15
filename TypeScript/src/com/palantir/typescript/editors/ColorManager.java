@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.editors;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
@@ -35,20 +34,21 @@ public final class ColorManager {
 
     private final Map<RGB, Color> colorTable = Maps.newHashMap();
 
-    public void dispose() {
-        Iterator<Color> e = this.colorTable.values().iterator();
-        while (e.hasNext()) {
-            e.next().dispose();
-        }
-    }
-
     public Color getColor(RGB rgb) {
         Preconditions.checkNotNull(rgb);
+
         Color color = this.colorTable.get(rgb);
         if (color == null) {
             color = new Color(Display.getCurrent(), rgb);
             this.colorTable.put(rgb, color);
         }
+
         return color;
+    }
+
+    public void dispose() {
+        for (Color color : this.colorTable.values()) {
+            color.dispose();
+        }
     }
 }

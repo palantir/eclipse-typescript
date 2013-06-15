@@ -29,18 +29,14 @@ public final class TypeScriptEditor extends TextEditor {
 
     public TypeScriptEditor() {
         this.colorManager = new ColorManager();
+
         this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
         this.setDocumentProvider(new TypeScriptDocumentProvider());
     }
 
-    /**
-     * The dispose method for TextEditors follows the same pattern where super.dispose() is called
-     * at the very end, so we use that style here as well.
-     */
     @Override
     public void dispose() {
         this.colorManager.dispose();
         super.dispose();
     }
-
 }

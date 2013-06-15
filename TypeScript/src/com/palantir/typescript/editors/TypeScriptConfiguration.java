@@ -33,11 +33,13 @@ import com.google.common.base.Preconditions;
  * @author tyleradams
  */
 public final class TypeScriptConfiguration extends SourceViewerConfiguration {
+
     private final TypeScriptDoubleClickStrategy doubleClickStrategy;
     private final TypeScriptScanner scanner;
 
     public TypeScriptConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
+
         this.scanner = new TypeScriptScanner(colorManager);
         this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
@@ -66,5 +68,4 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
         return reconciler;
     }
-
 }

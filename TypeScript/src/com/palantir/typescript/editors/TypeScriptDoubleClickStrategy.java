@@ -27,6 +27,7 @@ import org.eclipse.jface.text.ITextViewer;
  * @author tyleradams
  */
 public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStrategy {
+
     private ITextViewer textViewer;
 
     @Override
@@ -48,7 +49,6 @@ public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStra
      * Sets the selectedRange to be the region of a comment. Returns whether the cursor was in a
      * comment or not.
      *
-     * @param caretPosition
      * @return whether the act was successful or not
      */
     protected boolean selectComment(int caretPosition) {
@@ -105,7 +105,6 @@ public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStra
     /**
      * Sets a selected range in the textviewer.
      *
-     * @param caretPosition
      * @return whether a word was selected
      */
     protected boolean selectWord(int caretPosition) {
