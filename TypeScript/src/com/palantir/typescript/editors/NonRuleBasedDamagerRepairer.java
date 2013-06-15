@@ -52,9 +52,6 @@ public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, 
         this.defaultTextAttribute = defaultTextAttribute;
     }
 
-    /**
-     * @see IPresentationRepairer#setDocument(IDocument)
-     */
     @Override
     public void setDocument(IDocument document) {
         this.document = document;
@@ -86,9 +83,6 @@ public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, 
         }
     }
 
-    /**
-     * @see IPresentationDamager#getDamageRegion(ITypedRegion, DocumentEvent, boolean)
-     */
     @Override
     public IRegion getDamageRegion(ITypedRegion partition, DocumentEvent event, boolean documentPartitioningChanged) {
         if (!documentPartitioningChanged) {
@@ -115,9 +109,6 @@ public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, 
         return partition;
     }
 
-    /**
-     * @see IPresentationRepairer#createPresentation(TextPresentation, ITypedRegion)
-     */
     @Override
     public void createPresentation(TextPresentation presentation, ITypedRegion region) {
         addRange(presentation, region.getOffset(), region.getLength(), this.defaultTextAttribute);
