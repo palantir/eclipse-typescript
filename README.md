@@ -12,6 +12,7 @@ Roadmap
 * follow references
 * build on save?
 * JSDoc assistance (fill in parameter names for functions for example)
+* display documentation during auto-complete and on hover
 * code formatter
 * debug in Eclipse (perhaps using https://code.google.com/p/chromedevtools/)
 
