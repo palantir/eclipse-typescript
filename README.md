@@ -18,6 +18,7 @@ Roadmap
 
 Contributing
 ------------
-* Install the [Eclipse Checkstyle Plug-in](http://eclipse-cs.sourceforge.net/)
-* Install the [Eclipse FindBugs Plug-in](http://findbugs.sourceforge.net/)
+* Install the [Eclipse Checkstyle plug-in](http://eclipse-cs.sourceforge.net/)
+* Install the [Eclipse FindBugs plug-in](http://findbugs.sourceforge.net/)
+* Ensure there are no warnings/errors (in the Problems view)
 * Submit a pull request
