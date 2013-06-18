@@ -105,6 +105,10 @@
     </module>
     <module name="RedundantImport"/>
     <module name="ConstantName"/>
+    <module name="VisibilityModifier"/>
+    <module name="HideUtilityClassConstructor"/>
+    <module name="FinalClass"/>
+    <module name="DesignForExtension"/>
   </module>
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>
