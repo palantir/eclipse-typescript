@@ -18,6 +18,7 @@ package com.palantir.typescript.editors;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
+import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
@@ -35,12 +36,16 @@ import com.google.common.base.Preconditions;
 public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
     private final TypeScriptDoubleClickStrategy doubleClickStrategy;
-    private final TypeScriptScanner scanner;
+    private final TypeScriptServerScanner typeScriptScanner;
+    private final ColorManager colorManager;
+    private final JSDocScanner jsDocScanner;
 
     public TypeScriptConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
 
-        this.scanner = new TypeScriptScanner(colorManager);
+        this.colorManager = colorManager;
+        this.typeScriptScanner = new TypeScriptServerScanner(colorManager);
+        this.jsDocScanner = new JSDocScanner(colorManager);
         this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
 
@@ -54,8 +59,12 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
         return this.doubleClickStrategy;
     }
 
-    protected TypeScriptScanner getTypeScriptScanner() {
-        return this.scanner;
+    private TypeScriptServerScanner getTypeScriptScanner() {
+        return this.typeScriptScanner;
+    }
+
+    private JSDocScanner getJSDocScanner() {
+        return this.jsDocScanner;
     }
 
     @Override
@@ -66,6 +75,17 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
         reconciler.setDamager(damagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
         reconciler.setRepairer(damagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
 
+        damagerRepairer = new DefaultDamagerRepairer(getJSDocScanner());
+        reconciler.setDamager(damagerRepairer, TypeScriptPartitionScanner.JSDOC);
+        reconciler.setRepairer(damagerRepairer, TypeScriptPartitionScanner.JSDOC);
+
+        TextAttribute multiLine = new TextAttribute(this.colorManager.getColor(ITypeScriptColorConstants.COMMENT));
+        NonRuleBasedDamagerRepairer newDamagerRepairer = new NonRuleBasedDamagerRepairer(multiLine);
+
+        reconciler.setDamager(newDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
+        reconciler.setRepairer(newDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
+
         return reconciler;
     }
+
 }

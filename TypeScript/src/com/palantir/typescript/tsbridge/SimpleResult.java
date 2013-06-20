@@ -14,30 +14,26 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
-
-import org.eclipse.ui.editors.text.TextEditor;
+package com.palantir.typescript.tsbridge;
 
 /**
- * The entry point of this eclipse plugin.
+ * This is the default implementation of an IResult.
  *
  * @author tyleradams
  */
-public final class TypeScriptEditor extends TextEditor {
-
-    private final ColorManager colorManager;
-
-    public TypeScriptEditor() {
-        this.colorManager = new ColorManager();
-
-        this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
-        this.setDocumentProvider(new TypeScriptDocumentProvider());
-    }
+public final class SimpleResult implements IResult {
+    private String resultType;
+    private boolean resultValid;
 
     @Override
-    public void dispose() {
-        this.colorManager.dispose();
-        super.dispose();
+    public String getResultType() {
+        return this.resultType;
+    }
+
+
+    @Override
+    public boolean isResultNotValid() {
+        return !this.resultValid;
     }
 
 }

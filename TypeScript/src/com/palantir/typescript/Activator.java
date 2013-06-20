@@ -20,8 +20,12 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
+import com.palantir.typescript.tsbridge.TypeScriptBridge;
+
 /**
  * The activator class controls the plug-in life cycle.
+ *
+ * @author tyleradams
  */
 public final class Activator extends AbstractUIPlugin {
 
@@ -32,12 +36,14 @@ public final class Activator extends AbstractUIPlugin {
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
+        TypeScriptBridge.startBridge();
         plugin = this;
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         plugin = null;
+        TypeScriptBridge.stopBridge();
         super.stop(context);
     }
 
@@ -54,7 +60,6 @@ public final class Activator extends AbstractUIPlugin {
      * Returns an image descriptor for the image file at the given plug-in relative path.
      *
      * @param path
-     *            the path
      * @return the image descriptor
      */
     public static ImageDescriptor getImageDescriptor(String path) {

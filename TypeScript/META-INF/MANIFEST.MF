@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TypeScript
 Bundle-SymbolicName: com.palantir.typescript;singleton:=true
-Bundle-Version: 1.0.0.alpha
+Bundle-Version: 0.1.0
 Bundle-Activator: com.palantir.typescript.Activator
 Bundle-Vendor: Palantir Technologies
 Require-Bundle: org.eclipse.ui,
@@ -12,4 +12,8 @@ Require-Bundle: org.eclipse.ui,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/guava-14.0.1.jar,
- .
+ .,
+ lib/jackson-annotations-2.2.0.jar,
+ lib/jackson-core-2.2.0.jar,
+ lib/jackson-databind-2.2.0.jar
+Import-Package: org.eclipse.core.resources

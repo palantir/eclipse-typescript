@@ -35,11 +35,12 @@ public final class TypeScriptDocumentProvider extends FileDocumentProvider {
         IDocument document = super.createDocument(element);
 
         if (document != null) {
-            String[] partitionTypes = {};
+            String[] partitionTypes = new String[TypeScriptPartitionScanner.TYPE_SCRIPT_PARTITION_TYPES.size()];
+            TypeScriptPartitionScanner.TYPE_SCRIPT_PARTITION_TYPES.toArray(partitionTypes);
             TypeScriptPartitionScanner partitionScanner = new TypeScriptPartitionScanner();
             IDocumentPartitioner partitioner = new FastPartitioner(partitionScanner, partitionTypes);
-            partitioner.connect(document);
             document.setDocumentPartitioner(partitioner);
+            partitioner.connect(document);
         }
 
         return document;

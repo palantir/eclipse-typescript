@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
+package com.palantir.typescript.tsbridge.syntaxhighlight;
 
-import org.eclipse.ui.editors.text.TextEditor;
+import com.palantir.typescript.tsbridge.IResult;
 
 /**
- * The entry point of this eclipse plugin.
+ * All syntax highlight results come in this form.
  *
  * @author tyleradams
  */
-public final class TypeScriptEditor extends TextEditor {
+public final class SyntaxHighlightResult implements IResult {
+    public static final String TYPE = "syntax highlight";
+    private TokenWrapper[] tokenWrappers;
+    private boolean resultValid;
+    private String resultType;
 
-    private final ColorManager colorManager;
+    @Override
+    public String getResultType() {
+        return this.resultType;
+    }
 
-    public TypeScriptEditor() {
-        this.colorManager = new ColorManager();
-
-        this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
-        this.setDocumentProvider(new TypeScriptDocumentProvider());
+    public TokenWrapper[] getTokenWrappers() {
+        return this.tokenWrappers;
     }
 
     @Override
-    public void dispose() {
-        this.colorManager.dispose();
-        super.dispose();
+    public boolean isResultNotValid() {
+        return !this.resultValid;
     }
 
 }

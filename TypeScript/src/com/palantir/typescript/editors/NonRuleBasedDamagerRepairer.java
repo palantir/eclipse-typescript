@@ -128,7 +128,7 @@ public final class NonRuleBasedDamagerRepairer implements IPresentationDamager, 
 
         if (attribute != null) {
             Color foreground = attribute.getForeground();
-            Color background = attribute.getForeground();
+            Color background = attribute.getBackground();
             int style = attribute.getStyle();
             presentation.addStyleRange(new StyleRange(offset, length, foreground, background, style));
         }

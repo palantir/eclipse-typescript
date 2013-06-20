@@ -14,30 +14,41 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
+package com.palantir.typescript.tsbridge.syntaxhighlight;
 
-import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.jface.text.rules.IToken;
 
 /**
- * The entry point of this eclipse plugin.
+ * This class handles the tokens which come back from the TypeScript bridge.
  *
  * @author tyleradams
  */
-public final class TypeScriptEditor extends TextEditor {
+public final class TokenWrapper {
+    private IToken token;
+    private int tokenID;
+    private int offset;
+    private int length;
 
-    private final ColorManager colorManager;
-
-    public TypeScriptEditor() {
-        this.colorManager = new ColorManager();
-
-        this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
-        this.setDocumentProvider(new TypeScriptDocumentProvider());
+    public TokenWrapper() {
     }
 
-    @Override
-    public void dispose() {
-        this.colorManager.dispose();
-        super.dispose();
+    public IToken getToken() {
+        return this.token;
     }
 
+    public void setToken(IToken token) {
+        this.token = token;
+    }
+
+    public int getOffset() {
+        return this.offset;
+    }
+
+    public int getLength() {
+        return this.length;
+    }
+
+    public int getTokenID() {
+        return this.tokenID;
+    }
 }

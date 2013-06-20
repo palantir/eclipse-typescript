@@ -14,30 +14,17 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
-
-import org.eclipse.ui.editors.text.TextEditor;
+package com.palantir.typescript.tsbridge;
 
 /**
- * The entry point of this eclipse plugin.
+ * If you want to make a service server which provides a distinct set of features from the
+ * TypeScript services, you have to make one of these.
  *
  * @author tyleradams
  */
-public final class TypeScriptEditor extends TextEditor {
+public interface IService {
+    String getServiceType();
 
-    private final ColorManager colorManager;
-
-    public TypeScriptEditor() {
-        this.colorManager = new ColorManager();
-
-        this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
-        this.setDocumentProvider(new TypeScriptDocumentProvider());
-    }
-
-    @Override
-    public void dispose() {
-        this.colorManager.dispose();
-        super.dispose();
-    }
+    TypeScriptBridge getBridge();
 
 }

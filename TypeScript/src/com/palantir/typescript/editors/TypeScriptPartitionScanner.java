@@ -16,10 +16,14 @@
 
 package com.palantir.typescript.editors;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jface.text.rules.IPredicateRule;
+import org.eclipse.jface.text.rules.IToken;
+import org.eclipse.jface.text.rules.MultiLineRule;
 import org.eclipse.jface.text.rules.RuleBasedPartitionScanner;
+import org.eclipse.jface.text.rules.Token;
 
 import com.google.common.collect.Lists;
 
@@ -30,8 +34,20 @@ import com.google.common.collect.Lists;
  */
 public final class TypeScriptPartitionScanner extends RuleBasedPartitionScanner {
 
+    protected static final String MULTILINE_COMMENT = "__typescript_multiline_comment";
+    protected static final String JSDOC = "__javascript_JSDoc";
+    protected static final List<String> TYPE_SCRIPT_PARTITION_TYPES = Arrays.asList(MULTILINE_COMMENT, JSDOC);
+
     public TypeScriptPartitionScanner() {
+
         List<IPredicateRule> rulesList = Lists.newArrayList();
+        IToken token;
+
+        token = new Token(JSDOC);
+        rulesList.add(new MultiLineRule("/**", "*/", token, (char) 0, true));
+
+        token = new Token(MULTILINE_COMMENT);
+        rulesList.add(new MultiLineRule("/*", "*/", token, (char) 0, true));
 
         IPredicateRule[] rules = new IPredicateRule[rulesList.size()];
         rulesList.toArray(rules);

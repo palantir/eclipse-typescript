@@ -14,30 +14,15 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
-
-import org.eclipse.ui.editors.text.TextEditor;
+package com.palantir.typescript.tsbridge;
 
 /**
- * The entry point of this eclipse plugin.
+ * All results returned from the TypeScript Bridge must be IResults.
  *
  * @author tyleradams
  */
-public final class TypeScriptEditor extends TextEditor {
+public interface IResult {
+    String getResultType();
 
-    private final ColorManager colorManager;
-
-    public TypeScriptEditor() {
-        this.colorManager = new ColorManager();
-
-        this.setSourceViewerConfiguration(new TypeScriptConfiguration(this.colorManager));
-        this.setDocumentProvider(new TypeScriptDocumentProvider());
-    }
-
-    @Override
-    public void dispose() {
-        this.colorManager.dispose();
-        super.dispose();
-    }
-
+    boolean isResultNotValid();
 }
