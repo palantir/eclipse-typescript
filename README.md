@@ -9,7 +9,6 @@ Features
 
 Roadmap
 -------
-* syntax highlighting
 * auto-completion
 * organize references (similar to organizing imports for Java code)
 * warning/error markers
