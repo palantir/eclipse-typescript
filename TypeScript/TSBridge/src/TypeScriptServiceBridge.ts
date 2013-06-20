@@ -14,7 +14,6 @@
 * limitations under the License.
 */
 ///<reference path='SyntaxHighlight.ts' />
-///<reference path='node.d.ts' />
 
 
 /**
