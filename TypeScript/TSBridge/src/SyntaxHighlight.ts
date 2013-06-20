@@ -14,9 +14,8 @@
 * limitations under the License.
 */
 ///<reference path='TypeScriptServiceBridge.ts' />
-///<reference path='/Users/tadams/git/typescript/src/services/classifier.ts' />
-///<reference path='/Users/tadams/git/typescript/src/compiler/typescript.ts' />
-///<reference path='/Users/tadams/git/typescript/src/compiler/precompile.ts' />
+///<reference path='../lib/typescript/src/services/classifier.ts' />
+///<reference path='../lib/typescript/src/compiler/typescript.ts' />
 
 /**
   * This module handles everything related to syntax highlighting.  SyntaxHighlight.Service is the actual IService and it also comes with its own set of requests and results.
