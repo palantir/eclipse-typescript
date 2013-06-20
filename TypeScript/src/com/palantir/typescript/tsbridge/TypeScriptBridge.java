@@ -38,7 +38,7 @@ public final class TypeScriptBridge {
 
     private static TypeScriptBridge BRIDGE = null;
 
-    private static final String DEFAULT_NODE_LOCATION = "/opt/local/bin/node";
+    private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "TSBridge/bin/bridge.js";
 
     private final BufferedReader fromServer;
