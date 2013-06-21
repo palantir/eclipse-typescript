@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.palantir</groupId>
+  <artifactId>parent</artifactId>
+  <version>0.1.0</version>
+  <packaging>pom</packaging>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+
+  <modules>
+    <module>com.palantir.typescript</module>
+  </modules>
+
+  <properties>
+    <tycho-version>0.17.0</tycho-version>
+  </properties>
+
+  <repositories>
+   <repository>
+     <id>juno</id>
+     <layout>p2</layout>
+     <url>http://download.eclipse.org/releases/juno</url>
+   </repository>
+  </repositories>
+
+  
+
+</project>

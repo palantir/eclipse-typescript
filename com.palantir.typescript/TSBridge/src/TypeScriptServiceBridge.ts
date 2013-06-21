@@ -89,6 +89,7 @@ module TypeScriptServiceBridge {
         }
         private processRawRequest(rawRequest: String) {
             var request;
+            var result;
             try {
                 request = JSON.parse(rawRequest);
             } catch (e) {
