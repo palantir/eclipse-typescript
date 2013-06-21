@@ -35,7 +35,7 @@ import com.google.common.collect.Lists;
 /**
  * This class Parses partitions of JSDoc.
  *
- * @author tadams
+ * @author tyleradams
  */
 public class JSDocScanner extends RuleBasedScanner {
 
