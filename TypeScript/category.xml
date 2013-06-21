@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <category-def name="com.palantir.typescript" label="TylerScript Plug-in">
+   <category-def name="com.palantir.typescript" label="TypeScript Plug-in">
       <description>
          An eclipse-plugin for developing in the TypeScript language.
       </description>
