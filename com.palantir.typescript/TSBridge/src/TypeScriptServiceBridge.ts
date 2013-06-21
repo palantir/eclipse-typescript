@@ -92,8 +92,8 @@ module TypeScriptServiceBridge {
             try {
                 request = JSON.parse(rawRequest);
             } catch (e) {
-                console.log(e.stack);
-                return this.invalidJSON(); //weird bug doesn't allow you to say this.invalidJSON.
+                result = this.invalidJSON();
+                return this.sendResult(result);
             }
                 return this.processRequest(request);
         }
