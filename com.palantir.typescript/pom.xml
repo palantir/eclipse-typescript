@@ -29,10 +29,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                   <tasks>
                       <!-- deploys the plugin as a zip directory which when unpacked is the update site-->
                     <!--property definitions.  A lot are hardcoded just to get testing to work, then will be generalized. -->
-                    <property name="updatesite.dir" location="/Users/tadams/Documents/export"/> <!--TODO: not hardcode these guys -->
+                    <property name="updatesite.dir" location="export"/> <!--TODO: not hardcode these guys -->
                     <property name="file.seperator" value="/"/>
-                    <property name="plugin.source.dir" location="/Users/tadams/git/eclipse-typescript/com.palantir.typescript"/>
-                    <property name="dist.dir" location="/Users/tadams/Documents"/>
+                    <property name="plugin.source.dir" location="./"/>
+                    <property name="dist.dir" location="./"/>
                     <property name="plugin.id" value="com.palantir.typescript"/>
                     <property name="feature.id" value="com.palantir.typescript"/>
                     <property name="plugin.version" value="0.1.0"/>
