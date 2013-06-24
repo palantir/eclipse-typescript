@@ -18,16 +18,16 @@ Roadmap
 * display documentation during auto-complete and on hover
 * code formatter
 
+Building and Installing
+-----------------
+* Install [Maven](http://maven.apache.org/)
+* Install [Grunt](http://gruntjs.com/)
+* Run grunt --force.  Currently we have to force the build even if there are errors.
+* Run mvn install
+
 Contributing
 ------------
 * Install the [Eclipse Checkstyle plug-in](http://eclipse-cs.sourceforge.net/)
 * Install the [Eclipse FindBugs plug-in](http://findbugs.sourceforge.net/)
-* Install Maven
-* Install Grunt
 * Ensure there are no warnings/errors (in the Problems view)
 * Submit a pull request
-
-Installing locally
------------------
-* Run grunt --force.  Currently we have to force the build even if there are errors.
-* Run mvn install
