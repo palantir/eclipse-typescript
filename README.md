@@ -10,11 +10,11 @@ Features
 Roadmap
 -------
 * auto-completion
+* JSDoc assistance (fill in parameter names for functions for example)
 * organize references (similar to organizing imports for Java code)
 * warning/error markers
 * follow references
 * build on save?
-* JSDoc assistance (fill in parameter names for functions for example)
 * display documentation during auto-complete and on hover
 * code formatter
 
