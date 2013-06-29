@@ -27,7 +27,6 @@ import com.palantir.typescript.tsbridge.IRequest;
 public final class SyntaxHighlightRequest implements IRequest {
 
     public static final String COMMAND = "syntax highlight";
-    public static final String SERVICE_TYPE = "syntax highlight";
     private final String command;
     private final String serviceType;
     private final String documentText;
@@ -39,7 +38,7 @@ public final class SyntaxHighlightRequest implements IRequest {
 
         this.documentText = documentText;
         this.command = SyntaxHighlightRequest.COMMAND;
-        this.serviceType = SyntaxHighlightRequest.SERVICE_TYPE;
+        this.serviceType = SyntaxHighlightService.TYPE;
         this.offset = offset;
     }
 

@@ -28,7 +28,7 @@ import com.palantir.typescript.tsbridge.TypeScriptBridge;
  */
 public final class SyntaxHighlightService implements IService {
 
-    private final String serviceType = "Syntax Highlight";
+    public static final String TYPE = "syntax highlight";
     private final TypeScriptBridge typeScriptBridge;
 
     public SyntaxHighlightService(TypeScriptBridge typeScriptBridge) {
@@ -39,7 +39,7 @@ public final class SyntaxHighlightService implements IService {
 
     @Override
     public String getServiceType() {
-        return this.serviceType;
+        return SyntaxHighlightService.TYPE;
     }
 
     @Override
