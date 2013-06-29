@@ -39,7 +39,7 @@ public final class CompletionEntryDetails {
     private List<String> args;
 
     public CompletionEntryDetails() {
-
+        this.args = Lists.newArrayList();
     }
 
     public String getName() {
@@ -62,6 +62,10 @@ public final class CompletionEntryDetails {
             type = ""; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
         }
         this.type = type;
+        if (this.kind.equals("method")) {
+            setArgs();
+        }
+
     }
 
     private void setArgs() {
@@ -100,9 +104,6 @@ public final class CompletionEntryDetails {
         if (kind == null)
             kind = this.undefined; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
         this.kind = kind;
-        if (this.kind.equals("method")) {
-            setArgs();
-        }
 
     }
 
