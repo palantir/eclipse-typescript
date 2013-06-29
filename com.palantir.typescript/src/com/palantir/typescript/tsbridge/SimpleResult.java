@@ -31,6 +31,10 @@ public final class SimpleResult implements IResult {
     }
 
 
+    public void setResultValid(boolean resultValid) {
+        this.resultValid = resultValid;
+    }
+
     @Override
     public boolean isResultNotValid() {
         return !this.resultValid;

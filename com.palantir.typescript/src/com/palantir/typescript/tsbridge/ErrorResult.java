@@ -35,6 +35,12 @@ public final class ErrorResult implements IResult {
     public String getResultType() {
         return this.resultType;
     }
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
+    }
+    public void setResultValid(boolean resultValid) {
+        this.resultValid = resultValid;
+    }
 
     @Override
     public boolean isResultNotValid() {

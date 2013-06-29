@@ -42,5 +42,8 @@ public final class SyntaxHighlightResult implements IResult {
     public boolean isResultNotValid() {
         return !this.resultValid;
     }
+    public void setresultValid(boolean resultValid) {
+        this.resultValid = resultValid;
+    }
 
 }
