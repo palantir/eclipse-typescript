@@ -44,13 +44,13 @@ module SyntaxHighlight {
       * This class handles syntax highlighting typed requests.  Currently it only handles the command syntax highlight.
       */
     export class Service implements TypeScriptServiceBridge.IService {
-        constructor(private TSBridge: TypeScriptServiceBridge.TSServiceBridge) {
+        constructor() {
         }
         public getServiceType() : string {
             return "syntax highlight";
         }
         public processRequest(request: TypeScriptServiceBridge.IRequest) : TypeScriptServiceBridge.IResult {
-            if(request.command == "syntax highlight") {
+            if(request.command === "syntax highlight") {
                 return this.syntaxHighlight(<ISyntaxHighlightRequest> request);
             } else {
                 return this.invalidCommand();
@@ -88,7 +88,7 @@ module SyntaxHighlight {
             return result;
         }
         private invalidCommand() : TypeScriptServiceBridge.IResult{
-            return this.TSBridge.invalidResult("Bad Syntax Highlight Request"); //TODO: Figure out a better error message.
+            return TypeScriptServiceBridge.TSServiceBridge.invalidResult("A Request was made to Syntax Highlight, but it was bad.");
         }
     }
 }
