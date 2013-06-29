@@ -14,6 +14,7 @@
 * limitations under the License.
 */
 ///<reference path='SyntaxHighlight.ts' />
+///<reference path='AutoComplete.ts' />
 
 
 /**
@@ -35,7 +36,7 @@ module TypeScriptServiceBridge {
         resultType: string; //this should be the same as the command for the corresponding IResult.
     }
 
-    interface IError extends IResult{
+    export interface IError extends IResult{
         errorMessage: string;
     }
 
@@ -56,18 +57,21 @@ module TypeScriptServiceBridge {
             this.typeScriptServiceBridge = this; //needed for a stupid hack.
             this.populateservices();
         }
-        private populateservices() { //here's where we add IServices.  This is the only time we have to worry about which IServices we want!
-            this.services.push(new SyntaxHighlight.Service(this));
-        }
-        private invalidJSON() {
-            return this.invalidResult("invalid json");
-        }
-        private invalidCommand() {
-            return this.invalidResult("invalid command");
-        }
-        public invalidResult(error: string) {
+
+        public static invalidResult(error: string) {
             var result = { "resultValid" : false, "resultType" : "error", "errorMessage": error};
             return result;
+        }
+
+        private populateservices() { //This is how you add new Services.  Just push a new service onto this.services and it will be used.
+            this.services.push(new SyntaxHighlight.Service());
+            this.services.push(new AutoComplete.Service());
+        }
+        private invalidJSON() {
+            return TSServiceBridge.invalidResult("invalid json");
+        }
+        private invalidCommand() {
+            return TSServiceBridge.invalidResult("invalid command");
         }
         private processRequest(request) { //hands off the request to the appropriaate IService
             var serviceType = request.serviceType;
