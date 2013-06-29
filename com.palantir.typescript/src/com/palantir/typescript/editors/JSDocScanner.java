@@ -55,12 +55,12 @@ public class JSDocScanner extends RuleBasedScanner {
             "@throws",
             "@version"
             );
-        IToken defaultToken = new Token(new TextAttribute(manager.getColor(ITypeScriptColorConstants.JS_DEFAULT)));
+        IToken defaultToken = new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.JS_DEFAULT)));
         this.setDefaultReturnToken(defaultToken);
 
-        IToken tags = new Token(new TextAttribute(manager.getColor(ITypeScriptColorConstants.JSDOC_TAG), null, SWT.BOLD));
-        IToken htmlMarkup = new Token(new TextAttribute(manager.getColor(ITypeScriptColorConstants.JSDOC_MARKUP)));
-        IToken link = new Token(new TextAttribute(manager.getColor(ITypeScriptColorConstants.JSDOC_LINK)));
+        IToken tags = new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.JSDOC_TAG), null, SWT.BOLD));
+        IToken htmlMarkup = new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.JSDOC_MARKUP)));
+        IToken link = new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.JSDOC_LINK)));
 
         List ruleList = Lists.newArrayList();
         ruleList.add(new SingleLineRule("<", ">", htmlMarkup));

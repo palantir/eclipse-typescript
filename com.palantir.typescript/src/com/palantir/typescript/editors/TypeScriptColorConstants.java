@@ -23,12 +23,14 @@ import org.eclipse.swt.graphics.RGB;
  *
  * @author tyleradams
  */
-public interface ITypeScriptColorConstants {
+public interface TypeScriptColorConstants {
     RGB BLACK = new RGB(0, 0, 0);
     RGB RED = new RGB(219, 0, 0);
+    RGB WHITE = new RGB(255, 255, 255);
     RGB COMMENT_GREEN = new RGB(63, 127, 95);
     RGB KEYWORD_PURPLE = new RGB(127, 0, 85);
     RGB STRING_BLUE = new RGB(42, 0, 255);
+    RGB FEINT_YELLOW = new RGB(249, 252, 184);
     RGB JAVA_DOC_DARK_BLUE = new RGB(63, 63, 191);
     RGB JAVA_DOC_LIGHT_BLUE = new RGB(63, 95, 191);
     RGB JAVA_DOC_BLUE_GRAY = new RGB(127, 127, 159);
@@ -47,4 +49,7 @@ public interface ITypeScriptColorConstants {
     RGB JSDOC_TAG = new RGB(127, 159, 191);
     RGB JSDOC_MARKUP = JAVA_DOC_BLUE_GRAY;
     RGB JSDOC_LINK = JAVA_DOC_DARK_BLUE;
+
+    RGB AUTO_COMPLETE_BACKGROUND = WHITE;
+    RGB POP_UP_BACKGROUND = FEINT_YELLOW;
 }

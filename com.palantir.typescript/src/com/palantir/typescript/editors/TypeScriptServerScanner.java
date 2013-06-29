@@ -48,15 +48,15 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
 
         List<TextAttribute> attributePreTable = Lists.newArrayList();
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.PUNCTUATION)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.KEYWORD), null, SWT.BOLD));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.OPERATOR)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.COMMENT)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.WHITESPACE)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.IDENTIFIER)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.NUMBER_LITERAL)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.STRING_LITERAL)));
-        attributePreTable.add(new TextAttribute(manager.getColor(ITypeScriptColorConstants.REGEXP_LITERAL)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.PUNCTUATION)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.KEYWORD), null, SWT.BOLD));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.OPERATOR)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.COMMENT)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.WHITESPACE)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.IDENTIFIER)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.NUMBER_LITERAL)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.STRING_LITERAL)));
+        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.REGEXP_LITERAL)));
         this.AttributeTable = new TextAttribute[attributePreTable.size()];
         attributePreTable.toArray(this.AttributeTable);
     }
