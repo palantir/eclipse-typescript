@@ -26,6 +26,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteResult;
+import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
+import com.palantir.typescript.tsbridge.autocomplete.CheckFileResult;
 import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightResult;
 import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightService;
 
@@ -41,14 +44,16 @@ public final class TypeScriptBridge {
     private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "TSBridge/ecbuild/bridge.js";
 
-    private final BufferedReader fromServer;
-    private final BufferedWriter toServer;
-    private final Process server;
+    private BufferedReader fromServer;
+    private BufferedWriter toServer;
+    private Process server;
 
     private final String nodeLocation;
     private final String bridgeLocation;
 
     private final SyntaxHighlightService syntaxHighlightService;
+    private final AutoCompleteService autoCompleteService;
+
 
     public TypeScriptBridge() {
         this(DEFAULT_NODE_LOCATION, DEFAULT_BRIDGE_LOCATION);
@@ -64,15 +69,19 @@ public final class TypeScriptBridge {
         this.nodeLocation = nodeLocation;
         this.bridgeLocation = pluginRoot + bridgeLocation;
 
-        this.server = initializeServer();
-        this.fromServer = initializeReader();
-        this.toServer = initializeWriter();
+        initializeServer();
 
         this.syntaxHighlightService = new SyntaxHighlightService(this);
+        this.autoCompleteService = new AutoCompleteService(this);
     }
+
 
     public SyntaxHighlightService getSyntaxHighlightService() {
         return this.syntaxHighlightService;
+    }
+
+    public AutoCompleteService getAutoCompleteService() {
+        return this.autoCompleteService;
     }
 
     /**
@@ -83,17 +92,28 @@ public final class TypeScriptBridge {
         Preconditions.checkNotNull(request);
 
         ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         String rawResult = sendRequestGetRawResult(request, mapper);
 
         try {
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
             IResult result = mapper.readValue(rawResult, SimpleResult.class);
+            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
 
-            if (result.getResultType().equals(SyntaxHighlightResult.TYPE)) {
-                result = mapper.readValue(rawResult, SyntaxHighlightResult.class);
-            } else if (result.isResultNotValid()) {
+            if (result.isResultNotValid()) {
                 ErrorResult eResult = mapper.readValue(rawResult, ErrorResult.class);
                 throw new RuntimeException("The result is not valid, the error message is: " + eResult.getErrorMessage());
+            }
+            //TODO: Automate this, I should not have to modify the bridge manually every time a new result appears.
+            switch (result.getResultType()) {
+                case SyntaxHighlightResult.TYPE:
+                    result = mapper.readValue(rawResult, SyntaxHighlightResult.class);
+                    break;
+                case AutoCompleteResult.TYPE:
+                    result = mapper.readValue(rawResult, AutoCompleteResult.class);
+                    break;
+                case CheckFileResult.TYPE:
+                    result = mapper.readValue(rawResult, CheckFileResult.class);
+                    break;
             }
             return result;
 
@@ -140,21 +160,25 @@ public final class TypeScriptBridge {
             this.toServer.flush();
             rawResult = this.fromServer.readLine();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            restartServer();
         }
         if (rawResult == null) {
-            throw new RuntimeException("We got back a null object from the Server.  The corresponding request was: " + rawRequest);
+            restartServer();
         }
+
         return rawResult;
     }
 
-    private Process initializeServer() {
+    private void initializeServer() {
         ProcessBuilder pb = new ProcessBuilder(this.nodeLocation, this.bridgeLocation);
         try {
-            return pb.start();
+            this.server = pb.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.fromServer = initializeReader();
+        this.toServer = initializeWriter();
+
     }
 
     private BufferedReader initializeReader() {
@@ -178,5 +202,10 @@ public final class TypeScriptBridge {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void restartServer() {
+        killServer();
+        initializeServer();
     }
 }
