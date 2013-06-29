@@ -6,7 +6,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <parent>
         <groupId>com.palantir</groupId>
         <artifactId>parent</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </parent>
 
     <artifactId>com.palantir.typescript</artifactId>
@@ -29,13 +29,13 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                   <tasks>
                       <!-- deploys the plugin as a zip directory which when unpacked is the update site-->
                     <!--property definitions.  A lot are hardcoded just to get testing to work, then will be generalized. -->
-                    <property name="updatesite.dir" location="export"/> <!--TODO: not hardcode these guys -->
+                    <property name="updatesite.dir" location="export"/>
                     <property name="file.seperator" value="/"/>
                     <property name="plugin.source.dir" location="./"/>
                     <property name="dist.dir" location="./"/>
                     <property name="plugin.id" value="com.palantir.typescript"/>
                     <property name="feature.id" value="com.palantir.typescript"/>
-                    <property name="plugin.version" value="0.1.0"/>
+                    <property name="plugin.version" value="0.1.1"/>
                     <property name="plugin.jar.original.name" value="${plugin.id}-${plugin.version}.jar"/>
                     <property name="plugin.jar.fullname" value="${plugin.id}_${plugin.version}.jar"/>
                     <property name="jar.src.name" value="TypeScript"/>
