@@ -16,14 +16,19 @@
 
 package com.palantir.typescript.editors;
 
+import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
+import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.base.Preconditions;
 
@@ -51,7 +56,11 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
     @Override
     public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-        return new String[] { IDocument.DEFAULT_CONTENT_TYPE };
+        Preconditions.checkNotNull(sourceViewer);
+
+        String[] configuredContentTypes = new String[TypeScriptPartitionScanner.TYPE_SCRIPT_PARTITION_TYPES.size()];
+        TypeScriptPartitionScanner.TYPE_SCRIPT_PARTITION_TYPES.toArray(configuredContentTypes);
+        return configuredContentTypes;
     }
 
     @Override
@@ -69,6 +78,8 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+        Preconditions.checkNotNull(sourceViewer);
+
         PresentationReconciler reconciler = new PresentationReconciler();
 
         DefaultDamagerRepairer damagerRepairer = new DefaultDamagerRepairer(getTypeScriptScanner());
@@ -79,7 +90,7 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
         reconciler.setDamager(damagerRepairer, TypeScriptPartitionScanner.JSDOC);
         reconciler.setRepairer(damagerRepairer, TypeScriptPartitionScanner.JSDOC);
 
-        TextAttribute multiLine = new TextAttribute(this.colorManager.getColor(ITypeScriptColorConstants.COMMENT));
+        TextAttribute multiLine = new TextAttribute(this.colorManager.getColor(TypeScriptColorConstants.COMMENT));
         NonRuleBasedDamagerRepairer newDamagerRepairer = new NonRuleBasedDamagerRepairer(multiLine);
 
         reconciler.setDamager(newDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
@@ -87,5 +98,25 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
 
         return reconciler;
     }
+
+    @Override
+    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+        Preconditions.checkNotNull(sourceViewer);
+
+        ContentAssistant assistant = new ContentAssistant();
+
+        assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
+        assistant.setContentAssistProcessor(new TypeScriptCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+
+        assistant.enableAutoActivation(true);
+        assistant.setAutoActivationDelay(100);
+        assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
+        assistant.setProposalSelectorBackground(this.colorManager.getColor(TypeScriptColorConstants.AUTO_COMPLETE_BACKGROUND));
+        Shell parent = null;
+        IInformationControlCreator creator = new DefaultInformationControl(parent).getInformationPresenterControlCreator();
+        assistant.setInformationControlCreator(creator); //TODO: Why does this work?
+        return assistant;
+    }
+
 
 }
