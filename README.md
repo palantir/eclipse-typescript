@@ -5,11 +5,11 @@ An Eclipse plug-in for developing in the TypeScript language.
 
 Features
 --------
+* auto-completion
 * syntax highlighting
 
 Roadmap
 -------
-* auto-completion
 * JSDoc assistance (fill in parameter names for functions for example)
 * organize references (similar to organizing imports for Java code)
 * warning/error markers
