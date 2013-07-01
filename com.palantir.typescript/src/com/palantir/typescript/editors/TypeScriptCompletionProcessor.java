@@ -146,7 +146,7 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         Preconditions.checkNotNull(completionEntryDetail);
 
         String display = "";
-        if (completionEntryDetail.getKind().equals("method")) {
+        if (completionEntryDetail.getKind().equals("method") || completionEntryDetail.getKind().equals("function")) {
             display += completionEntryDetail.getName();
             display += completionEntryDetail.getType();
         } else {
