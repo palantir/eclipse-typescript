@@ -16,16 +16,9 @@
 
 package com.palantir.typescript.editors;
 
-import java.util.Map;
-
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetails;
-import com.palantir.typescript.tsbridge.autocomplete.ExtendedKindModifiers;
 
 /**
  * This class manages fetching icons.
@@ -37,43 +30,18 @@ public final class TypeScriptIconFetcher {
     private final String fileExtension = ".png";
     private final String defaultIconLocation;
 
-    private final Map<String, Image> map = Maps.newHashMap();
     private final Device device;
+    private final Image defaultIcon;
 
     public TypeScriptIconFetcher() {
         this.device = Display.getCurrent();
-        this.rootDirectory = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "icons/AutoComplete/";
-        this.defaultIconLocation = this.rootDirectory + "0" + this.fileExtension;
-
+        this.rootDirectory = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "icons/";
+        this.defaultIconLocation = this.rootDirectory + "typeScript" + this.fileExtension;
+        this.defaultIcon = new Image(this.device, this.defaultIconLocation);
     }
 
-    public Image getIcon(CompletionEntryDetails completionEntryDetails) {
-        Preconditions.checkNotNull(completionEntryDetails);
-
-        String kind = completionEntryDetails.getKind();
-        String rawKindModifiers = completionEntryDetails.getKindModifiers();
-        String docComment = completionEntryDetails.getDocComment();
-        ExtendedKindModifiers kindModifiers = new ExtendedKindModifiers(rawKindModifiers, docComment);
-        return this.getIcon(kind, kindModifiers);
-    }
-
-    private Image getIcon(String kind, ExtendedKindModifiers kindModifiers) {
-        Preconditions.checkNotNull(kind);
-        Preconditions.checkNotNull(kindModifiers);
-
-        String fileNumber = kind + kindModifiers.hashCode();
-        String fileLocation = this.rootDirectory + fileNumber + this.fileExtension;
-        return getIcon(fileLocation);
-    }
-
-    private Image getIcon(String fileLocation) {
-        Preconditions.checkNotNull(fileLocation);
-        if (this.map.containsKey(fileLocation)) {
-            return this.map.get(fileLocation);
-        }
-        Image img = new Image(this.device, this.defaultIconLocation); //TODO: use the custom fileLocations, not the default file.
-        this.map.put(fileLocation, img);
-        return img;
+    public Image getDefaultIcon() {
+        return this.defaultIcon;
     }
 
 }

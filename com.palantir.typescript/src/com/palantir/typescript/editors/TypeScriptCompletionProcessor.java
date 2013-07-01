@@ -84,6 +84,7 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         String display = null;
         String additionalProposalInfo = null;
         IContextInformation contextInfo = null;
+        TypeScriptIconFetcher iconFetcher = new TypeScriptIconFetcher();
         int cursorProposal;
 
         if (smartProposals == null) {
@@ -96,6 +97,7 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
             display = getDisplayString(smartProposals[i]);
             cursorProposal = getCursorProposal(smartProposals[i], replacement, autoCompletionInfo.getPruningPrefix());
             additionalProposalInfo = getAdditionalProposalInfo(smartProposals[i]);
+            img = iconFetcher.getDefaultIcon();
             result.add(new CompletionProposal(replacement, offset, 0, cursorProposal, img, display, contextInfo,
                 additionalProposalInfo));
         }
