@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TypeScript
 Bundle-SymbolicName: com.palantir.typescript;singleton:=true
-Bundle-Version: 0.1.1
+Bundle-Version: 0.1.2
 Bundle-Activator: com.palantir.typescript.Activator
 Bundle-Vendor: Palantir Technologies
 Require-Bundle: org.eclipse.ui,
