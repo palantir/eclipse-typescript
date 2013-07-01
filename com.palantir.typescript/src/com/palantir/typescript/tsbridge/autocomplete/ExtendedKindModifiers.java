@@ -35,7 +35,7 @@ public final class ExtendedKindModifiers {
 
     public ExtendedKindModifiers(String rawKindModifiers, String docComment) {
         Preconditions.checkNotNull(rawKindModifiers);
-        if (docComment == null) { //HACKHACK: This covers up errors from the bridge sending null objects. 
+        if (docComment == null) { //HACKHACK: This covers up errors from the bridge sending null objects.
             Preconditions.checkNotNull(docComment);
             docComment = "";
         }
