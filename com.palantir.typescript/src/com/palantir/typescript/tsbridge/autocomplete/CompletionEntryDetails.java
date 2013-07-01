@@ -18,8 +18,6 @@ package com.palantir.typescript.tsbridge.autocomplete;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.Assert;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
@@ -62,33 +60,6 @@ public final class CompletionEntryDetails {
             type = ""; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
         }
         this.type = type;
-        if (this.kind.equals("method")) {
-            setArgs();
-        }
-
-    }
-
-    private void setArgs() {
-        String delims = "[ ,:()]";
-        List<String> tokens = Lists.newArrayList(this.type.split(delims));
-        while (tokens.remove("")) {
-        }
-        if (tokens.size() == 0) {
-            this.args = tokens;
-            return;
-        }
-        tokens.remove(tokens.size() - 1);
-        Assert.isTrue((tokens.size() % 2) == 0);
-        int numberOfTokens = tokens.size() / 2;
-        for (int i = 1; i <= numberOfTokens; i++) {
-            tokens.remove(i);
-        }
-        this.args = tokens;
-
-    }
-
-    public List<String> getArgs() {
-        return this.args;
     }
 
     public boolean hasArgs() {
