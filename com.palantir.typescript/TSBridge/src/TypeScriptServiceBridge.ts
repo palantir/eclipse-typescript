@@ -91,7 +91,7 @@ module TypeScriptServiceBridge {
             console.log(rawResult);
             return;
         }
-        private processRawRequest(rawRequest: String) {
+        private processRawRequest(rawRequest: string) {
             var request;
             var result;
             try {
