@@ -21,15 +21,11 @@ import java.util.List;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
-import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
-import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -182,19 +178,6 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
     @Override
     public IContextInformationValidator getContextInformationValidator() {
         return this.localContextInformationValidator;
-    }
-
-    public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-        Preconditions.checkNotNull(sourceViewer);
-
-        ContentAssistant assistant = new ContentAssistant();
-        assistant.enableAutoActivation(true);
-        assistant.setAutoActivationDelay(500);
-        assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-        assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
-        assistant.setContextInformationPopupBackground(this.colorManager.getColor(new RGB(150, 150, 0)));
-
-        return assistant;
     }
 
     private IPath getFilePath() {
