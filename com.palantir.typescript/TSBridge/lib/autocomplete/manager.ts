@@ -31,15 +31,18 @@ module AutoCompleteLibrary {
         pruningPrefix: string;
         entries: Services.CompletionEntryDetails[];
     }
+
     export interface IAutoCompletionInfo { //extends CompletionInfo but interfaces can't extends classes.
         pruningPrefix: string;
         entries: Services.CompletionEntry[];
     }
+
     export class Manager {
         private languageServiceShim: Services.ILanguageServiceShim = null;
         private languageService: Services.ILanguageService = null;
 
         private fileNameToScript: DataStructures.Map = new DataStructures.Map();
+
         constructor() {
             this.createLS();
         }
@@ -47,32 +50,36 @@ module AutoCompleteLibrary {
         //////////////////////////////////////////////////////////////////////
         //  Raw Language Services as per ILanguageService.
         //  These are all just straight up feeds into the languageService object.
-        public refresh() : void {
+        public refresh(): void {
             return this.languageService.refresh();
         }
-        public getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean) : Services.CompletionInfo{
+
+        public getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): Services.CompletionInfo{
             return this.languageService.getCompletionsAtPosition(fileName,position,isMemberCompletion);
         }
+
         //////////////////////////////////////////////////////////////////////
         //  Some helper methods wrapping around the completions to handle prefix filtering.
-        public getImplicitPrunedCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean) : IAutoCompletionInfo {
+        public getImplicitPrunedCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): IAutoCompletionInfo {
             var pruningPrefix: string = this.getPrefix(fileName,position);
             return this.getExplicitPrunedCompletionsAtPosition(fileName,position,pruningPrefix,isMemberCompletion);
         }
+
         private getPrefix(fileName: string, position: number) {
             var start: number= 0; // just get the entire file up to this point.  PERFORMANCE may suffer but it works in all cases and is simple.
-            var end : number= position;
+            var end: number= position;
             var snapShot = this.getScriptSnapshot(fileName).getText(start,end);
-            var index : number;
-            for(index = snapShot.length-1; this.validMethodChar(snapShot.charAt(index)); index--);
-            if(snapShot.charAt(index) === '.' || snapShot.charAt(index) === ' ') {
+            var index: number;
+            for (index = snapShot.length-1; this.validMethodChar(snapShot.charAt(index)); index--);
+            if (snapShot.charAt(index) === '.' || snapShot.charAt(index) === ' ') {
                 index++;
-                var stringToRight : string = snapShot.substring(index,snapShot.length);
+                var stringToRight: string = snapShot.substring(index,snapShot.length);
                 return stringToRight;
             } else {
                 return "";
             }
         }
+
         private validMethodChar(orig_c) { // is the character a valid character for a method.
             var c = orig_c.toUpperCase();
             if ("A" <= c && c <= "Z") { // letters
@@ -87,132 +94,156 @@ module AutoCompleteLibrary {
                 return false;
             }
         }
-        public getExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string, isMemberCompletion: boolean) : IAutoCompletionInfo{
-            var rawCompletionInfo : Services.CompletionInfo = this.getCompletionsAtPosition(fileName,position,isMemberCompletion);
-            if(rawCompletionInfo === null) {
-                var autoCompletionInfo : IAutoCompletionInfo = {"pruningPrefix" : pruningPrefix, "entries" : null};
+
+        public getExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string, isMemberCompletion: boolean): IAutoCompletionInfo{
+            var rawCompletionInfo: Services.CompletionInfo = this.getCompletionsAtPosition(fileName,position,isMemberCompletion);
+            if (rawCompletionInfo === null) {
+                var autoCompletionInfo: IAutoCompletionInfo = {"pruningPrefix": pruningPrefix, "entries": null};
                 return autoCompletionInfo;
             }
-            var prunedEntries : Services.CompletionEntry[] = [];
-            var rawEntries : Services.CompletionEntry[] = rawCompletionInfo.entries;
-            for(var i=0;i<rawEntries.length;i++) {
-                if(this.prefixMatch(pruningPrefix,rawEntries[i].name)) {
+            var prunedEntries: Services.CompletionEntry[] = [];
+            var rawEntries: Services.CompletionEntry[] = rawCompletionInfo.entries;
+            for (var i=0;i<rawEntries.length;i++) {
+                if (this.prefixMatch(pruningPrefix,rawEntries[i].name)) {
                         prunedEntries.push(rawEntries[i]);
                 }
             }
 
-            var autoCompletionInfo : IAutoCompletionInfo = {"pruningPrefix" : pruningPrefix, "entries" : prunedEntries}; 
+            var autoCompletionInfo: IAutoCompletionInfo = {"pruningPrefix": pruningPrefix, "entries": prunedEntries};
             return autoCompletionInfo;
         }
+
         private prefixMatch(_prefix: string, str: string) {
-            var index : number = str.indexOf(_prefix);
-            var matches : boolean = (index === 0);
+            var index: number = str.indexOf(_prefix);
+            var matches: boolean = (index === 0);
             return matches;
         }
-        public getDetailedImplicitPrunedCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean) : IDetailedAutoCompletionInfo {
+
+        public getDetailedImplicitPrunedCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): IDetailedAutoCompletionInfo {
             var pruningPrefix: string = this.getPrefix(fileName,position);
             return this.getDetailedExplicitPrunedCompletionsAtPosition(fileName,position,pruningPrefix,isMemberCompletion);
         }
-        public getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string, isMemberCompletion: boolean) : IDetailedAutoCompletionInfo {
-            var abbreviatedCompletionInfo : IAutoCompletionInfo = this.getExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix, isMemberCompletion);
-            if(abbreviatedCompletionInfo.entries === null) {
+
+        public getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string, isMemberCompletion: boolean): IDetailedAutoCompletionInfo {
+            var abbreviatedCompletionInfo: IAutoCompletionInfo = this.getExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix, isMemberCompletion);
+            if (abbreviatedCompletionInfo.entries === null) {
                 return null;
             }
-            var abbreviatedEntry : Services.CompletionEntry;
+            var abbreviatedEntry: Services.CompletionEntry;
 
-            var detailedEntry : Services.CompletionEntryDetails;
-            var detailedEntries : Services.CompletionEntryDetails[] =[];
+            var detailedEntry: Services.CompletionEntryDetails;
+            var detailedEntries: Services.CompletionEntryDetails[] = [];
 
-            for(var i=0;i<abbreviatedCompletionInfo.entries.length;i++) {
+            for (var i=0;i<abbreviatedCompletionInfo.entries.length;i++) {
                 abbreviatedEntry = abbreviatedCompletionInfo.entries[i];
                 detailedEntry = this.getCompletionEntryDetails(fileName,position,abbreviatedEntry.name);
                 detailedEntries.push(detailedEntry);
             }
-            var detailedCompletionInfo : IDetailedAutoCompletionInfo = {"pruningPrefix" : pruningPrefix, "entries" : detailedEntries}; 
+            var detailedCompletionInfo: IDetailedAutoCompletionInfo = {"pruningPrefix": pruningPrefix, "entries": detailedEntries};
             return detailedCompletionInfo;
         }
         ///////End of helper methods.
 
-        public getCompletionEntryDetails(fileName: string, position: number, entryName: string) : Services.CompletionEntryDetails {
+        public getCompletionEntryDetails(fileName: string, position: number, entryName: string): Services.CompletionEntryDetails {
             return this.languageService.getCompletionEntryDetails(fileName,position,entryName);
         }
 
-        public getTypeAtPosition(fileName: string, position: number) : Services.TypeInfo {
+        public getTypeAtPosition(fileName: string, position: number): Services.TypeInfo {
             return this.languageService.getTypeAtPosition(fileName,position);
         }
-        public getBreakpointStatementAtPosition(fileName: string, position: number) : Services.SpanInfo {
+
+        public getBreakpointStatementAtPosition(fileName: string, position: number): Services.SpanInfo {
             return this.languageService.getBreakpointStatementAtPosition(fileName,position);
         }
-        public getSignatureAtPosition(fileName: string, position: number) : Services.SignatureInfo {
+
+        public getSignatureAtPosition(fileName: string, position: number): Services.SignatureInfo {
             return this.languageService.getSignatureAtPosition(fileName,position);
         }
-        public getDefinitionAtPosition(fileName: string, position: number) : Services.DefinitionInfo[] {
+
+        public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
             return this.languageService.getDefinitionAtPosition(fileName,position);
         }
-        public getReferencesAtPosition(fileName: string, position: number) : Services.ReferenceEntry[] {
+
+        public getReferencesAtPosition(fileName: string, position: number): Services.ReferenceEntry[] {
             return this.languageService.getReferencesAtPosition(fileName,position);
         }
-        public getOccurrencesAtPosition(fileName: string, position: number) : Services.ReferenceEntry[] {
+
+        public getOccurrencesAtPosition(fileName: string, position: number): Services.ReferenceEntry[] {
             return this.languageService.getOccurrencesAtPosition(fileName,position);
         }
-        public getImplementorsAtPosition(fileName: string, position: number) : Services.ReferenceEntry[] {
+
+        public getImplementorsAtPosition(fileName: string, position: number): Services.ReferenceEntry[] {
             return this.languageService.getImplementorsAtPosition(fileName,position);
         }
-        public getNavigateToItems(searchValue: string) : Services.NavigateToItem[] {
+
+        public getNavigateToItems(searchValue: string): Services.NavigateToItem[] {
             return this.languageService.getNavigateToItems(searchValue);
         }
-        public getScriptLexicalStructure(fileName: string) : Services.NavigateToItem[] {
+
+        public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
-        public getOutliningRegions(fileName: string) : TypeScript.TextSpan[] {
+
+        public getOutliningRegions(fileName: string): TypeScript.TextSpan[] {
             return this.languageService.getOutliningRegions(fileName);
         }
-        public getBraceMatchingAtPosition(fileName: string, position: number) : TypeScript.TextSpan[] {
+
+        public getBraceMatchingAtPosition(fileName: string, position: number): TypeScript.TextSpan[] {
             return this.languageService.getBraceMatchingAtPosition(fileName,position);
         }
-        public getIndentationAtPosition(fileName: string, position: number, options: Services.EditorOptions) : number {
+
+        public getIndentationAtPosition(fileName: string, position: number, options: Services.EditorOptions): number {
             return this.languageService.getIndentationAtPosition(fileName,position,options);
         }
-        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions) : Services.TextEdit[] {
+
+        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsForRange(fileName,minChar,limChar,options);
         }
-        public getFormattingEditsForDocument(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions) : Services.TextEdit[] {
+
+        public getFormattingEditsForDocument(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsForDocument(fileName,minChar,limChar,options);
         }
-        public getFormattingEditsOnPaste(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions) : Services.TextEdit[] {
+
+        public getFormattingEditsOnPaste(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsOnPaste(fileName,minChar,limChar,options);
         }
-        public getFormattingEditsAfterKeystroke(fileName: string, position: number, key: string, options: Services.FormatCodeOptions) : Services.TextEdit[] {
+
+        public getFormattingEditsAfterKeystroke(fileName: string, position: number, key: string, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsAfterKeystroke(fileName,position,key,options);
         }
-        public getEmitOutput(fileName: string) : Services.EmitOutput {
+
+        public getEmitOutput(fileName: string): Services.EmitOutput {
             return this.languageService.getEmitOutput(fileName);
         }
-        public getSyntaxTree(fileName: string) : TypeScript.SyntaxTree {
+
+        public getSyntaxTree(fileName: string): TypeScript.SyntaxTree {
             return this.languageService.getSyntaxTree(fileName);
         }
         //////////////////////////////////////////////////////////////////////
         //  File managing
         //
 
-        public addFile(fileName: string, rootPath: string) : boolean {
+        public addFile(fileName: string, rootPath: string): boolean {
             var filePath = rootPath + fileName;
             var code = this.readFileContents(filePath);
             return this.addScript(fileName, code);
         }
-        public removeFile(fileName: string) : boolean {
+
+        public removeFile(fileName: string): boolean {
             var result = this.fileNameToScript.delete(fileName);
             this.createLS();
             return result;
         }
-        public updateFile(fileName: string, rootPath: string) : boolean {
+
+        public updateFile(fileName: string, rootPath: string): boolean {
             var filePath = rootPath + fileName;
             var code = this.readFileContents(filePath);
             return this.updateScript(fileName, code);
         }
-        public checkFile(fileName: string) : boolean {
+
+        public checkFile(fileName: string): boolean {
             var fileContents = this.fileNameToScript.get(fileName);
-            var fileLoaded : boolean = (fileContents !== null);
+            var fileLoaded: boolean = (fileContents !== null);
             return fileLoaded;
         }
 
@@ -220,14 +251,14 @@ module AutoCompleteLibrary {
             return this.fileNameToScript.get(fileName);
         }
 
-        public addScript(fileName: string, content: string) : boolean {
+        public addScript(fileName: string, content: string): boolean {
             var script = new ScriptInfo(fileName, content);
             this.fileNameToScript.set(fileName, script);
             this.createLS();
             return true;
         }
 
-        public updateScript(fileName: string, content: string) : boolean { //better aptly named update or add.
+        public updateScript(fileName: string, content: string): boolean { //better aptly named update or add.
             var script = this.getScriptInfo(fileName);
             if (script !== undefined) {
                 script.updateContent(content);
@@ -283,7 +314,7 @@ module AutoCompleteLibrary {
         /*
             Random methods that have no home yet.
         */
-        public addDefaultLibrary() : boolean {
+        public addDefaultLibrary(): boolean {
             var root = "";
             return this.addFile("lib.d.ts",root);
         }
@@ -291,7 +322,8 @@ module AutoCompleteLibrary {
         private readFileContents(filePath: string): string {
             return IO.readFile(filePath).contents();
         }
-        public createLS() : void {
+
+        public createLS(): void {
             var languageServiceShim = new Services.TypeScriptServicesFactory().createLanguageServiceShim(this);
             languageServiceShim.refresh(true);
             this.languageServiceShim = languageServiceShim;
