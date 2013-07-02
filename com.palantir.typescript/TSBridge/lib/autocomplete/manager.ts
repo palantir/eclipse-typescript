@@ -84,11 +84,11 @@ module AutoCompleteLibrary {
             var c = orig_c.toUpperCase();
             if ("A" <= c && c <= "Z") { // letters
                 return true;
-            } else if (c === '(' || c === ')') { // parens
+            } else if (c === "(" || c === ")") { // parens
                 return true;
-            } else if ('0' <= c && c <= '9') { // numbers
+            } else if ("0" <= c && c <= "9") { // numbers
                 return true;
-            } else if ('$' === c) { // $
+            } else if ("$" === c) { // $
                 return true;
             } else {
                 return false;
