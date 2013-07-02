@@ -56,16 +56,16 @@ module AutoCompleteLibrary {
         //////////////////////////////////////////////////////////////////////
         //  Some helper methods wrapping around the completions to handle prefix filtering.
         public getImplicitPrunedCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean) : IAutoCompletionInfo {
-            var pruningPrefix : string = this.getStringToRightOfDot(fileName,position);
+            var pruningPrefix: string = this.getPrefix(fileName,position);
             return this.getExplicitPrunedCompletionsAtPosition(fileName,position,pruningPrefix,isMemberCompletion);
         }
-        private getStringToRightOfDot(fileName: string, position: number) {
-            var start : number= 0; //just get the entire file up to this point.  PERFORMANCE may suffer but it works in all cases and is simple.
+        private getPrefix(fileName: string, position: number) {
+            var start: number= 0; // just get the entire file up to this point.  PERFORMANCE may suffer but it works in all cases and is simple.
             var end : number= position;
             var snapShot = this.getScriptSnapshot(fileName).getText(start,end);
             var index : number;
             for(index = snapShot.length-1; this.validMethodChar(snapShot.charAt(index)); index--);
-            if(snapShot.charAt(index) === '.') {
+            if(snapShot.charAt(index) === '.' || snapShot.charAt(index) === ' ') {
                 index++;
                 var stringToRight : string = snapShot.substring(index,snapShot.length);
                 return stringToRight;
@@ -73,13 +73,15 @@ module AutoCompleteLibrary {
                 return "";
             }
         }
-        private validMethodChar(orig_c) { //is the character a valid character for a method.
+        private validMethodChar(orig_c) { // is the character a valid character for a method.
             var c = orig_c.toUpperCase();
-            if("A" <= c && c <= "Z") {
+            if ("A" <= c && c <= "Z") { // letters
                 return true;
-            } else if(c === '(' || c == ')') {
+            } else if (c === '(' || c === ')') { // parens
                 return true;
-            } else if('0' <= c && c <= '9') {
+            } else if ('0' <= c && c <= '9') { // numbers
+                return true;
+            } else if ('$' === c) { // $
                 return true;
             } else {
                 return false;
@@ -108,7 +110,7 @@ module AutoCompleteLibrary {
             return matches;
         }
         public getDetailedImplicitPrunedCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean) : IDetailedAutoCompletionInfo {
-            var pruningPrefix : string = this.getStringToRightOfDot(fileName,position);
+            var pruningPrefix: string = this.getPrefix(fileName,position);
             return this.getDetailedExplicitPrunedCompletionsAtPosition(fileName,position,pruningPrefix,isMemberCompletion);
         }
         public getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string, isMemberCompletion: boolean) : IDetailedAutoCompletionInfo {
