@@ -20,12 +20,10 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
@@ -40,6 +38,7 @@ import com.palantir.typescript.tsbridge.TypeScriptBridge;
 import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteResult;
 import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
 import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetails;
+import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetailsProposal;
 import com.palantir.typescript.tsbridge.autocomplete.IDetailedAutoCompletionInfo;
 
 /**
@@ -48,11 +47,9 @@ import com.palantir.typescript.tsbridge.autocomplete.IDetailedAutoCompletionInfo
  * @author tyleradams
  */
 public final class TypeScriptCompletionProcessor implements IContentAssistProcessor {
-    private final ColorManager colorManager;
     private final LocalValidator localContextInformationValidator;
 
     public TypeScriptCompletionProcessor() {
-        this.colorManager = new ColorManager();
         this.localContextInformationValidator = new LocalValidator();
     }
 
@@ -74,82 +71,21 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         if (autoCompletionInfo == null) {
             return null;
         }
-        CompletionEntryDetails[] smartProposals = autoCompletionInfo.getEntries();
-        Image img = null;
-        String replacement = null;
-        String display = null;
-        String additionalProposalInfo = null;
-        IContextInformation contextInfo = null;
-        TypeScriptIconFetcher iconFetcher = new TypeScriptIconFetcher();
-        int cursorProposal;
-
-        if (smartProposals == null) {
+        CompletionEntryDetails[] rawCompletionEntryDetails = autoCompletionInfo.getEntries();
+        if (rawCompletionEntryDetails == null) {
             return null;
         }
-
+        List<CompletionEntryDetailsProposal> smartProposals = Lists.newArrayList();
+        for (CompletionEntryDetails entry : rawCompletionEntryDetails) {
+            smartProposals.add(new CompletionEntryDetailsProposal(entry));
+        }
         List<ICompletionProposal> result = Lists.newArrayList();
-        for (int i = 0; i < smartProposals.length; i++) {
-            replacement = getReplacementString(smartProposals[i], autoCompletionInfo.getPruningPrefix());
-            display = getDisplayString(smartProposals[i]);
-            cursorProposal = getCursorProposal(smartProposals[i], replacement, autoCompletionInfo.getPruningPrefix());
-            additionalProposalInfo = getAdditionalProposalInfo(smartProposals[i]);
-            img = iconFetcher.getDefaultIcon();
-            result.add(new CompletionProposal(replacement, offset, 0, cursorProposal, img, display, contextInfo,
-                additionalProposalInfo));
+        for (CompletionEntryDetailsProposal proposal : smartProposals) {
+            result.add(proposal.getCompletionProposal(offset, autoCompletionInfo.getPruningPrefix()));
         }
         ICompletionProposal[] retu = new ICompletionProposal[result.size()];
         result.toArray(retu);
         return retu;
-    }
-
-    private int getCursorProposal(CompletionEntryDetails completionEntryDetail, String replacement, String prefix) {
-        Preconditions.checkNotNull(completionEntryDetail);
-        Preconditions.checkNotNull(replacement);
-        Preconditions.checkNotNull(prefix);
-
-        if (completionEntryDetail.getKind().equals(("method")) || completionEntryDetail.getKind().equals("function")) {
-            if (completionEntryDetail.hasArgs()) {
-                return completionEntryDetail.getName().length() - prefix.length() + 1;
-            } else {
-                return completionEntryDetail.getName().length() - prefix.length() + 2;
-            }
-        }
-        return replacement.length();
-    }
-
-    private String getAdditionalProposalInfo(CompletionEntryDetails completionEntryDetail) {
-        Preconditions.checkNotNull(completionEntryDetail);
-
-        return completionEntryDetail.getDocComment();
-    }
-
-    private String getReplacementString(CompletionEntryDetails completionEntryDetail, String prefix) {
-        Preconditions.checkNotNull(completionEntryDetail);
-        Preconditions.checkNotNull(prefix);
-
-        int prefixLength = prefix.length();
-        if (completionEntryDetail.getKind().equals(("method")) || completionEntryDetail.getKind().equals("function")) {
-            String replacement = completionEntryDetail.getName().substring(prefixLength);
-            String argString = "()";
-            replacement += argString;
-            return replacement;
-        } else {
-            return completionEntryDetail.getName().substring(prefixLength);
-        }
-    }
-
-    private String getDisplayString(CompletionEntryDetails completionEntryDetail) {
-        Preconditions.checkNotNull(completionEntryDetail);
-
-        String display = "";
-        if (completionEntryDetail.getKind().equals("method") || completionEntryDetail.getKind().equals("function")) {
-            display += completionEntryDetail.getName();
-            display += completionEntryDetail.getType();
-        } else {
-            display += completionEntryDetail.getName();
-            display += " : " + completionEntryDetail.getType();
-        }
-        return display;
     }
 
     @Override
