@@ -3,13 +3,11 @@ Eclipse TypeScript Plug-in
 
 An Eclipse plug-in for developing in the TypeScript language.
 
-Features
---------
+## Features
 * auto-completion
 * syntax highlighting
 
-Roadmap
--------
+## Roadmap
 * JSDoc assistance (fill in parameter names for functions for example)
 * organize references (similar to organizing imports for Java code)
 * warning/error markers
@@ -18,16 +16,18 @@ Roadmap
 * display documentation during auto-complete and on hover
 * code formatter
 
-Building and Installing
------------------
+## Building and Installing
+* Clone the repository
 * Install [Maven](http://maven.apache.org/)
 * Install [Grunt](http://gruntjs.com/)
-* Run grunt --force.  Currently we have to force the build even if there are errors.
-* Run mvn install
+* Run `npm install`
+* Run `grunt --force` (currently we have to force the build even if there are errors)
+* Run `mvn install`
 
-Contributing
-------------
+## Contributing
+### Java
 * Install the [Eclipse Checkstyle plug-in](http://eclipse-cs.sourceforge.net/)
 * Install the [Eclipse FindBugs plug-in](http://findbugs.sourceforge.net/)
 * Ensure there are no warnings/errors (in the Problems view)
-* Submit a pull request
+
+Please build the changes via Grunt and Maven and if they succeed submit a pull request.
