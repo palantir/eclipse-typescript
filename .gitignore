@@ -1,2 +1,3 @@
 ecbuild/
+node_modules/
 target/
