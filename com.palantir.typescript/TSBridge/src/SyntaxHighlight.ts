@@ -1,27 +1,28 @@
 /*
-* Copyright 2013 Palantir Technologies, Inc.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-///<reference path='TypeScriptServiceBridge.ts' />
-///<reference path='../lib/typescript/src/services/classifier.ts' />
-///<reference path='../lib/typescript/src/compiler/typescript.ts' />
+ * Copyright 2013 Palantir Technologies, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/// <reference path='../lib/typescript/src/services/classifier.ts' />
+/// <reference path='../lib/typescript/src/compiler/typescript.ts' />
+/// <reference path='TypeScriptServiceBridge.ts' />
 
 /**
   * This module handles everything related to syntax highlighting.  SyntaxHighlight.Service is the actual IService and it also comes with its own set of requests and results.
+  *
   * @author tyleradams
   */
-
 module SyntaxHighlight {
 
     interface TokenWrapper {
