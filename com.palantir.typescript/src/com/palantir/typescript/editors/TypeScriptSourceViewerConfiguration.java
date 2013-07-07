@@ -29,8 +29,8 @@ import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
 import com.google.common.base.Preconditions;
 
@@ -40,14 +40,14 @@ import com.google.common.base.Preconditions;
  *
  * @author tyleradams
  */
-public final class TypeScriptConfiguration extends SourceViewerConfiguration {
+public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
     private final TypeScriptDoubleClickStrategy doubleClickStrategy;
     private final TypeScriptServerScanner typeScriptScanner;
     private final ColorManager colorManager;
     private final JSDocScanner jsDocScanner;
 
-    public TypeScriptConfiguration(ColorManager colorManager) {
+    public TypeScriptSourceViewerConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
