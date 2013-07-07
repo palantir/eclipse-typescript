@@ -17,32 +17,29 @@
 package com.palantir.typescript.editors;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.io.IOException;
 
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.IPath;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
+import com.google.common.io.Files;
 import com.palantir.typescript.tsbridge.TypeScriptBridge;
 
 public final class TypeScriptFileManager implements IResourceDeltaVisitor {
-
-    public TypeScriptFileManager() {
-
-    }
 
     @Override
     public boolean visit(IResourceDelta delta) {
         Preconditions.checkNotNull(delta);
 
-        IResource res = delta.getResource();
-        if (isFile(res)) {
-            IPath filePath = res.getRawLocation();
+        IResource resource = delta.getResource();
+        if (isFile(resource)) {
+            IPath filePath = resource.getRawLocation();
             String fileName = getFileName(filePath);
+
             if (isTypeScriptFile(fileName)) {
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
@@ -54,15 +51,13 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
                         break;
                     case IResourceDelta.CHANGED:
                         String fileLocation = filePath.toString();
-                        String fileContents;
                         try {
-                            fileContents = new Scanner(new File(fileLocation)).useDelimiter("\\Z").next();
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
-                        } catch (NoSuchElementException e) {
+                            String fileContents = Files.toString(new File(fileLocation), Charsets.UTF_8);
+
+                            TypeScriptBridge.getBridge().getAutoCompleteService().safeUpdateFile(fileName, fileContents);
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                        TypeScriptBridge.getBridge().getAutoCompleteService().safeUpdateFile(fileName, fileContents);
                         break;
                 }
             }
@@ -70,25 +65,25 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
         return true;
     }
 
-    private boolean isTypeScriptFile(String fileName) {
+    private static boolean isTypeScriptFile(String fileName) {
         Preconditions.checkNotNull(fileName);
 
         return fileName.endsWith(".ts");
     }
 
-    private boolean isFile(IResource res) {
+    private static boolean isFile(IResource res) {
         Preconditions.checkNotNull(res);
 
         return res.getType() == IResource.FILE;
     }
 
-    private String getFileName(IPath path) {
+    private static String getFileName(IPath path) {
         Preconditions.checkNotNull(path);
 
         return path.lastSegment();
     }
 
-    private String getFileRootPath(IPath path) {
+    private static String getFileRootPath(IPath path) {
         Preconditions.checkNotNull(path);
 
         String rootPath = "";
