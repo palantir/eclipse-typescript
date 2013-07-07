@@ -106,11 +106,11 @@ module TypeScriptServiceBridge {
 
         //   The one and ONLY external method
         public run() {
-            process.stdin.resume();
-            process.stdin.on('data', (request) => {this.processRawRequest(request); }); //callback every time a request is made!
+            var myProcess: any = process; // workaround for multiple definitions of the process global variable
 
+            myProcess.stdin.resume();
+            myProcess.stdin.on('data', (request) => {this.processRawRequest(request); }); //callback every time a request is made!
         }
-
     }
 }
 

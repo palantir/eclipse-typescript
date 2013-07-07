@@ -28,7 +28,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 ### Build
 * Clone the repository
 * Run `npm install`
-* Run `grunt --force` (forcing the build is currently necessary to workaround some issues)
+* Run `grunt`
 * Run `mvn install`
 
 ### Contribute
