@@ -16,7 +16,9 @@
 
 package com.palantir.typescript.editors;
 
+import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
@@ -55,12 +57,17 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
     }
 
     @Override
-    public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-        Preconditions.checkNotNull(sourceViewer);
+    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+        return new IAutoEditStrategy[] { new DefaultIndentLineAutoEditStrategy() };
+    }
 
-        String[] configuredContentTypes = new String[TypeScriptPartitionScanner.TYPE_SCRIPT_PARTITION_TYPES.size()];
-        TypeScriptPartitionScanner.TYPE_SCRIPT_PARTITION_TYPES.toArray(configuredContentTypes);
-        return configuredContentTypes;
+    @Override
+    public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
+        return new String[] {
+                IDocument.DEFAULT_CONTENT_TYPE,
+                TypeScriptPartitionScanner.JSDOC,
+                TypeScriptPartitionScanner.MULTILINE_COMMENT
+        };
     }
 
     @Override
@@ -117,6 +124,5 @@ public final class TypeScriptConfiguration extends SourceViewerConfiguration {
         assistant.setInformationControlCreator(creator); //TODO: Why does this work?
         return assistant;
     }
-
 
 }
