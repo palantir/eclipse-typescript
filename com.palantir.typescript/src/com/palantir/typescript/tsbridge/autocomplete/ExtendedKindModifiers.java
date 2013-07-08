@@ -35,10 +35,8 @@ public final class ExtendedKindModifiers {
 
     public ExtendedKindModifiers(String rawKindModifiers, String docComment) {
         Preconditions.checkNotNull(rawKindModifiers);
-        if (docComment == null) { //HACKHACK: This covers up errors from the bridge sending null objects.
-            Preconditions.checkNotNull(docComment);
-            docComment = "";
-        }
+        Preconditions.checkNotNull(docComment);
+
         this.isNone = rawKindModifiers.equals("");
         this.isPublic = rawKindModifiers.contains("public");
         this.isPrivate = rawKindModifiers.contains("private");
