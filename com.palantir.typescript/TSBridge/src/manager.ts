@@ -19,13 +19,13 @@
 * I forked the TypeScriptLS class (below called manager) and any implementations
 * of interfaces that it used so as to be able to leverage the LanguageService class.
 */
-///<reference path='../datastructures/map.ts'/>
-///<reference path='../typescript/src/compiler/io.ts'/>
-///<reference path='../typescript/src/compiler/typescript.ts'/>
-///<reference path='../typescript/src/services/languageService.ts' />
-///<reference path='../typescript/src/services/shims.ts' />
-///<reference path='../typescript/src/services/typescriptServices.ts' />
-///<reference path='../typescript/src/services/diagnosticServices.ts' />
+///<reference path='map.ts'/>
+///<reference path='../lib/typescript/src/compiler/io.ts'/>
+///<reference path='../lib/typescript/src/compiler/typescript.ts'/>
+///<reference path='../lib/typescript/src/services/languageService.ts' />
+///<reference path='../lib/typescript/src/services/shims.ts' />
+///<reference path='../lib/typescript/src/services/typescriptServices.ts' />
+///<reference path='../lib/typescript/src/services/diagnosticServices.ts' />
 module AutoCompleteLibrary {
     export interface IDetailedAutoCompletionInfo {
         pruningPrefix: string;

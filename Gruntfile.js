@@ -10,7 +10,7 @@ module.exports = function(grunt) {
           sourcemap: true,
           target: "es5"
         },
-        src: ["com.palantir.typescript/TSBridge/src/TypeScriptServiceBridge.ts"],
+        src: ["com.palantir.typescript/TSBridge/src/bridge.ts"],
         dest: "com.palantir.typescript/TSBridge/ecbuild/bridge.js"
       }
     }
