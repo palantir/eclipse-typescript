@@ -66,8 +66,8 @@ module AutoCompleteLibrary {
         }
 
         private getPrefix(fileName: string, position: number) {
-            var start: number= 0; // just get the entire file up to this point.  PERFORMANCE may suffer but it works in all cases and is simple.
-            var end: number= position;
+            var start: number = 0; // HACKHACK: just get the entire file up to this point.  performance may suffer but it works in all cases and is simple.
+            var end: number = position;
             var snapShot = this.getScriptSnapshot(fileName).getText(start,end);
             var index: number;
             for (index = snapShot.length-1; this.validMethodChar(snapShot.charAt(index)); index--);
