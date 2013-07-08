@@ -75,7 +75,7 @@ module SyntaxHighlight {
             var classHost = new TypeScript.NullLogger();
             var classifier = new Services.Classifier(classHost);
             var contentsByLine = request.documentText.split(newline);
-            var lineState = Services.EndOfLineState.Start
+            var lineState = Services.EndOfLineState.Start;
             var classResults: Services.ClassificationResult[] = [];
             var currentResult: Services.ClassificationResult;
             var currentEntry: Services.ClassificationInfo;
@@ -184,7 +184,7 @@ module AutoComplete {
             var file = request.fileName;
             var position = request.offset;
             var isMemberCompletion = request.isMemberCompletion;
-            var rawResult: AutoCompleteLibrary.IDetailedAutoCompletionInfo = this.manager.getDetailedImplicitPrunedCompletionsAtPosition(file,position,isMemberCompletion);
+            var rawResult: AutoCompleteLibrary.IDetailedAutoCompletionInfo = this.manager.getDetailedImplicitPrunedCompletionsAtPosition(file, position, isMemberCompletion);
             var result = {"resultType": request.command, "resultValid": true, autoCompletionInfo: rawResult};
             return result;
         }
