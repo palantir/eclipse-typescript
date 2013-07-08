@@ -88,7 +88,7 @@ module AutoCompleteLibrary {
                 return true;
             } else if ("0" <= c && c <= "9") { // numbers
                 return true;
-            } else if ("$" === c) { // $
+            } else if (c === "$" || c === "_") { // Special characters
                 return true;
             } else {
                 return false;
