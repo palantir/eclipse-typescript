@@ -3,7 +3,7 @@
 An Eclipse plug-in for developing in the TypeScript language.
 
 ## Features
-* auto-completion
+* autocomplete
 * syntax highlighting
 
 ## Roadmap
