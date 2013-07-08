@@ -231,7 +231,6 @@ module AutoCompleteLibrary {
 
         public removeFile(fileName: string): boolean {
             var result = this.fileNameToScript.delete(fileName);
-            this.createLS();
             return result;
         }
 
@@ -254,7 +253,6 @@ module AutoCompleteLibrary {
         public addScript(fileName: string, content: string): boolean {
             var script = new ScriptInfo(fileName, content);
             this.fileNameToScript.set(fileName, script);
-            this.createLS();
             return true;
         }
 
@@ -262,7 +260,6 @@ module AutoCompleteLibrary {
             var script = this.getScriptInfo(fileName);
             if (script !== undefined) {
                 script.updateContent(content);
-                this.createLS();
                 return true;
             }
 
@@ -428,7 +425,7 @@ module AutoCompleteLibrary {
 
         public getTextChangeRangeSinceVersion(scriptVersion: number): string {
             var range = this.scriptInfo.getTextChangeRangeBetweenVersions(scriptVersion, this.version);
-            if (range === null) {
+            if (range === null || range === TypeScript.TextChangeRange.unchanged) {
                 return null;
             }
 
