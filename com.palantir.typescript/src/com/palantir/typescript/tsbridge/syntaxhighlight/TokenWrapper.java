@@ -24,12 +24,16 @@ import org.eclipse.jface.text.rules.IToken;
  * @author tyleradams
  */
 public final class TokenWrapper {
-    private IToken token;
-    private int tokenID;
-    private int offset;
-    private int length;
 
-    public TokenWrapper() {
+    private IToken token;
+    private final int length;
+    private final int offset;
+    private final int tokenID;
+
+    public TokenWrapper(ClassificationInfo entry, int offset) {
+        this.length = entry.getLength();
+        this.tokenID = entry.getClassification();
+        this.offset = offset;
     }
 
     public IToken getToken() {
@@ -51,4 +55,5 @@ public final class TokenWrapper {
     public int getTokenID() {
         return this.tokenID;
     }
+
 }

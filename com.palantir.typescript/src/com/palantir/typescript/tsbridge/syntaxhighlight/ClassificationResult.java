@@ -16,33 +16,36 @@
 
 package com.palantir.typescript.tsbridge.syntaxhighlight;
 
-import java.util.List;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 
 /**
- * This class packs up the results of a syntax highlight request into a clean object.
+ * Corresponds to matching object from TypeScript.
  *
  * @author tyleradams
  */
-public final class SyntaxHighlightResult {
+public final class ClassificationResult {
 
-    private final List<TokenWrapper> tokenWrappers;
+    private ClassificationInfo[] entries;
+    private int finalLexState;
 
-    public SyntaxHighlightResult(List<ClassificationInfo> entries, List<Integer> offsets) {
-        Preconditions.checkNotNull(entries);
-        Preconditions.checkNotNull(offsets);
-        Preconditions.checkArgument(entries.size() == offsets.size());
-
-        this.tokenWrappers = Lists.newArrayList();
-        for (int i = 0; i < entries.size(); i++) {
-            this.tokenWrappers.add(new TokenWrapper(entries.get(i), offsets.get(i)));
-        }
+    public int getFinalLexState() {
+        return this.finalLexState;
     }
 
-    public TokenWrapper[] getTokenWrappers() {
-        return this.tokenWrappers.toArray(new TokenWrapper[0]);
+    public void setFinalLexState(int lexState) {
+        Preconditions.checkArgument(lexState >= 0);
+
+        this.finalLexState = lexState;
+    }
+
+    public void setEntries(ClassificationInfo[] entries) {
+        Preconditions.checkNotNull(entries);
+
+        this.entries = entries;
+    }
+
+    public ClassificationInfo[] getEntries() {
+        return this.entries;
     }
 
 }
