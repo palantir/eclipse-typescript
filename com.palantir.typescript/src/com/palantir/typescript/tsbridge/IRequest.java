@@ -24,5 +24,7 @@ package com.palantir.typescript.tsbridge;
 public interface IRequest {
     String getCommand();
 
-    String getServiceType();
+    String getService();
+
+    Object[] getArgs();
 }

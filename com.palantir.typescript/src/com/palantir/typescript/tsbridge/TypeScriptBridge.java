@@ -23,13 +23,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteResult;
 import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
-import com.palantir.typescript.tsbridge.autocomplete.CheckFileResult;
-import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightResult;
 import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightService;
 
 /**
@@ -44,6 +40,8 @@ public final class TypeScriptBridge {
     private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "TSBridge/ecbuild/bridge.js";
 
+    private static final String UNITIALIZED = "Unitialized";
+
     private BufferedReader fromServer;
     private BufferedWriter toServer;
     private Process server;
@@ -51,16 +49,16 @@ public final class TypeScriptBridge {
     private final String nodeLocation;
     private final String bridgeLocation;
 
+    private final ObjectMapper mapper;
+
     private final SyntaxHighlightService syntaxHighlightService;
     private final AutoCompleteService autoCompleteService;
-
 
     public TypeScriptBridge() {
         this(DEFAULT_NODE_LOCATION, DEFAULT_BRIDGE_LOCATION);
     }
 
     public TypeScriptBridge(String nodeLocation, String bridgeLocation) {
-
         Preconditions.checkNotNull(nodeLocation);
         Preconditions.checkNotNull(bridgeLocation);
 
@@ -71,10 +69,11 @@ public final class TypeScriptBridge {
 
         initializeServer();
 
+        this.mapper = new ObjectMapper();
+
         this.syntaxHighlightService = new SyntaxHighlightService(this);
         this.autoCompleteService = new AutoCompleteService(this);
     }
-
 
     public SyntaxHighlightService getSyntaxHighlightService() {
         return this.syntaxHighlightService;
@@ -88,39 +87,48 @@ public final class TypeScriptBridge {
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
      * and packaging the result for usage.
      */
-    public IResult sendRequest(IRequest request) {
+    public <T> T sendRequest(IRequest request, Class<T> resultType) {
         Preconditions.checkNotNull(request);
+        Preconditions.checkNotNull(resultType);
 
-        ObjectMapper mapper = new ObjectMapper();
-        String rawResult = sendRequestGetRawResult(request, mapper);
+        String rawRequest;
 
         try {
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            IResult result = mapper.readValue(rawResult, SimpleResult.class);
-            mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+            rawRequest = this.mapper.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
-            if (result.isResultNotValid()) {
-                ErrorResult eResult = mapper.readValue(rawResult, ErrorResult.class);
-                throw new RuntimeException("The result is not valid, the error message is: " + eResult.getErrorMessage());
-            }
-            //TODO: Automate this, I should not have to modify the bridge manually every time a new result appears.
-            switch (result.getResultType()) {
-                case SyntaxHighlightResult.TYPE:
-                    result = mapper.readValue(rawResult, SyntaxHighlightResult.class);
-                    break;
-                case AutoCompleteResult.TYPE:
-                    result = mapper.readValue(rawResult, AutoCompleteResult.class);
-                    break;
-                case CheckFileResult.TYPE:
-                    result = mapper.readValue(rawResult, CheckFileResult.class);
-                    break;
-            }
-            return result;
+        String rawResult = this.sendRawRequestGetRawResult(rawRequest);
 
+        T result;
+        try {
+            result = this.mapper.readValue(rawResult, resultType);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
+        return result;
+    }
+
+    private String sendRawRequestGetRawResult(String rawRequest) {
+        Preconditions.checkNotNull(rawRequest);
+
+        String rawResult = UNITIALIZED;
+        try {
+            this.toServer.write(rawRequest);
+            this.toServer.flush();
+            rawResult = this.fromServer.readLine();
+        } catch (IOException e) {
+            restartServer();
+        }
+
+        if (rawResult == null) {
+            restartServer();
+        } else if (rawResult.equals(UNITIALIZED)) {
+            throw new RuntimeException("The rawResult was never set");
+        }
+        return rawResult;
     }
 
     public static TypeScriptBridge startBridge() {
@@ -145,28 +153,6 @@ public final class TypeScriptBridge {
         BRIDGE.killServer();
         BRIDGE = null;
         return;
-    }
-
-    private String sendRequestGetRawResult(IRequest request, ObjectMapper mapper) {
-        String rawResult = "";
-        String rawRequest;
-        try {
-            rawRequest = mapper.writeValueAsString(request);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.toServer.write(rawRequest);
-            this.toServer.flush();
-            rawResult = this.fromServer.readLine();
-        } catch (IOException e) {
-            restartServer();
-        }
-        if (rawResult == null) {
-            restartServer();
-        }
-
-        return rawResult;
     }
 
     private void initializeServer() {
