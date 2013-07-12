@@ -115,16 +115,24 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
 
     private IPath getFilePath() {
         IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) return null;
+        if (workbench == null) {
+            return null;
+        }
 
         IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) return null;
+        if (window == null) {
+            return null;
+        }
 
         IWorkbenchPage activePage = window.getActivePage();
-        if (activePage == null) return null;
+        if (activePage == null) {
+            return null;
+        }
 
         IEditorPart editor = activePage.getActiveEditor();
-        if (editor == null) return null;
+        if (editor == null) {
+            return null;
+        }
 
         IEditorInput input = editor.getEditorInput();
         if (input instanceof FileEditorInput) {
