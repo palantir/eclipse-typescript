@@ -113,6 +113,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         ContentAssistant assistant = new ContentAssistant();
 
         assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
+        assistant.setContentAssistProcessor(new TypeScriptCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
 
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(100);

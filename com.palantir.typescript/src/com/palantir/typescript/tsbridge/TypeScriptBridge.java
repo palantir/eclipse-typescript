@@ -25,6 +25,7 @@ import java.io.OutputStreamWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
+import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
 import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightService;
 
 /**
@@ -51,6 +52,7 @@ public final class TypeScriptBridge {
     private final ObjectMapper mapper;
 
     private final SyntaxHighlightService syntaxHighlightService;
+    private final AutoCompleteService autoCompleteService;
 
     public TypeScriptBridge() {
         this(DEFAULT_NODE_LOCATION, DEFAULT_BRIDGE_LOCATION);
@@ -70,11 +72,17 @@ public final class TypeScriptBridge {
         this.mapper = new ObjectMapper();
 
         this.syntaxHighlightService = new SyntaxHighlightService(this);
+        this.autoCompleteService = new AutoCompleteService(this);
     }
 
     public SyntaxHighlightService getSyntaxHighlightService() {
         return this.syntaxHighlightService;
     }
+
+    public AutoCompleteService getAutoCompleteService() {
+        return this.autoCompleteService;
+    }
+
 
     /**
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
