@@ -25,8 +25,8 @@ import com.palantir.typescript.tsbridge.TypeScriptBridge;
  */
 public final class AutoCompleteService {
 
-    public static final String TYPE = "Auto Complete";
     private final TypeScriptBridge typeScriptBridge;
+    private static final int MAX_CONTENT_SIZE = 30000;
 
     public AutoCompleteService(TypeScriptBridge typeScriptBridge) {
         Preconditions.checkNotNull(typeScriptBridge);
@@ -38,6 +38,10 @@ public final class AutoCompleteService {
         Preconditions.checkNotNull(file);
         Preconditions.checkArgument(offset >= 0);
         Preconditions.checkNotNull(contents);
+
+        if(contents.length() > MAX_CONTENT_SIZE) {
+            return null;
+        }
 
         Class<DetailedAutoCompletionInfo> resultType = DetailedAutoCompletionInfo.class;
 
