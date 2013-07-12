@@ -83,7 +83,6 @@ public final class TypeScriptBridge {
         return this.autoCompleteService;
     }
 
-
     /**
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
      * and packaging the result for usage.
@@ -101,6 +100,9 @@ public final class TypeScriptBridge {
         }
 
         String rawResult = this.sendRawRequestGetRawResult(rawRequest);
+        if (invalidJSON(rawResult)) {
+            throw new RuntimeException("The following string is invalid JSON\n" + rawResult);
+        }
 
         T result;
         try {
@@ -108,8 +110,18 @@ public final class TypeScriptBridge {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        if (result == null) {
+            throw new RuntimeException("The result is null");
+        }
 
         return result;
+    }
+
+    private static boolean invalidJSON(String rawResult) {
+        Preconditions.checkNotNull(rawResult);
+
+        String invalidJSON = "{\"error\": \"invalid json\"}";
+        return rawResult.equals(invalidJSON);
     }
 
     private String sendRawRequestGetRawResult(String rawRequest) {
