@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.IPath;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
+import com.palantir.typescript.tsbridge.TypeScriptBridge;
 
 public final class TypeScriptFileManager implements IResourceDeltaVisitor {
 
@@ -37,20 +38,20 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
         IResource resource = delta.getResource();
         if (isFile(resource)) {
             IPath filePath = resource.getRawLocation();
-            String fileName = getFileName(filePath);
+            String file = filePath.toOSString();
 
-            if (isTypeScriptFile(fileName)) {
+            if (isTypeScriptFile(file)) {
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        String rootFolder = getFileRootPath(filePath);
+                        TypeScriptBridge.getBridge().getFileManagerService().addFileToWorkspace(file);
                         break;
                     case IResourceDelta.REMOVED:
+                        TypeScriptBridge.getBridge().getFileManagerService().removeFileFromWorkspace(file);
                         break;
                     case IResourceDelta.CHANGED:
-                        String fileLocation = filePath.toString();
                         try {
-                            String fileContents = Files.toString(new File(fileLocation), Charsets.UTF_8);
-
+                            String content = Files.toString(new File(file), Charsets.UTF_8);
+                            TypeScriptBridge.getBridge().getFileManagerService().updateFile(file, content);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -71,22 +72,5 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
         Preconditions.checkNotNull(res);
 
         return res.getType() == IResource.FILE;
-    }
-
-    private static String getFileName(IPath path) {
-        Preconditions.checkNotNull(path);
-
-        return path.lastSegment();
-    }
-
-    private static String getFileRootPath(IPath path) {
-        Preconditions.checkNotNull(path);
-
-        String rootPath = "";
-        for (int i = 0; i < path.segmentCount() - 1; i++) {
-            rootPath += "/" + path.segment(i);
-        }
-        rootPath += "/";
-        return rootPath;
     }
 }
