@@ -14,31 +14,431 @@
  * limitations under the License.
  */
 
-///<reference path='map.ts' />
+///<reference path='../lib/typescript/src/compiler/io.ts'/>
 ///<reference path='../lib/typescript/src/services/classifier.ts' />
 ///<reference path='../lib/typescript/src/services/languageService.ts' />
 
+/**
+  * This module provides an interface between stdin, stdout and many of the TypeScript services.
+  *
+  * @author tyleradams
+  */
+module Bridge {
 
-module BridgeService {
+    function readFileContents(filePath: string): string {
+        return IO.readFile(filePath).contents();
+    }
 
-    export class ClassifierService implements TypeScriptServiceBridge.IService {
+    class Map {
 
-        private Classifier: Classifier;
+      private entries: any;
+      private headEntry: Entry;
 
-        constructor() {
-            this.Classifier = new Classifier();
+      constructor() {
+        this.entries = {};
+
+        // initialize a circular doubly linked list that allows quick access to the first or last entry
+        this.headEntry = new Entry();
+        this.headEntry.prev = this.headEntry;
+        this.headEntry.next = this.headEntry;
+      }
+
+      public delete(key: any): boolean {
+        var stringKey = this.stringify(key);
+        var entry = this.entries[stringKey];
+
+        if (entry !== undefined) {
+          // remove the entry from the linked list
+          entry.prev.next = entry.next;
+          entry.next.prev = entry.prev;
+
+          // remove the entry from the map
+          delete this.entries[stringKey];
+
+          return true;
         }
 
-        public getServiceName(): string {
-            return "classifier";
+        return false;
+      }
+
+      public get(key: any): any {
+        var stringKey = this.stringify(key);
+        var entry = this.entries[stringKey];
+
+        if (entry !== undefined) {
+          return entry.value;
         }
 
-        public getService() {
-            return this.Classifier;
+        return undefined;
+      }
+
+      public has(key: any): boolean {
+        var stringKey = this.stringify(key);
+        var entry = this.entries[stringKey];
+
+        return entry !== undefined;
+      }
+
+      public keys(): any[] {
+        return this.array((entry) => entry.key);
+      }
+
+      public set(key: any, value: any): void {
+        var stringKey = this.stringify(key);
+        var entry = this.entries[stringKey];
+
+        if (entry !== undefined) {
+          entry.value = value;
+        } else {
+          entry = new Entry();
+          entry.key = key;
+          entry.value = value;
+
+          // insert the entry into the linked list
+          entry.prev = this.headEntry.prev;
+          entry.next = this.headEntry;
+          this.headEntry.prev.next = entry;
+          this.headEntry.prev = entry;
+
+          // insert the entry into the map
+          this.entries[stringKey] = entry;
+        }
+      }
+
+      public size() {
+        return Object.keys(this.entries).length;
+      }
+
+      public values(): any[] {
+        return this.array((entry) => entry.value);
+      }
+
+      private array(transform: (Entry) => any): any[] {
+        var array = [];
+
+        var entry = this.headEntry.next;
+        while (entry !== this.headEntry) {
+          array.push(transform(entry));
+
+          entry = entry.next;
+        }
+
+        return array;
+      }
+
+      private stringify(key: any): string {
+        var suffix = key;
+
+        // use the key directly if it's already a string
+        if (typeof suffix !== "string") {
+          suffix = JSON.stringify(key);
+        }
+
+        return "key:" + suffix;
+      }
+    }
+
+    class Entry {
+      key: any;
+      value: any;
+
+      prev: Entry;
+      next: Entry;
+    }
+
+    interface AutoCompletionInfo {
+        entries: Services.CompletionEntry[];
+    }
+
+    interface DetailedAutoCompletionInfo { // correponds to the Java Class of the same name.
+        pruningPrefix: string;
+        entries: Services.CompletionEntryDetails[];
+    }
+
+   class ScriptSnapshot implements TypeScript.IScriptSnapshot {
+
+        private version: number;
+        private Open: boolean;
+        private content: string;
+
+        constructor(private file: string) {
+            this.version = 0;
+            this.Open = true;
+            this.content = readFileContents(file);
+        }
+
+        public updateContent(content: string) {
+            this.content = content;
+            this.version++;
+            return true;
+        }
+
+        public getVersion(): number {
+            return this.version;
+        }
+
+        public isOpen(): boolean {
+            return this.Open;
+        }
+
+        public setOpen() {
+            this.Open = true;
+        }
+
+        public setClosed() {
+            this.Open = false;
+        }
+
+        public getText(start: number, end: number): string {
+            return this.content.substring(start, end);
+        }
+
+        public getLength(): number {
+            return this.content.length;
+        }
+
+        public getLineStartPositions(): number[] {
+            return TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(this.content));
+        }
+
+        public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
+            if (this.version === version) {
+                return TypeScript.TextChangeRange.unchanged;
+            } else {
+                return null;
+            }
         }
     }
 
-    export class Classifier {
+    class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
+
+        public log(message: string): void {
+
+        }
+
+    }
+
+    class LanguageServiceHostService {
+
+        private languageServiceHost: LanguageServiceHost;
+
+        constructor() {
+            this.languageServiceHost = new LanguageServiceHost();
+        }
+
+        public loadFiles(files: string[]): boolean {
+            for (var i = 0; i < files.length; i++) {
+                this.languageServiceHost.loadFile(files[i]);
+            }
+            return true;
+        }
+
+        public removeFiles(files: string[]): boolean {
+            for (var i = 0; i < files.length; i++) {
+                this.languageServiceHost.removeFile(files[i]);
+            }
+            return true;
+        }
+
+        public updateFile(file: string, content: string): boolean {
+            return this.languageServiceHost.updateFile(file, content);
+        }
+
+        public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
+            return this.languageServiceHost.getCompletionsAtPosition(file, position, contents);
+        }
+
+    }
+
+    class LanguageServiceHost implements Services.ILanguageServiceHost {
+
+        private languageService: Services.LanguageService;
+        private compilationSettings: TypeScript.CompilationSettings;
+        private fileMap: Map;
+        private diagnostics: Services.ILanguageServicesDiagnostics;
+
+        constructor() {
+            this.languageService = new Services.LanguageService(this);
+            this.compilationSettings = new TypeScript.CompilationSettings();
+            this.fileMap = new Map();
+            this.diagnostics = new LanguageServicesDiagnostics();
+        }
+
+        public loadFile(file: string): boolean {
+            this.fileMap.set(file, new ScriptSnapshot(file));
+            return true;
+        }
+
+        public removeFile(file: string): boolean {
+            return this.fileMap.delete(file);
+        }
+
+        public updateFile(file: string, content: string): boolean {
+            return this.fileMap.get(file).updateContent(content);
+        }
+
+        public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
+            this.updateFile(file, contents);
+            return this.getDetailedImplicitlyPrunedCompletionsAtPosition(file, position);
+        }
+
+        public getCompilationSettings(): TypeScript.CompilationSettings {
+            return this.compilationSettings;
+        }
+
+        public getScriptFileNames(): string[] {
+            return <string[]> this.fileMap.keys();
+        }
+
+        public getScriptVersion(file: string): number {
+            return this.fileMap.get(file).getVersion();
+        }
+
+        public getScriptIsOpen(file: string): boolean {
+            return this.fileMap.get(file).isOpen();
+        }
+
+        public getScriptSnapshot(file: string): TypeScript.IScriptSnapshot {
+            return this.fileMap.get(file);
+        }
+
+        public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {
+            return this.diagnostics;
+        }
+
+        public information(): boolean {
+            return false;
+        }
+
+        public debug(): boolean {
+            return true;
+        }
+
+        public warning(): boolean {
+            return true;
+        }
+
+        public error(): boolean {
+            return true;
+        }
+
+        public fatal(): boolean {
+            return true;
+        }
+
+        public log(s: string): void {
+        }
+
+        private validPosition(fileName: string, position: number): boolean {
+            if (position === 0) {
+                return false;
+            }
+
+            var start: number = position - 2;
+            var end: number = position;
+            var snapshot: string = this.getScriptSnapshot(fileName).getText(start, end);
+
+            if (snapshot[1] === ".") {
+                if (!this.validMethodChar(snapshot[0])) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+
+            if (!this.validMethodChar(snapshot[1])) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private getPrefix(fileName: string, position: number): string {
+            var start: number = 0;
+            var end: number = position;
+            var snapshot: string = this.getScriptSnapshot(fileName).getText(start, end); // HACKHACK: gets file up to this point and works backwards.  Performance probably sucks.
+
+            for (var index = snapshot.length - 1; this.validMethodChar(snapshot.charAt(index)); index--);
+
+            if (snapshot.charAt(index) === "." || snapshot.charAt(index) === " " || snapshot.charAt(index) === "\n") {
+                index++;
+                return snapshot.substring(index, snapshot.length);
+            } else {
+                return "";
+            }
+        }
+
+        private validMethodChar(orig_c: string): boolean { // is the character a valid character for a method.
+            var c: string = orig_c.toUpperCase();
+
+            if ("A" <= c && c <= "Z") { // letters
+                return true;
+            } else if (c === "(" || c === ")") { // parens
+                return true;
+            } else if ("0" <= c && c <= "9") { // numbers
+                return true;
+            } else if (c === "$" || c === "_") { //$ and _
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        private getDetailedImplicitlyPrunedCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
+            if (this.validPosition(fileName, position)) {
+                var pruningPrefix: string = this.getPrefix(fileName, position);
+                return this.getDetailedExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
+            } else {
+                return {"pruningPrefix": "", "entries": []};
+            }
+        }
+
+        private getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): DetailedAutoCompletionInfo {
+            var abbreviatedCompletionInfo: AutoCompletionInfo  = this.getExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
+
+            if (abbreviatedCompletionInfo.entries === null) {
+                return {"pruningPrefix": "", "entries": []};
+            }
+
+            var abbreviatedEntry: Services.CompletionEntry;
+            var detailedEntry: Services.CompletionEntryDetails;
+            var detailedEntries: Services.CompletionEntryDetails[] = [];
+
+            for (var i = 0; i < abbreviatedCompletionInfo.entries.length; i++) {
+                abbreviatedEntry = abbreviatedCompletionInfo.entries[i];
+                detailedEntry = this.languageService.getCompletionEntryDetails(fileName, position, abbreviatedEntry.name);
+                detailedEntries.push(detailedEntry);
+            }
+
+            return {"pruningPrefix": pruningPrefix, "entries": detailedEntries};
+        }
+
+        private getExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): AutoCompletionInfo {
+            var isMemberCompletion: boolean = false;
+            var rawCompletionInfo: Services.CompletionInfo = this.languageService.getCompletionsAtPosition(fileName, position, isMemberCompletion);
+
+            if (rawCompletionInfo === null) {
+                return {"entries": []};
+            }
+
+            var prunedEntries: Services.CompletionEntry[] = [];
+            var rawEntries: Services.CompletionEntry[] = rawCompletionInfo.entries;
+
+            for (var i = 0; i < rawEntries.length; i++) {
+                if (this.prefixMatch(pruningPrefix, rawEntries[i].name)) {
+                        prunedEntries.push(rawEntries[i]);
+                }
+            }
+
+            return {"entries": prunedEntries};
+        }
+
+        private prefixMatch(_prefix: string, str: string): boolean {
+            return str.indexOf(_prefix) === 0;
+        }
+    }
+
+    class ClassifierService {
 
         private classifier: Services.Classifier;
 
@@ -63,52 +463,36 @@ module BridgeService {
         }
     }
 
-    export interface ClassificationResults {
+    interface ClassificationResults {
         results: Services.ClassificationResult[];
     }
-}
-/**
-  * This module serves as a bridge between the Java eclipse plugin and the TypeScript Services that are available.
-  * An example diagram of what files talk to what looks like this.
-  * Java Eclipse <-> TypeScriptBridge.java <-> TypeScriptServiceBridge.ts <-> SyntaxHighlight.ts <-> classifier.ts
-  * The modularness allows us to change the java-typescript protocall just by changing each side of the bridge WITHOUT changing anything else.
-  *
-  * @author tyleradams
-  */
-module TypeScriptServiceBridge {
 
     /**
      * All incoming objects must be IRequest objects.
      */
-    export interface IRequest {
+    interface IRequest {
         command: string; // the command
         service: string; // determines which service this message is for.
         args: any[]; // arguments
     }
 
-    /**
-     * All Services must implement IService.
-     */
-    export interface IService {
-        getServiceName(): string;
-        getService(): any;
-    }
-
     export class TSServiceBridge {
 
-        private services: IService[] = [];
+        private services: Map;
 
         constructor() {
             this.populateservices();
         }
 
         public static invalidResult(error: string) {
-            var result = {"error" : error};
+            var result: any = {"error" : error};
             return result;
         }
 
         private populateservices() { // Add the services here.
-            this.services.push(new BridgeService.ClassifierService());
+            this.services = new Map();
+            this.services.set("classifier", new ClassifierService());
+            this.services.set("language service", new LanguageServiceHostService());
         }
 
         private invalidJSON() {
@@ -119,16 +503,10 @@ module TypeScriptServiceBridge {
             return TSServiceBridge.invalidResult("invalid command");
         }
 
-        private preProcessRequest(request) { // hands off the request to the appropriate IService
-            var serviceName = request.service;
+        private preProcessRequest(request: IRequest) { // hands off the request to the appropriate IService
+            var service: string = request.service;
             var result;
-            result = this.invalidService(); // default value of result is invalid.
-            for (var i=0; i<this.services.length; i++) {
-                if (serviceName === this.services[i].getServiceName()) {
-                    result = this.processRequest(request,this.services[i].getService());
-                    break;
-                }
-            }
+            result = this.processRequest(request, this.services.get(service));
             return this.sendResult(result);
         }
 
@@ -136,16 +514,12 @@ module TypeScriptServiceBridge {
             var command: string = request.command;
             var args: any[] = request.args;
             var methodInstance: any = service[command];
-            var rawResult: any = methodInstance.apply(service,args);
-            var resultValid: boolean = true;
-            var resultType: string = command;
-            return rawResult;
+            return methodInstance.apply(service, args);
         }
 
         private sendResult(result) {
-            var rawResult = JSON.stringify(result);
+            var rawResult: string = JSON.stringify(result);
             console.log(rawResult);
-            return;
         }
 
         private processRawRequest(rawRequest: string) {
@@ -169,5 +543,5 @@ module TypeScriptServiceBridge {
     }
 }
 
-var TSSB = new TypeScriptServiceBridge.TSServiceBridge();
+var TSSB: Bridge.TSServiceBridge = new Bridge.TSServiceBridge();
 TSSB.run();
