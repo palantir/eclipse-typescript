@@ -16,17 +16,12 @@
 
 package com.palantir.typescript.editors;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.IPath;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.google.common.io.Files;
 import com.palantir.typescript.tsbridge.TypeScriptBridge;
 
 public final class TypeScriptFileManager implements IResourceDeltaVisitor {
@@ -49,12 +44,7 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
                         TypeScriptBridge.getBridge().getFileManagerService().removeFileFromWorkspace(file);
                         break;
                     case IResourceDelta.CHANGED:
-                        try {
-                            String content = Files.toString(new File(file), Charsets.UTF_8);
-                            TypeScriptBridge.getBridge().getFileManagerService().updateFile(file, content);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        TypeScriptBridge.getBridge().getFileManagerService().updateSavedFile(file);
                         break;
                 }
             }

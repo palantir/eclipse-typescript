@@ -244,6 +244,10 @@ module Bridge {
             return this.languageServiceHost.updateFile(file, content);
         }
 
+        public updateSavedFile(file: string): boolean {
+            return this.languageServiceHost.updateSavedFile(file);
+        }
+
         public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
             return this.languageServiceHost.getCompletionsAtPosition(file, position, contents);
         }
@@ -275,6 +279,10 @@ module Bridge {
 
         public updateFile(file: string, content: string): boolean {
             return this.fileMap.get(file).updateContent(content);
+        }
+
+        public updateSavedFile(file: string): boolean {
+            return this.updateFile(file, readFileContents(file));
         }
 
         public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {

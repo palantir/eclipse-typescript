@@ -80,6 +80,12 @@ public final class FileManagerService {
         return this.typeScriptBridge.sendRequest(new UpdateFileRequest(file, content), Boolean.class);
     }
 
+    public boolean updateSavedFile(String file) {
+        Preconditions.checkNotNull(file);
+
+        return this.typeScriptBridge.sendRequest(new UpdateSavedFileRequest(file), Boolean.class);
+    }
+
     public boolean addFolderToWorkspace(File directory) {
         Preconditions.checkNotNull(directory);
 
