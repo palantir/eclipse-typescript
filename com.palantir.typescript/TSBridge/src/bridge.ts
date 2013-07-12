@@ -30,7 +30,7 @@ module BridgeService {
         }
 
         public getServiceName(): string {
-            return "Classifier";
+            return "classifier";
         }
 
         public getService() {

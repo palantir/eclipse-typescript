@@ -23,14 +23,14 @@ import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.tsbridge.IRequest;
 
 /**
- * Request object for getClassificationsForLines from the Classifier.
+ * Request object for getClassificationsForLines from the classifier.
  *
  * @author tyleradams
  */
 public final class GetClassificationsForLinesRequest implements IRequest {
 
     private static final String COMMAND = "getClassificationsForLines";
-    private static final String SERVICE = "Classifier";
+    private static final String SERVICE = "classifier";
 
     private final List<String> lines;
     private final int beginningOfLineState;
