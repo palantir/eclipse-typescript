@@ -16,37 +16,25 @@
 
 package com.palantir.typescript.tsbridge.autocomplete;
 
-import com.palantir.typescript.tsbridge.IResult;
+import com.google.common.base.Preconditions;
 
 /**
+ * This object is the result of asking for auto complete information from TypeScript.
+ *
  * @author tyleradams
  */
-public final class AutoCompleteResult implements IResult {
-    public static final String TYPE = "auto complete";
-    private IDetailedAutoCompletionInfo autoCompletionInfo;
-    private boolean resultValid;
-    private String resultType;
+public final class AutoCompleteResult {
 
-    @Override
-    public String getResultType() {
-        return this.resultType;
-    }
+    private final DetailedAutoCompletionInfo autoCompletionInfo;
 
-    public void setResultValid(boolean resultValid) {
-        this.resultValid = resultValid;
-    }
+    public AutoCompleteResult(DetailedAutoCompletionInfo autoCompletionInfo) {
+        Preconditions.checkNotNull(autoCompletionInfo);
 
-    @Override
-    public boolean isResultNotValid() {
-        return !this.resultValid;
-    }
-
-    public IDetailedAutoCompletionInfo getAutoCompletionInfo() {
-        return this.autoCompletionInfo;
-    }
-
-    public void setAutoCompletionInfo(IDetailedAutoCompletionInfo autoCompletionInfo) {
         this.autoCompletionInfo = autoCompletionInfo;
+    }
+
+    public DetailedAutoCompletionInfo getAutoCompletionInfo() {
+        return this.autoCompletionInfo;
     }
 
 }

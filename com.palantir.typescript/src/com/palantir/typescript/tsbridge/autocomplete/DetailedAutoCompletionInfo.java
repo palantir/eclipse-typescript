@@ -16,10 +16,15 @@
 
 package com.palantir.typescript.tsbridge.autocomplete;
 
+import com.google.common.base.Preconditions;
+
 /**
+ * Corresponds to matching object from TypeScript.
+ *
  * @author tyleradams
  */
-public final class IDetailedAutoCompletionInfo {
+public final class DetailedAutoCompletionInfo {
+
     private String pruningPrefix;
     private CompletionEntryDetails[] entries;
 
@@ -28,6 +33,8 @@ public final class IDetailedAutoCompletionInfo {
     }
 
     public void setPruningPrefix(String pruningPrefix) {
+        Preconditions.checkNotNull(pruningPrefix);
+
         this.pruningPrefix = pruningPrefix;
     }
 
@@ -36,6 +43,8 @@ public final class IDetailedAutoCompletionInfo {
     }
 
     public void setEntries(CompletionEntryDetails[] entries) {
+        Preconditions.checkNotNull(entries);
+
         this.entries = entries;
     }
 

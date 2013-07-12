@@ -39,7 +39,7 @@ import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteResult;
 import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
 import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetails;
 import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetailsProposal;
-import com.palantir.typescript.tsbridge.autocomplete.IDetailedAutoCompletionInfo;
+import com.palantir.typescript.tsbridge.autocomplete.DetailedAutoCompletionInfo;
 
 /**
  * This class deals with making auto completions.
@@ -60,14 +60,11 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         Preconditions.checkArgument(offset >= 0);
 
         IPath filePath = getFilePath();
-        String fileName = getFileName(filePath);
+        String file = filePath.toOSString();
         String fileContents = viewer.getDocument().get();
-        String filePathRoot = getFilePathRoot(filePath);
-        boolean isMemberCompletion = false;
         AutoCompleteService autoCompleteService = TypeScriptBridge.getBridge().getAutoCompleteService();
-        AutoCompleteResult autoCompleteResult = autoCompleteService.safeAutoComplete(fileName, offset, isMemberCompletion, filePathRoot,
-            fileContents);
-        IDetailedAutoCompletionInfo autoCompletionInfo = autoCompleteResult.getAutoCompletionInfo();
+        AutoCompleteResult autoCompleteResult = autoCompleteService.autoComplete(file, offset, fileContents);
+        DetailedAutoCompletionInfo autoCompletionInfo = autoCompleteResult.getAutoCompletionInfo();
         if (autoCompletionInfo == null) {
             return null;
         }
@@ -135,23 +132,6 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
             return path;
         }
         return null;
-    }
-
-    private String getFileName(IPath path) {
-        Preconditions.checkNotNull(path);
-
-        return path.lastSegment();
-    }
-
-    private String getFilePathRoot(IPath path) {
-        Preconditions.checkNotNull(path);
-
-        String rootPath = "";
-        for (int i = 0; i < path.segmentCount() - 1; i++) {
-            rootPath += "/" + path.segment(i);
-        }
-        rootPath += "/";
-        return rootPath;
     }
 
     private final class LocalValidator implements IContextInformationValidator {

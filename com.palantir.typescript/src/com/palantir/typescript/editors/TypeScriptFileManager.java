@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IPath;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.Files;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
 
 public final class TypeScriptFileManager implements IResourceDeltaVisitor {
 
@@ -44,17 +43,14 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
                         String rootFolder = getFileRootPath(filePath);
-                        TypeScriptBridge.getBridge().getAutoCompleteService().safeAddFile(fileName, rootFolder);
                         break;
                     case IResourceDelta.REMOVED:
-                        TypeScriptBridge.getBridge().getAutoCompleteService().safeRemoveFile(fileName);
                         break;
                     case IResourceDelta.CHANGED:
                         String fileLocation = filePath.toString();
                         try {
                             String fileContents = Files.toString(new File(fileLocation), Charsets.UTF_8);
 
-                            TypeScriptBridge.getBridge().getAutoCompleteService().safeUpdateFile(fileName, fileContents);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
