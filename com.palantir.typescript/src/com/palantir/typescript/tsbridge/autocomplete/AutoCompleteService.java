@@ -43,12 +43,9 @@ public final class AutoCompleteService {
             return null;
         }
 
-        Class<DetailedAutoCompletionInfo> resultType = DetailedAutoCompletionInfo.class;
-
-        GetCompletionsAtPositionRequest getCompletionsAtPositionRequest = new GetCompletionsAtPositionRequest(file, offset, contents);
-        DetailedAutoCompletionInfo completionInfo = this.typeScriptBridge.sendRequest(getCompletionsAtPositionRequest, resultType);
-
-        return new AutoCompleteResult(completionInfo);
+        GetCompletionsAtPositionRequest request = new GetCompletionsAtPositionRequest(file, offset, contents);
+        DetailedAutoCompletionInfo autoCompletionInfo = this.typeScriptBridge.sendRequest(request, DetailedAutoCompletionInfo.class);
+        return new AutoCompleteResult(autoCompletionInfo);
     }
 
 }
