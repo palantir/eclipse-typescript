@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
 import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
+import com.palantir.typescript.tsbridge.filemanager.FileManagerService;
 import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightService;
 
 /**
@@ -53,6 +54,7 @@ public final class TypeScriptBridge {
 
     private final SyntaxHighlightService syntaxHighlightService;
     private final AutoCompleteService autoCompleteService;
+    private final FileManagerService fileManagerService;
 
     public TypeScriptBridge() {
         this(DEFAULT_NODE_LOCATION, DEFAULT_BRIDGE_LOCATION);
@@ -73,6 +75,7 @@ public final class TypeScriptBridge {
 
         this.syntaxHighlightService = new SyntaxHighlightService(this);
         this.autoCompleteService = new AutoCompleteService(this);
+        this.fileManagerService = new FileManagerService(this);
     }
 
     public SyntaxHighlightService getSyntaxHighlightService() {
@@ -81,6 +84,10 @@ public final class TypeScriptBridge {
 
     public AutoCompleteService getAutoCompleteService() {
         return this.autoCompleteService;
+    }
+
+    public FileManagerService getFileManagerService() {
+        return this.fileManagerService;
     }
 
     /**
