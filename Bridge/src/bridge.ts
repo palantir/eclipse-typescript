@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-///<reference path='../lib/typescript/src/compiler/io.ts'/>
-///<reference path='../lib/typescript/src/services/classifier.ts' />
-///<reference path='../lib/typescript/src/services/languageService.ts' />
+///<reference path='../typescript/src/compiler/io.ts'/>
+///<reference path='../typescript/src/services/classifier.ts' />
+///<reference path='../typescript/src/services/languageService.ts' />
 
 ///<reference path='map.ts' />
 
