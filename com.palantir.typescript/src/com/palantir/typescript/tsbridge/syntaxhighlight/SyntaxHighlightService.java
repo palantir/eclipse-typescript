@@ -42,7 +42,16 @@ public final class SyntaxHighlightService {
         Preconditions.checkNotNull(text);
         Preconditions.checkArgument(offset >= 0);
 
-        List<String> lines = this.getLines(text);
+        List<String> lines = Lists.newArrayList(text.split("\n"));
+        int[] lineSpacing = new int[lines.size()];
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).endsWith("\r")) {
+                lineSpacing[i] = 2;
+            } else {
+                lineSpacing[i] = 1;
+            }
+        }
+
         int beginningLexState = START;
         List<ClassificationInfo> entries = Lists.newArrayList();
         List<Integer> offsets = Lists.newArrayList();
@@ -62,13 +71,15 @@ public final class SyntaxHighlightService {
             ClassificationResults classificationResults = this.typeScriptBridge.sendRequest(request, resultType);
 
             // process classificationResults
+            int lineNumber = 0;
             for (ClassificationResult classificationResult : classificationResults.getResults()) {
                 for (ClassificationInfo entry : classificationResult.getEntries()) {
                     offsets.add(offset);
                     entries.add(entry);
                     offset += entry.getLength();
                 }
-                offset += 2; // end of line offset compensating for \r\n.  Each classificationResult is a line.
+                offset += lineSpacing[lineNumber]; // end of line offset compensating for \r\n.  Each classificationResult is a line.
+                lineNumber++;
             }
 
             beginningLexState = classificationResults.getFinalLexState();
