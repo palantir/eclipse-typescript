@@ -15,9 +15,9 @@
  */
 
 ///<reference path='../typescript/src/compiler/io.ts'/>
-///<reference path='../typescript/src/services/classifier.ts' />
 ///<reference path='../typescript/src/services/languageService.ts' />
 
+///<reference path='classifier.ts' />
 ///<reference path='map.ts' />
 
 /**
@@ -329,35 +329,6 @@ module Bridge {
         private prefixMatch(_prefix: string, str: string): boolean {
             return str.indexOf(_prefix) === 0;
         }
-    }
-
-    class ClassifierService {
-
-        private classifier: Services.Classifier;
-
-        constructor() {
-            this.classifier = new Services.Classifier(new TypeScript.NullLogger());
-        }
-
-        public getClassificationsForLines(lines: string[], lexState: Services.EndOfLineState) {
-            var line: string;
-            var localLexState: Services.EndOfLineState = lexState;
-            var classificationResult: Services.ClassificationResult;
-            var results: Services.ClassificationResult[] = [];
-
-            for (var i = 0; i < lines.length; i++) {
-                line = lines[i];
-                classificationResult = this.classifier.getClassificationsForLine(line, localLexState);
-                results.push(classificationResult);
-                localLexState = classificationResult.finalLexState;
-            }
-            var result: ClassificationResults = {"results" : results}; //ClassificationResults object.
-            return result;
-        }
-    }
-
-    interface ClassificationResults {
-        results: Services.ClassificationResult[];
     }
 
     /**
