@@ -107,8 +107,9 @@ public final class TypeScriptBridge {
         }
 
         String rawResult = this.sendRawRequestGetRawResult(rawRequest);
-        if (invalidJSON(rawResult)) {
-            throw new RuntimeException("The following raw request is invalid JSON\n" + rawRequest);
+        if (invalid(rawResult)) {
+            throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
+                    + "\n and it caused the following error\n" + rawResult);
         }
 
         T result;
@@ -124,11 +125,11 @@ public final class TypeScriptBridge {
         return result;
     }
 
-    private static boolean invalidJSON(String rawResult) {
+    private static boolean invalid(String rawResult) {
         Preconditions.checkNotNull(rawResult);
 
-        String invalidJSON = "{\"error\":\"invalid json\"}";
-        return rawResult.equals(invalidJSON);
+        String invalidPrefix = "{\"error\":";
+        return rawResult.startsWith(invalidPrefix);
     }
 
     private String sendRawRequestGetRawResult(String rawRequest) {
