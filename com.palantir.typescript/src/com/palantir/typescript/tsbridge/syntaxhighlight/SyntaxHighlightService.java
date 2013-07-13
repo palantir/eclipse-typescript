@@ -86,13 +86,4 @@ public final class SyntaxHighlightService {
         }
         return new SyntaxHighlightResult(entries, offsets);
     }
-
-    private List<String> getLines(String text) { // Turns a raw file into a string array where each entry is a line without a newline.
-        Preconditions.checkNotNull(text);
-
-        String delims = "\r\n";
-        String[] lines = text.split(delims);
-        return Lists.newArrayList(lines);
-    }
-
 }
