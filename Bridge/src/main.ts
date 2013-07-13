@@ -25,78 +25,49 @@
   */
 module Bridge {
 
-    /**
-     * All incoming objects must be IRequest objects.
-     */
-    interface IRequest {
-        command: string; // the command
-        service: string; // determines which service this message is for.
-        args: any[]; // arguments
-    }
-
     export class Main {
 
         private services: Map<string, any>;
 
         constructor() {
-            this.populateservices();
-        }
-
-        public static invalidResult(error: string) {
-            var result: any = {"error" : error};
-            return result;
-        }
-
-        private populateservices() { // Add the services here.
             this.services = new Map();
             this.services.set("classifier", new ClassifierService());
             this.services.set("language service", new LanguageServiceHostService());
         }
 
-        private invalidJSON(message: string) {
-            return Main.invalidResult("invalid json: " + message);
-        }
-
-        private invalidService() {
-            return Main.invalidResult("invalid command");
-        }
-
-        private preProcessRequest(request: IRequest) { // hands off the request to the appropriate IService
-            var service: string = request.service;
-            var result;
-            result = this.processRequest(request, this.services.get(service));
-            return this.sendResult(result);
-        }
-
-        private processRequest(request: IRequest, service: any) {
-            var command: string = request.command;
-            var args: any[] = request.args;
-            var methodInstance: any = service[command];
-            return methodInstance.apply(service, args);
-        }
-
-        private sendResult(result) {
-            var rawResult: string = JSON.stringify(result);
-            console.log(rawResult);
-        }
-
-        private processRawRequest(rawRequest: string) {
-            var request;
-            var result;
-            try {
-                request = JSON.parse(rawRequest);
-            } catch (e) {
-                result = this.invalidJSON(e.message);
-                return this.sendResult(result);
-            }
-            return this.preProcessRequest(request);
-        }
-
         public run() {
-            var myProcess: any = process; // workaround for multiple definitions of the process global variable
+            var myProcess: any = process;
 
             myProcess.stdin.resume();
-            myProcess.stdin.on('data', (request) => {this.processRawRequest(request); });
+            myProcess.stdin.on("data", (chunk) => {
+                var response = this.processRequest(chunk);
+                var json = JSON.stringify(response);
+
+                // write the response to stdout
+                console.log(json);
+            });
+        }
+
+        private processRequest(chunk: string): any {
+            // parse the data chunk
+            var request;
+            try {
+                request = JSON.parse(chunk);
+            } catch (e) {
+                return {"error": e.message};
+            }
+
+            // get the service
+            var service = this.services.get(request.service);
+            if (service === null) {
+                return {"error": "Invalid service: " + request.service};
+            }
+
+            // process the request
+            var method = service[request.command];
+            var response = method.apply(service, request.args);
+
+            return response;
         }
     }
 }
