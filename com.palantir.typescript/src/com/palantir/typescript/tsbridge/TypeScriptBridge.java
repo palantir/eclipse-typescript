@@ -108,7 +108,7 @@ public final class TypeScriptBridge {
 
         String rawResult = this.sendRawRequestGetRawResult(rawRequest);
         if (invalidJSON(rawResult)) {
-            throw new RuntimeException("The following string is invalid JSON\n" + rawResult);
+            throw new RuntimeException("The following raw request is invalid JSON\n" + rawRequest);
         }
 
         T result;
