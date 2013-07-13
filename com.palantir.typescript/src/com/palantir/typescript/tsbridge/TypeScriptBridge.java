@@ -39,7 +39,7 @@ public final class TypeScriptBridge {
     private static TypeScriptBridge BRIDGE = null;
 
     private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
-    private static final String DEFAULT_BRIDGE_LOCATION = "TSBridge/ecbuild/bridge.js";
+    private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
 
     private static final String UNITIALIZED = "Unitialized";
 
@@ -127,7 +127,7 @@ public final class TypeScriptBridge {
     private static boolean invalidJSON(String rawResult) {
         Preconditions.checkNotNull(rawResult);
 
-        String invalidJSON = "{\"error\": \"invalid json\"}";
+        String invalidJSON = "{\"error\":\"invalid json\"}";
         return rawResult.equals(invalidJSON);
     }
 
