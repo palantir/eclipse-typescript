@@ -34,7 +34,7 @@ module Bridge {
         args: any[]; // arguments
     }
 
-    export class TSServiceBridge {
+    export class Main {
 
         private services: Map<string, any>;
 
@@ -54,11 +54,11 @@ module Bridge {
         }
 
         private invalidJSON() {
-            return TSServiceBridge.invalidResult("invalid json");
+            return Main.invalidResult("invalid json");
         }
 
         private invalidService() {
-            return TSServiceBridge.invalidResult("invalid command");
+            return Main.invalidResult("invalid command");
         }
 
         private preProcessRequest(request: IRequest) { // hands off the request to the appropriate IService
@@ -101,5 +101,5 @@ module Bridge {
     }
 }
 
-var TSSB: Bridge.TSServiceBridge = new Bridge.TSServiceBridge();
-TSSB.run();
+var main = new Bridge.Main();
+main.run();

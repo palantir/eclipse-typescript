@@ -26,7 +26,7 @@ module.exports = function(grunt) {
         options: {
           target: 'es5'
         },
-        src: ['Bridge/src/bridge.ts'],
+        src: ['Bridge/src/main.ts'],
         dest: 'com.palantir.typescript/bin/bridge.js'
       }
     }
