@@ -54,7 +54,14 @@ public final class FileManagerService {
             return true;
         }
 
-        return this.typeScriptBridge.sendRequest(new LoadFilesRequest(files), Boolean.class);
+        int lineBunchSize = 20;
+        if (files.size() > lineBunchSize) {
+            List<String> firstFiles = files.subList(0, lineBunchSize);
+            this.typeScriptBridge.sendRequest(new LoadFilesRequest(firstFiles), Boolean.class);
+            return this.addFilesToWorkspace(files.subList(lineBunchSize, files.size()));
+        } else {
+            return this.typeScriptBridge.sendRequest(new LoadFilesRequest(files), Boolean.class);
+        }
     }
 
     public boolean removeFileFromWorkspace(String file) {
