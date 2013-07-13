@@ -53,8 +53,8 @@ module Bridge {
             this.services.set("language service", new LanguageServiceHostService());
         }
 
-        private invalidJSON() {
-            return Main.invalidResult("invalid json");
+        private invalidJSON(message: string) {
+            return Main.invalidResult("invalid json: " + message);
         }
 
         private invalidService() {
@@ -86,7 +86,7 @@ module Bridge {
             try {
                 request = JSON.parse(rawRequest);
             } catch (e) {
-                result = this.invalidJSON();
+                result = this.invalidJSON(e.message);
                 return this.sendResult(result);
             }
             return this.preProcessRequest(request);
