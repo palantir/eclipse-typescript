@@ -29,20 +29,32 @@ import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
- * This Eclipse Service handles managing files in the TypeScript language service (host).
+ * The language service.
+ * <p>
+ * This service provides autocompletion, formatting, compiling, etc...
  *
  * @author tyleradams
  */
-public final class FileManagerService {
+public final class LanguageService {
 
     private static final String SERVICE = "language service";
 
     private final TypeScriptBridge typeScriptBridge;
 
-    public FileManagerService(TypeScriptBridge typeScriptBridge) {
+    public LanguageService(TypeScriptBridge typeScriptBridge) {
         Preconditions.checkNotNull(typeScriptBridge);
 
         this.typeScriptBridge = typeScriptBridge;
+    }
+
+    public AutoCompleteResult autoComplete(String file, int offset, String contents) {
+        Preconditions.checkNotNull(file);
+        Preconditions.checkArgument(offset >= 0);
+        Preconditions.checkNotNull(contents);
+
+        Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset, contents);
+        DetailedAutoCompletionInfo autoCompletionInfo = this.typeScriptBridge.sendRequest(request, DetailedAutoCompletionInfo.class);
+        return new AutoCompleteResult(autoCompletionInfo);
     }
 
     public boolean addFileToWorkspace(String file) {

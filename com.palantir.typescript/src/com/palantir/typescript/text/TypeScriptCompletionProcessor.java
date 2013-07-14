@@ -36,10 +36,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.language.AutoCompleteResult;
-import com.palantir.typescript.bridge.language.AutoCompleteService;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
 import com.palantir.typescript.bridge.language.CompletionEntryDetailsProposal;
 import com.palantir.typescript.bridge.language.DetailedAutoCompletionInfo;
+import com.palantir.typescript.bridge.language.LanguageService;
 
 /**
  * This class deals with making auto completions.
@@ -62,9 +62,9 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         IPath filePath = getFilePath();
         String file = filePath.toOSString();
         String fileContents = viewer.getDocument().get();
-        AutoCompleteService autoCompleteService = Activator.getBridge().getAutoCompleteService();
+        LanguageService languageService = Activator.getBridge().getLanguageService();
 
-        AutoCompleteResult autoCompleteResult = autoCompleteService.autoComplete(file, offset, fileContents);
+        AutoCompleteResult autoCompleteResult = languageService.autoComplete(file, offset, fileContents);
         if (autoCompleteResult == null) {
             return null;
         }

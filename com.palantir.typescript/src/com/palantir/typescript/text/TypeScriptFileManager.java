@@ -38,13 +38,13 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
             if (isTypeScriptFile(file)) {
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        Activator.getBridge().getFileManagerService().addFileToWorkspace(file);
+                        Activator.getBridge().getLanguageService().addFileToWorkspace(file);
                         break;
                     case IResourceDelta.REMOVED:
-                        Activator.getBridge().getFileManagerService().removeFileFromWorkspace(file);
+                        Activator.getBridge().getLanguageService().removeFileFromWorkspace(file);
                         break;
                     case IResourceDelta.CHANGED:
-                        Activator.getBridge().getFileManagerService().updateSavedFile(file);
+                        Activator.getBridge().getLanguageService().updateSavedFile(file);
                         break;
                 }
             }
