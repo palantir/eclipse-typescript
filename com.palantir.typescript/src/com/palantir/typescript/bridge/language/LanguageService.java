@@ -84,15 +84,6 @@ public final class LanguageService {
         }
     }
 
-    public void updateFile(String file, String content) {
-        Preconditions.checkNotNull(file);
-        Preconditions.checkNotNull(content);
-
-        Request request = new Request(SERVICE, "updateFile", file, content);
-
-        this.typeScriptBridge.sendRequest(request, Boolean.class);
-    }
-
     public void updateSavedFile(String file) {
         Preconditions.checkNotNull(file);
 
