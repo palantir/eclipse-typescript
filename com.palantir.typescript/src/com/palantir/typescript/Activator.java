@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -118,23 +119,34 @@ public final class Activator extends AbstractUIPlugin {
             @Override
             public void resourceChanged(IResourceChangeEvent event) {
                 if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-                    IResource resource = event.getResource();
+                    try {
+                        event.getDelta().accept(new IResourceDeltaVisitor() {
+                            @Override
+                            public boolean visit(IResourceDelta delta) throws CoreException {
+                                IResource resource = delta.getResource();
 
-                    if (isTypeScriptFile(resource)) {
-                        String file = resource.getRawLocation().toOSString();
-                        LanguageService languageService = Activator.getBridge().getLanguageService();
+                                if (isTypeScriptFile(resource)) {
+                                    String file = resource.getRawLocation().toOSString();
+                                    LanguageService languageService = Activator.getBridge().getLanguageService();
 
-                        switch (event.getDelta().getKind()) {
-                            case IResourceDelta.ADDED:
-                                languageService.addFile(file);
-                                break;
-                            case IResourceDelta.CHANGED:
-                                languageService.updateFile(file);
-                                break;
-                            case IResourceDelta.REMOVED:
-                                languageService.removeFile(file);
-                                break;
-                        }
+                                    switch (delta.getKind()) {
+                                        case IResourceDelta.ADDED:
+                                            languageService.addFile(file);
+                                            break;
+                                        case IResourceDelta.CHANGED:
+                                            languageService.updateFile(file);
+                                            break;
+                                        case IResourceDelta.REMOVED:
+                                            languageService.removeFile(file);
+                                            break;
+                                    }
+                                }
+
+                                return true;
+                            }
+                        });
+                    } catch (CoreException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
@@ -142,15 +154,6 @@ public final class Activator extends AbstractUIPlugin {
     }
 
     private static boolean isTypeScriptFile(IResource resource) {
-        if (resource.getType() != IResource.FILE) {
-            return false;
-        }
-
-        String name = resource.getName();
-        if (name != null && name.endsWith(".ts")) {
-            return true;
-        }
-
-        return false;
+        return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
     }
 }
