@@ -45,7 +45,10 @@ public final class SyntaxHighlightService {
         List<String> lines = Lists.newArrayList(text.split("\n"));
         int[] lineSpacing = new int[lines.size()];
         for (int i = 0; i < lines.size(); i++) {
-            if (lines.get(i).endsWith("\r")) {
+            String line = lines.get(i);
+            if (line.endsWith("\r")) {
+                line = line.substring(0, line.length() - 1);
+                lines.set(i, line);
                 lineSpacing[i] = 2;
             } else {
                 lineSpacing[i] = 1;
@@ -58,6 +61,7 @@ public final class SyntaxHighlightService {
         List<String> firstLines;
         Class<ClassificationResults> resultType = ClassificationResults.class;
         int lineBunchSize = 100;
+        int lineNumber = 0;
 
         while (lines.size() > 0) {
             if (lines.size() > lineBunchSize) {
@@ -71,7 +75,6 @@ public final class SyntaxHighlightService {
             ClassificationResults classificationResults = this.typeScriptBridge.sendRequest(request, resultType);
 
             // process classificationResults
-            int lineNumber = 0;
             for (ClassificationResult classificationResult : classificationResults.getResults()) {
                 for (ClassificationInfo entry : classificationResult.getEntries()) {
                     offsets.add(offset);
