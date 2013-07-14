@@ -34,7 +34,7 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.autocomplete.AutoCompleteResult;
 import com.palantir.typescript.bridge.autocomplete.AutoCompleteService;
 import com.palantir.typescript.bridge.autocomplete.CompletionEntryDetails;
@@ -62,7 +62,7 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         IPath filePath = getFilePath();
         String file = filePath.toOSString();
         String fileContents = viewer.getDocument().get();
-        AutoCompleteService autoCompleteService = TypeScriptBridge.getBridge().getAutoCompleteService();
+        AutoCompleteService autoCompleteService = Activator.getBridge().getAutoCompleteService();
 
         AutoCompleteResult autoCompleteResult = autoCompleteService.autoComplete(file, offset, fileContents);
         if (autoCompleteResult == null) {

@@ -36,8 +36,6 @@ import com.palantir.typescript.bridge.filemanager.FileManagerService;
  */
 public final class TypeScriptBridge {
 
-    private static TypeScriptBridge BRIDGE = null;
-
     private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
 
@@ -69,7 +67,7 @@ public final class TypeScriptBridge {
         this.nodeLocation = nodeLocation;
         this.bridgeLocation = pluginRoot + bridgeLocation;
 
-        initializeServer();
+        start();
 
         this.mapper = new ObjectMapper();
 
@@ -152,31 +150,7 @@ public final class TypeScriptBridge {
         return rawResult;
     }
 
-    public static TypeScriptBridge startBridge() {
-        if (BRIDGE != null) {
-            throw new RuntimeException("We already started the Bridge, you cannot start it again");
-        }
-        BRIDGE = new TypeScriptBridge();
-        return BRIDGE;
-    }
-
-    public static TypeScriptBridge getBridge() {
-        if (BRIDGE == null) {
-            throw new RuntimeException("The Bridge has not been started");
-        }
-        return BRIDGE;
-    }
-
-    public static void stopBridge() {
-        if (BRIDGE == null) {
-            throw new RuntimeException("The Bridge has not been started, you cannot stop it");
-        }
-        BRIDGE.killServer();
-        BRIDGE = null;
-        return;
-    }
-
-    private void initializeServer() {
+    private void start() {
         ProcessBuilder pb = new ProcessBuilder(this.nodeLocation, this.bridgeLocation);
         try {
             this.server = pb.start();
@@ -198,7 +172,7 @@ public final class TypeScriptBridge {
             new OutputStreamWriter(this.server.getOutputStream()));
     }
 
-    private void killServer() {
+    public void stop() {
         try {
             this.fromServer.close();
         } catch (IOException e) {
@@ -212,7 +186,7 @@ public final class TypeScriptBridge {
     }
 
     private void restartServer() {
-        killServer();
-        initializeServer();
+        stop();
+        start();
     }
 }

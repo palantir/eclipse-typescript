@@ -22,7 +22,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.IPath;
 
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.Activator;
 
 public final class TypeScriptFileManager implements IResourceDeltaVisitor {
 
@@ -38,13 +38,13 @@ public final class TypeScriptFileManager implements IResourceDeltaVisitor {
             if (isTypeScriptFile(file)) {
                 switch (delta.getKind()) {
                     case IResourceDelta.ADDED:
-                        TypeScriptBridge.getBridge().getFileManagerService().addFileToWorkspace(file);
+                        Activator.getBridge().getFileManagerService().addFileToWorkspace(file);
                         break;
                     case IResourceDelta.REMOVED:
-                        TypeScriptBridge.getBridge().getFileManagerService().removeFileFromWorkspace(file);
+                        Activator.getBridge().getFileManagerService().removeFileFromWorkspace(file);
                         break;
                     case IResourceDelta.CHANGED:
-                        TypeScriptBridge.getBridge().getFileManagerService().updateSavedFile(file);
+                        Activator.getBridge().getFileManagerService().updateSavedFile(file);
                         break;
                 }
             }

@@ -36,24 +36,30 @@ import com.palantir.typescript.editors.TypeScriptFileManager;
  */
 public final class Activator extends AbstractUIPlugin {
 
-    public static final String PLUGIN_ID = "com.palantir.typescript";
+    private static Activator PLUGIN;
 
-    private static Activator plugin;
+    private TypeScriptBridge bridge;
 
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
-        TypeScriptBridge.startBridge();
-        TypeScriptBridge.getBridge().getFileManagerService().intializeWorkspace();
+
+        this.bridge = new TypeScriptBridge();
+        this.bridge.getFileManagerService().intializeWorkspace();
         manageResourceListeners();
-        plugin = this;
+        PLUGIN = this;
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        plugin = null;
-        TypeScriptBridge.stopBridge();
+        PLUGIN = null;
+        this.bridge.stop();
+
         super.stop(context);
+    }
+
+    public static TypeScriptBridge getBridge() {
+        return PLUGIN.bridge;
     }
 
     /**
@@ -62,7 +68,7 @@ public final class Activator extends AbstractUIPlugin {
      * @return the shared instance
      */
     public static Activator getDefault() {
-        return plugin;
+        return PLUGIN;
     }
 
     /**
@@ -72,7 +78,7 @@ public final class Activator extends AbstractUIPlugin {
      * @return the image descriptor
      */
     public static ImageDescriptor getImageDescriptor(String path) {
-        return imageDescriptorFromPlugin(PLUGIN_ID, path);
+        return imageDescriptorFromPlugin("com.palantir.typescript", path);
     }
 
     private void manageResourceListeners() {

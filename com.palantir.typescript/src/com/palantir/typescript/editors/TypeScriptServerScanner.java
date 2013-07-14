@@ -31,7 +31,7 @@ import org.eclipse.swt.SWT;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.classifier.ClassificationInfo;
 import com.palantir.typescript.bridge.classifier.ClassificationResult;
 import com.palantir.typescript.bridge.classifier.TokenClass;
@@ -81,7 +81,7 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
         // classify the lines
         this.infos = Lists.newArrayList();
-        List<ClassificationResult> results = TypeScriptBridge.getBridge().getClassifier().getClassificationsForLines(lines);
+        List<ClassificationResult> results = Activator.getBridge().getClassifier().getClassificationsForLines(lines);
         for (int i = 0; i < results.size(); i++) {
             int tokenOffset = lineOffsets.get(i);
             ClassificationResult result = results.get(i);
