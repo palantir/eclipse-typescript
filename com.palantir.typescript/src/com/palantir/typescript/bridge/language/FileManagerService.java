@@ -25,6 +25,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
@@ -33,6 +34,8 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
  * @author tyleradams
  */
 public final class FileManagerService {
+
+    private static final String SERVICE = "language service";
 
     private final TypeScriptBridge typeScriptBridge;
 
@@ -58,10 +61,15 @@ public final class FileManagerService {
         int lineBunchSize = 20;
         if (files.size() > lineBunchSize) {
             List<String> firstFiles = files.subList(0, lineBunchSize);
-            this.typeScriptBridge.sendRequest(new LoadFilesRequest(firstFiles), Boolean.class);
+            Request request = new Request(SERVICE, "loadFiles", firstFiles);
+
+            this.typeScriptBridge.sendRequest(request, Boolean.class);
+
             return this.addFilesToWorkspace(files.subList(lineBunchSize, files.size()));
         } else {
-            return this.typeScriptBridge.sendRequest(new LoadFilesRequest(files), Boolean.class);
+            Request request = new Request(SERVICE, "loadFiles", files);
+
+            return this.typeScriptBridge.sendRequest(request, Boolean.class);
         }
     }
 
@@ -78,20 +86,26 @@ public final class FileManagerService {
             return true;
         }
 
-        return this.typeScriptBridge.sendRequest(new RemoveFilesRequest(files), Boolean.class);
+        Request request = new Request(SERVICE, "removeFiles", files);
+
+        return this.typeScriptBridge.sendRequest(request, Boolean.class);
     }
 
     public boolean updateFile(String file, String content) {
         Preconditions.checkNotNull(file);
         Preconditions.checkNotNull(content);
 
-        return this.typeScriptBridge.sendRequest(new UpdateFileRequest(file, content), Boolean.class);
+        Request request = new Request(SERVICE, "updateFile", file, content);
+
+        return this.typeScriptBridge.sendRequest(request, Boolean.class);
     }
 
     public boolean updateSavedFile(String file) {
         Preconditions.checkNotNull(file);
 
-        return this.typeScriptBridge.sendRequest(new UpdateSavedFileRequest(file), Boolean.class);
+        Request request = new Request(SERVICE, "updateSavedFile", file);
+
+        return this.typeScriptBridge.sendRequest(request, Boolean.class);
     }
 
     public boolean addFolderToWorkspace(String folder) {

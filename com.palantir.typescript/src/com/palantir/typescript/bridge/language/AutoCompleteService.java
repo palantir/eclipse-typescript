@@ -17,6 +17,7 @@
 package com.palantir.typescript.bridge.language;
 
 import com.google.common.base.Preconditions;
+import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
@@ -24,6 +25,8 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
  * @author tyleradams
  */
 public final class AutoCompleteService {
+
+    private static final String SERVICE = "language service";
 
     private final TypeScriptBridge typeScriptBridge;
 
@@ -38,7 +41,7 @@ public final class AutoCompleteService {
         Preconditions.checkArgument(offset >= 0);
         Preconditions.checkNotNull(contents);
 
-        GetCompletionsAtPositionRequest request = new GetCompletionsAtPositionRequest(file, offset, contents);
+        Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset, contents);
         DetailedAutoCompletionInfo autoCompletionInfo = this.typeScriptBridge.sendRequest(request, DetailedAutoCompletionInfo.class);
         return new AutoCompleteResult(autoCompletionInfo);
     }

@@ -100,7 +100,7 @@ public final class TypeScriptBridge {
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
      * and packaging the result for usage.
      */
-    public <T> T sendRequest(IRequest request, Class<T> resultType) {
+    public <T> T sendRequest(Request request, Class<T> resultType) {
         Preconditions.checkNotNull(request);
         Preconditions.checkNotNull(resultType);
 

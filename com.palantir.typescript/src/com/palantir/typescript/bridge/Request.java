@@ -14,43 +14,40 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.classifier;
+package com.palantir.typescript.bridge;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.List;
-
-import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.bridge.IRequest;
-
 /**
- * Request object for getClassificationsForLines from the classifier.
+ * Represents a request which will be sent to the bridge.
  *
- * @author tyleradams
+ * @author dcicerone
  */
-public final class GetClassificationsForLinesRequest implements IRequest {
+public final class Request {
 
-    private final ImmutableList<?> args;
+    private final String service;
+    private final String command;
+    private final Object[] args;
 
-    public GetClassificationsForLinesRequest(List<String> lines, EndOfLineState lexState) {
-        checkNotNull(lines);
-        checkNotNull(lexState);
+    public Request(String service, String command, Object... args) {
+        checkNotNull(service);
+        checkNotNull(command);
+        checkNotNull(args);
 
-        this.args = ImmutableList.of(lines, lexState.ordinal());
+        this.service = service;
+        this.command = command;
+        this.args = args;
     }
 
-    @Override
     public String getService() {
-        return "classifier";
+        return this.service;
     }
 
-    @Override
     public String getCommand() {
-        return "getClassificationsForLines";
+        return this.command;
     }
 
-    @Override
-    public ImmutableList<?> getArgs() {
+    public Object[] getArgs() {
         return this.args;
     }
 }

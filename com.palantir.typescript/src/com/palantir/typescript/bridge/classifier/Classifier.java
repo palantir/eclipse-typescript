@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
@@ -41,7 +42,7 @@ public final class Classifier {
 
     public List<ClassificationResult> getClassificationsForLines(List<String> lines) {
         EndOfLineState lexState = EndOfLineState.START;
-        GetClassificationsForLinesRequest request = new GetClassificationsForLinesRequest(lines, lexState);
+        Request request = new Request("classifier", "getClassificationsForLines", lines, lexState.ordinal());
         ClassificationResults response = this.bridge.sendRequest(request, ClassificationResults.class);
 
         return response.getResults();
