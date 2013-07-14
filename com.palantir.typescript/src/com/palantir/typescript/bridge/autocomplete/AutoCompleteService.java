@@ -26,7 +26,6 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
 public final class AutoCompleteService {
 
     private final TypeScriptBridge typeScriptBridge;
-    private static final int MAX_CONTENT_SIZE = 30000;
 
     public AutoCompleteService(TypeScriptBridge typeScriptBridge) {
         Preconditions.checkNotNull(typeScriptBridge);
@@ -38,10 +37,6 @@ public final class AutoCompleteService {
         Preconditions.checkNotNull(file);
         Preconditions.checkArgument(offset >= 0);
         Preconditions.checkNotNull(contents);
-
-        if(contents.length() > MAX_CONTENT_SIZE) {
-            return null;
-        }
 
         GetCompletionsAtPositionRequest request = new GetCompletionsAtPositionRequest(file, offset, contents);
         DetailedAutoCompletionInfo autoCompletionInfo = this.typeScriptBridge.sendRequest(request, DetailedAutoCompletionInfo.class);
