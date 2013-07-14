@@ -27,19 +27,19 @@ module Bridge {
         }
 
         public getClassificationsForLines(lines: string[], lexState: Services.EndOfLineState): ClassificationResults {
-            var line: string;
-            var localLexState: Services.EndOfLineState = lexState;
-            var classificationResult: Services.ClassificationResult;
-            var results: Services.ClassificationResult[] = [];
+            var lastLexState: Services.EndOfLineState = lexState;
+            var results = [];
 
             for (var i = 0; i < lines.length; i++) {
-                line = lines[i];
-                classificationResult = this.classifier.getClassificationsForLine(line, localLexState);
+                var line = lines[i];
+                var classificationResult = this.classifier.getClassificationsForLine(line, lastLexState);
+
                 results.push(classificationResult);
-                localLexState = classificationResult.finalLexState;
+
+                lastLexState = classificationResult.finalLexState;
             }
 
-            return {"results" : results};
+            return {results: results};
         }
     }
 
