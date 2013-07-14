@@ -19,6 +19,7 @@ package com.palantir.typescript.bridge.filemanager;
 import java.io.File;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 
 import com.google.common.base.Preconditions;
@@ -93,6 +94,12 @@ public final class FileManagerService {
         return this.typeScriptBridge.sendRequest(new UpdateSavedFileRequest(file), Boolean.class);
     }
 
+    public boolean addFolderToWorkspace(String folder) {
+        Preconditions.checkNotNull(folder);
+
+        return addFolderToWorkspace(new File(folder));
+    }
+
     public boolean addFolderToWorkspace(File directory) {
         Preconditions.checkNotNull(directory);
 
@@ -111,7 +118,9 @@ public final class FileManagerService {
     }
 
     public void intializeWorkspace() {
-        File workspace = ResourcesPlugin.getWorkspace().getRoot().getLocation().toFile();
-        this.addFolderToWorkspace(workspace);
+        List<IProject> projects = Lists.newArrayList(ResourcesPlugin.getWorkspace().getRoot().getProjects());
+        for (IProject project : projects) {
+            this.addFolderToWorkspace(project.getRawLocation().toOSString());
+        }
     }
 }
