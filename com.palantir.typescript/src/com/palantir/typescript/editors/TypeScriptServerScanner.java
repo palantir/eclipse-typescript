@@ -109,8 +109,8 @@ public final class TypeScriptServerScanner implements ITokenScanner {
         if (this.currentIndex == this.infos.size()) {
             return Token.EOF;
         } else {
-            OffsetClassificationInfo tokenWrapper = getTokenWrapper();
-            int classificationIndex = tokenWrapper.entry.getClassification().ordinal();
+            OffsetClassificationInfo info = getInfo();
+            int classificationIndex = info.entry.getClassification().ordinal();
             TextAttribute data = this.AttributeTable[classificationIndex];
 
             return new Token(data);
@@ -119,15 +119,15 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
     @Override
     public int getTokenOffset() {
-        return this.getTokenWrapper().offset;
+        return this.getInfo().offset;
     }
 
     @Override
     public int getTokenLength() {
-        return this.getTokenWrapper().entry.getLength();
+        return this.getInfo().entry.getLength();
     }
 
-    private OffsetClassificationInfo getTokenWrapper() {
+    private OffsetClassificationInfo getInfo() {
         return this.infos.get(this.currentIndex);
     }
 
