@@ -86,6 +86,20 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         reconciler.setDamager(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
         reconciler.setRepairer(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
 
+        /*
+         * It should be noted here that Eclipse deals with the highlighting of JSDOC comments and multiline comments.  TypeScript can handle the rest.
+         *
+         * Why not JSDOC?
+         *      TypeScript doesn't know anything about JSDOC.  Thus Eclipse has to take care of it.
+         * Why not multiline?
+         *   Short answer: The defaultDamagerRepairer incorrectly calculates the damaged regions.
+         *   Long answer:
+         *     In the defaultDamagerRepairer when you break a multiline comment, eclipse can't tell that it's a mutliline comment and therefore asks typescript to repair just that line.
+         *     This is not enough information for typescript to know it's in the middle of a multiline comment.  Therefore Eclipse needs to take care of it.
+         *
+         *     There are many known bugs which are believed to be related to this partitioning.  The recommended fix is to make a better damagerRepairer.
+         */
+
         // JSDoc
         DefaultDamagerRepairer jsdocDamagerRepairer = new DefaultDamagerRepairer(this.jsDocScanner);
         reconciler.setDamager(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
