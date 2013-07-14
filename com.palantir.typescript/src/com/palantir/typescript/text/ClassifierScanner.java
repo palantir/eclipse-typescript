@@ -92,9 +92,9 @@ public final class ClassifierScanner implements ITokenScanner {
             ClassificationResult result = results.get(i);
 
             for (ClassificationInfo entry : result.getEntries()) {
-                OffsetClassificationInfo tokenWrapper = new OffsetClassificationInfo(entry, tokenOffset);
+                OffsetClassificationInfo offsetClassificationInfo = new OffsetClassificationInfo(entry, tokenOffset);
 
-                this.infos.add(tokenWrapper);
+                this.infos.add(offsetClassificationInfo);
                 tokenOffset += entry.getLength();
             }
         }
