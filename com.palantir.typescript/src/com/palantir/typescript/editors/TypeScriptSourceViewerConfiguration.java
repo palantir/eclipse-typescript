@@ -43,7 +43,7 @@ import com.google.common.base.Preconditions;
 public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
     private final TypeScriptDoubleClickStrategy doubleClickStrategy;
-    private final ClassifierTokenScanner classifierScanner;
+    private final ClassifierScanner classifierScanner;
     private final ColorManager colorManager;
     private final JSDocScanner jsDocScanner;
 
@@ -51,7 +51,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
-        this.classifierScanner = new ClassifierTokenScanner(colorManager);
+        this.classifierScanner = new ClassifierScanner(colorManager);
         this.jsDocScanner = new JSDocScanner(colorManager);
         this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
@@ -75,10 +75,6 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         return this.doubleClickStrategy;
     }
 
-    private JSDocScanner getJSDocScanner() {
-        return this.jsDocScanner;
-    }
-
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         Preconditions.checkNotNull(sourceViewer);
@@ -91,7 +87,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         reconciler.setRepairer(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
 
         // JSDoc
-        DefaultDamagerRepairer jsdocDamagerRepairer = new DefaultDamagerRepairer(getJSDocScanner());
+        DefaultDamagerRepairer jsdocDamagerRepairer = new DefaultDamagerRepairer(this.jsDocScanner);
         reconciler.setDamager(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
         reconciler.setRepairer(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
 

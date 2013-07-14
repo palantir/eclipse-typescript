@@ -42,7 +42,7 @@ import com.palantir.typescript.bridge.classifier.TokenClass;
  *
  * @author tyleradams
  */
-public final class ClassifierTokenScanner implements ITokenScanner {
+public final class ClassifierScanner implements ITokenScanner {
 
     private static final Splitter LINE_SPLITTER = Splitter.on('\n');
 
@@ -51,7 +51,7 @@ public final class ClassifierTokenScanner implements ITokenScanner {
     private List<OffsetClassificationInfo> infos;
     private int currentIndex;
 
-    public ClassifierTokenScanner(ColorManager manager) {
+    public ClassifierScanner(ColorManager manager) {
         checkNotNull(manager);
 
         this.textAttributes = getTextAttributes(manager);
