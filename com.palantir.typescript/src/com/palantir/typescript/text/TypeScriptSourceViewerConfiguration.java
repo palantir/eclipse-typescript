@@ -72,13 +72,11 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         Preconditions.checkNotNull(sourceViewer);
 
         PresentationReconciler reconciler = new PresentationReconciler();
+        TypeScriptDamager damager = new TypeScriptDamager();
+        TypeScriptRepairer repairer = new TypeScriptRepairer();
 
-        // default
-        TypeScriptDamager  typeScriptDamager = new TypeScriptDamager();
-        TypeScriptRepairer  typeScriptRepairer = new TypeScriptRepairer();
-
-        reconciler.setDamager(typeScriptDamager, IDocument.DEFAULT_CONTENT_TYPE);
-        reconciler.setRepairer(typeScriptRepairer, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setDamager(damager, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setRepairer(repairer, IDocument.DEFAULT_CONTENT_TYPE);
 
         return reconciler;
     }
