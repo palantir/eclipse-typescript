@@ -63,10 +63,16 @@ public final class TypeScriptServerScanner implements ITokenScanner {
         checkArgument(offset >= 0);
         checkArgument(length >= 0);
 
-        // break the text up into lines (keeping track of the offset for each line)
-        int currentOffset = offset;
+        // reset the state
+        this.infos = Lists.newArrayList();
+        this.currentIndex = -1;
+
+        // get the document text in the specified range
         String documentText = document.get();
         String rangeText = documentText.substring(offset, offset + length);
+
+        // break the text up into lines (keeping track of the offset for each line)
+        int currentOffset = offset;
         List<String> lines = Lists.newArrayList();
         List<Integer> lineOffsets = Lists.newArrayList();
         for (String line : LINE_SPLITTER.split(rangeText)) {
@@ -80,7 +86,6 @@ public final class TypeScriptServerScanner implements ITokenScanner {
         }
 
         // classify the lines
-        this.infos = Lists.newArrayList();
         List<ClassificationResult> results = Activator.getBridge().getClassifier().getClassificationsForLines(lines);
         for (int i = 0; i < results.size(); i++) {
             int tokenOffset = lineOffsets.get(i);
@@ -93,9 +98,6 @@ public final class TypeScriptServerScanner implements ITokenScanner {
                 tokenOffset += entry.getLength();
             }
         }
-
-        // reset the index
-        this.currentIndex = -1;
     }
 
     @Override
