@@ -40,22 +40,15 @@ module Bridge {
             var readline = require("readline");
             var rl = readline.createInterface(myProcess.stdin, myProcess.stdout);
 
-            rl.setPrompt("");
             rl.on("line", (requestJson: string) => {
                 var response = this.processRequest(requestJson);
                 var responseJson = JSON.stringify(response);
 
                 // write the response to stdout
                 console.log(responseJson);
-
-                // wait for the next request
-                rl.prompt();
             }).on("close", () => {
                 myProcess.exit(0);
             });
-
-            // wait for the first request
-            rl.prompt();
         }
 
         private processRequest(requestJson: string): any {
