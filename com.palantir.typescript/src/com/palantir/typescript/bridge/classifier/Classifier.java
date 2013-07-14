@@ -31,11 +31,11 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
  *
  * @author dcicerone
  */
-public final class ClassifierService {
+public final class Classifier {
 
     private final TypeScriptBridge bridge;
 
-    public ClassifierService(TypeScriptBridge bridge) {
+    public Classifier(TypeScriptBridge bridge) {
         checkNotNull(bridge);
 
         this.bridge = bridge;
