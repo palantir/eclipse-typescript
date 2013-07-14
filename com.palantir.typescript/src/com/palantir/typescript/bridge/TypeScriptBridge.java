@@ -107,10 +107,6 @@ public final class TypeScriptBridge {
         }
 
         String rawResult = this.sendRawRequestGetRawResult(rawRequest);
-        if (invalid(rawResult)) {
-            throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
-                    + "\n and it caused the following error\n" + rawResult);
-        }
 
         T result;
         try {
@@ -149,8 +145,27 @@ public final class TypeScriptBridge {
             restartServer();
         } else if (rawResult.equals(UNITIALIZED)) {
             throw new RuntimeException("The rawResult was never set");
+        } else if (invalid(rawResult)) {
+            throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
+                    + "\n and it caused the following error\n" + rawResult);
         }
+
+        while (isDebugMessage(rawResult)) { // capture and print debug messages from TypeScript.
+            System.out.println(rawResult);
+            try {
+                rawResult = this.fromServer.readLine();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         return rawResult;
+    }
+
+    private static boolean isDebugMessage(String rawResult) {
+        Preconditions.checkNotNull(rawResult);
+
+        return rawResult.startsWith("DEBUG");
     }
 
     private void start() {
