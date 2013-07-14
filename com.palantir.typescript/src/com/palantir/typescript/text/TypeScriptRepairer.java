@@ -36,8 +36,9 @@ import com.palantir.typescript.bridge.classifier.TokenClass;
  */
 public final class TypeScriptRepairer implements IPresentationRepairer {
 
-    private IDocument document;
     private static final Splitter LINE_SPLITTER = Splitter.on('\n');
+
+    private IDocument document;
 
     @Override
     public void setDocument(IDocument document) {
