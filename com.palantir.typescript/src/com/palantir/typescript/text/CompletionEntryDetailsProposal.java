@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.language;
+package com.palantir.typescript.text;
 
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -22,7 +22,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.text.TypeScriptIconFetcher;
+import com.palantir.typescript.bridge.language.CompletionEntryDetails;
 
 /**
  * This class handles all of the details behind creating an eclipse CompletionProposal object out of

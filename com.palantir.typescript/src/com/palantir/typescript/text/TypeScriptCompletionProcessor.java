@@ -37,7 +37,6 @@ import com.google.common.collect.Lists;
 import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.language.AutoCompleteResult;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
-import com.palantir.typescript.bridge.language.CompletionEntryDetailsProposal;
 import com.palantir.typescript.bridge.language.DetailedAutoCompletionInfo;
 import com.palantir.typescript.bridge.language.LanguageService;
 
