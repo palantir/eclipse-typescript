@@ -118,7 +118,7 @@ public final class ClassifierScanner implements ITokenScanner {
             return Token.EOF;
         } else {
             OffsetClassificationInfo info = this.getCurrentInfo();
-            int classificationIndex = info.entry.getClassification().ordinal();
+            int classificationIndex = info.getEntry().getClassification().ordinal();
 
             return this.tokens.get(classificationIndex);
         }
@@ -126,12 +126,12 @@ public final class ClassifierScanner implements ITokenScanner {
 
     @Override
     public int getTokenOffset() {
-        return this.getCurrentInfo().offset;
+        return this.getCurrentInfo().getOffset();
     }
 
     @Override
     public int getTokenLength() {
-        return this.getCurrentInfo().entry.getLength();
+        return this.getCurrentInfo().getEntry().getLength();
     }
 
     private OffsetClassificationInfo getCurrentInfo() {
@@ -157,14 +157,5 @@ public final class ClassifierScanner implements ITokenScanner {
         return tokens.build();
     }
 
-    public static final class OffsetClassificationInfo {
 
-        private final ClassificationInfo entry;
-        private final int offset;
-
-        public OffsetClassificationInfo(ClassificationInfo entry, int offset) {
-            this.entry = entry;
-            this.offset = offset;
-        }
-    }
 }

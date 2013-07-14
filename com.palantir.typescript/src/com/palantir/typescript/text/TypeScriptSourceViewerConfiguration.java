@@ -26,7 +26,6 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
-import org.eclipse.jface.text.rules.DefaultDamagerRepairer;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
@@ -42,18 +41,12 @@ import com.google.common.base.Preconditions;
 public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
     private final TypeScriptDoubleClickStrategy doubleClickStrategy;
-    private final ClassifierScanner classifierScanner;
     private final ColorManager colorManager;
-    private final JSDocScanner jsDocScanner;
-    private final CommentScanner commentScanner;
 
     public TypeScriptSourceViewerConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
-        this.classifierScanner = new ClassifierScanner(colorManager);
-        this.jsDocScanner = new JSDocScanner(colorManager);
-        this.commentScanner = new CommentScanner(colorManager);
         this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
 
@@ -66,9 +59,6 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
     public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
         return new String[] {
                 IDocument.DEFAULT_CONTENT_TYPE,
-                TypeScriptPartitionScanner.JSDOC,
-                TypeScriptPartitionScanner.MULTILINE_COMMENT,
-                TypeScriptPartitionScanner.SINGLE_LINE_COMMENT
         };
     }
 
@@ -84,38 +74,11 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         PresentationReconciler reconciler = new PresentationReconciler();
 
         // default
-        DefaultDamagerRepairer defaultDamagerRepairer = new DefaultDamagerRepairer(this.classifierScanner);
-        reconciler.setDamager(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
-        reconciler.setRepairer(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
+        TypeScriptDamager  typeScriptDamager = new TypeScriptDamager();
+        TypeScriptRepairer  typeScriptRepairer = new TypeScriptRepairer();
 
-        /*
-         * It should be noted here that Eclipse deals with the highlighting of JSDOC comments and multiline comments.  TypeScript can handle the rest.
-         *
-         * Why not JSDOC?
-         *      TypeScript doesn't know anything about JSDOC.  Thus Eclipse has to take care of it.
-         * Why not multiline?
-         *   Short answer: The defaultDamagerRepairer incorrectly calculates the damaged regions.
-         *   Long answer:
-         *     In the defaultDamagerRepairer when you break a multiline comment, eclipse can't tell that it's a mutliline comment and therefore asks typescript to repair just that line.
-         *     This is not enough information for typescript to know it's in the middle of a multiline comment.  Therefore Eclipse needs to take care of it.
-         *
-         *     There are many known bugs which are believed to be related to this partitioning.  The recommended fix is to make a better damagerRepairer.
-         */
-
-        // JSDoc
-        DefaultDamagerRepairer jsdocDamagerRepairer = new DefaultDamagerRepairer(this.jsDocScanner);
-        reconciler.setDamager(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
-        reconciler.setRepairer(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
-
-        // multiline comments
-        DefaultDamagerRepairer multilineDamagerRepairer = new DefaultDamagerRepairer(this.commentScanner);
-        reconciler.setDamager(multilineDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
-        reconciler.setRepairer(multilineDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
-
-        // singleline comments
-        DefaultDamagerRepairer singleLineDamagerRepairer = new DefaultDamagerRepairer(this.commentScanner);
-        reconciler.setDamager(singleLineDamagerRepairer, TypeScriptPartitionScanner.SINGLE_LINE_COMMENT);
-        reconciler.setRepairer(singleLineDamagerRepairer, TypeScriptPartitionScanner.SINGLE_LINE_COMMENT);
+        reconciler.setDamager(typeScriptDamager, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setRepairer(typeScriptRepairer, IDocument.DEFAULT_CONTENT_TYPE);
 
         return reconciler;
     }
