@@ -111,10 +111,6 @@ public final class Activator extends AbstractUIPlugin {
         this.bridge.getLanguageService().addFiles(files);
 
         // listen to the resource deltas for additional TypeScript files
-        this.listenToResourceDeltas();
-    }
-
-    private void listenToResourceDeltas() {
         ResourcesPlugin.getWorkspace().addResourceChangeListener(new MyResourceChangeListener());
     }
 
