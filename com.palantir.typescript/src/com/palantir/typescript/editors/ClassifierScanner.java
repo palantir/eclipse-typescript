@@ -46,7 +46,7 @@ public final class ClassifierScanner implements ITokenScanner {
 
     private static final Splitter LINE_SPLITTER = Splitter.on('\n');
 
-    private final ImmutableList<TextAttribute> textAttributes;
+    private final ImmutableList<IToken> tokens;
 
     private List<OffsetClassificationInfo> infos;
     private int currentIndex;
@@ -54,7 +54,7 @@ public final class ClassifierScanner implements ITokenScanner {
     public ClassifierScanner(ColorManager manager) {
         checkNotNull(manager);
 
-        this.textAttributes = getTextAttributes(manager);
+        this.tokens = createTokens(manager);
     }
 
     @Override
@@ -107,11 +107,10 @@ public final class ClassifierScanner implements ITokenScanner {
         if (this.currentIndex == this.infos.size()) {
             return Token.EOF;
         } else {
-            OffsetClassificationInfo info = getCurrentInfo();
+            OffsetClassificationInfo info = this.getCurrentInfo();
             int classificationIndex = info.entry.getClassification().ordinal();
-            TextAttribute data = this.textAttributes.get(classificationIndex);
 
-            return new Token(data);
+            return this.tokens.get(classificationIndex);
         }
     }
 
@@ -130,22 +129,22 @@ public final class ClassifierScanner implements ITokenScanner {
     }
 
     /**
-     * Returns a list of text attributes stored in the same order as the {@link TokenClass} enum.
+     * Creates the tokens (in the same order as the {@link TokenClass} enum).
      */
-    private static ImmutableList<TextAttribute> getTextAttributes(ColorManager manager) {
-        ImmutableList.Builder<TextAttribute> textAttributes = ImmutableList.builder();
+    private static ImmutableList<IToken> createTokens(ColorManager manager) {
+        ImmutableList.Builder<IToken> tokens = ImmutableList.builder();
 
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.PUNCTUATION)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.KEYWORD), null, SWT.BOLD));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.OPERATOR)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.COMMENT)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.WHITESPACE)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.IDENTIFIER)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.NUMBER_LITERAL)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.STRING_LITERAL)));
-        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.REG_EXP_LITERAL)));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.PUNCTUATION))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.KEYWORD), null, SWT.BOLD)));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.OPERATOR))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.COMMENT))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.WHITESPACE))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.IDENTIFIER))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.NUMBER_LITERAL))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.STRING_LITERAL))));
+        tokens.add(new Token(new TextAttribute(manager.getColor(TypeScriptColorConstants.REG_EXP_LITERAL))));
 
-        return textAttributes.build();
+        return tokens.build();
     }
 
     public static final class OffsetClassificationInfo {
