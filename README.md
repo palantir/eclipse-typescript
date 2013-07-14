@@ -25,13 +25,16 @@ An Eclipse plug-in for developing in the TypeScript language.
 * [Maven](http://maven.apache.org/)
 * [Node.js](http://nodejs.org/)
 
-### Build
+### Initial Setup
 * Clone the repository
+* Run `git submodule update`
 * Run `npm install`
+
+### Building
 * Run `grunt`
 * Run `mvn install`
 
-### Contribute
+### Contributing
 * Ensure there are no warnings/errors in Eclipse (with Checkstyle and FindBugs installed)
 * Ensure the Grunt and Maven builds succeed
 * Submit a pull request
