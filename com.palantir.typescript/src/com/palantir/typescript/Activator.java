@@ -45,15 +45,18 @@ public final class Activator extends AbstractUIPlugin {
         super.start(context);
 
         this.bridge = new TypeScriptBridge();
-        this.bridge.getFileManagerService().intializeWorkspace();
+
         manageResourceListeners();
+
         PLUGIN = this;
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
         PLUGIN = null;
+
         this.bridge.stop();
+        this.bridge = null;
 
         super.stop(context);
     }

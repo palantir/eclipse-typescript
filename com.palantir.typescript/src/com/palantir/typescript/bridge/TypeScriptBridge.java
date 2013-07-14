@@ -74,6 +74,8 @@ public final class TypeScriptBridge {
         this.classifier = new Classifier(this);
         this.autoCompleteService = new AutoCompleteService(this);
         this.fileManagerService = new FileManagerService(this);
+
+        this.fileManagerService.intializeWorkspace();
     }
 
     public Classifier getClassifier() {
