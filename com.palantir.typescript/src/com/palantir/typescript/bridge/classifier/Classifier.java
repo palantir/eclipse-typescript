@@ -20,8 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
@@ -42,23 +40,10 @@ public final class Classifier {
     }
 
     public List<ClassificationResult> getClassificationsForLines(List<String> lines) {
-        List<List<String>> batches = Lists.partition(lines, 100);
-        ImmutableList.Builder<ClassificationResult> results = ImmutableList.builder();
-
-        // classify the lines in batches to avoid sending a request that is too large
         EndOfLineState lexState = EndOfLineState.START;
-        for (List<String> batch : batches) {
-            GetClassificationsForLinesRequest request = new GetClassificationsForLinesRequest(batch, lexState);
-            ClassificationResults response = this.bridge.sendRequest(request, ClassificationResults.class);
+        GetClassificationsForLinesRequest request = new GetClassificationsForLinesRequest(lines, lexState);
+        ClassificationResults response = this.bridge.sendRequest(request, ClassificationResults.class);
 
-            for (ClassificationResult result : response.getResults()) {
-                results.add(result);
-
-                // keep track of the final lex state
-                lexState = result.getFinalLexState();
-            }
-        }
-
-        return results.build();
+        return response.getResults();
     }
 }

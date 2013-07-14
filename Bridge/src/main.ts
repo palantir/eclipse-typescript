@@ -38,21 +38,30 @@ module Bridge {
         public run() {
             var myProcess: any = process;
 
+            var requestJson = "";
             myProcess.stdin.resume();
-            myProcess.stdin.on("data", (chunk) => {
-                var response = this.processRequest(chunk);
-                var json = JSON.stringify(response);
+            myProcess.stdin.on("data", (chunk: string) => {
+                requestJson += chunk;
 
-                // write the response to stdout
-                console.log(json);
+                // process the request if it is complete (this may fail in some cases)
+                if (/}$/.test(requestJson)) {
+                    var response = this.processRequest(requestJson);
+                    var responseJson = JSON.stringify(response);
+
+                    // write the response to stdout
+                    console.log(responseJson);
+
+                    // reset for the next request
+                    requestJson = "";
+                }
             });
         }
 
-        private processRequest(chunk: string): any {
+        private processRequest(requestJson: string): any {
             // parse the data chunk
             var request;
             try {
-                request = JSON.parse(chunk);
+                request = JSON.parse(requestJson);
             } catch (e) {
                 return {error: e.message};
             }
