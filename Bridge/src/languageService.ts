@@ -272,10 +272,24 @@ module Bridge {
         private getDetailedImplicitlyPrunedCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
             if (this.validPosition(fileName, position)) {
                 var pruningPrefix: string = this.getPrefix(fileName, position);
+                if(this.knownToBreak(pruningPrefix)) {
+                    return {pruningPrefix: pruningPrefix, entries: []};
+                }
                 return this.getDetailedExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
             } else {
                 return {"pruningPrefix": "", "entries": []};
             }
+        }
+
+        private knownToBreak(prefix: string) {
+            var badPrefix = [];
+            badPrefix.push("$");
+            for (var i = 0; i < badPrefix.length; i++) {
+                if(badPrefix[i] === prefix) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): DetailedAutoCompletionInfo {
