@@ -14,38 +14,27 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.autocomplete;
+package com.palantir.typescript.bridge.language;
 
 import com.google.common.base.Preconditions;
 
 /**
- * Corresponds to matching object from TypeScript.
+ * This object is the result of asking for auto complete information from TypeScript.
  *
  * @author tyleradams
  */
-public final class DetailedAutoCompletionInfo {
+public final class AutoCompleteResult {
 
-    private String pruningPrefix;
-    private CompletionEntryDetails[] entries;
+    private final DetailedAutoCompletionInfo autoCompletionInfo;
 
-    public String getPruningPrefix() {
-        return this.pruningPrefix;
+    public AutoCompleteResult(DetailedAutoCompletionInfo autoCompletionInfo) {
+        Preconditions.checkNotNull(autoCompletionInfo);
+
+        this.autoCompletionInfo = autoCompletionInfo;
     }
 
-    public void setPruningPrefix(String pruningPrefix) {
-        Preconditions.checkNotNull(pruningPrefix);
-
-        this.pruningPrefix = pruningPrefix;
-    }
-
-    public CompletionEntryDetails[] getEntries() {
-        return this.entries;
-    }
-
-    public void setEntries(CompletionEntryDetails[] entries) {
-        Preconditions.checkNotNull(entries);
-
-        this.entries = entries;
+    public DetailedAutoCompletionInfo getAutoCompletionInfo() {
+        return this.autoCompletionInfo;
     }
 
 }

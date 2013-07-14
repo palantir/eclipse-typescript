@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.autocomplete;
+package com.palantir.typescript.bridge.language;
 
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;

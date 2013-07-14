@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.filemanager;
+package com.palantir.typescript.bridge.language;
 
 import java.io.File;
 import java.util.List;

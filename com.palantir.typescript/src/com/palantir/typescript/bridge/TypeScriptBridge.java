@@ -28,9 +28,9 @@ import java.io.PrintStream;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.bridge.autocomplete.AutoCompleteService;
 import com.palantir.typescript.bridge.classifier.Classifier;
-import com.palantir.typescript.bridge.filemanager.FileManagerService;
+import com.palantir.typescript.bridge.language.AutoCompleteService;
+import com.palantir.typescript.bridge.language.FileManagerService;
 
 /**
  * This handles all requests that need to be handled by TypeScript's built in language services.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.filemanager;
+package com.palantir.typescript.bridge.language;
 
 import java.util.List;
 
@@ -23,18 +23,17 @@ import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.IRequest;
 
 /**
- * Makes a removeFiles request from the language service from TypeScript.
+ * Makes a loadFiles request from the language service from TypeScript.
  *
  * @author tyleradams
  */
-public final class RemoveFilesRequest implements IRequest {
+public final class LoadFilesRequest implements IRequest {
 
-    private static final String COMMAND = "removeFiles";
+    private static final String COMMAND = "loadFiles";
     private static final String SERVICE = "language service";
-
     private final ImmutableList<String[]> args;
 
-    public RemoveFilesRequest(List<String> files) {
+    public LoadFilesRequest(List<String> files) {
         Preconditions.checkNotNull(files);
 
         String[] filesArray = files.toArray(new String[0]);
