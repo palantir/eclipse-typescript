@@ -16,6 +16,9 @@
 
 package com.palantir.typescript.editors;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.eclipse.jface.text.IDocument;
@@ -25,12 +28,13 @@ import org.eclipse.jface.text.rules.ITokenScanner;
 import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 import com.palantir.typescript.bridge.classifier.ClassificationInfo;
 import com.palantir.typescript.bridge.classifier.ClassificationResult;
+import com.palantir.typescript.bridge.classifier.TokenClass;
 
 /**
  * This class handles tokenizing and properly highlighting sections of typescript. It does so by
@@ -42,35 +46,25 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
     private static final Splitter LINE_SPLITTER = Splitter.on('\n');
 
-    private final TextAttribute[] AttributeTable;
+    private final ImmutableList<TextAttribute> textAttributes;
 
     private List<OffsetClassificationInfo> infos;
     private int currentIndex;
 
     public TypeScriptServerScanner(ColorManager manager) {
-        Preconditions.checkNotNull(manager);
+        checkNotNull(manager);
 
-        List<TextAttribute> attributePreTable = Lists.newArrayList();
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.PUNCTUATION)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.KEYWORD), null, SWT.BOLD));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.OPERATOR)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.COMMENT)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.WHITESPACE)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.IDENTIFIER)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.NUMBER_LITERAL)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.STRING_LITERAL)));
-        attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.REGEXP_LITERAL)));
-        this.AttributeTable = new TextAttribute[attributePreTable.size()];
-        attributePreTable.toArray(this.AttributeTable);
+        this.textAttributes = getTextAttributes(manager);
     }
 
     @Override
     public void setRange(IDocument document, int offset, int length) {
-        Preconditions.checkNotNull(document);
-
-        int currentOffset = offset;
+        checkNotNull(document);
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
 
         // break the text up into lines (keeping track of the offset for each line)
+        int currentOffset = offset;
         String documentText = document.get();
         String rangeText = documentText.substring(offset, offset + length);
         List<String> lines = Lists.newArrayList();
@@ -99,6 +93,8 @@ public final class TypeScriptServerScanner implements ITokenScanner {
                 tokenOffset += entry.getLength();
             }
         }
+
+        // reset the index
         this.currentIndex = -1;
     }
 
@@ -109,9 +105,9 @@ public final class TypeScriptServerScanner implements ITokenScanner {
         if (this.currentIndex == this.infos.size()) {
             return Token.EOF;
         } else {
-            OffsetClassificationInfo info = getInfo();
+            OffsetClassificationInfo info = getCurrentInfo();
             int classificationIndex = info.entry.getClassification().ordinal();
-            TextAttribute data = this.AttributeTable[classificationIndex];
+            TextAttribute data = this.textAttributes.get(classificationIndex);
 
             return new Token(data);
         }
@@ -119,16 +115,35 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
     @Override
     public int getTokenOffset() {
-        return this.getInfo().offset;
+        return this.getCurrentInfo().offset;
     }
 
     @Override
     public int getTokenLength() {
-        return this.getInfo().entry.getLength();
+        return this.getCurrentInfo().entry.getLength();
     }
 
-    private OffsetClassificationInfo getInfo() {
+    private OffsetClassificationInfo getCurrentInfo() {
         return this.infos.get(this.currentIndex);
+    }
+
+    /**
+     * Returns a list of text attributes stored in the same order as the {@link TokenClass} enum.
+     */
+    private static ImmutableList<TextAttribute> getTextAttributes(ColorManager manager) {
+        ImmutableList.Builder<TextAttribute> textAttributes = ImmutableList.builder();
+
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.PUNCTUATION)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.KEYWORD), null, SWT.BOLD));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.OPERATOR)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.COMMENT)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.WHITESPACE)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.IDENTIFIER)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.NUMBER_LITERAL)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.STRING_LITERAL)));
+        textAttributes.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.REG_EXP_LITERAL)));
+
+        return textAttributes.build();
     }
 
     public static final class OffsetClassificationInfo {
