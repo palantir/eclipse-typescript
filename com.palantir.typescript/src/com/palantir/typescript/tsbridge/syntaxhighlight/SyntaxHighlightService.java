@@ -81,7 +81,7 @@ public final class SyntaxHighlightService {
                     entries.add(entry);
                     offset += entry.getLength();
                 }
-                offset += lineSpacing[lineNumber]; // end of line offset compensating for \r\n.  Each classificationResult is a line.
+                offset += lineSpacing[lineNumber]; // end of line offset compensating for \r\n or \n.  Each classificationResult is a line.
                 lineNumber++;
             }
 
