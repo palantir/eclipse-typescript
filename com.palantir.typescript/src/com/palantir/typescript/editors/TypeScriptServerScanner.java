@@ -44,8 +44,8 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
     private final TextAttribute[] AttributeTable;
 
-    private List<TokenWrapper> tokenWrappers;
-    private int tokenIndex;
+    private List<OffsetClassificationInfo> infos;
+    private int currentIndex;
 
     public TypeScriptServerScanner(ColorManager manager) {
         Preconditions.checkNotNull(manager);
@@ -86,31 +86,32 @@ public final class TypeScriptServerScanner implements ITokenScanner {
         }
 
         // classify the lines
-        this.tokenWrappers = Lists.newArrayList();
+        this.infos = Lists.newArrayList();
         List<ClassificationResult> results = TypeScriptBridge.getBridge().getClassifier().getClassificationsForLines(lines);
         for (int i = 0; i < results.size(); i++) {
             int tokenOffset = lineOffsets.get(i);
             ClassificationResult result = results.get(i);
 
             for (ClassificationInfo entry : result.getEntries()) {
-                TokenWrapper tokenWrapper = new TokenWrapper(entry, tokenOffset);
+                OffsetClassificationInfo tokenWrapper = new OffsetClassificationInfo(entry, tokenOffset);
 
-                this.tokenWrappers.add(tokenWrapper);
+                this.infos.add(tokenWrapper);
                 tokenOffset += entry.getLength();
             }
         }
-        this.tokenIndex = -1;
+        this.currentIndex = -1;
     }
 
     @Override
     public IToken nextToken() {
-        this.tokenIndex++;
+        this.currentIndex++;
 
-        if (this.tokenIndex == this.tokenWrappers.size()) {
+        if (this.currentIndex == this.infos.size()) {
             return Token.EOF;
         } else {
-            TokenWrapper tokenWrapper = getTokenWrapper();
-            TextAttribute data = this.AttributeTable[tokenWrapper.getTokenID()];
+            OffsetClassificationInfo tokenWrapper = getTokenWrapper();
+            int classificationIndex = tokenWrapper.entry.getClassification().ordinal();
+            TextAttribute data = this.AttributeTable[classificationIndex];
 
             return new Token(data);
         }
@@ -118,15 +119,26 @@ public final class TypeScriptServerScanner implements ITokenScanner {
 
     @Override
     public int getTokenOffset() {
-        return this.getTokenWrapper().getOffset();
+        return this.getTokenWrapper().offset;
     }
 
     @Override
     public int getTokenLength() {
-        return this.getTokenWrapper().getLength();
+        return this.getTokenWrapper().entry.getLength();
     }
 
-    private TokenWrapper getTokenWrapper() {
-        return this.tokenWrappers.get(this.tokenIndex);
+    private OffsetClassificationInfo getTokenWrapper() {
+        return this.infos.get(this.currentIndex);
+    }
+
+    public static final class OffsetClassificationInfo {
+
+        private final ClassificationInfo entry;
+        private final int offset;
+
+        public OffsetClassificationInfo(ClassificationInfo entry, int offset) {
+            this.entry = entry;
+            this.offset = offset;
+        }
     }
 }
