@@ -54,13 +54,13 @@ module Bridge {
             try {
                 request = JSON.parse(chunk);
             } catch (e) {
-                return {"error": e.message};
+                return {error: e.message};
             }
 
             // get the service
             var service = this.services.get(request.service);
             if (service === null) {
-                return {"error": "Invalid service: " + request.service};
+                return {error: "Invalid service: " + request.service};
             }
 
             // process the request
