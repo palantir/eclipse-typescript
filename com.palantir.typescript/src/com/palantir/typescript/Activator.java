@@ -115,45 +115,49 @@ public final class Activator extends AbstractUIPlugin {
     }
 
     private void listenToResourceDeltas() {
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
-            @Override
-            public void resourceChanged(IResourceChangeEvent event) {
-                if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-                    try {
-                        event.getDelta().accept(new IResourceDeltaVisitor() {
-                            @Override
-                            public boolean visit(IResourceDelta delta) throws CoreException {
-                                IResource resource = delta.getResource();
-
-                                if (isTypeScriptFile(resource)) {
-                                    String file = resource.getRawLocation().toOSString();
-                                    LanguageService languageService = Activator.getBridge().getLanguageService();
-
-                                    switch (delta.getKind()) {
-                                        case IResourceDelta.ADDED:
-                                            languageService.addFile(file);
-                                            break;
-                                        case IResourceDelta.CHANGED:
-                                            languageService.updateFile(file);
-                                            break;
-                                        case IResourceDelta.REMOVED:
-                                            languageService.removeFile(file);
-                                            break;
-                                    }
-                                }
-
-                                return true;
-                            }
-                        });
-                    } catch (CoreException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new MyResourceChangeListener());
     }
 
     private static boolean isTypeScriptFile(IResource resource) {
         return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
+    }
+
+    private final class MyResourceChangeListener implements IResourceChangeListener {
+        @Override
+        public void resourceChanged(IResourceChangeEvent event) {
+            if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+                try {
+                    event.getDelta().accept(new MyResourceDeltaVisitor());
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
+        @Override
+        public boolean visit(IResourceDelta delta) throws CoreException {
+            IResource resource = delta.getResource();
+
+            if (isTypeScriptFile(resource)) {
+                LanguageService languageService = Activator.this.bridge.getLanguageService();
+                String file = resource.getRawLocation().toOSString();
+
+                switch (delta.getKind()) {
+                    case IResourceDelta.ADDED:
+                        languageService.addFile(file);
+                        break;
+                    case IResourceDelta.CHANGED:
+                        languageService.updateFile(file);
+                        break;
+                    case IResourceDelta.REMOVED:
+                        languageService.removeFile(file);
+                        break;
+                }
+            }
+
+            return true;
+        }
     }
 }
