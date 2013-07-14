@@ -67,8 +67,12 @@ module Bridge {
             }
 
             // process the request
-            var method = service[request.command];
-            var response = method.apply(service, request.args);
+            try {
+                var method = service[request.command];
+                var response = method.apply(service, request.args);
+            } catch (e) {
+                return {error: e.stack};
+            }
 
             return response;
         }
