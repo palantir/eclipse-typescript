@@ -28,11 +28,8 @@ import org.eclipse.jface.text.presentation.IPresentationDamager;
  */
 public final class TypeScriptDamager implements IPresentationDamager {
 
-    private IDocument document;
-
     @Override
     public void setDocument(IDocument document) {
-        this.document = document;
     }
 
     @Override
