@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge;
-
-import java.util.List;
+package com.palantir.typescript.bridge.classifier;
 
 /**
- * Represents a request which will be sent to the bridge.
+ * Corresponds to the enum with the same name in classifier.ts.
  *
- * @author tyleradams
+ * @author dcicerone
  */
-public interface IRequest {
-
-    String getCommand();
-
-    String getService();
-
-    List<?> getArgs();
+public enum EndOfLineState {
+    START,
+    IN_MULTI_LINE_COMMENT_TRIVIA,
+    IN_SINGLE_QUOTE_STRING_LITERAL,
+    IN_DOUBLE_QUOTE_STRING_LITERAL
 }

@@ -32,7 +32,7 @@ public final class GetCompletionsAtPositionRequest implements IRequest {
     private static final String COMMAND = "getCompletionsAtPosition";
     private static final String SERVICE = "language service";
 
-    private final List args;
+    private final ImmutableList args;
 
     public GetCompletionsAtPositionRequest(String file, int offset, String contents) {
         Preconditions.checkNotNull(file);
@@ -53,8 +53,8 @@ public final class GetCompletionsAtPositionRequest implements IRequest {
     }
 
     @Override
-    public Object[] getArgs() {
-        return this.args.toArray();
+    public List<?> getArgs() {
+        return this.args;
     }
 
 }

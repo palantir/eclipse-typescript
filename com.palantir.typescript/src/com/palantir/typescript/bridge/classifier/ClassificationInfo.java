@@ -16,36 +16,36 @@
 
 package com.palantir.typescript.bridge.classifier;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Corresponds to matching object from TypeScript.
+ * Corresponds to the class with the same name in classifier.ts.
  *
  * @author tyleradams
  */
 public final class ClassificationInfo {
 
-    private int length;
-    private int classification;
+    private final int length;
+    private final TokenClass classification;
+
+    @JsonCreator
+    public ClassificationInfo(@JsonProperty("length") int length, @JsonProperty("classification") TokenClass classification) {
+        checkArgument(length >= 0);
+        checkNotNull(classification);
+
+        this.length = length;
+        this.classification = classification;
+    }
 
     public int getLength() {
         return this.length;
     }
 
-    public void setLength(int length) {
-        Preconditions.checkArgument(length >= 0);
-
-        this.length = length;
-    }
-
-    public int getClassification() {
+    public TokenClass getClassification() {
         return this.classification;
     }
-
-    public void setClassification(int classification) {
-        Preconditions.checkArgument(classification >= 0);
-
-        this.classification = classification;
-    }
-
 }

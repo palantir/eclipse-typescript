@@ -32,7 +32,7 @@ public final class TokenWrapper {
 
     public TokenWrapper(ClassificationInfo entry, int offset) {
         this.length = entry.getLength();
-        this.tokenID = entry.getClassification();
+        this.tokenID = entry.getClassification().ordinal();
         this.offset = offset;
     }
 

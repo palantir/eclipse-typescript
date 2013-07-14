@@ -31,7 +31,8 @@ public final class UpdateFileRequest implements IRequest {
 
     private static final String COMMAND = "updateFile";
     private static final String SERVICE = "language service";
-    private final List<String> args;
+
+    private final ImmutableList<String> args;
 
     public UpdateFileRequest(String file, String content) {
         Preconditions.checkNotNull(file);
@@ -51,7 +52,7 @@ public final class UpdateFileRequest implements IRequest {
     }
 
     @Override
-    public Object[] getArgs() {
-        return this.args.toArray();
+    public List<?> getArgs() {
+        return this.args;
     }
 }

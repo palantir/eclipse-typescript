@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge;
+package com.palantir.typescript.bridge.classifier;
 
-import java.util.List;
+import com.palantir.typescript.bridge.IRequest;
 
 /**
- * Represents a request which will be sent to the bridge.
+ * A request to the classifier service.
  *
- * @author tyleradams
+ * @author dcicerone
  */
-public interface IRequest {
+public abstract class ClassifierRequest implements IRequest {
 
-    String getCommand();
-
-    String getService();
-
-    List<?> getArgs();
+    @Override
+    public final String getService() {
+        return "classifier";
+    }
 }

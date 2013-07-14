@@ -16,36 +16,37 @@
 
 package com.palantir.typescript.bridge.classifier;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 
 /**
- * Corresponds to matching object from TypeScript.
+ * Corresponds to the class with the same name in classifier.ts.
  *
  * @author tyleradams
  */
 public final class ClassificationResult {
 
-    private ClassificationInfo[] entries;
-    private int finalLexState;
+    private final ImmutableList<ClassificationInfo> entries;
+    private final EndOfLineState finalLexState;
 
-    public int getFinalLexState() {
+    @JsonCreator
+    public ClassificationResult(@JsonProperty("entries") List<ClassificationInfo> entries, @JsonProperty("finalLexState") EndOfLineState finalLexState) {
+        checkNotNull(finalLexState);
+
+        this.entries = ImmutableList.copyOf(entries);
+        this.finalLexState = finalLexState;
+    }
+
+    public EndOfLineState getFinalLexState() {
         return this.finalLexState;
     }
 
-    public void setFinalLexState(int lexState) {
-        Preconditions.checkArgument(lexState >= 0);
-
-        this.finalLexState = lexState;
-    }
-
-    public void setEntries(ClassificationInfo[] entries) {
-        Preconditions.checkNotNull(entries);
-
-        this.entries = entries;
-    }
-
-    public ClassificationInfo[] getEntries() {
+    public ImmutableList<ClassificationInfo> getEntries() {
         return this.entries;
     }
-
 }

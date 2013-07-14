@@ -29,7 +29,6 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
  */
 public final class SyntaxHighlightService {
 
-    private static final int START = 0; // This corresponds to the Start enum in Services.EndOfLineState.
     private final TypeScriptBridge typeScriptBridge;
 
     public SyntaxHighlightService(TypeScriptBridge typeScriptBridge) {
@@ -55,7 +54,7 @@ public final class SyntaxHighlightService {
             }
         }
 
-        int beginningLexState = START;
+        EndOfLineState lexState = EndOfLineState.START;
         List<ClassificationInfo> entries = Lists.newArrayList();
         List<Integer> offsets = Lists.newArrayList();
         List<String> firstLines;
@@ -71,7 +70,7 @@ public final class SyntaxHighlightService {
                 firstLines = lines;
                 lines = lines.subList(lines.size(), lines.size());
             }
-            GetClassificationsForLinesRequest request = new GetClassificationsForLinesRequest(firstLines, beginningLexState);
+            GetClassificationsForLinesRequest request = new GetClassificationsForLinesRequest(firstLines, lexState);
             ClassificationResults classificationResults = this.typeScriptBridge.sendRequest(request, resultType);
 
             // process classificationResults
@@ -85,7 +84,7 @@ public final class SyntaxHighlightService {
                 lineNumber++;
             }
 
-            beginningLexState = classificationResults.getFinalLexState();
+            lexState = classificationResults.getFinalLexState();
         }
         return new SyntaxHighlightResult(entries, offsets);
     }

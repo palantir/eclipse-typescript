@@ -31,7 +31,7 @@ public final class LoadFilesRequest implements IRequest {
 
     private static final String COMMAND = "loadFiles";
     private static final String SERVICE = "language service";
-    private final List<String[]> args;
+    private final ImmutableList<String[]> args;
 
     public LoadFilesRequest(List<String> files) {
         Preconditions.checkNotNull(files);
@@ -52,7 +52,7 @@ public final class LoadFilesRequest implements IRequest {
     }
 
     @Override
-    public Object[] getArgs() {
-        return this.args.toArray();
+    public List<?> getArgs() {
+        return this.args;
     }
 }

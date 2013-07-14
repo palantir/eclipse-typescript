@@ -16,48 +16,35 @@
 
 package com.palantir.typescript.bridge.classifier;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.bridge.IRequest;
 
 /**
  * Request object for getClassificationsForLines from the classifier.
  *
  * @author tyleradams
  */
-public final class GetClassificationsForLinesRequest implements IRequest {
+public final class GetClassificationsForLinesRequest extends ClassifierRequest {
 
-    private static final String COMMAND = "getClassificationsForLines";
-    private static final String SERVICE = "classifier";
+    private final ImmutableList<?> args;
 
-    private final List<String> lines;
-    private final int beginningOfLineState;
-    private final List args;
+    public GetClassificationsForLinesRequest(List<String> lines, EndOfLineState lexState) {
+        checkNotNull(lines);
+        checkNotNull(lexState);
 
-    public GetClassificationsForLinesRequest(List<String> lines, int beginningOfLineState) {
-        Preconditions.checkNotNull(lines);
-        Preconditions.checkArgument(beginningOfLineState >= 0);
-
-        this.lines = lines;
-        this.beginningOfLineState = beginningOfLineState;
-        this.args = ImmutableList.of(this.lines, this.beginningOfLineState);
+        this.args = ImmutableList.of(lines, lexState.ordinal());
     }
 
     @Override
     public String getCommand() {
-        return COMMAND;
+        return "getClassificationsForLines";
     }
 
     @Override
-    public String getService() {
-        return SERVICE;
+    public ImmutableList<?> getArgs() {
+        return this.args;
     }
-
-    @Override
-    public Object[] getArgs() {
-        return this.args.toArray();
-    }
-
 }

@@ -37,7 +37,7 @@ public final class ClassificationResults {
         this.results = results;
     }
 
-    public int getFinalLexState() {
+    public EndOfLineState getFinalLexState() {
         int lastIndex = this.results.length - 1;
         Preconditions.checkElementIndex(lastIndex, this.results.length);
 

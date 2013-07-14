@@ -31,7 +31,8 @@ public final class RemoveFilesRequest implements IRequest {
 
     private static final String COMMAND = "removeFiles";
     private static final String SERVICE = "language service";
-    private final List<String[]> args;
+
+    private final ImmutableList<String[]> args;
 
     public RemoveFilesRequest(List<String> files) {
         Preconditions.checkNotNull(files);
@@ -52,7 +53,7 @@ public final class RemoveFilesRequest implements IRequest {
     }
 
     @Override
-    public Object[] getArgs() {
-        return this.args.toArray();
+    public List<?> getArgs() {
+        return this.args;
     }
 }
