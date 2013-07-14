@@ -37,24 +37,25 @@ module Bridge {
 
         public run() {
             var myProcess: any = process;
+            var readline = require("readline");
+            var rl = readline.createInterface(myProcess.stdin, myProcess.stdout);
 
-            var requestJson = "";
-            myProcess.stdin.resume();
-            myProcess.stdin.on("data", (chunk: string) => {
-                requestJson += chunk;
+            rl.setPrompt("");
+            rl.on("line", (requestJson: string) => {
+                var response = this.processRequest(requestJson);
+                var responseJson = JSON.stringify(response);
 
-                // process the request if it is complete (this may fail in some cases)
-                if (/}$/.test(requestJson)) {
-                    var response = this.processRequest(requestJson);
-                    var responseJson = JSON.stringify(response);
+                // write the response to stdout
+                console.log(responseJson);
 
-                    // write the response to stdout
-                    console.log(responseJson);
-
-                    // reset for the next request
-                    requestJson = "";
-                }
+                // wait for the next request
+                rl.prompt();
+            }).on("close", () => {
+                myProcess.exit(0);
             });
+
+            // wait for the first request
+            rl.prompt();
         }
 
         private processRequest(requestJson: string): any {
@@ -68,7 +69,7 @@ module Bridge {
 
             // get the service
             var service = this.services.get(request.service);
-            if (service === null) {
+            if (service === undefined) {
                 return {error: "Invalid service: " + request.service};
             }
 

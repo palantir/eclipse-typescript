@@ -138,6 +138,7 @@ public final class TypeScriptBridge {
         String rawResult = UNITIALIZED;
         try {
             this.toServer.write(rawRequest);
+            this.toServer.write('\n');
             this.toServer.flush();
             rawResult = this.fromServer.readLine();
         } catch (IOException e) {
