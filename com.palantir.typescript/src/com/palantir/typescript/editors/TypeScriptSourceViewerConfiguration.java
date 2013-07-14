@@ -43,7 +43,7 @@ import com.google.common.base.Preconditions;
 public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
     private final TypeScriptDoubleClickStrategy doubleClickStrategy;
-    private final TypeScriptServerScanner typeScriptScanner;
+    private final ClassifierTokenScanner classifierScanner;
     private final ColorManager colorManager;
     private final JSDocScanner jsDocScanner;
 
@@ -51,7 +51,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
-        this.typeScriptScanner = new TypeScriptServerScanner(colorManager);
+        this.classifierScanner = new ClassifierTokenScanner(colorManager);
         this.jsDocScanner = new JSDocScanner(colorManager);
         this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
@@ -75,10 +75,6 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         return this.doubleClickStrategy;
     }
 
-    private TypeScriptServerScanner getTypeScriptScanner() {
-        return this.typeScriptScanner;
-    }
-
     private JSDocScanner getJSDocScanner() {
         return this.jsDocScanner;
     }
@@ -89,19 +85,21 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
 
         PresentationReconciler reconciler = new PresentationReconciler();
 
-        DefaultDamagerRepairer damagerRepairer = new DefaultDamagerRepairer(getTypeScriptScanner());
-        reconciler.setDamager(damagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
-        reconciler.setRepairer(damagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
+        // default
+        DefaultDamagerRepairer defaultDamagerRepairer = new DefaultDamagerRepairer(this.classifierScanner);
+        reconciler.setDamager(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
+        reconciler.setRepairer(defaultDamagerRepairer, IDocument.DEFAULT_CONTENT_TYPE);
 
-        damagerRepairer = new DefaultDamagerRepairer(getJSDocScanner());
-        reconciler.setDamager(damagerRepairer, TypeScriptPartitionScanner.JSDOC);
-        reconciler.setRepairer(damagerRepairer, TypeScriptPartitionScanner.JSDOC);
+        // JSDoc
+        DefaultDamagerRepairer jsdocDamagerRepairer = new DefaultDamagerRepairer(getJSDocScanner());
+        reconciler.setDamager(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
+        reconciler.setRepairer(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
 
-        TextAttribute multiLine = new TextAttribute(this.colorManager.getColor(TypeScriptColorConstants.COMMENT));
-        NonRuleBasedDamagerRepairer newDamagerRepairer = new NonRuleBasedDamagerRepairer(multiLine);
-
-        reconciler.setDamager(newDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
-        reconciler.setRepairer(newDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
+        // multiline comments
+        TextAttribute multilineAttribute = new TextAttribute(this.colorManager.getColor(TypeScriptColorConstants.COMMENT));
+        NonRuleBasedDamagerRepairer multilineDamagerRepairer = new NonRuleBasedDamagerRepairer(multilineAttribute);
+        reconciler.setDamager(multilineDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
+        reconciler.setRepairer(multilineDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
 
         return reconciler;
     }
