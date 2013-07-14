@@ -26,14 +26,14 @@ An Eclipse plug-in for developing in the TypeScript language.
 * [Node.js](http://nodejs.org/)
 
 ### Initial Setup
-* Clone the repository
-* Run `git submodule init`
-* Run `git submodule update`
-* Run `npm install`
+    git clone git@github.com:palantir/eclipse-typescript.git
+    git submodule init
+    git submodule update
+    npm install
 
 ### Building
-* Run `grunt`
-* Run `mvn install`
+    grunt
+    mvn install
 
 ### Contributing
 * Ensure there are no warnings/errors in Eclipse (with Checkstyle and FindBugs installed)
