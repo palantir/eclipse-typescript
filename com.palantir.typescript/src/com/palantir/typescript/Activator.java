@@ -107,7 +107,7 @@ public final class Activator extends AbstractUIPlugin {
                 }
             });
         }
-        this.bridge.getLanguageService().addFilesToWorkspace(files);
+        this.bridge.getLanguageService().addFiles(files);
 
         // listen to the resource deltas for additional TypeScript files
         this.listenToResourceDeltas();
@@ -126,13 +126,13 @@ public final class Activator extends AbstractUIPlugin {
 
                         switch (event.getDelta().getKind()) {
                             case IResourceDelta.ADDED:
-                                languageService.addFileToWorkspace(file);
+                                languageService.addFile(file);
                                 break;
                             case IResourceDelta.CHANGED:
-                                languageService.updateSavedFile(file);
+                                languageService.updateFile(file);
                                 break;
                             case IResourceDelta.REMOVED:
-                                languageService.removeFileFromWorkspace(file);
+                                languageService.removeFile(file);
                                 break;
                         }
                     }
@@ -142,6 +142,15 @@ public final class Activator extends AbstractUIPlugin {
     }
 
     private static boolean isTypeScriptFile(IResource resource) {
-        return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
+        if (resource.getType() != IResource.FILE) {
+            return false;
+        }
+
+        String name = resource.getName();
+        if (name != null && name.endsWith(".ts")) {
+            return true;
+        }
+
+        return false;
     }
 }

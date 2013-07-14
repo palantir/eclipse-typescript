@@ -63,7 +63,7 @@ public final class TypeScriptCompletionProcessor implements IContentAssistProces
         String fileContents = viewer.getDocument().get();
         LanguageService languageService = Activator.getBridge().getLanguageService();
 
-        AutoCompleteResult autoCompleteResult = languageService.autoComplete(file, offset, fileContents);
+        AutoCompleteResult autoCompleteResult = languageService.getCompletionsAtPosition(file, offset, fileContents);
         if (autoCompleteResult == null) {
             return null;
         }

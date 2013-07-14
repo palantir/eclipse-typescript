@@ -32,7 +32,7 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
  */
 public final class LanguageService {
 
-    private static final String SERVICE = "language service";
+    private static final String SERVICE = "language";
 
     private final TypeScriptBridge typeScriptBridge;
 
@@ -42,7 +42,7 @@ public final class LanguageService {
         this.typeScriptBridge = typeScriptBridge;
     }
 
-    public AutoCompleteResult autoComplete(String file, int offset, String contents) {
+    public AutoCompleteResult getCompletionsAtPosition(String file, int offset, String contents) {
         Preconditions.checkNotNull(file);
         Preconditions.checkArgument(offset >= 0);
         Preconditions.checkNotNull(contents);
@@ -52,29 +52,29 @@ public final class LanguageService {
         return new AutoCompleteResult(autoCompletionInfo);
     }
 
-    public void addFileToWorkspace(String file) {
+    public void addFile(String file) {
         Preconditions.checkNotNull(file);
 
-        this.addFilesToWorkspace(ImmutableList.of(file));
+        this.addFiles(ImmutableList.of(file));
     }
 
-    public void addFilesToWorkspace(List<String> files) {
+    public void addFiles(List<String> files) {
         Preconditions.checkNotNull(files);
 
         if (!files.isEmpty()) {
-            Request request = new Request(SERVICE, "loadFiles", files);
+            Request request = new Request(SERVICE, "addFiles", files);
 
             this.typeScriptBridge.sendRequest(request, Boolean.class);
         }
     }
 
-    public void removeFileFromWorkspace(String file) {
+    public void removeFile(String file) {
         Preconditions.checkNotNull(file);
 
-        this.removeFilesFromWorkspace(ImmutableList.of(file));
+        this.removeFiles(ImmutableList.of(file));
     }
 
-    public void removeFilesFromWorkspace(List<String> files) {
+    public void removeFiles(List<String> files) {
         Preconditions.checkNotNull(files);
 
         if (!files.isEmpty()) {
@@ -84,10 +84,10 @@ public final class LanguageService {
         }
     }
 
-    public void updateSavedFile(String file) {
+    public void updateFile(String file) {
         Preconditions.checkNotNull(file);
 
-        Request request = new Request(SERVICE, "updateSavedFile", file);
+        Request request = new Request(SERVICE, "updateFile", file);
 
         this.typeScriptBridge.sendRequest(request, Boolean.class);
     }

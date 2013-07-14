@@ -103,9 +103,9 @@ module Bridge {
             this.languageServiceHost = new LanguageServiceHost();
         }
 
-        public loadFiles(files: string[]): boolean {
+        public addFiles(files: string[]): boolean {
             for (var i = 0; i < files.length; i++) {
-                this.languageServiceHost.loadFile(files[i]);
+                this.languageServiceHost.addFile(files[i]);
             }
             return true;
         }
@@ -117,12 +117,12 @@ module Bridge {
             return true;
         }
 
-        public updateFile(file: string, content: string): boolean {
-            return this.languageServiceHost.updateFile(file, content);
+        public updateFileContents(file: string, content: string): boolean {
+            return this.languageServiceHost.updateFileContents(file, content);
         }
 
-        public updateSavedFile(file: string): boolean {
-            return this.languageServiceHost.updateSavedFile(file);
+        public updateFile(file: string): boolean {
+            return this.languageServiceHost.updateFile(file);
         }
 
         public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
@@ -145,7 +145,7 @@ module Bridge {
             this.diagnostics = new LanguageServicesDiagnostics();
         }
 
-        public loadFile(file: string): boolean {
+        public addFile(file: string): boolean {
             this.fileMap.set(file, new ScriptSnapshot(file));
             return true;
         }
@@ -154,16 +154,16 @@ module Bridge {
             return this.fileMap.delete(file);
         }
 
-        public updateFile(file: string, content: string): boolean {
+        public updateFileContents(file: string, content: string): boolean {
             return this.fileMap.get(file).updateContent(content);
         }
 
-        public updateSavedFile(file: string): boolean {
-            return this.updateFile(file, readFileContents(file));
+        public updateFile(file: string): boolean {
+            return this.updateFileContents(file, readFileContents(file));
         }
 
         public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
-            this.updateFile(file, contents);
+            this.updateFileContents(file, contents);
             return this.getDetailedImplicitlyPrunedCompletionsAtPosition(file, position);
         }
 
