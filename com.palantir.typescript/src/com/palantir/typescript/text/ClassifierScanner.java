@@ -91,15 +91,21 @@ public final class ClassifierScanner implements ITokenScanner {
             int tokenOffset = lineOffsets.get(i);
             ClassificationResult result = results.get(i);
 
+            // add an info for each entry
             for (ClassificationInfo entry : result.getEntries()) {
-                OffsetClassificationInfo offsetClassificationInfo = new OffsetClassificationInfo(entry, tokenOffset);
+                OffsetClassificationInfo info = new OffsetClassificationInfo(entry, tokenOffset);
 
-                this.infos.add(offsetClassificationInfo);
+                this.infos.add(info);
                 tokenOffset += entry.getLength();
             }
-            if (i < results.size() - 1) { // add token for newlines
-                ClassificationInfo entry = new ClassificationInfo(lineOffsets.get(i + 1) - tokenOffset, TokenClass.WHITESPACE);
-                this.infos.add(new OffsetClassificationInfo(entry, tokenOffset));
+
+            // add a token for the newline character(s)
+            if (i < results.size() - 1) {
+                int newlineLength = lineOffsets.get(i + 1) - tokenOffset;
+                ClassificationInfo entry = new ClassificationInfo(newlineLength, TokenClass.WHITESPACE);
+                OffsetClassificationInfo info = new OffsetClassificationInfo(entry, tokenOffset);
+
+                this.infos.add(info);
             }
         }
     }
