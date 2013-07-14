@@ -27,7 +27,7 @@ import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Preconditions;
 import com.palantir.typescript.bridge.TypeScriptBridge;
-import com.palantir.typescript.editors.TypeScriptFileManager;
+import com.palantir.typescript.text.TypeScriptFileManager;
 
 /**
  * The activator class controls the plug-in life cycle.

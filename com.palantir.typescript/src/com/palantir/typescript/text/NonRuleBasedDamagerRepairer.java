@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
+package com.palantir.typescript.text;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;

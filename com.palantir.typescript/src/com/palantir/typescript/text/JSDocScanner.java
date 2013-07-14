@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
+package com.palantir.typescript.text;
 
 import java.util.List;
 

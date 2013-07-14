@@ -22,7 +22,7 @@ import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.editors.TypeScriptIconFetcher;
+import com.palantir.typescript.text.TypeScriptIconFetcher;
 
 /**
  * This class handles all of the details behind creating an eclipse CompletionProposal object out of

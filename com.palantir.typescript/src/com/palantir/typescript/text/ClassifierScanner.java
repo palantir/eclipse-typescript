@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.editors;
+package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

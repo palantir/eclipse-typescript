@@ -9,8 +9,8 @@
             extensions="ts"
             icon="icons/typeScript.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="com.palantir.typescript.editors.TypeScriptEditor"
-            id="com.palantir.typescript.editors.TypeScriptEditor">
+            class="com.palantir.typescript.text.TypeScriptEditor"
+            id="com.palantir.typescript.text.TypeScriptEditor">
       </editor>
    </extension>
 
