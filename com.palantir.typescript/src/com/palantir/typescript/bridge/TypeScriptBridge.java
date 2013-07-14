@@ -43,6 +43,7 @@ public final class TypeScriptBridge {
     private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
 
     private static final String UNITIALIZED = "Unitialized";
+    private static final int MAX_MESSAGE_LOG_SIZE = 1000;
 
     private BufferedReader fromServer;
     private BufferedWriter toServer;
@@ -173,6 +174,11 @@ public final class TypeScriptBridge {
 
     private void log(String message) {
         Preconditions.checkNotNull(message);
+
+        if (message.length() > MAX_MESSAGE_LOG_SIZE) {
+            log(message.substring(0, MAX_MESSAGE_LOG_SIZE - 10) + "...etc"); // MAX_MESSAGE_LOG_SIZE > 10.
+            return;
+        }
 
         System.out.println(message);
         if (this.logger != null) {
