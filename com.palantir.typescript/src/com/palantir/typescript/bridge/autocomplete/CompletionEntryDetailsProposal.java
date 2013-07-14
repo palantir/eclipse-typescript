@@ -97,6 +97,10 @@ public final class CompletionEntryDetailsProposal {
         if (this.completionEntryDetails.getKind().equals("method") || this.completionEntryDetails.getKind().equals("function")) {
             display += this.completionEntryDetails.getName();
             display += this.completionEntryDetails.getType();
+        } else if(this.completionEntryDetails.getKind().equals("keyword")) {
+            display += this.completionEntryDetails.getName();
+            display += " : keyword";
+
         } else {
             display += this.completionEntryDetails.getName();
             display += " : " + this.completionEntryDetails.getType();
