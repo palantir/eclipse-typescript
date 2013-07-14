@@ -21,6 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 /**
  * Corresponds to the class with the same name in classifier.ts.
@@ -47,5 +48,13 @@ public final class ClassificationInfo {
 
     public TokenClass getClassification() {
         return this.classification;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("classification", this.classification)
+            .add("length", this.length)
+            .toString();
     }
 }

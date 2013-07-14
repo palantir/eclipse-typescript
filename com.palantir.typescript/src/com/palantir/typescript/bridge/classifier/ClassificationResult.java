@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -35,7 +36,8 @@ public final class ClassificationResult {
     private final EndOfLineState finalLexState;
 
     @JsonCreator
-    public ClassificationResult(@JsonProperty("entries") List<ClassificationInfo> entries, @JsonProperty("finalLexState") EndOfLineState finalLexState) {
+    public ClassificationResult(@JsonProperty("entries") List<ClassificationInfo> entries,
+            @JsonProperty("finalLexState") EndOfLineState finalLexState) {
         checkNotNull(finalLexState);
 
         this.entries = ImmutableList.copyOf(entries);
@@ -48,5 +50,13 @@ public final class ClassificationResult {
 
     public ImmutableList<ClassificationInfo> getEntries() {
         return this.entries;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("entries", this.entries)
+            .add("finalLexState", this.finalLexState)
+            .toString();
     }
 }
