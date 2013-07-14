@@ -22,7 +22,6 @@ import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
-import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
@@ -46,6 +45,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
     private final ClassifierScanner classifierScanner;
     private final ColorManager colorManager;
     private final JSDocScanner jsDocScanner;
+    private final CommentScanner commentScanner;
 
     public TypeScriptSourceViewerConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
@@ -53,6 +53,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         this.colorManager = colorManager;
         this.classifierScanner = new ClassifierScanner(colorManager);
         this.jsDocScanner = new JSDocScanner(colorManager);
+        this.commentScanner = new CommentScanner(colorManager);
         this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
     }
 
@@ -66,7 +67,8 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         return new String[] {
                 IDocument.DEFAULT_CONTENT_TYPE,
                 TypeScriptPartitionScanner.JSDOC,
-                TypeScriptPartitionScanner.MULTILINE_COMMENT
+                TypeScriptPartitionScanner.MULTILINE_COMMENT,
+                TypeScriptPartitionScanner.SINGLE_LINE_COMMENT
         };
     }
 
@@ -106,10 +108,14 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         reconciler.setRepairer(jsdocDamagerRepairer, TypeScriptPartitionScanner.JSDOC);
 
         // multiline comments
-        TextAttribute multilineAttribute = new TextAttribute(this.colorManager.getColor(TypeScriptColorConstants.COMMENT));
-        NonRuleBasedDamagerRepairer multilineDamagerRepairer = new NonRuleBasedDamagerRepairer(multilineAttribute);
+        DefaultDamagerRepairer multilineDamagerRepairer = new DefaultDamagerRepairer(this.commentScanner);
         reconciler.setDamager(multilineDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
         reconciler.setRepairer(multilineDamagerRepairer, TypeScriptPartitionScanner.MULTILINE_COMMENT);
+
+        // singleline comments
+        DefaultDamagerRepairer singleLineDamagerRepairer = new DefaultDamagerRepairer(this.commentScanner);
+        reconciler.setDamager(singleLineDamagerRepairer, TypeScriptPartitionScanner.SINGLE_LINE_COMMENT);
+        reconciler.setRepairer(singleLineDamagerRepairer, TypeScriptPartitionScanner.SINGLE_LINE_COMMENT);
 
         return reconciler;
     }
@@ -132,5 +138,4 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         assistant.setInformationControlCreator(creator); //TODO: Why does this work?
         return assistant;
     }
-
 }

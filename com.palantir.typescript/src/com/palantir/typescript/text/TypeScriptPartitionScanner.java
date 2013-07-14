@@ -18,6 +18,7 @@ package com.palantir.typescript.text;
 
 import java.util.List;
 
+import org.eclipse.jface.text.rules.EndOfLineRule;
 import org.eclipse.jface.text.rules.IPredicateRule;
 import org.eclipse.jface.text.rules.IToken;
 import org.eclipse.jface.text.rules.MultiLineRule;
@@ -36,18 +37,22 @@ public final class TypeScriptPartitionScanner extends RuleBasedPartitionScanner 
 
     protected static final String MULTILINE_COMMENT = "__typescript_multiline_comment";
     protected static final String JSDOC = "__javascript_JSDoc";
-    protected static final List<String> TYPE_SCRIPT_PARTITION_TYPES = ImmutableList.of(MULTILINE_COMMENT, JSDOC);
+    protected static final String SINGLE_LINE_COMMENT = "__typescript_single_line_comment";
+    protected static final List<String> TYPE_SCRIPT_PARTITION_TYPES = ImmutableList.of(MULTILINE_COMMENT, JSDOC, SINGLE_LINE_COMMENT);
 
     public TypeScriptPartitionScanner() {
 
         List<IPredicateRule> rulesList = Lists.newArrayList();
         IToken token;
 
-        token = new Token(JSDOC);
-        rulesList.add(new MultiLineRule("/**", "*/", token, (char) 0, true));
+        token = new Token(SINGLE_LINE_COMMENT);
+        rulesList.add(new EndOfLineRule("//", token));
 
         token = new Token(MULTILINE_COMMENT);
         rulesList.add(new MultiLineRule("/*", "*/", token, (char) 0, true));
+
+        token = new Token(JSDOC);
+        rulesList.add(new MultiLineRule("/**", "*/", token, (char) 0, true));
 
         IPredicateRule[] rules = new IPredicateRule[rulesList.size()];
         rulesList.toArray(rules);
