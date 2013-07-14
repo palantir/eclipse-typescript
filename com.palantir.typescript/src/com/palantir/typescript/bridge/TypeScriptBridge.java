@@ -18,9 +18,12 @@ package com.palantir.typescript.bridge;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,6 +47,8 @@ public final class TypeScriptBridge {
     private BufferedReader fromServer;
     private BufferedWriter toServer;
     private Process server;
+
+    private PrintStream logger;
 
     private final String nodeLocation;
     private final String bridgeLocation;
@@ -131,6 +136,8 @@ public final class TypeScriptBridge {
     private String sendRawRequestGetRawResult(String rawRequest) {
         Preconditions.checkNotNull(rawRequest);
 
+        log("Request: " + rawRequest);
+
         String rawResult = UNITIALIZED;
         try {
             this.toServer.write(rawRequest);
@@ -151,7 +158,7 @@ public final class TypeScriptBridge {
         }
 
         while (isDebugMessage(rawResult)) { // capture and print debug messages from TypeScript.
-            System.out.println(rawResult);
+            log(rawResult);
             try {
                 rawResult = this.fromServer.readLine();
             } catch (IOException e) {
@@ -159,7 +166,19 @@ public final class TypeScriptBridge {
             }
         }
 
+        log("Result: " + rawResult);
+
         return rawResult;
+    }
+
+    private void log(String message) {
+        Preconditions.checkNotNull(message);
+
+        System.out.println(message);
+        if (this.logger != null) {
+            this.logger.println(message);
+            this.logger.flush();
+        }
     }
 
     private static boolean isDebugMessage(String rawResult) {
@@ -177,7 +196,7 @@ public final class TypeScriptBridge {
         }
         this.fromServer = initializeReader();
         this.toServer = initializeWriter();
-
+        this.logger = initializeLogger();
     }
 
     private BufferedReader initializeReader() {
@@ -188,6 +207,17 @@ public final class TypeScriptBridge {
     private BufferedWriter initializeWriter() {
         return new BufferedWriter(
             new OutputStreamWriter(this.server.getOutputStream()));
+    }
+
+    private PrintStream initializeLogger() {
+        long logNumber = System.currentTimeMillis();
+        String logLocation = "/tmp/" + logNumber + "TS.log";
+        File logFile = new File(logLocation);
+        try {
+            return new PrintStream(logFile);
+        } catch (FileNotFoundException e) {
+            return null; // uninitialized logger.
+        }
     }
 
     public void stop() {
