@@ -176,7 +176,8 @@ public final class TypeScriptBridge {
         Preconditions.checkNotNull(message);
 
         if (message.length() > MAX_MESSAGE_LOG_SIZE) {
-            log(message.substring(0, MAX_MESSAGE_LOG_SIZE - 10) + "...etc"); // MAX_MESSAGE_LOG_SIZE > 10.
+            String etc = "...etc";
+            log(message.substring(0, MAX_MESSAGE_LOG_SIZE - etc.length()) + etc); // etc.length() is guaranteed to be less than MAX_MESSAGE_LOG_SIZE
             return;
         }
 
