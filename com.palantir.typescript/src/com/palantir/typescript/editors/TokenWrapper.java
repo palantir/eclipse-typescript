@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.classifier;
+package com.palantir.typescript.editors;
 
 import org.eclipse.jface.text.rules.IToken;
+
+import com.palantir.typescript.bridge.classifier.ClassificationInfo;
 
 /**
  * This class handles the tokens which come back from the TypeScript bridge.

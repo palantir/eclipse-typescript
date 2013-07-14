@@ -25,7 +25,6 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.google.common.base.Preconditions;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 import com.palantir.typescript.editors.TypeScriptFileManager;

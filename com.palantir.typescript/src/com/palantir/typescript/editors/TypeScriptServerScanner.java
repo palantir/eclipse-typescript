@@ -26,10 +26,11 @@ import org.eclipse.jface.text.rules.Token;
 import org.eclipse.swt.SWT;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.TypeScriptBridge;
-import com.palantir.typescript.bridge.classifier.SyntaxHighlightResult;
-import com.palantir.typescript.bridge.classifier.TokenWrapper;
+import com.palantir.typescript.bridge.classifier.ClassificationInfo;
+import com.palantir.typescript.bridge.classifier.ClassificationResult;
 
 /**
  * This class handles tokenizing and properly highlighting sections of typescript. It does so by
@@ -38,14 +39,16 @@ import com.palantir.typescript.bridge.classifier.TokenWrapper;
  * @author tyleradams
  */
 public final class TypeScriptServerScanner implements ITokenScanner {
+
+    private static final Splitter LINE_SPLITTER = Splitter.on('\n');
+
     private final TextAttribute[] AttributeTable;
 
-    private TokenWrapper[] tokenWrappers;
+    private List<TokenWrapper> tokenWrappers;
     private int tokenIndex;
 
     public TypeScriptServerScanner(ColorManager manager) {
         Preconditions.checkNotNull(manager);
-
 
         List<TextAttribute> attributePreTable = Lists.newArrayList();
         attributePreTable.add(new TextAttribute(manager.getColor(TypeScriptColorConstants.PUNCTUATION)));
@@ -65,36 +68,65 @@ public final class TypeScriptServerScanner implements ITokenScanner {
     public void setRange(IDocument document, int offset, int length) {
         Preconditions.checkNotNull(document);
 
-        String text = document.get();
-        String documentText = text.substring(offset, offset + length);
-        SyntaxHighlightResult syntaxHighlightResult = TypeScriptBridge.getBridge().getSyntaxHighlightService().getTokenInformation(documentText, offset);
-        this.tokenWrappers = syntaxHighlightResult.getTokenWrappers();
-        IToken iToken;
-        for (int i = 0; i < this.tokenWrappers.length; i++) {
-            iToken = new Token(this.AttributeTable[this.tokenWrappers[i].getTokenID()]);
-            this.tokenWrappers[i].setToken(iToken);
+        int currentOffset = offset;
+
+        // break the text up into lines (keeping track of the offset for each line)
+        String documentText = document.get();
+        String rangeText = documentText.substring(offset, offset + length);
+        List<String> lines = Lists.newArrayList();
+        List<Integer> lineOffsets = Lists.newArrayList();
+        for (String line : LINE_SPLITTER.split(rangeText)) {
+            lineOffsets.add(currentOffset);
+            currentOffset += line.length() + 1; // add 1 for the newline character
+
+            if (line.endsWith("\r")) {
+                line = line.substring(0, line.length() - 1);
+            }
+            lines.add(line);
+        }
+
+        // classify the lines
+        this.tokenWrappers = Lists.newArrayList();
+        List<ClassificationResult> results = TypeScriptBridge.getBridge().getClassifier().getClassificationsForLines(lines);
+        for (int i = 0; i < results.size(); i++) {
+            int tokenOffset = lineOffsets.get(i);
+            ClassificationResult result = results.get(i);
+
+            for (ClassificationInfo entry : result.getEntries()) {
+                TokenWrapper tokenWrapper = new TokenWrapper(entry, tokenOffset);
+
+                this.tokenWrappers.add(tokenWrapper);
+                tokenOffset += entry.getLength();
+            }
         }
         this.tokenIndex = -1;
-
     }
 
     @Override
     public IToken nextToken() {
-        if (this.tokenIndex == this.tokenWrappers.length - 1) {
-            return Token.EOF;
-        }
         this.tokenIndex++;
-        return this.tokenWrappers[this.tokenIndex].getToken();
+
+        if (this.tokenIndex == this.tokenWrappers.size()) {
+            return Token.EOF;
+        } else {
+            TokenWrapper tokenWrapper = getTokenWrapper();
+            TextAttribute data = this.AttributeTable[tokenWrapper.getTokenID()];
+
+            return new Token(data);
+        }
     }
 
     @Override
     public int getTokenOffset() {
-        return this.tokenWrappers[this.tokenIndex].getOffset();
+        return this.getTokenWrapper().getOffset();
     }
 
     @Override
     public int getTokenLength() {
-        return this.tokenWrappers[this.tokenIndex].getLength();
+        return this.getTokenWrapper().getLength();
     }
 
+    private TokenWrapper getTokenWrapper() {
+        return this.tokenWrappers.get(this.tokenIndex);
+    }
 }
