@@ -16,18 +16,23 @@
 
 package com.palantir.typescript;
 
+import java.util.List;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.TypeScriptBridge;
-import com.palantir.typescript.text.TypeScriptFileManager;
+import com.palantir.typescript.bridge.language.LanguageService;
 
 /**
  * The activator class controls the plug-in life cycle.
@@ -46,7 +51,7 @@ public final class Activator extends AbstractUIPlugin {
 
         this.bridge = new TypeScriptBridge();
 
-        manageResourceListeners();
+        this.intializeWorkspace();
 
         PLUGIN = this;
     }
@@ -84,22 +89,59 @@ public final class Activator extends AbstractUIPlugin {
         return imageDescriptorFromPlugin("com.palantir.typescript", path);
     }
 
-    private void manageResourceListeners() {
-        IWorkspace workspace = ResourcesPlugin.getWorkspace();
-        IResourceChangeListener listener = new IResourceChangeListener() {
+    private void intializeWorkspace() throws CoreException {
+        final List<String> files = Lists.newArrayList();
+
+        // add all the TypeScript files in the workspace
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+            project.accept(new IResourceVisitor() {
+                @Override
+                public boolean visit(IResource resource) throws CoreException {
+                    if (isTypeScriptFile(resource)) {
+                        String file = resource.getRawLocation().toOSString();
+
+                        files.add(file);
+                    }
+
+                    return true;
+                }
+            });
+        }
+        this.bridge.getLanguageService().addFilesToWorkspace(files);
+
+        // listen to the resource deltas for additional TypeScript files
+        this.listenToResourceDeltas();
+    }
+
+    private void listenToResourceDeltas() {
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new IResourceChangeListener() {
             @Override
             public void resourceChanged(IResourceChangeEvent event) {
-                Preconditions.checkNotNull(event);
-
                 if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-                    try {
-                        event.getDelta().accept(new TypeScriptFileManager());
-                    } catch (CoreException e) {
-                        throw new RuntimeException(e);
+                    IResource resource = event.getResource();
+
+                    if (isTypeScriptFile(resource)) {
+                        String file = resource.getRawLocation().toOSString();
+                        LanguageService languageService = Activator.getBridge().getLanguageService();
+
+                        switch (event.getDelta().getKind()) {
+                            case IResourceDelta.ADDED:
+                                languageService.addFileToWorkspace(file);
+                                break;
+                            case IResourceDelta.CHANGED:
+                                languageService.updateSavedFile(file);
+                                break;
+                            case IResourceDelta.REMOVED:
+                                languageService.removeFileFromWorkspace(file);
+                                break;
+                        }
                     }
                 }
             }
-        };
-        workspace.addResourceChangeListener(listener);
+        });
+    }
+
+    private static boolean isTypeScriptFile(IResource resource) {
+        return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
     }
 }

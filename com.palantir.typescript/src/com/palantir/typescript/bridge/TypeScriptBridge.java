@@ -77,8 +77,6 @@ public final class TypeScriptBridge {
 
         this.classifier = new Classifier(this);
         this.languageService = new LanguageService(this);
-
-        this.languageService.intializeWorkspace();
     }
 
     public Classifier getClassifier() {
