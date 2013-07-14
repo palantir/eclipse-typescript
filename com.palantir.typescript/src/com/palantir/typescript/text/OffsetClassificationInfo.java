@@ -34,61 +34,61 @@ public final class OffsetClassificationInfo {
     private final ClassificationInfo entry;
     private final int offset;
     private final StyleRange styleRange;
-    private static final Map<TokenClass, Color> classToColor;
-    private static final Map<TokenClass, Integer> classToStyle;
+    private static final Map<TokenClass, Color> CLASS_TO_COLOR;
+    private static final Map<TokenClass, Integer> CLASS_TO_STYLE;
 
     static {
         ColorManager manager = new ColorManager();
-        classToColor = Maps.newHashMap();
-        classToStyle = Maps.newHashMap();
+        CLASS_TO_COLOR = Maps.newHashMap();
+        CLASS_TO_STYLE = Maps.newHashMap();
 
         TokenClass tokenClass;
         Color color;
 
         tokenClass = TokenClass.PUNCTUATION;
         color = manager.getColor(TypeScriptColorConstants.PUNCTUATION);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.KEYWORD;
         color = manager.getColor(TypeScriptColorConstants.KEYWORD);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, SWT.BOLD);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, SWT.BOLD);
 
         tokenClass = TokenClass.OPERATOR;
         color = manager.getColor(TypeScriptColorConstants.OPERATOR);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.COMMENT;
         color = manager.getColor(TypeScriptColorConstants.COMMENT);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.WHITESPACE;
         color = manager.getColor(TypeScriptColorConstants.WHITESPACE);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.IDENTIFIER;
         color = manager.getColor(TypeScriptColorConstants.IDENTIFIER);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.NUMBER_LITERAL;
         color = manager.getColor(TypeScriptColorConstants.NUMBER_LITERAL);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.STRING_LITERAL;
         color = manager.getColor(TypeScriptColorConstants.STRING_LITERAL);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
         tokenClass = TokenClass.REG_EXP_LITERAL;
         color = manager.getColor(TypeScriptColorConstants.REG_EXP_LITERAL);
-        classToColor.put(tokenClass, color);
-        classToStyle.put(tokenClass, 0);
+        CLASS_TO_COLOR.put(tokenClass, color);
+        CLASS_TO_STYLE.put(tokenClass, 0);
 
     }
 
@@ -100,8 +100,8 @@ public final class OffsetClassificationInfo {
         int length = entry.getLength();
 
         TokenClass tokenClass = entry.getClassification();
-        Color foregroundColor = classToColor.get(tokenClass);
-        int fontStyle = classToStyle.get(tokenClass);
+        Color foregroundColor = CLASS_TO_COLOR.get(tokenClass);
+        int fontStyle = CLASS_TO_STYLE.get(tokenClass);
         this.styleRange = new StyleRange(offset, length, foregroundColor, null, fontStyle);
     }
 
