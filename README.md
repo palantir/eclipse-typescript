@@ -27,6 +27,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 
 ### Initial Setup
 * Clone the repository
+* Run `git submodule init`
 * Run `git submodule update`
 * Run `npm install`
 
