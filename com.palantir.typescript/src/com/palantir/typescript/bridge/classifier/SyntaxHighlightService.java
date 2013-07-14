@@ -82,10 +82,10 @@ public final class SyntaxHighlightService {
                 }
                 offset += lineSpacing[lineNumber]; // end of line offset compensating for \r\n or \n.  Each classificationResult is a line.
                 lineNumber++;
+                lexState = classificationResult.getFinalLexState();
             }
-
-            lexState = classificationResults.getFinalLexState();
         }
+
         return new SyntaxHighlightResult(entries, offsets);
     }
 }

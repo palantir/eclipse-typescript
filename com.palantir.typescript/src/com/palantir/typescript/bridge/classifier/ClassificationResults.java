@@ -16,32 +16,27 @@
 
 package com.palantir.typescript.bridge.classifier;
 
-import com.google.common.base.Preconditions;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 
 /**
- * Corresponds to matching object from TypeScript.
+ * Corresponds to the class with the same name in classifier.ts.
  *
  * @author tyleradams
  */
 public final class ClassificationResults {
 
-    private ClassificationResult[] results;
+    private final ImmutableList<ClassificationResult> results;
 
-    public ClassificationResult[] getResults() {
+    @JsonCreator
+    public ClassificationResults(@JsonProperty("results") List<ClassificationResult> results) {
+        this.results = ImmutableList.copyOf(results);
+    }
+
+    public ImmutableList<ClassificationResult> getResults() {
         return this.results;
     }
-
-    public void setResults(ClassificationResult[] results) {
-        Preconditions.checkNotNull(results);
-
-        this.results = results;
-    }
-
-    public EndOfLineState getFinalLexState() {
-        int lastIndex = this.results.length - 1;
-        Preconditions.checkElementIndex(lastIndex, this.results.length);
-
-        return this.results[lastIndex].getFinalLexState();
-    }
-
 }
