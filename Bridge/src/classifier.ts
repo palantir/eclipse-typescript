@@ -27,7 +27,7 @@ module Bridge {
         }
 
         public getClassificationsForLines(lines: string[], lexState: Services.EndOfLineState): ClassificationResults {
-            var lastLexState: Services.EndOfLineState = lexState;
+            var lastLexState = lexState;
             var results = [];
 
             for (var i = 0; i < lines.length; i++) {
