@@ -241,8 +241,4 @@ public final class TypeScriptBridge {
         }
     }
 
-    private void restartServer() {
-        stop();
-        start();
-    }
 }
