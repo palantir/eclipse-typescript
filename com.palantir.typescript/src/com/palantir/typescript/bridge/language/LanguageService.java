@@ -34,12 +34,12 @@ public final class LanguageService {
 
     private static final String SERVICE = "language";
 
-    private final TypeScriptBridge typeScriptBridge;
+    private final TypeScriptBridge bridge;
 
     public LanguageService(TypeScriptBridge typeScriptBridge) {
         Preconditions.checkNotNull(typeScriptBridge);
 
-        this.typeScriptBridge = typeScriptBridge;
+        this.bridge = typeScriptBridge;
     }
 
     public AutoCompleteResult getCompletionsAtPosition(String file, int offset, String contents) {
@@ -48,7 +48,7 @@ public final class LanguageService {
         Preconditions.checkNotNull(contents);
 
         Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset, contents);
-        DetailedAutoCompletionInfo autoCompletionInfo = this.typeScriptBridge.sendRequest(request, DetailedAutoCompletionInfo.class);
+        DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.sendRequest(request, DetailedAutoCompletionInfo.class);
         return new AutoCompleteResult(autoCompletionInfo);
     }
 
@@ -64,7 +64,7 @@ public final class LanguageService {
         if (!files.isEmpty()) {
             Request request = new Request(SERVICE, "addFiles", files);
 
-            this.typeScriptBridge.sendRequest(request, Boolean.class);
+            this.bridge.sendRequest(request, Boolean.class);
         }
     }
 
@@ -80,7 +80,7 @@ public final class LanguageService {
         if (!files.isEmpty()) {
             Request request = new Request(SERVICE, "removeFiles", files);
 
-            this.typeScriptBridge.sendRequest(request, Boolean.class);
+            this.bridge.sendRequest(request, Boolean.class);
         }
     }
 
@@ -89,6 +89,6 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "updateFile", file);
 
-        this.typeScriptBridge.sendRequest(request, Boolean.class);
+        this.bridge.sendRequest(request, Boolean.class);
     }
 }
