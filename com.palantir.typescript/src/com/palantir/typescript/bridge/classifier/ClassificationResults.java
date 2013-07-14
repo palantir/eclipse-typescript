@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.autocomplete;
+package com.palantir.typescript.bridge.classifier;
 
 import com.google.common.base.Preconditions;
 
 /**
- * This object is the result of asking for auto complete information from TypeScript.
+ * Corresponds to matching object from TypeScript.
  *
  * @author tyleradams
  */
-public final class AutoCompleteResult {
+public final class ClassificationResults {
 
-    private final DetailedAutoCompletionInfo autoCompletionInfo;
+    private ClassificationResult[] results;
 
-    public AutoCompleteResult(DetailedAutoCompletionInfo autoCompletionInfo) {
-        Preconditions.checkNotNull(autoCompletionInfo);
-
-        this.autoCompletionInfo = autoCompletionInfo;
+    public ClassificationResult[] getResults() {
+        return this.results;
     }
 
-    public DetailedAutoCompletionInfo getAutoCompletionInfo() {
-        return this.autoCompletionInfo;
+    public void setResults(ClassificationResult[] results) {
+        Preconditions.checkNotNull(results);
+
+        this.results = results;
+    }
+
+    public int getFinalLexState() {
+        int lastIndex = this.results.length - 1;
+        Preconditions.checkElementIndex(lastIndex, this.results.length);
+
+        return this.results[lastIndex].getFinalLexState();
     }
 
 }

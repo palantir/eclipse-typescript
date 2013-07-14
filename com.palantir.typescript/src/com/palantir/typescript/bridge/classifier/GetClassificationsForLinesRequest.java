@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.filemanager;
+package com.palantir.typescript.bridge.classifier;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.tsbridge.IRequest;
+import com.palantir.typescript.bridge.IRequest;
 
 /**
- * Makes a loadFiles request from the language service from TypeScript.
+ * Request object for getClassificationsForLines from the classifier.
  *
  * @author tyleradams
  */
-public final class LoadFilesRequest implements IRequest {
+public final class GetClassificationsForLinesRequest implements IRequest {
 
-    private static final String COMMAND = "loadFiles";
-    private static final String SERVICE = "language service";
-    private final List<String[]> args;
+    private static final String COMMAND = "getClassificationsForLines";
+    private static final String SERVICE = "classifier";
 
-    public LoadFilesRequest(List<String> files) {
-        Preconditions.checkNotNull(files);
+    private final List<String> lines;
+    private final int beginningOfLineState;
+    private final List args;
 
-        String[] filesArray = files.toArray(new String[0]);
+    public GetClassificationsForLinesRequest(List<String> lines, int beginningOfLineState) {
+        Preconditions.checkNotNull(lines);
+        Preconditions.checkArgument(beginningOfLineState >= 0);
 
-        this.args = ImmutableList.of(filesArray);
+        this.lines = lines;
+        this.beginningOfLineState = beginningOfLineState;
+        this.args = ImmutableList.of(this.lines, this.beginningOfLineState);
     }
 
     @Override
@@ -55,4 +59,5 @@ public final class LoadFilesRequest implements IRequest {
     public Object[] getArgs() {
         return this.args.toArray();
     }
+
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge;
+package com.palantir.typescript.bridge;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -25,9 +25,9 @@ import java.io.OutputStreamWriter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
-import com.palantir.typescript.tsbridge.filemanager.FileManagerService;
-import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightService;
+import com.palantir.typescript.bridge.autocomplete.AutoCompleteService;
+import com.palantir.typescript.bridge.classifier.SyntaxHighlightService;
+import com.palantir.typescript.bridge.filemanager.FileManagerService;
 
 /**
  * This handles all requests that need to be handled by TypeScript's built in language services.

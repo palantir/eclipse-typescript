@@ -22,7 +22,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.runtime.IPath;
 
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.TypeScriptBridge;
 
 public final class TypeScriptFileManager implements IResourceDeltaVisitor {
 

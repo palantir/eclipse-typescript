@@ -34,12 +34,12 @@ import org.eclipse.ui.part.FileEditorInput;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
-import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteResult;
-import com.palantir.typescript.tsbridge.autocomplete.AutoCompleteService;
-import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetails;
-import com.palantir.typescript.tsbridge.autocomplete.CompletionEntryDetailsProposal;
-import com.palantir.typescript.tsbridge.autocomplete.DetailedAutoCompletionInfo;
+import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.autocomplete.AutoCompleteResult;
+import com.palantir.typescript.bridge.autocomplete.AutoCompleteService;
+import com.palantir.typescript.bridge.autocomplete.CompletionEntryDetails;
+import com.palantir.typescript.bridge.autocomplete.CompletionEntryDetailsProposal;
+import com.palantir.typescript.bridge.autocomplete.DetailedAutoCompletionInfo;
 
 /**
  * This class deals with making auto completions.

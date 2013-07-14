@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.syntaxhighlight;
+package com.palantir.typescript.bridge.classifier;
 
 import java.util.List;
 

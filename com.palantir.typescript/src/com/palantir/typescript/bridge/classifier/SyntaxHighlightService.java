@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.syntaxhighlight;
+package com.palantir.typescript.bridge.classifier;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
  * Through this object one makes syntax highlight requests. It needs a bridge to send requests.

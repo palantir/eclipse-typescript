@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.autocomplete;
+package com.palantir.typescript.bridge.classifier;
 
 import com.google.common.base.Preconditions;
 
@@ -23,29 +23,29 @@ import com.google.common.base.Preconditions;
  *
  * @author tyleradams
  */
-public final class DetailedAutoCompletionInfo {
+public final class ClassificationInfo {
 
-    private String pruningPrefix;
-    private CompletionEntryDetails[] entries;
+    private int length;
+    private int classification;
 
-    public String getPruningPrefix() {
-        return this.pruningPrefix;
+    public int getLength() {
+        return this.length;
     }
 
-    public void setPruningPrefix(String pruningPrefix) {
-        Preconditions.checkNotNull(pruningPrefix);
+    public void setLength(int length) {
+        Preconditions.checkArgument(length >= 0);
 
-        this.pruningPrefix = pruningPrefix;
+        this.length = length;
     }
 
-    public CompletionEntryDetails[] getEntries() {
-        return this.entries;
+    public int getClassification() {
+        return this.classification;
     }
 
-    public void setEntries(CompletionEntryDetails[] entries) {
-        Preconditions.checkNotNull(entries);
+    public void setClassification(int classification) {
+        Preconditions.checkArgument(classification >= 0);
 
-        this.entries = entries;
+        this.classification = classification;
     }
 
 }

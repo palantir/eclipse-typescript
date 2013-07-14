@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge;
+package com.palantir.typescript.bridge;
 
 /**
  * All request objects sent across the TypeScript Bridge must be IRequest objects.

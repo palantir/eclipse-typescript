@@ -14,38 +14,27 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.syntaxhighlight;
+package com.palantir.typescript.bridge.autocomplete;
 
 import com.google.common.base.Preconditions;
 
 /**
- * Corresponds to matching object from TypeScript.
+ * This object is the result of asking for auto complete information from TypeScript.
  *
  * @author tyleradams
  */
-public final class ClassificationInfo {
+public final class AutoCompleteResult {
 
-    private int length;
-    private int classification;
+    private final DetailedAutoCompletionInfo autoCompletionInfo;
 
-    public int getLength() {
-        return this.length;
+    public AutoCompleteResult(DetailedAutoCompletionInfo autoCompletionInfo) {
+        Preconditions.checkNotNull(autoCompletionInfo);
+
+        this.autoCompletionInfo = autoCompletionInfo;
     }
 
-    public void setLength(int length) {
-        Preconditions.checkArgument(length >= 0);
-
-        this.length = length;
-    }
-
-    public int getClassification() {
-        return this.classification;
-    }
-
-    public void setClassification(int classification) {
-        Preconditions.checkArgument(classification >= 0);
-
-        this.classification = classification;
+    public DetailedAutoCompletionInfo getAutoCompletionInfo() {
+        return this.autoCompletionInfo;
     }
 
 }

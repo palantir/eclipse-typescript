@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.filemanager;
+package com.palantir.typescript.bridge.filemanager;
 
 import java.io.File;
 import java.util.List;
@@ -24,7 +24,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
  * This Eclipse Service handles managing files in the TypeScript language service (host).

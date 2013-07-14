@@ -27,9 +27,9 @@ import org.eclipse.swt.SWT;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
-import com.palantir.typescript.tsbridge.syntaxhighlight.SyntaxHighlightResult;
-import com.palantir.typescript.tsbridge.syntaxhighlight.TokenWrapper;
+import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.classifier.SyntaxHighlightResult;
+import com.palantir.typescript.bridge.classifier.TokenWrapper;
 
 /**
  * This class handles tokenizing and properly highlighting sections of typescript. It does so by

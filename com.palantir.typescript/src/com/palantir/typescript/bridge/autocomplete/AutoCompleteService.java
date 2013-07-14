@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.autocomplete;
+package com.palantir.typescript.bridge.autocomplete;
 
 import com.google.common.base.Preconditions;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.TypeScriptBridge;
 
 /**
  * Through this object one makes auto complete related requests. It needs a bridge to send requests.

@@ -27,8 +27,8 @@ import org.osgi.framework.BundleContext;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.google.common.base.Preconditions;
+import com.palantir.typescript.bridge.TypeScriptBridge;
 import com.palantir.typescript.editors.TypeScriptFileManager;
-import com.palantir.typescript.tsbridge.TypeScriptBridge;
 
 /**
  * The activator class controls the plug-in life cycle.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.syntaxhighlight;
+package com.palantir.typescript.bridge.autocomplete;
 
 import com.google.common.base.Preconditions;
 
@@ -23,25 +23,29 @@ import com.google.common.base.Preconditions;
  *
  * @author tyleradams
  */
-public final class ClassificationResults {
+public final class DetailedAutoCompletionInfo {
 
-    private ClassificationResult[] results;
+    private String pruningPrefix;
+    private CompletionEntryDetails[] entries;
 
-    public ClassificationResult[] getResults() {
-        return this.results;
+    public String getPruningPrefix() {
+        return this.pruningPrefix;
     }
 
-    public void setResults(ClassificationResult[] results) {
-        Preconditions.checkNotNull(results);
+    public void setPruningPrefix(String pruningPrefix) {
+        Preconditions.checkNotNull(pruningPrefix);
 
-        this.results = results;
+        this.pruningPrefix = pruningPrefix;
     }
 
-    public int getFinalLexState() {
-        int lastIndex = this.results.length - 1;
-        Preconditions.checkElementIndex(lastIndex, this.results.length);
+    public CompletionEntryDetails[] getEntries() {
+        return this.entries;
+    }
 
-        return this.results[lastIndex].getFinalLexState();
+    public void setEntries(CompletionEntryDetails[] entries) {
+        Preconditions.checkNotNull(entries);
+
+        this.entries = entries;
     }
 
 }

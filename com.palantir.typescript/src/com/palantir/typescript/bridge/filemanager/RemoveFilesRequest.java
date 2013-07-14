@@ -14,29 +14,31 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.filemanager;
+package com.palantir.typescript.bridge.filemanager;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.tsbridge.IRequest;
+import com.palantir.typescript.bridge.IRequest;
 
 /**
- * Makes an updateSavedFile request from the language service from TypeScript.
+ * Makes a removeFiles request from the language service from TypeScript.
  *
  * @author tyleradams
  */
-public final class UpdateSavedFileRequest implements IRequest {
+public final class RemoveFilesRequest implements IRequest {
 
-    private static final String COMMAND = "updateSavedFile";
+    private static final String COMMAND = "removeFiles";
     private static final String SERVICE = "language service";
-    private final List<String> args;
+    private final List<String[]> args;
 
-    public UpdateSavedFileRequest(String file) {
-        Preconditions.checkNotNull(file);
+    public RemoveFilesRequest(List<String> files) {
+        Preconditions.checkNotNull(files);
 
-        this.args = ImmutableList.of(file);
+        String[] filesArray = files.toArray(new String[0]);
+
+        this.args = ImmutableList.of(filesArray);
     }
 
     @Override

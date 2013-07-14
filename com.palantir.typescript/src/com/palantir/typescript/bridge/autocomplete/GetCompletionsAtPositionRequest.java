@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.filemanager;
+package com.palantir.typescript.bridge.autocomplete;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.tsbridge.IRequest;
+import com.palantir.typescript.bridge.IRequest;
 
 /**
- * Makes a removeFiles request from the language service from TypeScript.
+ * Request object for getCompletionsAtPosition from the language service.
  *
  * @author tyleradams
  */
-public final class RemoveFilesRequest implements IRequest {
+public final class GetCompletionsAtPositionRequest implements IRequest {
 
-    private static final String COMMAND = "removeFiles";
+    private static final String COMMAND = "getCompletionsAtPosition";
     private static final String SERVICE = "language service";
-    private final List<String[]> args;
 
-    public RemoveFilesRequest(List<String> files) {
-        Preconditions.checkNotNull(files);
+    private final List args;
 
-        String[] filesArray = files.toArray(new String[0]);
+    public GetCompletionsAtPositionRequest(String file, int offset, String contents) {
+        Preconditions.checkNotNull(file);
+        Preconditions.checkArgument(offset >= 0);
+        Preconditions.checkNotNull(contents);
 
-        this.args = ImmutableList.of(filesArray);
+        this.args = ImmutableList.of(file, offset, contents);
     }
 
     @Override
@@ -55,4 +56,5 @@ public final class RemoveFilesRequest implements IRequest {
     public Object[] getArgs() {
         return this.args.toArray();
     }
+
 }

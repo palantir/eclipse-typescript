@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.tsbridge.autocomplete;
+package com.palantir.typescript.bridge.filemanager;
 
 import java.util.List;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.tsbridge.IRequest;
+import com.palantir.typescript.bridge.IRequest;
 
 /**
- * Request object for getCompletionsAtPosition from the language service.
+ * Makes an updateSavedFile request from the language service from TypeScript.
  *
  * @author tyleradams
  */
-public final class GetCompletionsAtPositionRequest implements IRequest {
+public final class UpdateSavedFileRequest implements IRequest {
 
-    private static final String COMMAND = "getCompletionsAtPosition";
+    private static final String COMMAND = "updateSavedFile";
     private static final String SERVICE = "language service";
+    private final List<String> args;
 
-    private final List args;
-
-    public GetCompletionsAtPositionRequest(String file, int offset, String contents) {
+    public UpdateSavedFileRequest(String file) {
         Preconditions.checkNotNull(file);
-        Preconditions.checkArgument(offset >= 0);
-        Preconditions.checkNotNull(contents);
 
-        this.args = ImmutableList.of(file, offset, contents);
+        this.args = ImmutableList.of(file);
     }
 
     @Override
@@ -56,5 +53,4 @@ public final class GetCompletionsAtPositionRequest implements IRequest {
     public Object[] getArgs() {
         return this.args.toArray();
     }
-
 }
