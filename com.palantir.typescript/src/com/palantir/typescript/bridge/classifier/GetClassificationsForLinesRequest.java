@@ -21,13 +21,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.typescript.bridge.IRequest;
 
 /**
  * Request object for getClassificationsForLines from the classifier.
  *
  * @author tyleradams
  */
-public final class GetClassificationsForLinesRequest extends ClassifierRequest {
+public final class GetClassificationsForLinesRequest implements IRequest {
 
     private final ImmutableList<?> args;
 
@@ -36,6 +37,11 @@ public final class GetClassificationsForLinesRequest extends ClassifierRequest {
         checkNotNull(lexState);
 
         this.args = ImmutableList.of(lines, lexState.ordinal());
+    }
+
+    @Override
+    public String getService() {
+        return "classifier";
     }
 
     @Override
