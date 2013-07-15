@@ -39,6 +39,7 @@ module Bridge {
         private content: string;
         private changes: TypeScript.TextChangeRange[];
         private lineStartPositions: number[];
+        private maxChanges = 100;
 
         constructor(private file: string) {
             this.version = 0;
@@ -73,6 +74,9 @@ module Bridge {
         }
 
         public addEdit(offset: number, length: number, replacementText: string): boolean {
+            if(this.changes.length >= this.maxChanges) {
+                this.changes = [];
+            }
             var beforeEdit = this.content.substring(0, offset);
             var afterEdit = this.content.substring(offset + length, this.content.length);
             var newContent = beforeEdit + replacementText + afterEdit;
