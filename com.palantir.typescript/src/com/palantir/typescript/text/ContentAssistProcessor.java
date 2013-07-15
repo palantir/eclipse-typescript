@@ -60,10 +60,9 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
 
         IPath filePath = getFilePath();
         String file = filePath.toOSString();
-        String fileContents = viewer.getDocument().get();
         LanguageService languageService = Activator.getBridge().getLanguageService();
 
-        AutoCompleteResult autoCompleteResult = languageService.getCompletionsAtPosition(file, offset, fileContents);
+        AutoCompleteResult autoCompleteResult = languageService.getCompletionsAtPosition(file, offset);
         if (autoCompleteResult == null) {
             return null;
         }

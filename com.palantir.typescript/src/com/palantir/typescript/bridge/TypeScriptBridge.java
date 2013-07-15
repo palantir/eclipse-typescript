@@ -145,7 +145,8 @@ public final class TypeScriptBridge {
         } else if (rawResult.equals(UNITIALIZED)) {
             throw new RuntimeException("The rawResult was never set");
         } else if (invalid(rawResult)) {
-            log(rawResult);
+            rawResult = rawResult.replaceAll("\\\\n", "\n");
+            System.out.println(rawResult);
             throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
                     + "\n and it caused the following error\n" + rawResult);
         }

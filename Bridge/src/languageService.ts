@@ -43,13 +43,15 @@ module Bridge {
         constructor(private file: string) {
             this.version = 0;
             this.Open = true;
-            this.content = readFileContents(file);
-            this.changes = [];
+            this.updateContent(readFileContents(file));
         }
 
-        public updateContent(content: string): boolean {
-            this.changes = [];
+        public updateContent(content: string, resetChanges: boolean = true): boolean {
+            if(resetChanges) {
+                this.changes = [];
+            }
             this.content = content;
+            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(this.content));
             this.version++;
             return true;
         }
@@ -76,9 +78,7 @@ module Bridge {
             var newContent = beforeEdit + replacementText + afterEdit;
             var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset+length), replacementText.length);
             this.changes.push(textChangeRange);
-            this.version++;
-            this.content = newContent;
-            return true;
+            return this.updateContent(newContent, false);
         }
 
         public getText(start: number, end: number): string {
@@ -148,8 +148,8 @@ module Bridge {
             return this.languageServiceHost.editFile(file, offset, length, replacementText);
         }
 
-        public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
-            return this.languageServiceHost.getCompletionsAtPosition(file, position, contents);
+        public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {
+            return this.languageServiceHost.getCompletionsAtPosition(file, position);
         }
 
     }
@@ -189,8 +189,7 @@ module Bridge {
             return this.fileMap.get(file).addEdit(offset, length, replacementText);
         }
 
-        public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
-            this.updateFileContents(file, contents);
+        public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {
             return this.getDetailedImplicitlyPrunedCompletionsAtPosition(file, position);
         }
 

@@ -42,12 +42,11 @@ public final class LanguageService {
         this.bridge = typeScriptBridge;
     }
 
-    public AutoCompleteResult getCompletionsAtPosition(String file, int offset, String contents) {
+    public AutoCompleteResult getCompletionsAtPosition(String file, int offset) {
         Preconditions.checkNotNull(file);
         Preconditions.checkArgument(offset >= 0);
-        Preconditions.checkNotNull(contents);
 
-        Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset, contents);
+        Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset);
         DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.sendRequest(request, DetailedAutoCompletionInfo.class);
         return new AutoCompleteResult(autoCompletionInfo);
     }
