@@ -32,13 +32,13 @@ import com.palantir.typescript.bridge.language.CompletionEntryDetails;
  */
 public final class CompletionEntryDetailsProposal {
     private final CompletionEntryDetails completionEntryDetails;
-    private final TypeScriptIconFetcher iconFetcher;
+    private final IconFetcher iconFetcher;
 
     public CompletionEntryDetailsProposal(CompletionEntryDetails completionEntryDetails) {
         Preconditions.checkNotNull(completionEntryDetails);
 
         this.completionEntryDetails = completionEntryDetails;
-        this.iconFetcher = TypeScriptIconFetcher.getInstance();
+        this.iconFetcher = IconFetcher.getInstance();
     }
 
     public ICompletionProposal getCompletionProposal(int offset, String prefix) {

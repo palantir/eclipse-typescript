@@ -26,7 +26,7 @@ import org.eclipse.jface.text.ITextViewer;
  *
  * @author tyleradams
  */
-public final class TypeScriptDoubleClickStrategy implements ITextDoubleClickStrategy {
+public final class TextDoubleClickStrategy implements ITextDoubleClickStrategy {
 
     private ITextViewer textViewer;
 

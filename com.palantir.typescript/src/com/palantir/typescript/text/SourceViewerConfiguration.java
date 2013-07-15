@@ -38,16 +38,16 @@ import com.google.common.base.Preconditions;
  *
  * @author tyleradams
  */
-public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerConfiguration {
+public final class SourceViewerConfiguration extends TextSourceViewerConfiguration {
 
-    private final TypeScriptDoubleClickStrategy doubleClickStrategy;
+    private final TextDoubleClickStrategy doubleClickStrategy;
     private final ColorManager colorManager;
 
-    public TypeScriptSourceViewerConfiguration(ColorManager colorManager) {
+    public SourceViewerConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
-        this.doubleClickStrategy = new TypeScriptDoubleClickStrategy();
+        this.doubleClickStrategy = new TextDoubleClickStrategy();
     }
 
     @Override
@@ -72,7 +72,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         Preconditions.checkNotNull(sourceViewer);
 
         PresentationReconciler reconciler = new PresentationReconciler();
-        TypeScriptDamageRepairer damageRepairer = new TypeScriptDamageRepairer(this.colorManager);
+        DamageRepairer damageRepairer = new DamageRepairer(this.colorManager);
         reconciler.setDamager(damageRepairer, IDocument.DEFAULT_CONTENT_TYPE);
         reconciler.setRepairer(damageRepairer, IDocument.DEFAULT_CONTENT_TYPE);
 
@@ -86,7 +86,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         ContentAssistant assistant = new ContentAssistant();
 
         assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
-        assistant.setContentAssistProcessor(new TypeScriptCompletionProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+        assistant.setContentAssistProcessor(new ContentAssistProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
 
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(100);

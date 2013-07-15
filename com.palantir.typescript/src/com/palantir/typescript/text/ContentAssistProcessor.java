@@ -45,10 +45,10 @@ import com.palantir.typescript.bridge.language.LanguageService;
  *
  * @author tyleradams
  */
-public final class TypeScriptCompletionProcessor implements IContentAssistProcessor {
+public final class ContentAssistProcessor implements IContentAssistProcessor {
     private final LocalValidator localContextInformationValidator;
 
-    public TypeScriptCompletionProcessor() {
+    public ContentAssistProcessor() {
         this.localContextInformationValidator = new LocalValidator();
     }
 

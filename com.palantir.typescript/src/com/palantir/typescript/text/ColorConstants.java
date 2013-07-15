@@ -23,7 +23,7 @@ import org.eclipse.swt.graphics.RGB;
  *
  * @author tyleradams
  */
-public interface TypeScriptColorConstants {
+public interface ColorConstants {
     RGB BLACK = new RGB(0, 0, 0);
     RGB RED = new RGB(219, 0, 0);
     RGB WHITE = new RGB(255, 255, 255);

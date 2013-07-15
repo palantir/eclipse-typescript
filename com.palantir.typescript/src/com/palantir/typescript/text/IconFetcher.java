@@ -25,16 +25,18 @@ import org.eclipse.swt.widgets.Display;
  *
  * @author tyleradams
  */
-public final class TypeScriptIconFetcher {
-    private static final TypeScriptIconFetcher INSTANCE = new TypeScriptIconFetcher();
-    private final String rootDirectory;
+public final class IconFetcher {
+
+    private static final IconFetcher INSTANCE = new IconFetcher();
     private static final String FILE_EXTENSION = ".png";
+
+    private final String rootDirectory;
     private final String defaultIconLocation;
 
     private final Device device;
     private final Image defaultIcon;
 
-    public TypeScriptIconFetcher() {
+    public IconFetcher() {
         this.device = Display.getCurrent();
         this.rootDirectory = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath() + "icons/";
         this.defaultIconLocation = this.rootDirectory + "typeScript" + FILE_EXTENSION;
@@ -45,7 +47,7 @@ public final class TypeScriptIconFetcher {
         return this.defaultIcon;
     }
 
-    public static TypeScriptIconFetcher getInstance() {
+    public static IconFetcher getInstance() {
         return INSTANCE;
     }
 
