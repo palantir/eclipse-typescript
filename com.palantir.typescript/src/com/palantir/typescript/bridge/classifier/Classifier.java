@@ -41,6 +41,9 @@ public final class Classifier {
     }
 
     public List<ClassificationResult> getClassificationsForLines(List<String> lines, EndOfLineState lexState) {
+        checkNotNull(lines);
+        checkNotNull(lexState);
+
         Request request = new Request("classifier", "getClassificationsForLines", lines, lexState.ordinal());
         ClassificationResults response = this.bridge.sendRequest(request, ClassificationResults.class);
 
