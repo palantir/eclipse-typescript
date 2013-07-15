@@ -36,7 +36,7 @@ public final class TypeScriptEditor extends TextEditor {
     @Override
     public void dispose() {
         this.colorManager.dispose();
+
         super.dispose();
     }
-
 }
