@@ -37,14 +37,18 @@ module Bridge {
         private version: number;
         private Open: boolean;
         private content: string;
+        private changes: TypeScript.TextChangeRange[];
+        private lineStartPositions: number[];
 
         constructor(private file: string) {
             this.version = 0;
             this.Open = true;
             this.content = readFileContents(file);
+            this.changes = [];
         }
 
-        public updateContent(content: string) {
+        public updateContent(content: string): boolean {
+            this.changes = [];
             this.content = content;
             this.version++;
             return true;
@@ -58,12 +62,23 @@ module Bridge {
             return this.Open;
         }
 
-        public setOpen() {
+        public setOpen(): void {
             this.Open = true;
         }
 
-        public setClosed() {
+        public setClosed(): void {
             this.Open = false;
+        }
+
+        public addEdit(offset: number, length: number, replacementText: string): boolean {
+            var beforeEdit = this.content.substring(0, offset);
+            var afterEdit = this.content.substring(offset + length, this.content.length);
+            var newContent = beforeEdit + replacementText + afterEdit;
+            var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset+length), replacementText.length);
+            this.changes.push(textChangeRange);
+            this.version++;
+            this.content = newContent;
+            return true;
         }
 
         public getText(start: number, end: number): string {
@@ -75,12 +90,16 @@ module Bridge {
         }
 
         public getLineStartPositions(): number[] {
-            return TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(this.content));
+            return this.lineStartPositions;
         }
 
         public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
             if (this.version === version) {
                 return TypeScript.TextChangeRange.unchanged;
+            } else if (this.changes.length >= this.version - version) {
+                var start = this.changes.length - (this.version - version);
+                var changes = this.changes.slice(start);
+                return TypeScript.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
             } else {
                 return null;
             }
@@ -125,6 +144,10 @@ module Bridge {
             return this.languageServiceHost.updateFile(file);
         }
 
+        public editFile(file: string, offset: number, length: number, replacementText: string): boolean {
+            return this.languageServiceHost.editFile(file, offset, length, replacementText);
+        }
+
         public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
             return this.languageServiceHost.getCompletionsAtPosition(file, position, contents);
         }
@@ -160,6 +183,10 @@ module Bridge {
 
         public updateFile(file: string): boolean {
             return this.updateFileContents(file, readFileContents(file));
+        }
+
+        public editFile(file: string, offset: number, length: number, replacementText: string): boolean {
+            return this.fileMap.get(file).addEdit(offset, length, replacementText);
         }
 
         public getCompletionsAtPosition(file: string, position: number, contents: string): DetailedAutoCompletionInfo {
