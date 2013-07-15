@@ -144,11 +144,6 @@ public final class TypeScriptBridge {
             throw new RuntimeException("The TypeScript services server crashed and did not return an error.");
         } else if (rawResult.equals(UNITIALIZED)) {
             throw new RuntimeException("The rawResult was never set");
-        } else if (invalid(rawResult)) {
-            rawResult = rawResult.replaceAll("\\\\n", "\n");
-            System.out.println(rawResult);
-            throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
-                    + "\n and it caused the following error\n" + rawResult);
         }
 
         while (isDebugMessage(rawResult)) { // capture and print debug messages from TypeScript.
@@ -160,6 +155,12 @@ public final class TypeScriptBridge {
             }
         }
 
+        if (invalid(rawResult)) {
+            rawResult = rawResult.replaceAll("\\\\n", "\n");
+            System.out.println(rawResult);
+            throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
+                    + "\n and it caused the following error\n" + rawResult);
+        }
         log("Result: " + rawResult);
 
         return rawResult;
