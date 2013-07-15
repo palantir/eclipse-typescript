@@ -16,38 +16,38 @@
 
 package com.palantir.typescript.text;
 
-import java.util.Map;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 /**
- * Converts RGB values into Colors.
+ * The color manager creates and disposes of colors.
  *
  * @author tyleradams
  */
 public final class ColorManager {
 
-    private final Map<RGB, Color> colorTable = Maps.newHashMap();
+    private final LoadingCache<RGB, Color> colors = CacheBuilder.newBuilder().build(new CacheLoader<RGB, Color>() {
+        @Override
+        public Color load(RGB rgb) throws Exception {
+            return new Color(Display.getCurrent(), rgb);
+        }
+    });
 
     public Color getColor(RGB rgb) {
-        Preconditions.checkNotNull(rgb);
+        checkNotNull(rgb);
 
-        Color color = this.colorTable.get(rgb);
-        if (color == null) {
-            color = new Color(Display.getCurrent(), rgb);
-            this.colorTable.put(rgb, color);
-        }
-
-        return color;
+        return this.colors.getUnchecked(rgb);
     }
 
     public void dispose() {
-        for (Color color : this.colorTable.values()) {
+        for (Color color : this.colors.asMap().values()) {
             color.dispose();
         }
     }
