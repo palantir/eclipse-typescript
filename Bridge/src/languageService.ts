@@ -35,14 +35,14 @@ module Bridge {
    class ScriptSnapshot implements TypeScript.IScriptSnapshot {
 
         private version: number;
-        private Open: boolean;
+        private open: boolean;
         private content: string;
         private changes: TypeScript.TextChangeRange[];
         private lineStartPositions: number[];
 
         constructor(private file: string) {
             this.version = 0;
-            this.Open = true;
+            this.open = true;
             this.updateContent(readFileContents(file));
         }
 
@@ -61,15 +61,15 @@ module Bridge {
         }
 
         public isOpen(): boolean {
-            return this.Open;
+            return this.open;
         }
 
         public setOpen(): void {
-            this.Open = true;
+            this.open = true;
         }
 
         public setClosed(): void {
-            this.Open = false;
+            this.open = false;
         }
 
         public addEdit(offset: number, length: number, replacementText: string): boolean {
@@ -96,7 +96,7 @@ module Bridge {
         public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
             if (this.version === version) {
                 return TypeScript.TextChangeRange.unchanged;
-            } else if (this.changes.length >= this.version - version) {
+            } else if (this.version - version <= this.changes.length) {
                 var start = this.changes.length - (this.version - version);
                 var changes = this.changes.slice(start);
                 return TypeScript.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
