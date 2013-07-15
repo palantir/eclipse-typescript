@@ -91,7 +91,6 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(100);
         assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-        assistant.setProposalSelectorBackground(this.colorManager.getColor(TypeScriptColorConstants.AUTO_COMPLETE_BACKGROUND));
         Shell parent = null;
         IInformationControlCreator creator = new DefaultInformationControl(parent).getInformationPresenterControlCreator();
         assistant.setInformationControlCreator(creator); //TODO: Why does this work?
