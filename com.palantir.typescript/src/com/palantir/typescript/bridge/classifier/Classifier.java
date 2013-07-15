@@ -40,8 +40,7 @@ public final class Classifier {
         this.bridge = bridge;
     }
 
-    public List<ClassificationResult> getClassificationsForLines(List<String> lines) {
-        EndOfLineState lexState = EndOfLineState.START;
+    public List<ClassificationResult> getClassificationsForLines(List<String> lines, EndOfLineState lexState) {
         Request request = new Request("classifier", "getClassificationsForLines", lines, lexState.ordinal());
         ClassificationResults response = this.bridge.sendRequest(request, ClassificationResults.class);
 

@@ -31,7 +31,6 @@ public final class TypeScriptEditor extends TextEditor {
         this.colorManager = new ColorManager();
 
         this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this.colorManager));
-        this.setDocumentProvider(new TypeScriptDocumentProvider());
     }
 
     @Override
