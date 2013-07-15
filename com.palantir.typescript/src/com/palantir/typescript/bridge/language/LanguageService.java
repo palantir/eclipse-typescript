@@ -91,4 +91,14 @@ public final class LanguageService {
 
         this.bridge.sendRequest(request, Boolean.class);
     }
+
+    public boolean editFile(String file, int offset, int length, String replacementText) {
+        Preconditions.checkNotNull(file);
+        Preconditions.checkArgument(offset >= 0);
+        Preconditions.checkArgument(length >= 0);
+        Preconditions.checkNotNull(replacementText);
+
+        Request request = new Request(SERVICE, "editFile", file, offset, length, replacementText);
+        return this.bridge.sendRequest(request, Boolean.class);
+    }
 }
