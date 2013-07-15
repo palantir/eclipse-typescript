@@ -16,7 +16,17 @@
 
 package com.palantir.typescript.text;
 
+import org.eclipse.jface.text.ITextListener;
+import org.eclipse.jface.text.TextEvent;
+import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
+
+import com.google.common.base.Preconditions;
+import com.palantir.typescript.Activator;
 
 /**
  * The entry point of this eclipse plugin.
@@ -39,4 +49,38 @@ public final class TypeScriptEditor extends TextEditor {
 
         super.dispose();
     }
+
+    @Override
+    protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) { // cannot be private because it extends a protected method.  No need to make public
+        ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
+
+        String file;
+        IEditorInput input = this.getEditorInput();
+        if (input instanceof IPathEditorInput) {
+            file = ((IPathEditorInput) input).getPath().toOSString();
+        } else {
+            throw new RuntimeException("The file for this TypeScriptEditor could not be found.");
+        }
+
+        sourceViewer.addTextListener(new TypeScriptTextListener(file));
+        return sourceViewer;
+    }
+
+    private final class TypeScriptTextListener implements ITextListener {
+        private final String file;
+
+        public TypeScriptTextListener(String file) {
+            Preconditions.checkNotNull(file);
+
+            this.file = file;
+        }
+
+        @Override
+        public void textChanged(TextEvent event) {
+            Preconditions.checkNotNull(event);
+
+            Activator.getBridge().getLanguageService().editFile(this.file, event.getOffset(), event.getLength(), event.getText());
+        }
+    }
+
 }
