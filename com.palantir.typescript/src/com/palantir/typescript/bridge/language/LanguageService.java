@@ -67,6 +67,17 @@ public final class LanguageService {
         }
     }
 
+    public void editFile(String file, int offset, int length, String replacementText) {
+        Preconditions.checkNotNull(file);
+        Preconditions.checkArgument(offset >= 0);
+        Preconditions.checkArgument(length >= 0);
+        Preconditions.checkNotNull(replacementText);
+
+        Request request = new Request(SERVICE, "editFile", file, offset, length, replacementText);
+
+        this.bridge.sendRequest(request, Boolean.class);
+    }
+
     public void removeFile(String file) {
         Preconditions.checkNotNull(file);
 
@@ -89,15 +100,5 @@ public final class LanguageService {
         Request request = new Request(SERVICE, "updateFile", file);
 
         this.bridge.sendRequest(request, Boolean.class);
-    }
-
-    public boolean editFile(String file, int offset, int length, String replacementText) {
-        Preconditions.checkNotNull(file);
-        Preconditions.checkArgument(offset >= 0);
-        Preconditions.checkArgument(length >= 0);
-        Preconditions.checkNotNull(replacementText);
-
-        Request request = new Request(SERVICE, "editFile", file, offset, length, replacementText);
-        return this.bridge.sendRequest(request, Boolean.class);
     }
 }
