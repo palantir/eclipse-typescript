@@ -25,7 +25,6 @@ import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
-import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
@@ -69,14 +68,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        Preconditions.checkNotNull(sourceViewer);
-
-        PresentationReconciler reconciler = new PresentationReconciler();
-        DamageRepairer damageRepairer = new DamageRepairer(this.colorManager);
-        reconciler.setDamager(damageRepairer, IDocument.DEFAULT_CONTENT_TYPE);
-        reconciler.setRepairer(damageRepairer, IDocument.DEFAULT_CONTENT_TYPE);
-
-        return reconciler;
+        return new PresentationReconciler(this.colorManager);
     }
 
     @Override
