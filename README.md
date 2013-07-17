@@ -7,13 +7,10 @@ An Eclipse plug-in for developing in the TypeScript language.
 * syntax highlighting
 
 ## Roadmap
-* JSDoc assistance (fill in parameter names for functions for example)
-* organize references (similar to organizing imports for Java code)
 * warning/error markers
 * follow references
 * compile-on-save
-* display documentation during auto-complete and on hover
-* code formatter
+* format code
 
 ## Developing
 
