@@ -16,153 +16,153 @@
 
 module Bridge {
 
-	export class Map<K, V> {
+    export class Map<K, V> {
 
-	  private entries: any;
-	  private headEntry: Entry<K, V>;
+        private entries: any;
+        private headEntry: Entry<K, V>;
 
-	  // if true, the iteration is ordered from least recent access to most recent access
-	  private accessOrder: boolean;
+        // if true, the iteration is ordered from least recent access to most recent access
+        private accessOrder: boolean;
 
-	  constructor(accessOrder?: boolean) {
-	    this.entries = {};
+        constructor(accessOrder?: boolean) {
+            this.entries = {};
 
-	    // initialize a circular doubly linked list that allows quick access to the first or last entry
-	    // and also maintains order of entries
-	    this.headEntry = new Entry();
-	    this.headEntry.prev = this.headEntry;
-	    this.headEntry.next = this.headEntry;
+            // initialize a circular doubly linked list that allows quick access to the first or last entry
+            // and also maintains order of entries
+            this.headEntry = new Entry();
+            this.headEntry.prev = this.headEntry;
+            this.headEntry.next = this.headEntry;
 
-	    if (accessOrder !== undefined) {
-	      this.accessOrder = accessOrder;
-	    } else {
-	      this.accessOrder = false;
-	    }
-	  }
+            if (accessOrder !== undefined) {
+                this.accessOrder = accessOrder;
+            } else {
+                this.accessOrder = false;
+            }
+        }
 
-	  public delete(key: K): boolean {
-	    var stringKey = this.stringify(key);
-	    var entry = this.entries[stringKey];
+        public delete(key: K): boolean {
+            var stringKey = this.stringify(key);
+            var entry = this.entries[stringKey];
 
-	    if (entry !== undefined) {
-	      // remove the entry from the linked list
-	      this.removeFromList(entry);
+            if (entry !== undefined) {
+                // remove the entry from the linked list
+                this.removeFromList(entry);
 
-	      // remove the entry from the map
-	      delete this.entries[stringKey];
+                // remove the entry from the map
+                delete this.entries[stringKey];
 
-	      return true;
-	    }
+                return true;
+            }
 
-	    return false;
-	  }
+            return false;
+        }
 
-	  public get(key: K): V {
-	    var stringKey = this.stringify(key);
-	    var entry = this.entries[stringKey];
+        public get(key: K): V {
+            var stringKey = this.stringify(key);
+            var entry = this.entries[stringKey];
 
-	    if (entry !== undefined) {
+            if (entry !== undefined) {
 
-	      if (this.accessOrder) {
-	        this.recordAccess(entry);
-	      }
+                if (this.accessOrder) {
+                    this.recordAccess(entry);
+                }
 
-	      return entry.value;
-	    }
+                return entry.value;
+            }
 
-	    return undefined;
-	  }
+            return undefined;
+        }
 
-	  public has(key: K): boolean {
-	    var stringKey = this.stringify(key);
-	    var entry = this.entries[stringKey];
+        public has(key: K): boolean {
+            var stringKey = this.stringify(key);
+            var entry = this.entries[stringKey];
 
-	    return entry !== undefined;
-	  }
+            return entry !== undefined;
+        }
 
-	  public keys(): K[] {
-	    return this.array((entry) => entry.key);
-	  }
+        public keys(): K[] {
+            return this.array((entry) => entry.key);
+        }
 
-	  public set(key: K, value: V): void {
-	    var stringKey = this.stringify(key);
-	    var entry = this.entries[stringKey];
+        public set(key: K, value: V): void {
+            var stringKey = this.stringify(key);
+            var entry = this.entries[stringKey];
 
-	    if (entry !== undefined) {
-	      entry.value = value;
+            if (entry !== undefined) {
+                entry.value = value;
 
-	      if (this.recordAccess) {
-	        this.recordAccess(entry);
-	      }
-	    } else {
-	      entry = new Entry();
-	      entry.key = key;
-	      entry.value = value;
+                if (this.recordAccess) {
+                    this.recordAccess(entry);
+                }
+            } else {
+                entry = new Entry();
+                entry.key = key;
+                entry.value = value;
 
-	      // insert the entry at the end of the list and into the map
-	      this.pushIntoList(entry);
-	      this.entries[stringKey] = entry;
-	    }
-	  }
+                // insert the entry at the end of the list and into the map
+                this.pushIntoList(entry);
+                this.entries[stringKey] = entry;
+            }
+        }
 
-	  public size() {
-	    return Object.keys(this.entries).length;
-	  }
+        public size() {
+            return Object.keys(this.entries).length;
+        }
 
-	  public values(): V[] {
-	    return this.array((entry) => entry.value);
-	  }
+        public values(): V[] {
+            return this.array((entry) => entry.value);
+        }
 
-	  private array<T>(transform: (Entry) => T): T[] {
-	    var array = [];
+        private array<T>(transform: (Entry) => T): T[] {
+            var array = [];
 
-	    var entry = this.headEntry.next;
-	    while (entry !== this.headEntry) {
-	      array.push(transform(entry));
+            var entry = this.headEntry.next;
+            while (entry !== this.headEntry) {
+                array.push(transform(entry));
 
-	      entry = entry.next;
-	    }
+                entry = entry.next;
+            }
 
-	    return array;
-	  }
+            return array;
+        }
 
-	  private pushIntoList(entry: Entry<K, V>) {
-	    // insert the entry as the last entry of the linked list (just before head)
-	    entry.prev = this.headEntry.prev;
-	    entry.next = this.headEntry;
-	    this.headEntry.prev.next = entry;
-	    this.headEntry.prev = entry;
-	  }
+        private pushIntoList(entry: Entry<K, V>) {
+            // insert the entry as the last entry of the linked list (just before head)
+            entry.prev = this.headEntry.prev;
+            entry.next = this.headEntry;
+            this.headEntry.prev.next = entry;
+            this.headEntry.prev = entry;
+        }
 
-	  private removeFromList(entry: Entry<K, V>) {
-	    entry.prev.next = entry.next;
-	    entry.next.prev = entry.prev;
-	  }
+        private removeFromList(entry: Entry<K, V>) {
+            entry.prev.next = entry.next;
+            entry.next.prev = entry.prev;
+        }
 
-	  private recordAccess(entry: Entry<K, V>) {
-	    this.removeFromList(entry);
-	    this.pushIntoList(entry);
-	  }
+        private recordAccess(entry: Entry<K, V>) {
+            this.removeFromList(entry);
+            this.pushIntoList(entry);
+        }
 
-	  private stringify(key: K): string {
-	    var suffix;
+        private stringify(key: K): string {
+            var suffix;
 
-	    // use the key directly if it's already a string
-	    if (typeof suffix === "string") {
-	      suffix = key;
-	    } else {
-	      suffix = JSON.stringify(key);
-	    }
+            // use the key directly if it's already a string
+            if (typeof suffix === "string") {
+                suffix = key;
+            } else {
+                suffix = JSON.stringify(key);
+            }
 
-	    return "key:" + suffix;
-	  }
-	}
+            return "key:" + suffix;
+        }
+    }
 
-	class Entry<K, V> {
-	  key: K;
-	  value: V;
+    class Entry<K, V> {
+        key: K;
+        value: V;
 
-	  prev: Entry<K, V>;
-	  next: Entry<K, V>;
-	}
+        prev: Entry<K, V>;
+        next: Entry<K, V>;
+    }
 }
