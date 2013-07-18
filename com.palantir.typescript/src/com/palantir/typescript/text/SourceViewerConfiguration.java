@@ -62,16 +62,6 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     }
 
     @Override
-    public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
-        return this.doubleClickStrategy;
-    }
-
-    @Override
-    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        return new PresentationReconciler(this.colorManager);
-    }
-
-    @Override
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
         Preconditions.checkNotNull(sourceViewer);
 
@@ -87,5 +77,15 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         IInformationControlCreator creator = new DefaultInformationControl(parent).getInformationPresenterControlCreator();
         assistant.setInformationControlCreator(creator); //TODO: Why does this work?
         return assistant;
+    }
+
+    @Override
+    public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
+        return this.doubleClickStrategy;
+    }
+
+    @Override
+    public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
+        return new PresentationReconciler(this.colorManager);
     }
 }
