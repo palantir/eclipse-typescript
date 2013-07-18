@@ -19,6 +19,8 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -103,12 +105,27 @@ public final class TypeScriptEditor extends TextEditor {
         public void textChanged(TextEvent event) {
             checkNotNull(event);
 
+            int offset = event.getOffset();
+            int length = event.getLength();
             String text = event.getText();
-            if (text != null) {
-                IEditorInput input = getEditorInput();
-                String file = ((IPathEditorInput) input).getPath().toOSString();
+            IEditorInput input = getEditorInput();
+            String file = ((IPathEditorInput) input).getPath().toOSString();
 
-                Activator.getBridge().getLanguageService().editFile(file, event.getOffset(), event.getLength(), text);
+            // redraw state change - update the entire document
+            if (event.getDocumentEvent() == null && offset == 0 && length == 0 && text == null) {
+                IDocument document = getSourceViewer().getDocument();
+                int editLength = document.getLength();
+
+                String replacementText;
+                try {
+                    replacementText = document.get(0, editLength);
+                } catch (BadLocationException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Activator.getBridge().getLanguageService().editFile(file, 0, editLength, replacementText);
+            } else if (text != null) { // normal edit
+                Activator.getBridge().getLanguageService().editFile(file, offset, length, text);
             }
         }
     }
