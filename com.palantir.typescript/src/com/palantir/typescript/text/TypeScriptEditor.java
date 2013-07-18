@@ -18,14 +18,17 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.IUpdate;
 
 import com.palantir.typescript.Activator;
 
@@ -52,6 +55,16 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     @Override
+    protected void createActions() {
+        super.createActions();
+
+        // format
+        FormatAction formatAction = new FormatAction();
+        formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
+        this.setAction("format", formatAction);
+    }
+
+    @Override
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
         ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
 
@@ -60,21 +73,43 @@ public final class TypeScriptEditor extends TextEditor {
         return sourceViewer;
     }
 
+    @Override
+    protected void initializeKeyBindingScopes() {
+        this.setKeyBindingScopes(new String[] { "com.palantir.typescript.text.typeScriptEditorScope" });
+    }
+
+    private final class FormatAction extends Action implements IUpdate {
+
+        public FormatAction() {
+            this.update();
+        }
+
+        @Override
+        public void run() {
+            SourceViewer sourceViewer = (SourceViewer) getSourceViewer();
+
+            sourceViewer.doOperation(ISourceViewer.FORMAT);
+        }
+
+        @Override
+        public void update() {
+            this.setEnabled(isEditorInputModifiable());
+        }
+    }
+
     private final class MyTextListener implements ITextListener {
 
         @Override
         public void textChanged(TextEvent event) {
             checkNotNull(event);
 
-            String file;
-            IEditorInput input = getEditorInput();
-            if (input instanceof IPathEditorInput) {
-                file = ((IPathEditorInput) input).getPath().toOSString();
-            } else {
-                throw new IllegalStateException();
-            }
+            String text = event.getText();
+            if (text != null) {
+                IEditorInput input = getEditorInput();
+                String file = ((IPathEditorInput) input).getPath().toOSString();
 
-            Activator.getBridge().getLanguageService().editFile(file, event.getOffset(), event.getLength(), event.getText());
+                Activator.getBridge().getLanguageService().editFile(file, event.getOffset(), event.getLength(), text);
+            }
         }
     }
 }

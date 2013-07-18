@@ -26,7 +26,9 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Preconditions;
 import com.palantir.typescript.bridge.classifier.Classifier;
 import com.palantir.typescript.bridge.language.LanguageService;
@@ -91,7 +93,7 @@ public final class TypeScriptBridge {
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
      * and packaging the result for usage.
      */
-    public <T> T sendRequest(Request request, Class<T> resultType) {
+    public <T> T sendRequest(Request request, JavaType resultType) {
         Preconditions.checkNotNull(request);
         Preconditions.checkNotNull(resultType);
 
@@ -116,6 +118,18 @@ public final class TypeScriptBridge {
         }
 
         return result;
+    }
+
+    /**
+     * This method handles packaging the request from Java, sending it across the TypeScript bridge,
+     * and packaging the result for usage.
+     */
+    public <T> T sendRequest(Request request, Class<T> resultType) {
+        Preconditions.checkNotNull(request);
+        Preconditions.checkNotNull(resultType);
+
+        JavaType type = TypeFactory.defaultInstance().uncheckedSimpleType(resultType);
+        return this.sendRequest(request, type);
     }
 
     private static boolean invalid(String rawResult) {

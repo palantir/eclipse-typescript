@@ -3,6 +3,31 @@
 <plugin>
 
    <extension
+         point="org.eclipse.ui.bindings">
+      <!--  win32:  M1=CTRL,    M2=SHIFT, M3=ALT, M4=-
+            carbon: M1=COMMAND, M2=SHIFT, M3=ALT, M4=CTRL -->
+      <key
+            sequence="M1+M2+F"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.format"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="com.palantir.typescript.text.format"
+            name="Format">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.contexts">
+      <context
+            name="TypeScript"
+            parentId="org.eclipse.ui.textEditorScope"
+            id="com.palantir.typescript.text.typeScriptEditorScope">
+      </context>
+   </extension>
+   <extension
          point="org.eclipse.ui.editors">
       <editor
             name="TypeScript Editor"

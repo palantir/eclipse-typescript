@@ -24,6 +24,7 @@ import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Shell;
@@ -77,6 +78,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         IInformationControlCreator creator = new DefaultInformationControl(parent).getInformationPresenterControlCreator();
         assistant.setInformationControlCreator(creator); //TODO: Why does this work?
         return assistant;
+    }
+
+    @Override
+    public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
+        return new ContentFormatter();
     }
 
     @Override

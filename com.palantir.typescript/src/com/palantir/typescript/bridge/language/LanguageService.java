@@ -16,8 +16,13 @@
 
 package com.palantir.typescript.bridge.language;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Request;
@@ -40,6 +45,17 @@ public final class LanguageService {
         Preconditions.checkNotNull(typeScriptBridge);
 
         this.bridge = typeScriptBridge;
+    }
+
+    public List<TextEdit> getFormattingEditsForRange(String file, int minChar, int limChar, FormatCodeOptions options) {
+        checkNotNull(file);
+        checkArgument(minChar >= 0);
+        checkArgument(limChar >= 0);
+        checkNotNull(options);
+
+        Request request = new Request(SERVICE, "getFormattingEditsForRange", file, minChar, limChar, options);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
+        return this.bridge.sendRequest(request, resultType);
     }
 
     public AutoCompleteResult getCompletionsAtPosition(String file, int offset) {

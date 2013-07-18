@@ -156,6 +156,9 @@ module Bridge {
             return this.languageServiceHost.getCompletionsAtPosition(file, position);
         }
 
+        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
+            return this.languageServiceHost.getFormattingEditsForRange(fileName, minChar, limChar, options);
+        }
     }
 
     class LanguageServiceHost implements Services.ILanguageServiceHost {
@@ -195,6 +198,10 @@ module Bridge {
 
         public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {
             return this.getDetailedImplicitlyPrunedCompletionsAtPosition(file, position);
+        }
+
+        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
+            return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
         public getCompilationSettings(): TypeScript.CompilationSettings {
