@@ -26,7 +26,7 @@ module Bridge {
             this.classifier = new Services.Classifier(new TypeScript.NullLogger());
         }
 
-        public getClassificationsForLines(lines: string[], lexState: Services.EndOfLineState): ClassificationResults {
+        public getClassificationsForLines(lines: string[], lexState: Services.EndOfLineState): Services.ClassificationResult[] {
             var lastLexState = lexState;
             var results = [];
 
@@ -39,11 +39,7 @@ module Bridge {
                 lastLexState = classificationResult.finalLexState;
             }
 
-            return {results: results};
+            return results;
         }
-    }
-
-    export interface ClassificationResults {
-        results: Services.ClassificationResult[];
     }
 }

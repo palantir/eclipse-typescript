@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.TypeScriptBridge;
 
@@ -45,8 +47,8 @@ public final class Classifier {
         checkNotNull(lexState);
 
         Request request = new Request("classifier", "getClassificationsForLines", lines, lexState.ordinal());
-        ClassificationResults response = this.bridge.sendRequest(request, ClassificationResults.class);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, ClassificationResult.class);
 
-        return response.getResults();
+        return this.bridge.sendRequest(request, resultType);
     }
 }
