@@ -32,7 +32,7 @@ module Bridge {
         entries: Services.CompletionEntryDetails[];
     }
 
-   class ScriptSnapshot implements TypeScript.IScriptSnapshot {
+    class ScriptSnapshot implements TypeScript.IScriptSnapshot {
 
         private version: number;
         private open: boolean;
@@ -48,7 +48,7 @@ module Bridge {
         }
 
         public updateContent(content: string, resetChanges: boolean = true): boolean {
-            if(resetChanges) {
+            if (resetChanges) {
                 this.changes = [];
             }
             this.content = content;
@@ -74,13 +74,13 @@ module Bridge {
         }
 
         public addEdit(offset: number, length: number, replacementText: string): boolean {
-            if(this.changes.length >= this.maxChanges) {
+            if (this.changes.length >= this.maxChanges) {
                 this.changes = [];
             }
             var beforeEdit = this.content.substring(0, offset);
             var afterEdit = this.content.substring(offset + length, this.content.length);
             var newContent = beforeEdit + replacementText + afterEdit;
-            var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset+length), replacementText.length);
+            var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset + length), replacementText.length);
             this.changes.push(textChangeRange);
             return this.updateContent(newContent, false);
         }
@@ -309,12 +309,12 @@ module Bridge {
         private getDetailedImplicitlyPrunedCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
             if (this.validPosition(fileName, position)) {
                 var pruningPrefix: string = this.getPrefix(fileName, position);
-                if(this.knownToBreak(pruningPrefix)) {
-                    return {pruningPrefix: pruningPrefix, entries: []};
+                if (this.knownToBreak(pruningPrefix)) {
+                    return { pruningPrefix: pruningPrefix, entries: [] };
                 }
                 return this.getDetailedExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
             } else {
-                return {"pruningPrefix": "", "entries": []};
+                return { "pruningPrefix": "", "entries": [] };
             }
         }
 
@@ -322,7 +322,7 @@ module Bridge {
             var badPrefix = [];
             badPrefix.push("$");
             for (var i = 0; i < badPrefix.length; i++) {
-                if(badPrefix[i] === prefix) {
+                if (badPrefix[i] === prefix) {
                     return true;
                 }
             }
@@ -330,10 +330,10 @@ module Bridge {
         }
 
         private getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): DetailedAutoCompletionInfo {
-            var abbreviatedCompletionInfo: AutoCompletionInfo  = this.getExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
+            var abbreviatedCompletionInfo: AutoCompletionInfo = this.getExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
 
             if (abbreviatedCompletionInfo.entries === null) {
-                return {"pruningPrefix": "", "entries": []};
+                return { "pruningPrefix": "", "entries": [] };
             }
 
             var abbreviatedEntry: Services.CompletionEntry;
@@ -346,7 +346,7 @@ module Bridge {
                 detailedEntries.push(detailedEntry);
             }
 
-            return {"pruningPrefix": pruningPrefix, "entries": detailedEntries};
+            return { "pruningPrefix": pruningPrefix, "entries": detailedEntries };
         }
 
         private getExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): AutoCompletionInfo {
@@ -354,7 +354,7 @@ module Bridge {
             var rawCompletionInfo: Services.CompletionInfo = this.languageService.getCompletionsAtPosition(fileName, position, isMemberCompletion);
 
             if (rawCompletionInfo === null) {
-                return {"entries": []};
+                return { "entries": [] };
             }
 
             var prunedEntries: Services.CompletionEntry[] = [];
@@ -362,11 +362,11 @@ module Bridge {
 
             for (var i = 0; i < rawEntries.length; i++) {
                 if (this.prefixMatch(pruningPrefix, rawEntries[i].name)) {
-                        prunedEntries.push(rawEntries[i]);
+                    prunedEntries.push(rawEntries[i]);
                 }
             }
 
-            return {"entries": prunedEntries};
+            return { "entries": prunedEntries };
         }
 
         private prefixMatch(_prefix: string, str: string): boolean {

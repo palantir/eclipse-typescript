@@ -40,13 +40,17 @@ module Bridge {
             var readline = require("readline");
             var rl = readline.createInterface(myProcess.stdin, myProcess.stdout);
 
+            // process incoming requests
             rl.on("line", (requestJson: string) => {
                 var response = this.processRequest(requestJson);
                 var responseJson = JSON.stringify(response);
 
                 // write the response to stdout
                 console.log(responseJson);
-            }).on("close", () => {
+            });
+
+            // exit when stdin is closed
+            rl.on("close", () => {
                 myProcess.exit(0);
             });
         }
@@ -57,13 +61,13 @@ module Bridge {
             try {
                 request = JSON.parse(requestJson);
             } catch (e) {
-                return {error: e.message};
+                return { error: e.message };
             }
 
             // get the service
             var service = this.services.get(request.service);
             if (service === undefined) {
-                return {error: "Invalid service: " + request.service};
+                return { error: "Invalid service: " + request.service };
             }
 
             // process the request
@@ -71,7 +75,7 @@ module Bridge {
                 var method = service[request.command];
                 var response = method.apply(service, request.args);
             } catch (e) {
-                return {error: e.stack};
+                return { error: e.stack };
             }
 
             return response;
