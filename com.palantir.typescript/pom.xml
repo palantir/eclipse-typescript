@@ -9,6 +9,21 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <version>0.0.0</version>
     </parent>
 
+    <properties>
+        <updatesite.dir>export</updatesite.dir>
+        <file.seperator>/</file.seperator>
+        <plugin.source.dir>./</plugin.source.dir>
+        <dist.dir>./</dist.dir>
+        <plugin.id>com.palantir.typescript</plugin.id>
+        <feature.id>com.palantir.typescript</feature.id>
+        <placeholder.build.version>0.0.0</placeholder.build.version>
+        <plugin.version>1.0</plugin.version>
+        <full.plugin.version>${plugin.version}.${build.version}</full.plugin.version>
+        <plugin.jar.original.name>${plugin.id}-${placeholder.build.version}.jar</plugin.jar.original.name>
+        <plugin.jar.fullname>${plugin.id}_${full.plugin.version}.jar</plugin.jar.fullname>
+        <jar.src.name>TypeScript</jar.src.name>
+    </properties>
+
     <artifactId>com.palantir.typescript</artifactId>
     <packaging>eclipse-plugin</packaging>
     <build>
@@ -24,21 +39,24 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
             <version>1.7</version>
             <executions>
               <execution>
+                  <id>clean</id>
+                  <phase>clean</phase>
+                  <configuration>
+                      <tasks>
+                        <delete dir="${updatesite.dir}"/>
+                      </tasks>
+                    </configuration>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+              </execution>
+              <execution>
+                <id>install</id>
                 <phase>install</phase>
                 <configuration>
                   <tasks>
                       <!-- deploys the plugin as a zip directory which when unpacked is the update site-->
                     <!--property definitions.  A lot are hardcoded just to get testing to work, then will be generalized. -->
-                    <property name="updatesite.dir" location="export"/>
-                    <property name="file.seperator" value="/"/>
-                    <property name="plugin.source.dir" location="./"/>
-                    <property name="dist.dir" location="./"/>
-                    <property name="plugin.id" value="com.palantir.typescript"/>
-                    <property name="feature.id" value="com.palantir.typescript"/>
-                    <property name="dummy.plugin.version" value="0.0.0"/>
-                    <property name="plugin.jar.original.name" value="${plugin.id}-${dummy.plugin.version}.jar"/>
-                    <property name="plugin.jar.fullname" value="${plugin.id}_${plugin.version}.jar"/>
-                    <property name="jar.src.name" value="TypeScript"/>
 
                     <!-- Copy over plugin -->
                     <mkdir dir="${updatesite.dir}"/>
@@ -55,7 +73,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                     <copy todir="${updatesite.dir}" file="${plugin.source.dir}${file.separator}index.html"/>
                     <replace dir="${updatesite.dir}" includes="*.xml" token="TYPESCRIPT_PLUGIN_ID" value="${plugin.id}"/>
                     <replace dir="${updatesite.dir}" includes="*.xml" token="TYPESCRIPT_FEATURE_ID" value="${feature.id}"/>
-                    <replace dir="${updatesite.dir}" includes="*.xml,*.html" token="TYPESCRIPT_PLUGIN_VERSION" value="${plugin.version}"/>
+                    <replace dir="${updatesite.dir}" includes="*.xml,*.html" token="TYPESCRIPT_PLUGIN_VERSION" value="${full.plugin.version}"/>
                     <replace dir="${updatesite.dir}" includes="*.html" token="TYPESCRIPT_PLUGIN_DATE" value="${tstamp.manifest-date}"/>
 
                     <!-- Create features jar -->
@@ -63,7 +81,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                          basedir="${updatesite.dir}" includes="feature.xml"/>
                      <delete file="${updatesite.dir}${file.separator}feature.xml"/>
 
-                    <zip destfile="${dist.dir}${file.separator}${jar.src.name}-update.zip"
+                     <zip destfile="${dist.dir}${file.separator}${jar.src.name}-update-${full.plugin.version}.zip"
                          basedir="${updatesite.dir}" includes="**/*"/>
                   </tasks>
                 </configuration>
