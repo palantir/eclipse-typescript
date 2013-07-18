@@ -4,13 +4,13 @@ An Eclipse plug-in for developing in the TypeScript language.
 
 ## Features
 * autocomplete
+* format code
 * syntax highlighting
 
 ## Roadmap
 * warning/error markers
 * follow references
 * compile-on-save
-* format code
 
 ## Developing
 
