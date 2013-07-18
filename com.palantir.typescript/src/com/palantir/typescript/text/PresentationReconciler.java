@@ -120,7 +120,12 @@ public final class PresentationReconciler implements IPresentationReconciler {
         IDocument document = this.viewer.getDocument();
         int offset = event.getOffset();
         String text = event.getText();
-        int length = text != null ? text.length() : 0;
+        int length = event.getLength();
+
+        // redraw state change - re-classify the entire document
+        if (event.getDocumentEvent() == null && offset == 0 && length == 0 && text == null) {
+            return new Region(0, document.getLength());
+        }
 
         try {
             IRegion startLineInfo = document.getLineInformationOfOffset(offset);
