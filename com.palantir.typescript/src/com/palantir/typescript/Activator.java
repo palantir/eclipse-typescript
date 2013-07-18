@@ -32,7 +32,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Lists;
-import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.language.LanguageService;
 
 /**
@@ -44,13 +44,13 @@ public final class Activator extends AbstractUIPlugin {
 
     private static Activator PLUGIN;
 
-    private TypeScriptBridge bridge;
+    private Bridge bridge;
 
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
-        this.bridge = new TypeScriptBridge();
+        this.bridge = new Bridge();
 
         this.intializeWorkspace();
 
@@ -67,7 +67,7 @@ public final class Activator extends AbstractUIPlugin {
         super.stop(context);
     }
 
-    public static TypeScriptBridge getBridge() {
+    public static Bridge getBridge() {
         return PLUGIN.bridge;
     }
 

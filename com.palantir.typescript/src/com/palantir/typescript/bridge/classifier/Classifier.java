@@ -23,7 +23,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.palantir.typescript.bridge.Request;
-import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.Bridge;
 
 /**
  * The classifier service.
@@ -34,9 +34,9 @@ import com.palantir.typescript.bridge.TypeScriptBridge;
  */
 public final class Classifier {
 
-    private final TypeScriptBridge bridge;
+    private final Bridge bridge;
 
-    public Classifier(TypeScriptBridge bridge) {
+    public Classifier(Bridge bridge) {
         checkNotNull(bridge);
 
         this.bridge = bridge;

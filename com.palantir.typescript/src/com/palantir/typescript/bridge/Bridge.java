@@ -38,7 +38,7 @@ import com.palantir.typescript.bridge.language.LanguageService;
  *
  * @author tyleradams
  */
-public final class TypeScriptBridge {
+public final class Bridge {
 
     private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
@@ -60,11 +60,11 @@ public final class TypeScriptBridge {
     private final Classifier classifier;
     private final LanguageService languageService;
 
-    public TypeScriptBridge() {
+    public Bridge() {
         this(DEFAULT_NODE_LOCATION, DEFAULT_BRIDGE_LOCATION);
     }
 
-    public TypeScriptBridge(String nodeLocation, String bridgeLocation) {
+    public Bridge(String nodeLocation, String bridgeLocation) {
         Preconditions.checkNotNull(nodeLocation);
         Preconditions.checkNotNull(bridgeLocation);
 
@@ -142,8 +142,6 @@ public final class TypeScriptBridge {
     private String sendRawRequestGetRawResult(String rawRequest) {
         Preconditions.checkNotNull(rawRequest);
 
-        log("Request: " + rawRequest);
-
         String rawResult = UNITIALIZED;
         try {
             this.toServer.write(rawRequest);
@@ -175,7 +173,6 @@ public final class TypeScriptBridge {
             throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
                     + "\n and it caused the following error\n" + rawResult);
         }
-        log("Result: " + rawResult);
 
         return rawResult;
     }

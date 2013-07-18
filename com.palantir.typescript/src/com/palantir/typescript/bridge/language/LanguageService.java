@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Request;
-import com.palantir.typescript.bridge.TypeScriptBridge;
+import com.palantir.typescript.bridge.Bridge;
 
 /**
  * The language service.
@@ -39,9 +39,9 @@ public final class LanguageService {
 
     private static final String SERVICE = "language";
 
-    private final TypeScriptBridge bridge;
+    private final Bridge bridge;
 
-    public LanguageService(TypeScriptBridge typeScriptBridge) {
+    public LanguageService(Bridge typeScriptBridge) {
         Preconditions.checkNotNull(typeScriptBridge);
 
         this.bridge = typeScriptBridge;
