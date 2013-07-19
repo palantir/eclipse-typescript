@@ -118,13 +118,13 @@ public final class PresentationReconciler implements IPresentationReconciler {
      */
     private IRegion getDamagedRegion(TextEvent event) {
         IDocument document = this.viewer.getDocument();
+        int documentLength = document.getLength();
         int offset = event.getOffset();
-        String text = event.getText();
         int length = event.getLength();
 
         // redraw state change - re-classify the entire document
-        if (event.getDocumentEvent() == null && offset == 0 && length == 0 && text == null) {
-            return new Region(0, document.getLength());
+        if (event.getDocumentEvent() == null && offset == 0 && length == 0) {
+            return new Region(0, documentLength);
         }
 
         try {
@@ -139,12 +139,12 @@ public final class PresentationReconciler implements IPresentationReconciler {
                 int line = document.getLineOfOffset(endOffset);
                 String lineDelimiter = document.getLineDelimiter(line);
 
-                if (startOffset + lineDelimiter.length() < document.getLength()) {
+                if (startOffset + lineDelimiter.length() < documentLength) {
                     IRegion nextLineInfo = document.getLineInformation(line + 1);
 
                     endOffset = nextLineInfo.getOffset() + nextLineInfo.getLength();
                 } else {
-                    endOffset = document.getLength();
+                    endOffset = documentLength;
                 }
             }
 
