@@ -16,6 +16,9 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
 import org.eclipse.core.runtime.IPath;
@@ -32,7 +35,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.language.AutoCompleteResult;
@@ -55,8 +57,8 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
     @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
             int offset) {
-        Preconditions.checkNotNull(viewer);
-        Preconditions.checkArgument(offset >= 0);
+        checkNotNull(viewer);
+        checkArgument(offset >= 0);
 
         IPath filePath = getFilePath();
         String file = filePath.toOSString();

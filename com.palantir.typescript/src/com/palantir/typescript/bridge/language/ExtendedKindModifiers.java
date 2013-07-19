@@ -16,7 +16,7 @@
 
 package com.palantir.typescript.bridge.language;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This is a container object which knows what kind of modifiers an object has.
@@ -34,8 +34,8 @@ public final class ExtendedKindModifiers {
     private final int hashCode;
 
     public ExtendedKindModifiers(String rawKindModifiers, String docComment) {
-        Preconditions.checkNotNull(rawKindModifiers);
-        Preconditions.checkNotNull(docComment);
+        checkNotNull(rawKindModifiers);
+        checkNotNull(docComment);
 
         this.isNone = rawKindModifiers.equals("");
         this.isPublic = rawKindModifiers.contains("public");

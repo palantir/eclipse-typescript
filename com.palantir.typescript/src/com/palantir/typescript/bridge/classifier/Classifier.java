@@ -22,8 +22,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.Bridge;
+import com.palantir.typescript.bridge.Request;
 
 /**
  * The classifier service.

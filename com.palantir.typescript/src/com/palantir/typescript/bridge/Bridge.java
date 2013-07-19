@@ -16,6 +16,8 @@
 
 package com.palantir.typescript.bridge;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -28,7 +30,6 @@ import java.io.PrintStream;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.common.base.Preconditions;
 import com.palantir.typescript.bridge.classifier.Classifier;
 import com.palantir.typescript.bridge.language.LanguageService;
 
@@ -64,8 +65,8 @@ public final class Bridge {
     }
 
     public Bridge(String nodeLocation, String bridgeLocation) {
-        Preconditions.checkNotNull(nodeLocation);
-        Preconditions.checkNotNull(bridgeLocation);
+        checkNotNull(nodeLocation);
+        checkNotNull(bridgeLocation);
 
         String pluginRoot = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
 
@@ -93,8 +94,8 @@ public final class Bridge {
      * and packaging the result for usage.
      */
     public <T> T sendRequest(Request request, Class<T> resultType) {
-        Preconditions.checkNotNull(request);
-        Preconditions.checkNotNull(resultType);
+        checkNotNull(request);
+        checkNotNull(resultType);
 
         JavaType type = TypeFactory.defaultInstance().uncheckedSimpleType(resultType);
 
@@ -106,8 +107,8 @@ public final class Bridge {
      * and packaging the result for usage.
      */
     public <T> T sendRequest(Request request, JavaType resultType) {
-        Preconditions.checkNotNull(request);
-        Preconditions.checkNotNull(resultType);
+        checkNotNull(request);
+        checkNotNull(resultType);
 
         // process the request
         String resultJson;
@@ -128,7 +129,7 @@ public final class Bridge {
     }
 
     private String processRequest(String requestJson) throws IOException {
-        Preconditions.checkNotNull(requestJson);
+        checkNotNull(requestJson);
 
         // write the request JSON to the bridge's stdin
         this.toServer.write(requestJson);
@@ -160,7 +161,7 @@ public final class Bridge {
     }
 
     private void log(String message) {
-        Preconditions.checkNotNull(message);
+        checkNotNull(message);
 
         if (message.length() > MAX_MESSAGE_LOG_SIZE) {
             String etc = "...etc";

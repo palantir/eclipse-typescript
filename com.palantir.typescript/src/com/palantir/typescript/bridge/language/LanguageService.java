@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.Request;
@@ -42,7 +41,7 @@ public final class LanguageService {
     private final Bridge bridge;
 
     public LanguageService(Bridge typeScriptBridge) {
-        Preconditions.checkNotNull(typeScriptBridge);
+        checkNotNull(typeScriptBridge);
 
         this.bridge = typeScriptBridge;
     }
@@ -59,8 +58,8 @@ public final class LanguageService {
     }
 
     public AutoCompleteResult getCompletionsAtPosition(String fileName, int offset) {
-        Preconditions.checkNotNull(fileName);
-        Preconditions.checkArgument(offset >= 0);
+        checkNotNull(fileName);
+        checkArgument(offset >= 0);
 
         Request request = new Request(SERVICE, "getCompletionsAtPosition", fileName, offset);
         DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.sendRequest(request, DetailedAutoCompletionInfo.class);
@@ -76,13 +75,13 @@ public final class LanguageService {
     }
 
     public void addFile(String fileName) {
-        Preconditions.checkNotNull(fileName);
+        checkNotNull(fileName);
 
         this.addFiles(ImmutableList.of(fileName));
     }
 
     public void addFiles(List<String> fileNames) {
-        Preconditions.checkNotNull(fileNames);
+        checkNotNull(fileNames);
 
         if (!fileNames.isEmpty()) {
             Request request = new Request(SERVICE, "addFiles", fileNames);
@@ -92,10 +91,10 @@ public final class LanguageService {
     }
 
     public void editFile(String fileName, int offset, int length, String replacementText) {
-        Preconditions.checkNotNull(fileName);
-        Preconditions.checkArgument(offset >= 0);
-        Preconditions.checkArgument(length >= 0);
-        Preconditions.checkNotNull(replacementText);
+        checkNotNull(fileName);
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
+        checkNotNull(replacementText);
 
         Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
 
@@ -103,13 +102,13 @@ public final class LanguageService {
     }
 
     public void removeFile(String fileName) {
-        Preconditions.checkNotNull(fileName);
+        checkNotNull(fileName);
 
         this.removeFiles(ImmutableList.of(fileName));
     }
 
     public void removeFiles(List<String> fileNames) {
-        Preconditions.checkNotNull(fileNames);
+        checkNotNull(fileNames);
 
         if (!fileNames.isEmpty()) {
             Request request = new Request(SERVICE, "removeFiles", fileNames);
@@ -119,7 +118,7 @@ public final class LanguageService {
     }
 
     public void updateFile(String fileName) {
-        Preconditions.checkNotNull(fileName);
+        checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "updateFile", fileName);
 

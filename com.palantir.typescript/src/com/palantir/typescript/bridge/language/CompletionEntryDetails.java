@@ -16,9 +16,10 @@
 
 package com.palantir.typescript.bridge.language;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /**
@@ -63,7 +64,7 @@ public final class CompletionEntryDetails {
     }
 
     public boolean hasArgs() {
-        Preconditions.checkNotNull(this.args);
+        checkNotNull(this.args);
         return this.args.size() > 0;
     }
 

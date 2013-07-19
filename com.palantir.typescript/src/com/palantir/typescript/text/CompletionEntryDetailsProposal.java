@@ -16,12 +16,14 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.swt.graphics.Image;
 
-import com.google.common.base.Preconditions;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
 
 /**
@@ -35,15 +37,15 @@ public final class CompletionEntryDetailsProposal {
     private final IconFetcher iconFetcher;
 
     public CompletionEntryDetailsProposal(CompletionEntryDetails completionEntryDetails) {
-        Preconditions.checkNotNull(completionEntryDetails);
+        checkNotNull(completionEntryDetails);
 
         this.completionEntryDetails = completionEntryDetails;
         this.iconFetcher = IconFetcher.getInstance();
     }
 
     public ICompletionProposal getCompletionProposal(int offset, String prefix) {
-        Preconditions.checkArgument(offset >= 0);
-        Preconditions.checkNotNull(prefix);
+        checkArgument(offset >= 0);
+        checkNotNull(prefix);
 
         return new CompletionProposal(this.getReplacementString(prefix),
             this.getReplacementOffset(offset), this.getReplacementLength(),
@@ -53,7 +55,7 @@ public final class CompletionEntryDetailsProposal {
     }
 
     private String getReplacementString(String prefix) {
-        Preconditions.checkNotNull(prefix);
+        checkNotNull(prefix);
 
         int prefixLength = prefix.length();
         if (this.completionEntryDetails.getKind().equals(("method")) || this.completionEntryDetails.getKind().equals("function")) {
@@ -75,7 +77,7 @@ public final class CompletionEntryDetailsProposal {
     }
 
     private int getCursorProposal(String prefix) {
-        Preconditions.checkNotNull(prefix);
+        checkNotNull(prefix);
 
         String replacement = this.getReplacementString(prefix);
         if (this.completionEntryDetails.getKind().equals(("method")) || this.completionEntryDetails.getKind().equals("function")) {

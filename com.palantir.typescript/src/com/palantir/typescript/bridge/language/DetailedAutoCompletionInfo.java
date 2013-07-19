@@ -16,7 +16,7 @@
 
 package com.palantir.typescript.bridge.language;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Corresponds to matching object from TypeScript.
@@ -33,7 +33,7 @@ public final class DetailedAutoCompletionInfo {
     }
 
     public void setPruningPrefix(String pruningPrefix) {
-        Preconditions.checkNotNull(pruningPrefix);
+        checkNotNull(pruningPrefix);
 
         this.pruningPrefix = pruningPrefix;
     }
@@ -43,7 +43,7 @@ public final class DetailedAutoCompletionInfo {
     }
 
     public void setEntries(CompletionEntryDetails[] entries) {
-        Preconditions.checkNotNull(entries);
+        checkNotNull(entries);
 
         this.entries = entries;
     }

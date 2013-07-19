@@ -16,6 +16,8 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -26,8 +28,6 @@ import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
-
-import com.google.common.base.Preconditions;
 
 /**
  * Configures the features of the editor. This is the entry point for features like intelligent
@@ -40,14 +40,14 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     private final ColorManager colorManager;
 
     public SourceViewerConfiguration(ColorManager colorManager) {
-        Preconditions.checkNotNull(colorManager);
+        checkNotNull(colorManager);
 
         this.colorManager = colorManager;
     }
 
     @Override
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
-        Preconditions.checkNotNull(sourceViewer);
+        checkNotNull(sourceViewer);
 
         ContentAssistant assistant = new ContentAssistant();
 

@@ -16,7 +16,7 @@
 
 package com.palantir.typescript.bridge.language;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This object is the result of asking for auto complete information from TypeScript.
@@ -28,7 +28,7 @@ public final class AutoCompleteResult {
     private final DetailedAutoCompletionInfo autoCompletionInfo;
 
     public AutoCompleteResult(DetailedAutoCompletionInfo autoCompletionInfo) {
-        Preconditions.checkNotNull(autoCompletionInfo);
+        checkNotNull(autoCompletionInfo);
 
         this.autoCompletionInfo = autoCompletionInfo;
     }
