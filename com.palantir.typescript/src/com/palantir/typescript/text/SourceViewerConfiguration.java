@@ -21,7 +21,6 @@ import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
-import org.eclipse.jface.text.ITextDoubleClickStrategy;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
@@ -40,14 +39,12 @@ import com.google.common.base.Preconditions;
  */
 public final class SourceViewerConfiguration extends TextSourceViewerConfiguration {
 
-    private final TextDoubleClickStrategy doubleClickStrategy;
     private final ColorManager colorManager;
 
     public SourceViewerConfiguration(ColorManager colorManager) {
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
-        this.doubleClickStrategy = new TextDoubleClickStrategy();
     }
 
     @Override
@@ -83,11 +80,6 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     @Override
     public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
         return new ContentFormatter();
-    }
-
-    @Override
-    public ITextDoubleClickStrategy getDoubleClickStrategy(ISourceViewer sourceViewer, String contentType) {
-        return this.doubleClickStrategy;
     }
 
     @Override
