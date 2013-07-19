@@ -33,40 +33,40 @@ module Bridge {
             this.diagnostics = new LanguageServicesDiagnostics();
         }
 
-        public addFiles(files: string[]) {
-            for (var i = 0; i < files.length; i++) {
-                this.addFile(files[i]);
+        public addFiles(fileNames: string[]) {
+            for (var i = 0; i < fileNames.length; i++) {
+                this.addFile(fileNames[i]);
             }
         }
 
-        public removeFiles(files: string[]) {
-            for (var i = 0; i < files.length; i++) {
-                this.removeFile(files[i]);
+        public removeFiles(fileNames: string[]) {
+            for (var i = 0; i < fileNames.length; i++) {
+                this.removeFile(fileNames[i]);
             }
         }
 
-        public addFile(file: string) {
-            this.fileMap.set(file, new ScriptSnapshot(file));
+        public addFile(fileName: string) {
+            this.fileMap.set(fileName, new ScriptSnapshot(fileName));
         }
 
-        public removeFile(file: string) {
-            this.fileMap.delete(file);
+        public removeFile(fileName: string) {
+            this.fileMap.delete(fileName);
         }
 
-        public updateFileContents(file: string, content: string) {
-            this.fileMap.get(file).updateContent(content);
+        public updateFileContents(fileName: string, content: string) {
+            this.fileMap.get(fileName).updateContent(content);
         }
 
-        public updateFile(file: string) {
-            this.fileMap.get(file).updateFile(file);
+        public updateFile(fileName: string) {
+            this.fileMap.get(fileName).updateFile(fileName);
         }
 
-        public editFile(file: string, offset: number, length: number, replacementText: string) {
-            this.fileMap.get(file).addEdit(offset, length, replacementText);
+        public editFile(fileName: string, offset: number, length: number, replacementText: string) {
+            this.fileMap.get(fileName).addEdit(offset, length, replacementText);
         }
 
-        public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {
-            return this.getDetailedImplicitlyPrunedCompletionsAtPosition(file, position);
+        public getCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
+            return this.getDetailedImplicitlyPrunedCompletionsAtPosition(fileName, position);
         }
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
@@ -85,16 +85,16 @@ module Bridge {
             return <string[]> this.fileMap.keys();
         }
 
-        public getScriptVersion(file: string): number {
-            return this.fileMap.get(file).getVersion();
+        public getScriptVersion(fileName: string): number {
+            return this.fileMap.get(fileName).getVersion();
         }
 
-        public getScriptIsOpen(file: string): boolean {
-            return this.fileMap.get(file).isOpen();
+        public getScriptIsOpen(fileName: string): boolean {
+            return this.fileMap.get(fileName).isOpen();
         }
 
-        public getScriptSnapshot(file: string): TypeScript.IScriptSnapshot {
-            return this.fileMap.get(file);
+        public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
+            return this.fileMap.get(fileName);
         }
 
         public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {

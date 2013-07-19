@@ -47,22 +47,22 @@ public final class LanguageService {
         this.bridge = typeScriptBridge;
     }
 
-    public List<TextEdit> getFormattingEditsForRange(String file, int minChar, int limChar, FormatCodeOptions options) {
-        checkNotNull(file);
+    public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {
+        checkNotNull(fileName);
         checkArgument(minChar >= 0);
         checkArgument(limChar >= 0);
         checkNotNull(options);
 
-        Request request = new Request(SERVICE, "getFormattingEditsForRange", file, minChar, limChar, options);
+        Request request = new Request(SERVICE, "getFormattingEditsForRange", fileName, minChar, limChar, options);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
         return this.bridge.sendRequest(request, resultType);
     }
 
-    public AutoCompleteResult getCompletionsAtPosition(String file, int offset) {
-        Preconditions.checkNotNull(file);
+    public AutoCompleteResult getCompletionsAtPosition(String fileName, int offset) {
+        Preconditions.checkNotNull(fileName);
         Preconditions.checkArgument(offset >= 0);
 
-        Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset);
+        Request request = new Request(SERVICE, "getCompletionsAtPosition", fileName, offset);
         DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.sendRequest(request, DetailedAutoCompletionInfo.class);
         return new AutoCompleteResult(autoCompletionInfo);
     }
@@ -75,53 +75,53 @@ public final class LanguageService {
         return this.bridge.sendRequest(request, returnType);
     }
 
-    public void addFile(String file) {
-        Preconditions.checkNotNull(file);
+    public void addFile(String fileName) {
+        Preconditions.checkNotNull(fileName);
 
-        this.addFiles(ImmutableList.of(file));
+        this.addFiles(ImmutableList.of(fileName));
     }
 
-    public void addFiles(List<String> files) {
-        Preconditions.checkNotNull(files);
+    public void addFiles(List<String> fileNames) {
+        Preconditions.checkNotNull(fileNames);
 
-        if (!files.isEmpty()) {
-            Request request = new Request(SERVICE, "addFiles", files);
+        if (!fileNames.isEmpty()) {
+            Request request = new Request(SERVICE, "addFiles", fileNames);
 
             this.bridge.sendRequest(request, Boolean.class);
         }
     }
 
-    public void editFile(String file, int offset, int length, String replacementText) {
-        Preconditions.checkNotNull(file);
+    public void editFile(String fileName, int offset, int length, String replacementText) {
+        Preconditions.checkNotNull(fileName);
         Preconditions.checkArgument(offset >= 0);
         Preconditions.checkArgument(length >= 0);
         Preconditions.checkNotNull(replacementText);
 
-        Request request = new Request(SERVICE, "editFile", file, offset, length, replacementText);
+        Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
 
         this.bridge.sendRequest(request, Boolean.class);
     }
 
-    public void removeFile(String file) {
-        Preconditions.checkNotNull(file);
+    public void removeFile(String fileName) {
+        Preconditions.checkNotNull(fileName);
 
-        this.removeFiles(ImmutableList.of(file));
+        this.removeFiles(ImmutableList.of(fileName));
     }
 
-    public void removeFiles(List<String> files) {
-        Preconditions.checkNotNull(files);
+    public void removeFiles(List<String> fileNames) {
+        Preconditions.checkNotNull(fileNames);
 
-        if (!files.isEmpty()) {
-            Request request = new Request(SERVICE, "removeFiles", files);
+        if (!fileNames.isEmpty()) {
+            Request request = new Request(SERVICE, "removeFiles", fileNames);
 
             this.bridge.sendRequest(request, Boolean.class);
         }
     }
 
-    public void updateFile(String file) {
-        Preconditions.checkNotNull(file);
+    public void updateFile(String fileName) {
+        Preconditions.checkNotNull(fileName);
 
-        Request request = new Request(SERVICE, "updateFile", file);
+        Request request = new Request(SERVICE, "updateFile", fileName);
 
         this.bridge.sendRequest(request, Boolean.class);
     }
