@@ -13,7 +13,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
         <updatesite.dir>export</updatesite.dir>
         <file.seperator>/</file.seperator>
         <plugin.source.dir>./</plugin.source.dir>
-        <dist.dir>./</dist.dir>
+        <dist.dir>dist</dist.dir>
         <plugin.id>com.palantir.typescript</plugin.id>
         <feature.id>com.palantir.typescript</feature.id>
         <placeholder.build.version>0.0.0</placeholder.build.version>
@@ -44,6 +44,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                   <configuration>
                       <tasks>
                         <delete dir="${updatesite.dir}"/>
+                        <delete dir="${dist.dir}"/>
                       </tasks>
                     </configuration>
                     <goals>
@@ -62,6 +63,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
                     <mkdir dir="${updatesite.dir}"/>
                     <mkdir dir="${updatesite.dir}${file.separator}features"/>
                     <mkdir dir="${updatesite.dir}${file.separator}plugins"/>
+                    <mkdir dir="${dist.dir}"/>
 
                     <!-- Copy over plugin -->
                     <copy tofile="${updatesite.dir}${file.separator}plugins${file.seperator}${plugin.jar.fullname}" file="${plugin.source.dir}${file.seperator}target${file.seperator}${plugin.jar.original.name}" />
