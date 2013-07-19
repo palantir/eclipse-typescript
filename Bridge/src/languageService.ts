@@ -14,158 +14,12 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/compiler/io.ts'/>
 ///<reference path='../typescript/src/services/languageService.ts'/>
+///<reference path='snapshot.ts'/>
 
 module Bridge {
 
-    function readFileContents(filePath: string): string {
-        return IO.readFile(filePath).contents();
-    }
-
-    interface AutoCompletionInfo {
-        entries: Services.CompletionEntry[];
-    }
-
-    export interface DetailedAutoCompletionInfo { // correponds to the Java Class of the same name.
-        pruningPrefix: string;
-        entries: Services.CompletionEntryDetails[];
-    }
-
-    class ScriptSnapshot implements TypeScript.IScriptSnapshot {
-
-        private version: number;
-        private open: boolean;
-        private content: string;
-        private changes: TypeScript.TextChangeRange[];
-        private lineStartPositions: number[];
-        private maxChanges = 100;
-
-        constructor(private file: string) {
-            this.version = 0;
-            this.open = true;
-            this.updateContent(readFileContents(file));
-        }
-
-        public updateContent(content: string, resetChanges: boolean = true): boolean {
-            if (resetChanges) {
-                this.changes = [];
-            }
-            this.content = content;
-            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(this.content));
-            this.version++;
-            return true;
-        }
-
-        public getVersion(): number {
-            return this.version;
-        }
-
-        public isOpen(): boolean {
-            return this.open;
-        }
-
-        public setOpen(): void {
-            this.open = true;
-        }
-
-        public setClosed(): void {
-            this.open = false;
-        }
-
-        public addEdit(offset: number, length: number, replacementText: string): boolean {
-            if (this.changes.length >= this.maxChanges) {
-                this.changes = [];
-            }
-            var beforeEdit = this.content.substring(0, offset);
-            var afterEdit = this.content.substring(offset + length, this.content.length);
-            var newContent = beforeEdit + replacementText + afterEdit;
-            var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset + length), replacementText.length);
-            this.changes.push(textChangeRange);
-            return this.updateContent(newContent, false);
-        }
-
-        public getText(start: number, end: number): string {
-            return this.content.substring(start, end);
-        }
-
-        public getLength(): number {
-            return this.content.length;
-        }
-
-        public getLineStartPositions(): number[] {
-            return this.lineStartPositions;
-        }
-
-        public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
-            if (this.version === version) {
-                return TypeScript.TextChangeRange.unchanged;
-            } else if (this.version - version <= this.changes.length) {
-                var start = this.changes.length - (this.version - version);
-                var changes = this.changes.slice(start);
-                return TypeScript.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
-            } else {
-                return null;
-            }
-        }
-    }
-
-    class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
-
-        public log(message: string): void {
-
-        }
-
-    }
-
-    export class LanguageServiceHostService {
-
-        private languageServiceHost: LanguageServiceHost;
-
-        constructor() {
-            this.languageServiceHost = new LanguageServiceHost();
-        }
-
-        public addFiles(files: string[]): boolean {
-            for (var i = 0; i < files.length; i++) {
-                this.languageServiceHost.addFile(files[i]);
-            }
-            return true;
-        }
-
-        public removeFiles(files: string[]): boolean {
-            for (var i = 0; i < files.length; i++) {
-                this.languageServiceHost.removeFile(files[i]);
-            }
-            return true;
-        }
-
-        public updateFileContents(file: string, content: string): boolean {
-            return this.languageServiceHost.updateFileContents(file, content);
-        }
-
-        public updateFile(file: string): boolean {
-            return this.languageServiceHost.updateFile(file);
-        }
-
-        public editFile(file: string, offset: number, length: number, replacementText: string): boolean {
-            return this.languageServiceHost.editFile(file, offset, length, replacementText);
-        }
-
-        public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {
-            return this.languageServiceHost.getCompletionsAtPosition(file, position);
-        }
-
-        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
-            return this.languageServiceHost.getFormattingEditsForRange(fileName, minChar, limChar, options);
-        }
-
-        public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
-            return this.languageServiceHost.getScriptLexicalStructure(fileName);
-        }
-    }
-
-    class LanguageServiceHost implements Services.ILanguageServiceHost {
+    export class LanguageServiceHostService implements Services.ILanguageServiceHost {
 
         private languageService: Services.LanguageService;
         private compilationSettings: TypeScript.CompilationSettings;
@@ -179,6 +33,22 @@ module Bridge {
             this.diagnostics = new LanguageServicesDiagnostics();
         }
 
+        public addFiles(files: string[]): boolean {
+            for (var i = 0; i < files.length; i++) {
+                this.addFile(files[i]);
+            }
+
+            return true;
+        }
+
+        public removeFiles(files: string[]): boolean {
+            for (var i = 0; i < files.length; i++) {
+                this.removeFile(files[i]);
+            }
+
+            return true;
+        }
+
         public addFile(file: string): boolean {
             this.fileMap.set(file, new ScriptSnapshot(file));
             return true;
@@ -189,15 +59,18 @@ module Bridge {
         }
 
         public updateFileContents(file: string, content: string): boolean {
-            return this.fileMap.get(file).updateContent(content);
+            this.fileMap.get(file).updateContent(content);
+            return true;
         }
 
         public updateFile(file: string): boolean {
-            return this.updateFileContents(file, readFileContents(file));
+            this.fileMap.get(file).updateFile(file);
+            return true;
         }
 
         public editFile(file: string, offset: number, length: number, replacementText: string): boolean {
-            return this.fileMap.get(file).addEdit(offset, length, replacementText);
+            this.fileMap.get(file).addEdit(offset, length, replacementText);
+            return true;
         }
 
         public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {
@@ -380,5 +253,21 @@ module Bridge {
         private prefixMatch(_prefix: string, str: string): boolean {
             return str.indexOf(_prefix) === 0;
         }
+    }
+
+    export interface DetailedAutoCompletionInfo {
+        pruningPrefix: string;
+        entries: Services.CompletionEntryDetails[];
+    }
+
+    class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
+
+        public log(message: string): void {
+
+        }
+    }
+
+    interface AutoCompletionInfo {
+        entries: Services.CompletionEntry[];
     }
 }
