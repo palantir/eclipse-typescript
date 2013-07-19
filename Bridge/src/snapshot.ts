@@ -21,12 +21,13 @@ module Bridge {
 
     export class ScriptSnapshot implements TypeScript.IScriptSnapshot {
 
+        private static MAX_CHANGES = 100;
+
         private version: number;
         private open: boolean;
         private content: string;
         private changes: TypeScript.TextChangeRange[];
         private lineStartPositions: number[];
-        private maxChanges = 100;
 
         constructor(private file: string) {
             this.version = 0;
@@ -66,7 +67,7 @@ module Bridge {
         }
 
         public addEdit(offset: number, length: number, replacementText: string): void {
-            if (this.changes.length >= this.maxChanges) {
+            if (this.changes.length >= ScriptSnapshot.MAX_CHANGES) {
                 this.changes = [];
             }
             var beforeEdit = this.content.substring(0, offset);
