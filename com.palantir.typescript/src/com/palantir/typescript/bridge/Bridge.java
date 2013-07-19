@@ -126,19 +126,20 @@ public final class Bridge {
         }
     }
 
-    private String processRequest(String rawRequest) throws IOException {
-        Preconditions.checkNotNull(rawRequest);
+    private String processRequest(String requestJson) throws IOException {
+        Preconditions.checkNotNull(requestJson);
 
-        // write the request to the bridge's stdin
-        this.toServer.write(rawRequest);
+        // write the request JSON to the bridge's stdin
+        this.toServer.write(requestJson);
         this.toServer.write('\n');
         this.toServer.flush();
 
-        // read the response from the bridge's stdout
+        // read the response JSON from the bridge's stdout
         String resultJson = null;
         do {
             String line = this.fromServer.readLine();
 
+            // process errors and logger statements
             if (line.startsWith("DEBUG")) {
                 this.log(line);
             } else if (line.startsWith("ERROR")) {
@@ -146,8 +147,9 @@ public final class Bridge {
                 line = line.replaceAll("\\\\n", "\n"); // put newlines back
                 line = line.replaceAll("    ", "\t"); // replace spaces with tabs (to match Java stack traces)
 
-                throw new RuntimeException("The following request caused an error to be thrown\n" + rawRequest
-                        + "\n and it caused the following error\n" + line);
+                throw new RuntimeException("The following request caused an error to be thrown:" + System.lineSeparator()
+                        + requestJson + System.lineSeparator()
+                        + line);
             } else {
                 resultJson = line;
             }
