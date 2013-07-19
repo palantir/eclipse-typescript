@@ -33,44 +33,36 @@ module Bridge {
             this.diagnostics = new LanguageServicesDiagnostics();
         }
 
-        public addFiles(files: string[]): boolean {
+        public addFiles(files: string[]) {
             for (var i = 0; i < files.length; i++) {
                 this.addFile(files[i]);
             }
-
-            return true;
         }
 
-        public removeFiles(files: string[]): boolean {
+        public removeFiles(files: string[]) {
             for (var i = 0; i < files.length; i++) {
                 this.removeFile(files[i]);
             }
-
-            return true;
         }
 
-        public addFile(file: string): boolean {
+        public addFile(file: string) {
             this.fileMap.set(file, new ScriptSnapshot(file));
-            return true;
         }
 
-        public removeFile(file: string): boolean {
-            return this.fileMap.delete(file);
+        public removeFile(file: string) {
+            this.fileMap.delete(file);
         }
 
-        public updateFileContents(file: string, content: string): boolean {
+        public updateFileContents(file: string, content: string) {
             this.fileMap.get(file).updateContent(content);
-            return true;
         }
 
-        public updateFile(file: string): boolean {
+        public updateFile(file: string) {
             this.fileMap.get(file).updateFile(file);
-            return true;
         }
 
-        public editFile(file: string, offset: number, length: number, replacementText: string): boolean {
+        public editFile(file: string, offset: number, length: number, replacementText: string) {
             this.fileMap.get(file).addEdit(offset, length, replacementText);
-            return true;
         }
 
         public getCompletionsAtPosition(file: string, position: number): DetailedAutoCompletionInfo {

@@ -40,13 +40,9 @@ module Bridge {
             var readline = require("readline");
             var rl = readline.createInterface(myProcess.stdin, myProcess.stdout);
 
-            // process incoming requests
-            rl.on("line", (requestJson: string) => {
-                var response = this.processRequest(requestJson);
-                var responseJson = JSON.stringify(response);
-
-                // write the response to stdout
-                console.log(responseJson);
+            // process incoming requests from stdin
+            rl.on("line", (line: string) => {
+                this.processRequest(line);
             });
 
             // exit when stdin is closed
@@ -55,30 +51,26 @@ module Bridge {
             });
         }
 
-        private processRequest(requestJson: string): any {
-            // parse the data chunk
-            var request;
+        private processRequest(requestJson: string) {
             try {
-                request = JSON.parse(requestJson);
-            } catch (e) {
-                return { error: e.message };
-            }
+                var request = JSON.parse(requestJson);
 
-            // get the service
-            var service = this.services.get(request.service);
-            if (service === undefined) {
-                return { error: "Invalid service: " + request.service };
-            }
-
-            // process the request
-            try {
+                // invoke the service method with the supplied arguments
+                var service = this.services.get(request.service);
                 var method = service[request.command];
-                var response = method.apply(service, request.args);
-            } catch (e) {
-                return { error: e.stack };
-            }
+                var result = method.apply(service, request.args);
 
-            return response;
+                // convert undefined to null (its basically the Java equivalent of void)
+                if (result === undefined) {
+                    result = null;
+                }
+
+                // convert the result to JSON and write it to stdout
+                var resultJson = JSON.stringify(result);
+                console.log(resultJson);
+            } catch (e) {
+                console.log("ERROR: " + e.stack.replace(/\n/g, "\\n"));
+            }
         }
     }
 }

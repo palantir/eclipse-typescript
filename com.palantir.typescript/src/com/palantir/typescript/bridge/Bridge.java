@@ -25,7 +25,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -43,7 +42,6 @@ public final class Bridge {
     private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
 
-    private static final String UNITIALIZED = "Unitialized";
     private static final int MAX_MESSAGE_LOG_SIZE = 1000;
 
     private BufferedReader fromServer;
@@ -93,88 +91,69 @@ public final class Bridge {
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
      * and packaging the result for usage.
      */
-    public <T> T sendRequest(Request request, JavaType resultType) {
+    public <T> T sendRequest(Request request, Class<T> resultType) {
         Preconditions.checkNotNull(request);
         Preconditions.checkNotNull(resultType);
 
-        String rawRequest;
+        JavaType type = TypeFactory.defaultInstance().uncheckedSimpleType(resultType);
 
-        try {
-            rawRequest = this.mapper.writeValueAsString(request);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        String rawResult = this.sendRawRequestGetRawResult(rawRequest);
-
-        T result;
-        try {
-            result = this.mapper.readValue(rawResult, resultType);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (result == null) {
-            throw new RuntimeException("The result is null");
-        }
-
-        return result;
+        return this.sendRequest(request, type);
     }
 
     /**
      * This method handles packaging the request from Java, sending it across the TypeScript bridge,
      * and packaging the result for usage.
      */
-    public <T> T sendRequest(Request request, Class<T> resultType) {
+    public <T> T sendRequest(Request request, JavaType resultType) {
         Preconditions.checkNotNull(request);
         Preconditions.checkNotNull(resultType);
 
-        JavaType type = TypeFactory.defaultInstance().uncheckedSimpleType(resultType);
-        return this.sendRequest(request, type);
-    }
-
-    private static boolean invalid(String rawResult) {
-        Preconditions.checkNotNull(rawResult);
-
-        String invalidPrefix = "{\"error\":";
-        return rawResult.startsWith(invalidPrefix);
-    }
-
-    private String sendRawRequestGetRawResult(String rawRequest) {
-        Preconditions.checkNotNull(rawRequest);
-
-        String rawResult = UNITIALIZED;
+        // process the request
+        String resultJson;
         try {
-            this.toServer.write(rawRequest);
-            this.toServer.write('\n');
-            this.toServer.flush();
-            rawResult = this.fromServer.readLine();
+            String requestJson = this.mapper.writeValueAsString(request);
+
+            resultJson = this.processRequest(requestJson);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        if (rawResult == null) {
-            throw new RuntimeException("The TypeScript services server crashed and did not return an error.");
-        } else if (rawResult.equals(UNITIALIZED)) {
-            throw new RuntimeException("The rawResult was never set");
+        // convert the JSON result into a Java object
+        try {
+            return this.mapper.readValue(resultJson, resultType);
+        } catch (IOException e) {
+            throw new RuntimeException("Error parsing result: " + resultJson, e);
         }
+    }
 
-        while (isDebugMessage(rawResult)) { // capture and print debug messages from TypeScript.
-            log(rawResult);
-            try {
-                rawResult = this.fromServer.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+    private String processRequest(String rawRequest) throws IOException {
+        Preconditions.checkNotNull(rawRequest);
+
+        // write the request to the bridge's stdin
+        this.toServer.write(rawRequest);
+        this.toServer.write('\n');
+        this.toServer.flush();
+
+        // read the response from the bridge's stdout
+        String resultJson = null;
+        do {
+            String line = this.fromServer.readLine();
+
+            if (line.startsWith("DEBUG")) {
+                this.log(line);
+            } else if (line.startsWith("ERROR")) {
+                line = line.substring(7, line.length()); // remove "ERROR: "
+                line = line.replaceAll("\\\\n", "\n"); // put newlines back
+                line = line.replaceAll("    ", "\t"); // replace spaces with tabs (to match Java stack traces)
+
+                throw new RuntimeException("The following request caused an error to be thrown\n" + rawRequest
+                        + "\n and it caused the following error\n" + line);
+            } else {
+                resultJson = line;
             }
-        }
+        } while (resultJson == null);
 
-        if (invalid(rawResult)) {
-            rawResult = rawResult.replaceAll("\\\\n", "\n");
-            System.out.println(rawResult);
-            throw new RuntimeException("The following raw request caused an error to be thrown\n" + rawRequest
-                    + "\n and it caused the following error\n" + rawResult);
-        }
-
-        return rawResult;
+        return resultJson;
     }
 
     private void log(String message) {
@@ -191,12 +170,6 @@ public final class Bridge {
             this.logger.println(message);
             this.logger.flush();
         }
-    }
-
-    private static boolean isDebugMessage(String rawResult) {
-        Preconditions.checkNotNull(rawResult);
-
-        return rawResult.startsWith("DEBUG");
     }
 
     private void start() {
@@ -244,5 +217,4 @@ public final class Bridge {
             throw new RuntimeException(e);
         }
     }
-
 }
