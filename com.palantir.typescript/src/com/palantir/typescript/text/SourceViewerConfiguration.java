@@ -16,9 +16,7 @@
 
 package com.palantir.typescript.text;
 
-import org.eclipse.jface.text.DefaultIndentLineAutoEditStrategy;
 import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
@@ -45,18 +43,6 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         Preconditions.checkNotNull(colorManager);
 
         this.colorManager = colorManager;
-    }
-
-    @Override
-    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-        return new IAutoEditStrategy[] { new DefaultIndentLineAutoEditStrategy() };
-    }
-
-    @Override
-    public String[] getConfiguredContentTypes(ISourceViewer sourceViewer) {
-        return new String[] {
-                IDocument.DEFAULT_CONTENT_TYPE,
-        };
     }
 
     @Override
