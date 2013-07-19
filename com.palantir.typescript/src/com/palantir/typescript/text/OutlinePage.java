@@ -121,21 +121,7 @@ public final class OutlinePage extends ContentOutlinePage {
 
         @Override
         public boolean hasChildren(Object element) {
-            NavigateToItem itemElement = (NavigateToItem) element;
-            String containerName = itemElement.getContainerName();
-            String name = itemElement.getName();
-
-            if (!containerName.isEmpty()) {
-                name = containerName + "." + name;
-            }
-
-            for (NavigateToItem item : this.lexicalStructure) {
-                if (item.getContainerName().equals(name)) {
-                    return true;
-                }
-            }
-
-            return false;
+            return this.getChildren(element).length > 0;
         }
 
         @Override
