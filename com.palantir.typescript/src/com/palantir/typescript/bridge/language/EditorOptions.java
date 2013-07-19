@@ -40,7 +40,7 @@ public class EditorOptions {
     public EditorOptions() {
         this.indentSize = 4;
         this.tabSize = 4;
-        this.newLineCharacter = System.lineSeparator();
+        this.newLineCharacter = System.getProperty("line.separator");
         this.convertTabsToSpaces = true;
     }
 }

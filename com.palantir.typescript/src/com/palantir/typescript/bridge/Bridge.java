@@ -39,8 +39,9 @@ import com.palantir.typescript.bridge.language.LanguageService;
  */
 public final class Bridge {
 
-    private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
+    private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     private static final int MAX_MESSAGE_LOG_SIZE = 1000;
 
@@ -147,8 +148,8 @@ public final class Bridge {
                 line = line.replaceAll("\\\\n", "\n"); // put newlines back
                 line = line.replaceAll("    ", "\t"); // replace spaces with tabs (to match Java stack traces)
 
-                throw new RuntimeException("The following request caused an error to be thrown:" + System.lineSeparator()
-                        + requestJson + System.lineSeparator()
+                throw new RuntimeException("The following request caused an error to be thrown:" + LINE_SEPARATOR
+                        + requestJson + LINE_SEPARATOR
                         + line);
             } else {
                 resultJson = line;
