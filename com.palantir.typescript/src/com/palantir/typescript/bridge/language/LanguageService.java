@@ -25,8 +25,8 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.bridge.Request;
 import com.palantir.typescript.bridge.Bridge;
+import com.palantir.typescript.bridge.Request;
 
 /**
  * The language service.
@@ -65,6 +65,14 @@ public final class LanguageService {
         Request request = new Request(SERVICE, "getCompletionsAtPosition", file, offset);
         DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.sendRequest(request, DetailedAutoCompletionInfo.class);
         return new AutoCompleteResult(autoCompletionInfo);
+    }
+
+    public List<NavigateToItem> getScriptLexicalStructure(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getScriptLexicalStructure", fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
+        return this.bridge.sendRequest(request, returnType);
     }
 
     public void addFile(String file) {

@@ -31,6 +31,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.palantir.typescript.Activator;
 
@@ -43,10 +44,25 @@ public final class TypeScriptEditor extends TextEditor {
 
     private final ColorManager colorManager;
 
+    private OutlinePage contentOutlinePage;
+
     public TypeScriptEditor() {
         this.colorManager = new ColorManager();
 
         this.setSourceViewerConfiguration(new SourceViewerConfiguration(this.colorManager));
+    }
+
+    @Override
+    public Object getAdapter(Class adapter) {
+        if (IContentOutlinePage.class.equals(adapter)) {
+            if (this.contentOutlinePage == null) {
+                this.contentOutlinePage = new OutlinePage(this);
+            }
+
+            return this.contentOutlinePage;
+        }
+
+        return super.getAdapter(adapter);
     }
 
     @Override

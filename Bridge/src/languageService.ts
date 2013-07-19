@@ -159,6 +159,10 @@ module Bridge {
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageServiceHost.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
+
+        public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
+            return this.languageServiceHost.getScriptLexicalStructure(fileName);
+        }
     }
 
     class LanguageServiceHost implements Services.ILanguageServiceHost {
@@ -202,6 +206,10 @@ module Bridge {
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
+        }
+
+        public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
+            return this.languageService.getScriptLexicalStructure(fileName);
         }
 
         public getCompilationSettings(): TypeScript.CompilationSettings {
