@@ -99,7 +99,7 @@ public final class Bridge {
                 System.out.println(line);
             } else if (line.startsWith("ERROR")) {
                 line = line.substring(7, line.length()); // remove "ERROR: "
-                line = line.replaceAll("\\\\n", "\n"); // put newlines back
+                line = line.replaceAll("\\\\n", LINE_SEPARATOR); // put newlines back
                 line = line.replaceAll("    ", "\t"); // replace spaces with tabs (to match Java stack traces)
 
                 throw new RuntimeException("The following request caused an error to be thrown:" + LINE_SEPARATOR
