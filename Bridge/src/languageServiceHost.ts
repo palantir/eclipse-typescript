@@ -33,31 +33,35 @@ module Bridge {
             this.snapshots = new Map();
         }
 
-        public addFile(fileName: string) {
-            var contents = readFileContents(fileName);
-            var snapshot = new ScriptSnapshot(contents);
+        public editFile(fileName: string, offset: number, length: number, replacementText: string) {
+            var snapshot = this.snapshots.get(fileName);
 
-            this.snapshots.set(fileName, snapshot);
+            if (snapshot != null) {
+                snapshot.addEdit(offset, length, replacementText);
+            } else {
+                var contents = replacementText;
+                var snapshot = new ScriptSnapshot(contents);
 
-            // also add the files referenced from the one being added
-            var lastSlash = fileName.lastIndexOf("/");
-            var rootPath = fileName.substring(0, lastSlash);
-            var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
-            for (var i = 0; i < referencedFiles.length; i++) {
-                var referencedFilePath = referencedFiles[i].path;
-                var resolvedFile = IO.findFile(rootPath, referencedFilePath);
+                // save a snapshot of the contents
+                snapshot.setOpen(true);
+                this.snapshots.set(fileName, snapshot);
 
-                if (resolvedFile != null) {
-                    var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
-                    var resolvedFilePath = IO.resolvePath(resolvedFile.path);
+                // also add the files referenced from the one being added
+                var lastSlash = fileName.lastIndexOf("/");
+                var rootPath = fileName.substring(0, lastSlash);
+                var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
+                for (var i = 0; i < referencedFiles.length; i++) {
+                    var referencedFilePath = referencedFiles[i].path;
+                    var resolvedFile = IO.findFile(rootPath, referencedFilePath);
 
-                    this.snapshots.set(resolvedFilePath, referencedSnapshot);
+                    if (resolvedFile != null) {
+                        var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
+                        var resolvedFilePath = IO.resolvePath(resolvedFile.path);
+
+                        this.snapshots.set(resolvedFilePath, referencedSnapshot);
+                    }
                 }
             }
-        }
-
-        public editFile(fileName: string, offset: number, length: number, replacementText: string) {
-            this.snapshots.get(fileName).addEdit(offset, length, replacementText);
         }
 
         public updateFiles(deltas: IFileDelta[]) {

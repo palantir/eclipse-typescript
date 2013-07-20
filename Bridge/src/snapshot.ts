@@ -51,12 +51,8 @@ module Bridge {
             return this.open;
         }
 
-        public setOpen(): void {
-            this.open = true;
-        }
-
-        public setClosed(): void {
-            this.open = false;
+        public setOpen(open: boolean): void {
+            this.open = open;
         }
 
         public addEdit(offset: number, length: number, replacementText: string): void {

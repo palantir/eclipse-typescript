@@ -34,7 +34,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
@@ -129,16 +128,6 @@ public final class TypeScriptEditor extends TextEditor {
         sourceViewer.addTextListener(new MyTextListener());
 
         return sourceViewer;
-    }
-
-    @Override
-    protected void doSetInput(IEditorInput input) throws CoreException {
-        super.doSetInput(input);
-
-        IPathEditorInput editorInput = (IPathEditorInput) input;
-        String fileName = editorInput.getPath().toOSString();
-
-        this.getLanguageService().addFile(fileName);
     }
 
     @Override

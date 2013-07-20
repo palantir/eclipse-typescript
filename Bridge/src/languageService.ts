@@ -30,10 +30,6 @@ module Bridge {
             this.languageService = new Services.LanguageService(this.languageServiceHost);
         }
 
-        public addFile(fileName: string) {
-            this.languageServiceHost.addFile(fileName);
-        }
-
         public editFile(fileName: string, offset: number, length: number, replacementText: string) {
             this.languageServiceHost.editFile(fileName, offset, length, replacementText);
         }
