@@ -32,7 +32,7 @@ module Bridge {
         constructor() {
             this.services = new Map();
             this.services.set("classifier", new ClassifierService());
-            this.services.set("language", new LanguageServiceHostService());
+            this.services.set("language", new LanguageService());
         }
 
         public run() {

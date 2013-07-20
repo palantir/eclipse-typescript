@@ -95,7 +95,9 @@ public final class Bridge {
             String line = this.nodeStdout.readLine();
 
             // process errors and logger statements
-            if (line.startsWith("DEBUG")) {
+            if (line == null) {
+                throw new IllegalStateException("The node process has crashed.");
+            } else if (line.startsWith("DEBUG")) {
                 System.out.println(line);
             } else if (line.startsWith("ERROR")) {
                 line = line.substring(7, line.length()); // remove "ERROR: "

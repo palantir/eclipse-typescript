@@ -14,73 +14,32 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/compiler/io.ts'/>
-///<reference path='../typescript/src/compiler/precompile.ts'/>
 ///<reference path='../typescript/src/services/languageService.ts'/>
+///<reference path='languageServiceHost.ts'/>
 ///<reference path='snapshot.ts'/>
 
 module Bridge {
 
-    export class LanguageServiceHostService implements Services.ILanguageServiceHost {
+    export class LanguageService {
 
         private languageService: Services.LanguageService;
-        private compilationSettings: TypeScript.CompilationSettings;
-        private snapshots: Map<string, ScriptSnapshot>;
-        private diagnostics: Services.ILanguageServicesDiagnostics;
+        private languageServiceHost: LanguageServiceHost;
 
         constructor() {
-            this.languageService = new Services.LanguageService(this);
-            this.compilationSettings = new TypeScript.CompilationSettings();
-            this.snapshots = new Map();
-            this.diagnostics = new LanguageServicesDiagnostics();
+            this.languageServiceHost = new LanguageServiceHost();
+            this.languageService = new Services.LanguageService(this.languageServiceHost);
         }
 
         public addFile(fileName: string) {
-            var contents = readFileContents(fileName);
-            var snapshot = new ScriptSnapshot(contents);
-
-            this.snapshots.set(fileName, snapshot);
-
-            // also add the files referenced from the one being added
-            var lastSlash = fileName.lastIndexOf("/");
-            var rootPath = fileName.substring(0, lastSlash);
-            var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
-            for (var i = 0; i < referencedFiles.length; i++) {
-                var referencedFilePath = referencedFiles[i].path;
-                var resolvedFile = IO.findFile(rootPath, referencedFilePath);
-
-                if (resolvedFile != null) {
-                    var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
-                    var resolvedFilePath = IO.resolvePath(resolvedFile.path);
-
-                    this.snapshots.set(resolvedFilePath, referencedSnapshot);
-                }
-            }
+            this.languageServiceHost.addFile(fileName);
         }
 
         public editFile(fileName: string, offset: number, length: number, replacementText: string) {
-            this.snapshots.get(fileName).addEdit(offset, length, replacementText);
+            this.languageServiceHost.editFile(fileName, offset, length, replacementText);
         }
 
         public updateFiles(deltas: IFileDelta[]) {
-            for (var i = 0; i < deltas.length; i++) {
-                var fileName = deltas[i].fileName;
-
-                switch (deltas[i].delta) {
-                    case "CHANGED":
-                        var snapshot = this.snapshots.get(fileName);
-
-                        if (snapshot !== undefined) {
-                            var contents = readFileContents(fileName);
-
-                            snapshot.updateContents(contents);
-                        }
-                        break;
-                    case "REMOVED":
-                        this.snapshots.delete(fileName);
-                        break;
-                }
-            }
+            this.languageServiceHost.updateFiles(deltas);
         }
 
         public getCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
@@ -95,53 +54,6 @@ module Bridge {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
 
-        public getCompilationSettings(): TypeScript.CompilationSettings {
-            return this.compilationSettings;
-        }
-
-        public getScriptFileNames(): string[] {
-            return <string[]> this.snapshots.keys();
-        }
-
-        public getScriptVersion(fileName: string): number {
-            return this.snapshots.get(fileName).getVersion();
-        }
-
-        public getScriptIsOpen(fileName: string): boolean {
-            return this.snapshots.get(fileName).isOpen();
-        }
-
-        public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
-            return this.snapshots.get(fileName);
-        }
-
-        public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {
-            return this.diagnostics;
-        }
-
-        public information(): boolean {
-            return false;
-        }
-
-        public debug(): boolean {
-            return true;
-        }
-
-        public warning(): boolean {
-            return true;
-        }
-
-        public error(): boolean {
-            return true;
-        }
-
-        public fatal(): boolean {
-            return true;
-        }
-
-        public log(s: string): void {
-        }
-
         private validPosition(fileName: string, position: number): boolean {
             if (position === 0) {
                 return false;
@@ -149,7 +61,7 @@ module Bridge {
 
             var start: number = position - 2;
             var end: number = position;
-            var snapshot: string = this.getScriptSnapshot(fileName).getText(start, end);
+            var snapshot: string = this.languageServiceHost.getScriptSnapshot(fileName).getText(start, end);
 
             if (snapshot[1] === ".") {
                 if (!this.validMethodChar(snapshot[0])) {
@@ -169,7 +81,7 @@ module Bridge {
         private getPrefix(fileName: string, position: number): string {
             var start: number = 0;
             var end: number = position;
-            var snapshot: string = this.getScriptSnapshot(fileName).getText(start, end); // HACKHACK: gets file up to this point and works backwards.  Performance probably sucks.
+            var snapshot: string = this.languageServiceHost.getScriptSnapshot(fileName).getText(start, end); // HACKHACK: gets file up to this point and works backwards.  Performance probably sucks.
 
             for (var index = snapshot.length - 1; this.validMethodChar(snapshot.charAt(index)); index--);
 
@@ -265,25 +177,9 @@ module Bridge {
         }
     }
 
-    function readFileContents(filePath: string): string {
-        return IO.readFile(filePath).contents();
-    }
-
     export interface DetailedAutoCompletionInfo {
         pruningPrefix: string;
         entries: Services.CompletionEntryDetails[];
-    }
-
-    export interface IFileDelta {
-        delta: string;
-        fileName: string;
-    }
-
-    class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
-
-        public log(message: string): void {
-
-        }
     }
 
     interface AutoCompletionInfo {
