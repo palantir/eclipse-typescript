@@ -25,65 +25,62 @@ module Bridge {
 
         private languageService: Services.LanguageService;
         private compilationSettings: TypeScript.CompilationSettings;
-        private fileMap: Map<string, ScriptSnapshot>;
+        private snapshots: Map<string, ScriptSnapshot>;
         private diagnostics: Services.ILanguageServicesDiagnostics;
 
         constructor() {
             this.languageService = new Services.LanguageService(this);
             this.compilationSettings = new TypeScript.CompilationSettings();
-            this.fileMap = new Map();
+            this.snapshots = new Map();
             this.diagnostics = new LanguageServicesDiagnostics();
         }
 
-        public addFiles(fileNames: string[]) {
-            for (var i = 0; i < fileNames.length; i++) {
-                this.addFile(fileNames[i], false);
-            }
-        }
-
-        public addFile(fileName: string, addReferencedFiles: boolean) {
+        public addFile(fileName: string) {
             var contents = readFileContents(fileName);
             var snapshot = new ScriptSnapshot(contents);
 
-            this.fileMap.set(fileName, snapshot);
+            this.snapshots.set(fileName, snapshot);
 
-            if (addReferencedFiles) {
-                var lastSlash = fileName.lastIndexOf("/");
-                var rootPath = fileName.substring(0, lastSlash);
-                var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
+            // also add the files referenced from the one being added
+            var lastSlash = fileName.lastIndexOf("/");
+            var rootPath = fileName.substring(0, lastSlash);
+            var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
+            for (var i = 0; i < referencedFiles.length; i++) {
+                var referencedFilePath = referencedFiles[i].path;
+                var resolvedFile = IO.findFile(rootPath, referencedFilePath);
 
-                for (var i = 0; i < referencedFiles.length; i++) {
-                    var referencedFilePath = referencedFiles[i].path;
-                    var resolvedFile = IO.findFile(rootPath, referencedFilePath);
+                if (resolvedFile != null) {
+                    var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
+                    var resolvedFilePath = IO.resolvePath(resolvedFile.path);
 
-                    if (resolvedFile != null) {
-                        var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
-                        var resolvedFilePath = IO.resolvePath(resolvedFile.path);
-
-                        this.fileMap.set(resolvedFilePath, referencedSnapshot);
-                    }
+                    this.snapshots.set(resolvedFilePath, referencedSnapshot);
                 }
             }
         }
 
-        public removeFiles(fileNames: string[]) {
-            for (var i = 0; i < fileNames.length; i++) {
-                this.removeFile(fileNames[i]);
-            }
-        }
-
-        public removeFile(fileName: string) {
-            this.fileMap.delete(fileName);
-        }
-
-        public updateFile(fileName: string) {
-            var contents = readFileContents(fileName);
-
-            this.fileMap.get(fileName).updateContents(contents);
-        }
-
         public editFile(fileName: string, offset: number, length: number, replacementText: string) {
-            this.fileMap.get(fileName).addEdit(offset, length, replacementText);
+            this.snapshots.get(fileName).addEdit(offset, length, replacementText);
+        }
+
+        public updateFiles(deltas: IFileDelta[]) {
+            for (var i = 0; i < deltas.length; i++) {
+                var fileName = deltas[i].fileName;
+
+                switch (deltas[i].delta) {
+                    case "CHANGED":
+                        var snapshot = this.snapshots.get(fileName);
+
+                        if (snapshot !== undefined) {
+                            var contents = readFileContents(fileName);
+
+                            snapshot.updateContents(contents);
+                        }
+                        break;
+                    case "REMOVED":
+                        this.snapshots.delete(fileName);
+                        break;
+                }
+            }
         }
 
         public getCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
@@ -103,19 +100,19 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            return <string[]> this.fileMap.keys();
+            return <string[]> this.snapshots.keys();
         }
 
         public getScriptVersion(fileName: string): number {
-            return this.fileMap.get(fileName).getVersion();
+            return this.snapshots.get(fileName).getVersion();
         }
 
         public getScriptIsOpen(fileName: string): boolean {
-            return this.fileMap.get(fileName).isOpen();
+            return this.snapshots.get(fileName).isOpen();
         }
 
         public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
-            return this.fileMap.get(fileName);
+            return this.snapshots.get(fileName);
         }
 
         public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {
@@ -275,6 +272,11 @@ module Bridge {
     export interface DetailedAutoCompletionInfo {
         pruningPrefix: string;
         entries: Services.CompletionEntryDetails[];
+    }
+
+    export interface IFileDelta {
+        delta: string;
+        fileName: string;
     }
 
     class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {

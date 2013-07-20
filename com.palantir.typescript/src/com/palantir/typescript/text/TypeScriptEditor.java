@@ -18,6 +18,12 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.BadLocationException;
@@ -34,8 +40,11 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.classifier.Classifier;
+import com.palantir.typescript.bridge.language.FileDelta;
+import com.palantir.typescript.bridge.language.FileDelta.Delta;
 import com.palantir.typescript.bridge.language.LanguageService;
 
 /**
@@ -52,6 +61,7 @@ public final class TypeScriptEditor extends TextEditor {
     private final LanguageService languageService;
 
     private OutlinePage contentOutlinePage;
+    private MyResourceChangeListener resourceChangeListener;
 
     public TypeScriptEditor() {
         this.colorManager = new ColorManager();
@@ -61,6 +71,9 @@ public final class TypeScriptEditor extends TextEditor {
         this.languageService = new LanguageService(this.bridge);
 
         this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
+
+        this.resourceChangeListener = new MyResourceChangeListener();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener);
     }
 
     @Override
@@ -93,6 +106,9 @@ public final class TypeScriptEditor extends TextEditor {
         this.bridge.dispose();
         this.colorManager.dispose();
 
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
+        this.resourceChangeListener = null;
+
         super.dispose();
     }
 
@@ -122,7 +138,7 @@ public final class TypeScriptEditor extends TextEditor {
         IPathEditorInput editorInput = (IPathEditorInput) input;
         String fileName = editorInput.getPath().toOSString();
 
-        this.getLanguageService().addFile(fileName, true);
+        this.getLanguageService().addFile(fileName);
     }
 
     @Override
@@ -146,6 +162,52 @@ public final class TypeScriptEditor extends TextEditor {
         @Override
         public void update() {
             this.setEnabled(isEditorInputModifiable());
+        }
+    }
+
+    private final class MyResourceChangeListener implements IResourceChangeListener {
+        @Override
+        public void resourceChanged(IResourceChangeEvent event) {
+            if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
+                MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor();
+
+                try {
+                    event.getDelta().accept(visitor);
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+
+                TypeScriptEditor.this.languageService.updateFiles(visitor.getDeltas());
+            }
+        }
+    }
+
+    private final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
+
+        private final ImmutableList.Builder<FileDelta> deltas = ImmutableList.builder();
+
+        @Override
+        public boolean visit(IResourceDelta delta) throws CoreException {
+            IResource resource = delta.getResource();
+
+            if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
+                String fileName = resource.getRawLocation().toOSString();
+
+                switch (delta.getKind()) {
+                    case IResourceDelta.CHANGED:
+                        this.deltas.add(new FileDelta(Delta.CHANGED, fileName));
+                        break;
+                    case IResourceDelta.REMOVED:
+                        this.deltas.add(new FileDelta(Delta.REMOVED, fileName));
+                        break;
+                }
+            }
+
+            return true;
+        }
+
+        public ImmutableList<FileDelta> getDeltas() {
+            return this.deltas.build();
         }
     }
 

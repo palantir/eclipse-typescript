@@ -23,7 +23,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.Request;
 
@@ -74,21 +73,11 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
-    public void addFile(String fileName, boolean addReferencedFiles) {
+    public void addFile(String fileName) {
         checkNotNull(fileName);
 
-        Request request = new Request(SERVICE, "addFile", fileName, addReferencedFiles);
+        Request request = new Request(SERVICE, "addFile", fileName);
         this.bridge.call(request, Void.class);
-    }
-
-    public void addFiles(List<String> fileNames) {
-        checkNotNull(fileNames);
-
-        if (!fileNames.isEmpty()) {
-            Request request = new Request(SERVICE, "addFiles", fileNames);
-
-            this.bridge.call(request, Void.class);
-        }
     }
 
     public void editFile(String fileName, int offset, int length, String replacementText) {
@@ -102,27 +91,10 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    public void removeFile(String fileName) {
-        checkNotNull(fileName);
+    public void updateFiles(List<FileDelta> deltas) {
+        checkNotNull(deltas);
 
-        this.removeFiles(ImmutableList.of(fileName));
-    }
-
-    public void removeFiles(List<String> fileNames) {
-        checkNotNull(fileNames);
-
-        if (!fileNames.isEmpty()) {
-            Request request = new Request(SERVICE, "removeFiles", fileNames);
-
-            this.bridge.call(request, Void.class);
-        }
-    }
-
-    public void updateFile(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "updateFile", fileName);
-
+        Request request = new Request(SERVICE, "updateFiles", deltas);
         this.bridge.call(request, Void.class);
     }
 }
