@@ -54,7 +54,7 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "getFormattingEditsForRange", fileName, minChar, limChar, options);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
-        return this.bridge.sendRequest(request, resultType);
+        return this.bridge.call(request, resultType);
     }
 
     public AutoCompleteResult getCompletionsAtPosition(String fileName, int offset) {
@@ -62,7 +62,7 @@ public final class LanguageService {
         checkArgument(offset >= 0);
 
         Request request = new Request(SERVICE, "getCompletionsAtPosition", fileName, offset);
-        DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.sendRequest(request, DetailedAutoCompletionInfo.class);
+        DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.call(request, DetailedAutoCompletionInfo.class);
         return new AutoCompleteResult(autoCompletionInfo);
     }
 
@@ -71,7 +71,7 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "getScriptLexicalStructure", fileName);
         CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
-        return this.bridge.sendRequest(request, returnType);
+        return this.bridge.call(request, returnType);
     }
 
     public void addFile(String fileName) {
@@ -86,7 +86,7 @@ public final class LanguageService {
         if (!fileNames.isEmpty()) {
             Request request = new Request(SERVICE, "addFiles", fileNames);
 
-            this.bridge.sendRequest(request, Boolean.class);
+            this.bridge.call(request, Boolean.class);
         }
     }
 
@@ -98,7 +98,7 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
 
-        this.bridge.sendRequest(request, Boolean.class);
+        this.bridge.call(request, Boolean.class);
     }
 
     public void removeFile(String fileName) {
@@ -113,7 +113,7 @@ public final class LanguageService {
         if (!fileNames.isEmpty()) {
             Request request = new Request(SERVICE, "removeFiles", fileNames);
 
-            this.bridge.sendRequest(request, Boolean.class);
+            this.bridge.call(request, Boolean.class);
         }
     }
 
@@ -122,6 +122,6 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "updateFile", fileName);
 
-        this.bridge.sendRequest(request, Boolean.class);
+        this.bridge.call(request, Boolean.class);
     }
 }

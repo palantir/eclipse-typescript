@@ -16,24 +16,9 @@
 
 package com.palantir.typescript;
 
-import java.util.List;
-
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-
-import com.google.common.collect.Lists;
-import com.palantir.typescript.bridge.Bridge;
-import com.palantir.typescript.bridge.language.LanguageService;
 
 /**
  * The activator class controls the plug-in life cycle.
@@ -44,15 +29,9 @@ public final class Activator extends AbstractUIPlugin {
 
     private static Activator PLUGIN;
 
-    private Bridge bridge;
-
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
-
-        this.bridge = new Bridge();
-
-        this.intializeWorkspace();
 
         PLUGIN = this;
     }
@@ -61,14 +40,7 @@ public final class Activator extends AbstractUIPlugin {
     public void stop(BundleContext context) throws Exception {
         PLUGIN = null;
 
-        this.bridge.stop();
-        this.bridge = null;
-
         super.stop(context);
-    }
-
-    public static Bridge getBridge() {
-        return PLUGIN.bridge;
     }
 
     /**
@@ -88,72 +60,5 @@ public final class Activator extends AbstractUIPlugin {
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin("com.palantir.typescript", path);
-    }
-
-    private void intializeWorkspace() throws CoreException {
-        final List<String> files = Lists.newArrayList();
-
-        // add all the TypeScript files in the workspace
-        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-            project.accept(new IResourceVisitor() {
-                @Override
-                public boolean visit(IResource resource) throws CoreException {
-                    if (isTypeScriptFile(resource)) {
-                        String file = resource.getRawLocation().toOSString();
-
-                        files.add(file);
-                    }
-
-                    return true;
-                }
-            });
-        }
-        this.bridge.getLanguageService().addFiles(files);
-
-        // listen to the resource deltas for additional TypeScript files
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new MyResourceChangeListener());
-    }
-
-    private static boolean isTypeScriptFile(IResource resource) {
-        return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
-    }
-
-    private final class MyResourceChangeListener implements IResourceChangeListener {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-                try {
-                    event.getDelta().accept(new MyResourceDeltaVisitor());
-                } catch (CoreException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-    }
-
-    private final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
-        @Override
-        public boolean visit(IResourceDelta delta) throws CoreException {
-            IResource resource = delta.getResource();
-
-            if (isTypeScriptFile(resource)) {
-                LanguageService languageService = Activator.this.bridge.getLanguageService();
-                String file = resource.getRawLocation().toOSString();
-
-                switch (delta.getKind()) {
-                    case IResourceDelta.ADDED:
-                        languageService.addFile(file);
-                        break;
-                    case IResourceDelta.CHANGED:
-                        languageService.updateFile(file);
-                        break;
-                    case IResourceDelta.REMOVED:
-                        languageService.removeFile(file);
-                        break;
-                }
-            }
-
-            return true;
-        }
     }
 }

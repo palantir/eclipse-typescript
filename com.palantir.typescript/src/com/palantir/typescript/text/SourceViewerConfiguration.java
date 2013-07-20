@@ -37,12 +37,12 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
  */
 public final class SourceViewerConfiguration extends TextSourceViewerConfiguration {
 
-    private final ColorManager colorManager;
+    private final TypeScriptEditor editor;
 
-    public SourceViewerConfiguration(ColorManager colorManager) {
-        checkNotNull(colorManager);
+    public SourceViewerConfiguration(TypeScriptEditor editor) {
+        checkNotNull(editor);
 
-        this.colorManager = colorManager;
+        this.editor = editor;
     }
 
     @Override
@@ -52,7 +52,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         ContentAssistant assistant = new ContentAssistant();
 
         assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
-        assistant.setContentAssistProcessor(new ContentAssistProcessor(), IDocument.DEFAULT_CONTENT_TYPE);
+        assistant.setContentAssistProcessor(new ContentAssistProcessor(this.editor), IDocument.DEFAULT_CONTENT_TYPE);
 
         assistant.enableAutoActivation(true);
         assistant.setAutoActivationDelay(100);
@@ -65,11 +65,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
     @Override
     public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
-        return new ContentFormatter();
+        return new ContentFormatter(this.editor);
     }
 
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        return new PresentationReconciler(this.colorManager);
+        return new PresentationReconciler(this.editor);
     }
 }

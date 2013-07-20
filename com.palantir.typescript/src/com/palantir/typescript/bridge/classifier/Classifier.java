@@ -49,6 +49,6 @@ public final class Classifier {
         Request request = new Request("classifier", "getClassificationsForLines", lines, lexState.ordinal());
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, ClassificationResult.class);
 
-        return this.bridge.sendRequest(request, resultType);
+        return this.bridge.call(request, resultType);
     }
 }

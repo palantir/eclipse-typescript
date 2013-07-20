@@ -30,12 +30,11 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.Lists;
-import com.palantir.typescript.Activator;
+import com.palantir.typescript.bridge.language.LanguageService;
 import com.palantir.typescript.bridge.language.NavigateToItem;
 
 /**
@@ -57,9 +56,10 @@ public final class OutlinePage extends ContentOutlinePage {
     public void createControl(Composite parent) {
         super.createControl(parent);
 
-        IEditorInput input = this.editor.getEditorInput();
-        String filePath = ((IPathEditorInput) input).getPath().toOSString();
-        List<NavigateToItem> lexicalStructure = Activator.getBridge().getLanguageService().getScriptLexicalStructure(filePath);
+        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
+        String fileName = editorInput.getPath().toOSString();
+        LanguageService languageService = this.editor.getLanguageService();
+        List<NavigateToItem> lexicalStructure = languageService.getScriptLexicalStructure(fileName);
 
         TreeViewer treeViewer = this.getTreeViewer();
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());

@@ -21,22 +21,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.IPathEditorInput;
 
 import com.google.common.collect.Lists;
-import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.language.AutoCompleteResult;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
 import com.palantir.typescript.bridge.language.DetailedAutoCompletionInfo;
@@ -48,9 +40,14 @@ import com.palantir.typescript.bridge.language.LanguageService;
  * @author tyleradams
  */
 public final class ContentAssistProcessor implements IContentAssistProcessor {
+
+    private final TypeScriptEditor editor;
     private final LocalValidator localContextInformationValidator;
 
-    public ContentAssistProcessor() {
+    public ContentAssistProcessor(TypeScriptEditor editor) {
+        checkNotNull(editor);
+
+        this.editor = editor;
         this.localContextInformationValidator = new LocalValidator();
     }
 
@@ -60,11 +57,11 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
         checkNotNull(viewer);
         checkArgument(offset >= 0);
 
-        IPath filePath = getFilePath();
-        String file = filePath.toOSString();
-        LanguageService languageService = Activator.getBridge().getLanguageService();
+        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
+        String fileName = editorInput.getPath().toOSString();
+        LanguageService languageService = this.editor.getLanguageService();
 
-        AutoCompleteResult autoCompleteResult = languageService.getCompletionsAtPosition(file, offset);
+        AutoCompleteResult autoCompleteResult = languageService.getCompletionsAtPosition(fileName, offset);
         if (autoCompleteResult == null) {
             return null;
         }
@@ -118,35 +115,6 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
         return this.localContextInformationValidator;
     }
 
-    private IPath getFilePath() {
-        IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) {
-            return null;
-        }
-
-        IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) {
-            return null;
-        }
-
-        IWorkbenchPage activePage = window.getActivePage();
-        if (activePage == null) {
-            return null;
-        }
-
-        IEditorPart editor = activePage.getActiveEditor();
-        if (editor == null) {
-            return null;
-        }
-
-        IEditorInput input = editor.getEditorInput();
-        if (input instanceof FileEditorInput) {
-            IPath path = ((FileEditorInput) input).getPath();
-            return path;
-        }
-        return null;
-    }
-
     private final class LocalValidator implements IContextInformationValidator {
         @Override
         public boolean isContextInformationValid(int offset) {
@@ -158,5 +126,4 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
                 int offset) {
         }
     }
-
 }

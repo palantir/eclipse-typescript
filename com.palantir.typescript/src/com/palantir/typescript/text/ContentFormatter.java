@@ -16,25 +16,20 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.IPathEditorInput;
 
 import com.google.common.collect.Lists;
-import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.language.FormatCodeOptions;
+import com.palantir.typescript.bridge.language.LanguageService;
 import com.palantir.typescript.bridge.language.TextEdit;
 
 /**
@@ -44,13 +39,23 @@ import com.palantir.typescript.bridge.language.TextEdit;
  */
 public final class ContentFormatter implements IContentFormatter {
 
+    private final TypeScriptEditor editor;
+
+    public ContentFormatter(TypeScriptEditor editor) {
+        checkNotNull(editor);
+
+        this.editor = editor;
+    }
+
     @Override
     public void format(IDocument document, IRegion region) {
-        String file = this.getFilePath().toOSString();
+        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
+        String fileName = editorInput.getPath().toOSString();
         int minChar = region.getOffset();
         int limChar = minChar + region.getLength();
         FormatCodeOptions options = new FormatCodeOptions();
-        List<TextEdit> edits = Activator.getBridge().getLanguageService().getFormattingEditsForRange(file, minChar, limChar, options);
+        LanguageService languageService = this.editor.getLanguageService();
+        List<TextEdit> edits = languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
 
         // apply the edits
         try {
@@ -69,34 +74,5 @@ public final class ContentFormatter implements IContentFormatter {
     @Override
     public IFormattingStrategy getFormattingStrategy(String contentType) {
         throw new UnsupportedOperationException();
-    }
-
-    private IPath getFilePath() {
-        IWorkbench workbench = PlatformUI.getWorkbench();
-        if (workbench == null) {
-            return null;
-        }
-
-        IWorkbenchWindow window = workbench.getActiveWorkbenchWindow();
-        if (window == null) {
-            return null;
-        }
-
-        IWorkbenchPage activePage = window.getActivePage();
-        if (activePage == null) {
-            return null;
-        }
-
-        IEditorPart editor = activePage.getActiveEditor();
-        if (editor == null) {
-            return null;
-        }
-
-        IEditorInput input = editor.getEditorInput();
-        if (input instanceof FileEditorInput) {
-            IPath path = ((FileEditorInput) input).getPath();
-            return path;
-        }
-        return null;
     }
 }

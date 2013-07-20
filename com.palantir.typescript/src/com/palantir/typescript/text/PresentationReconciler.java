@@ -42,9 +42,9 @@ import org.eclipse.swt.graphics.Color;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.palantir.typescript.Activator;
 import com.palantir.typescript.bridge.classifier.ClassificationInfo;
 import com.palantir.typescript.bridge.classifier.ClassificationResult;
+import com.palantir.typescript.bridge.classifier.Classifier;
 import com.palantir.typescript.bridge.classifier.EndOfLineState;
 import com.palantir.typescript.bridge.classifier.TokenClass;
 
@@ -56,15 +56,17 @@ import com.palantir.typescript.bridge.classifier.TokenClass;
 public final class PresentationReconciler implements IPresentationReconciler {
 
     private final ImmutableMap<TokenClass, TextAttribute> classificationTextAttributes;
+    private final TypeScriptEditor editor;
     private final Map<Integer, EndOfLineState> finalLexStates;
 
     private ITextListener listener;
     private ITextViewer viewer;
 
-    public PresentationReconciler(ColorManager colorManager) {
-        checkNotNull(colorManager);
+    public PresentationReconciler(TypeScriptEditor editor) {
+        checkNotNull(editor);
 
-        this.classificationTextAttributes = createClassificationTextAttributes(colorManager);
+        this.classificationTextAttributes = createClassificationTextAttributes(editor.getColorManager());
+        this.editor = editor;
         this.listener = new MyTextListener();
         this.finalLexStates = Maps.newTreeMap();
     }
@@ -232,7 +234,8 @@ public final class PresentationReconciler implements IPresentationReconciler {
         }
 
         boolean lastLexStateDiffers = false;
-        List<ClassificationResult> results = Activator.getBridge().getClassifier().getClassificationsForLines(lines, lexState);
+        Classifier classifier = this.editor.getClassifier();
+        List<ClassificationResult> results = classifier.getClassificationsForLines(lines, lexState);
         for (int i = 0; i < results.size(); i++) {
             int line = startLine + i;
             int lineOffset = document.getLineOffset(line);

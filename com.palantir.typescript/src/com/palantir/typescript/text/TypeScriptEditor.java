@@ -18,6 +18,7 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -33,7 +34,9 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import com.palantir.typescript.Activator;
+import com.palantir.typescript.bridge.Bridge;
+import com.palantir.typescript.bridge.classifier.Classifier;
+import com.palantir.typescript.bridge.language.LanguageService;
 
 /**
  * The editor for TypeScript files.
@@ -44,12 +47,20 @@ public final class TypeScriptEditor extends TextEditor {
 
     private final ColorManager colorManager;
 
+    private final Bridge bridge;
+    private final Classifier classifier;
+    private final LanguageService languageService;
+
     private OutlinePage contentOutlinePage;
 
     public TypeScriptEditor() {
         this.colorManager = new ColorManager();
 
-        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this.colorManager));
+        this.bridge = new Bridge();
+        this.classifier = new Classifier(this.bridge);
+        this.languageService = new LanguageService(this.bridge);
+
+        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
     }
 
     @Override
@@ -65,8 +76,21 @@ public final class TypeScriptEditor extends TextEditor {
         return super.getAdapter(adapter);
     }
 
+    public Classifier getClassifier() {
+        return this.classifier;
+    }
+
+    public ColorManager getColorManager() {
+        return this.colorManager;
+    }
+
+    public LanguageService getLanguageService() {
+        return this.languageService;
+    }
+
     @Override
     public void dispose() {
+        this.bridge.dispose();
         this.colorManager.dispose();
 
         super.dispose();
@@ -89,6 +113,16 @@ public final class TypeScriptEditor extends TextEditor {
         sourceViewer.addTextListener(new MyTextListener());
 
         return sourceViewer;
+    }
+
+    @Override
+    protected void doSetInput(IEditorInput input) throws CoreException {
+        super.doSetInput(input);
+
+        IPathEditorInput editorInput = (IPathEditorInput) input;
+        String fileName = editorInput.getPath().toOSString();
+
+        this.getLanguageService().addFile(fileName);
     }
 
     @Override
@@ -116,7 +150,6 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     private final class MyTextListener implements ITextListener {
-
         @Override
         public void textChanged(TextEvent event) {
             checkNotNull(event);
@@ -124,8 +157,8 @@ public final class TypeScriptEditor extends TextEditor {
             int offset = event.getOffset();
             int length = event.getLength();
             String text = event.getText();
-            IEditorInput input = getEditorInput();
-            String file = ((IPathEditorInput) input).getPath().toOSString();
+            IPathEditorInput editorInput = (IPathEditorInput) getEditorInput();
+            String fileName = editorInput.getPath().toOSString();
 
             // redraw state change - update the entire document
             if (event.getDocumentEvent() == null && offset == 0 && length == 0 && text == null) {
@@ -139,9 +172,9 @@ public final class TypeScriptEditor extends TextEditor {
                     throw new RuntimeException(e);
                 }
 
-                Activator.getBridge().getLanguageService().editFile(file, 0, editLength, replacementText);
+                TypeScriptEditor.this.languageService.editFile(fileName, 0, editLength, replacementText);
             } else if (text != null) { // normal edit
-                Activator.getBridge().getLanguageService().editFile(file, offset, length, text);
+                TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
             }
         }
     }

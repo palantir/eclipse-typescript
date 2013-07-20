@@ -19,19 +19,16 @@ package com.palantir.typescript.bridge;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.palantir.typescript.bridge.classifier.Classifier;
-import com.palantir.typescript.bridge.language.LanguageService;
+import com.google.common.base.Charsets;
 
 /**
  * This handles all requests that need to be handled by TypeScript's built in language services.
@@ -40,73 +37,31 @@ import com.palantir.typescript.bridge.language.LanguageService;
  */
 public final class Bridge {
 
-    private static final String DEFAULT_BRIDGE_LOCATION = "bin/bridge.js";
-    private static final String DEFAULT_NODE_LOCATION = "/usr/local/bin/node";
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
-    private static final int MAX_MESSAGE_LOG_SIZE = 1000;
-
-    private BufferedReader fromServer;
-    private BufferedWriter toServer;
-    private Process server;
-
-    private PrintStream logger;
-
-    private final String nodeLocation;
-    private final String bridgeLocation;
+    private Process nodeProcess;
+    private BufferedReader nodeStdout;
+    private PrintWriter nodeStdin;
 
     private final ObjectMapper mapper;
 
-    private final Classifier classifier;
-    private final LanguageService languageService;
-
     public Bridge() {
-        this(DEFAULT_NODE_LOCATION, DEFAULT_BRIDGE_LOCATION);
-    }
-
-    public Bridge(String nodeLocation, String bridgeLocation) {
-        checkNotNull(nodeLocation);
-        checkNotNull(bridgeLocation);
-
-        String pluginRoot = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-
-        this.nodeLocation = nodeLocation;
-        this.bridgeLocation = pluginRoot + bridgeLocation;
-
-        start();
-
         this.mapper = new ObjectMapper();
 
-        this.classifier = new Classifier(this);
-        this.languageService = new LanguageService(this);
+        // start the node process
+        this.start();
     }
 
-    public Classifier getClassifier() {
-        return this.classifier;
-    }
-
-    public LanguageService getLanguageService() {
-        return this.languageService;
-    }
-
-    /**
-     * This method handles packaging the request from Java, sending it across the TypeScript bridge,
-     * and packaging the result for usage.
-     */
-    public <T> T sendRequest(Request request, Class<T> resultType) {
+    public <T> T call(Request request, Class<T> resultType) {
         checkNotNull(request);
         checkNotNull(resultType);
 
         JavaType type = TypeFactory.defaultInstance().uncheckedSimpleType(resultType);
 
-        return this.sendRequest(request, type);
+        return this.call(request, type);
     }
 
-    /**
-     * This method handles packaging the request from Java, sending it across the TypeScript bridge,
-     * and packaging the result for usage.
-     */
-    public <T> T sendRequest(Request request, JavaType resultType) {
+    public <T> T call(Request request, JavaType resultType) {
         checkNotNull(request);
         checkNotNull(resultType);
 
@@ -132,18 +87,16 @@ public final class Bridge {
         checkNotNull(requestJson);
 
         // write the request JSON to the bridge's stdin
-        this.toServer.write(requestJson);
-        this.toServer.write('\n');
-        this.toServer.flush();
+        this.nodeStdin.println(requestJson);
 
         // read the response JSON from the bridge's stdout
         String resultJson = null;
         do {
-            String line = this.fromServer.readLine();
+            String line = this.nodeStdout.readLine();
 
             // process errors and logger statements
             if (line.startsWith("DEBUG")) {
-                this.log(line);
+                System.out.println(line);
             } else if (line.startsWith("ERROR")) {
                 line = line.substring(7, line.length()); // remove "ERROR: "
                 line = line.replaceAll("\\\\n", "\n"); // put newlines back
@@ -160,63 +113,35 @@ public final class Bridge {
         return resultJson;
     }
 
-    private void log(String message) {
-        checkNotNull(message);
-
-        if (message.length() > MAX_MESSAGE_LOG_SIZE) {
-            String etc = "...etc";
-            log(message.substring(0, MAX_MESSAGE_LOG_SIZE - etc.length()) + etc); // etc.length() is guaranteed to be less than MAX_MESSAGE_LOG_SIZE
-            return;
-        }
-
-        System.out.println(message);
-        if (this.logger != null) {
-            this.logger.println(message);
-            this.logger.flush();
-        }
-    }
-
     private void start() {
-        ProcessBuilder pb = new ProcessBuilder(this.nodeLocation, this.bridgeLocation);
+        // get the path to node
+        File nodeFile = new File("/usr/local/bin/node");
+        String nodePath = nodeFile.getAbsolutePath();
+        if (!nodeFile.exists()) {
+            throw new RuntimeException("Could not find node at " + nodePath);
+        }
+
+        // get the path to the bridge.js file
+        String pluginRoot = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        File bridgeFile = new File(pluginRoot, "bin/bridge.js");
+        String bridgePath = bridgeFile.getAbsolutePath();
+
+        // start the node process and create a reader/writer for its stdin/stdout
+        ProcessBuilder processBuilder = new ProcessBuilder(nodePath, bridgePath);
         try {
-            this.server = pb.start();
+            this.nodeProcess = processBuilder.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.fromServer = initializeReader();
-        this.toServer = initializeWriter();
-        this.logger = initializeLogger();
+        this.nodeStdout = new BufferedReader(new InputStreamReader(this.nodeProcess.getInputStream(), Charsets.UTF_8));
+        this.nodeStdin = new PrintWriter(new OutputStreamWriter(this.nodeProcess.getOutputStream(), Charsets.UTF_8), true);
     }
 
-    private BufferedReader initializeReader() {
-        return new BufferedReader(
-            new InputStreamReader(this.server.getInputStream()));
-    }
+    public void dispose() {
+        this.nodeStdin.close();
 
-    private BufferedWriter initializeWriter() {
-        return new BufferedWriter(
-            new OutputStreamWriter(this.server.getOutputStream()));
-    }
-
-    private PrintStream initializeLogger() {
-        long logNumber = System.currentTimeMillis();
-        String logLocation = "/tmp/" + logNumber + "TS.log";
-        File logFile = new File(logLocation);
         try {
-            return new PrintStream(logFile);
-        } catch (FileNotFoundException e) {
-            return null; // uninitialized logger.
-        }
-    }
-
-    public void stop() {
-        try {
-            this.fromServer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.toServer.close();
+            this.nodeStdout.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
