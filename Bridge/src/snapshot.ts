@@ -24,22 +24,22 @@ module Bridge {
 
         private version: number;
         private open: boolean;
-        private content: string;
+        private contents: string;
         private changes: TypeScript.TextChangeRange[];
         private lineStartPositions: number[];
 
-        constructor(private fileContent: string) {
+        constructor(private fileContents: string) {
             this.version = 0;
             this.open = true;
-            this.updateContent(fileContent);
+            this.updateContents(fileContents);
         }
 
-        public updateContent(content: string, resetChanges: boolean = true): void {
+        public updateContents(contents: string, resetChanges: boolean = true): void {
             if (resetChanges) {
                 this.changes = [];
             }
-            this.content = content;
-            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(this.content));
+            this.contents = contents;
+            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(contents));
             this.version++;
         }
 
@@ -63,20 +63,20 @@ module Bridge {
             if (this.changes.length >= ScriptSnapshot.MAX_CHANGES) {
                 this.changes = [];
             }
-            var beforeEdit = this.content.substring(0, offset);
-            var afterEdit = this.content.substring(offset + length, this.content.length);
-            var newContent = beforeEdit + replacementText + afterEdit;
+            var beforeEdit = this.contents.substring(0, offset);
+            var afterEdit = this.contents.substring(offset + length, this.contents.length);
+            var newContents = beforeEdit + replacementText + afterEdit;
             var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset + length), replacementText.length);
             this.changes.push(textChangeRange);
-            this.updateContent(newContent, false);
+            this.updateContents(newContents, false);
         }
 
         public getText(start: number, end: number): string {
-            return this.content.substring(start, end);
+            return this.contents.substring(start, end);
         }
 
         public getLength(): number {
-            return this.content.length;
+            return this.contents.length;
         }
 
         public getLineStartPositions(): number[] {

@@ -42,8 +42,8 @@ module Bridge {
         }
 
         public addFile(fileName: string, addReferencedFiles: boolean) {
-            var content = readFileContents(fileName);
-            var snapshot = new ScriptSnapshot(content);
+            var contents = readFileContents(fileName);
+            var snapshot = new ScriptSnapshot(contents);
 
             this.fileMap.set(fileName, snapshot);
 
@@ -76,14 +76,10 @@ module Bridge {
             this.fileMap.delete(fileName);
         }
 
-        public updateFileContents(fileName: string, content: string) {
-            this.fileMap.get(fileName).updateContent(content);
-        }
-
         public updateFile(fileName: string) {
-            var content = readFileContents(fileName);
+            var contents = readFileContents(fileName);
 
-            this.fileMap.get(fileName).updateContent(content);
+            this.fileMap.get(fileName).updateContents(contents);
         }
 
         public editFile(fileName: string, offset: number, length: number, replacementText: string) {
