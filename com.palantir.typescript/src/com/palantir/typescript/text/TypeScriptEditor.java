@@ -122,7 +122,7 @@ public final class TypeScriptEditor extends TextEditor {
         IPathEditorInput editorInput = (IPathEditorInput) input;
         String fileName = editorInput.getPath().toOSString();
 
-        this.getLanguageService().addFile(fileName);
+        this.getLanguageService().addFile(fileName, true);
     }
 
     @Override

@@ -74,10 +74,11 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
-    public void addFile(String fileName) {
+    public void addFile(String fileName, boolean addReferencedFiles) {
         checkNotNull(fileName);
 
-        this.addFiles(ImmutableList.of(fileName));
+        Request request = new Request(SERVICE, "addFile", fileName, addReferencedFiles);
+        this.bridge.call(request, Void.class);
     }
 
     public void addFiles(List<String> fileNames) {
@@ -86,7 +87,7 @@ public final class LanguageService {
         if (!fileNames.isEmpty()) {
             Request request = new Request(SERVICE, "addFiles", fileNames);
 
-            this.bridge.call(request, Boolean.class);
+            this.bridge.call(request, Void.class);
         }
     }
 
@@ -98,7 +99,7 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
 
-        this.bridge.call(request, Boolean.class);
+        this.bridge.call(request, Void.class);
     }
 
     public void removeFile(String fileName) {
@@ -113,7 +114,7 @@ public final class LanguageService {
         if (!fileNames.isEmpty()) {
             Request request = new Request(SERVICE, "removeFiles", fileNames);
 
-            this.bridge.call(request, Boolean.class);
+            this.bridge.call(request, Void.class);
         }
     }
 
@@ -122,6 +123,6 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "updateFile", fileName);
 
-        this.bridge.call(request, Boolean.class);
+        this.bridge.call(request, Void.class);
     }
 }

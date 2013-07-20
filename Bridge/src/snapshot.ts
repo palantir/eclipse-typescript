@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/compiler/io.ts'/>
 ///<reference path='../typescript/src/services/languageService.ts'/>
 
 module Bridge {
@@ -29,10 +28,10 @@ module Bridge {
         private changes: TypeScript.TextChangeRange[];
         private lineStartPositions: number[];
 
-        constructor(private file: string) {
+        constructor(private fileContent: string) {
             this.version = 0;
             this.open = true;
-            this.updateContent(readFileContents(file));
+            this.updateContent(fileContent);
         }
 
         public updateContent(content: string, resetChanges: boolean = true): void {
@@ -42,12 +41,6 @@ module Bridge {
             this.content = content;
             this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(this.content));
             this.version++;
-        }
-
-        public updateFile(file: string): void {
-            var content = readFileContents(file);
-
-            this.updateContent(content);
         }
 
         public getVersion(): number {
@@ -101,9 +94,5 @@ module Bridge {
                 return null;
             }
         }
-    }
-
-    function readFileContents(filePath: string): string {
-        return IO.readFile(filePath).contents();
     }
 }

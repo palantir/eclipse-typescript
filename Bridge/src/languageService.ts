@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+///<reference path='../typescript/src/compiler/io.ts'/>
+///<reference path='../typescript/src/compiler/precompile.ts'/>
 ///<reference path='../typescript/src/services/languageService.ts'/>
 ///<reference path='snapshot.ts'/>
 
@@ -35,7 +37,32 @@ module Bridge {
 
         public addFiles(fileNames: string[]) {
             for (var i = 0; i < fileNames.length; i++) {
-                this.addFile(fileNames[i]);
+                this.addFile(fileNames[i], false);
+            }
+        }
+
+        public addFile(fileName: string, addReferencedFiles: boolean) {
+            var content = readFileContents(fileName);
+            var snapshot = new ScriptSnapshot(content);
+
+            this.fileMap.set(fileName, snapshot);
+
+            if (addReferencedFiles) {
+                var lastSlash = fileName.lastIndexOf("/");
+                var rootPath = fileName.substring(0, lastSlash);
+                var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
+
+                for (var i = 0; i < referencedFiles.length; i++) {
+                    var referencedFilePath = referencedFiles[i].path;
+                    var resolvedFile = IO.findFile(rootPath, referencedFilePath);
+
+                    if (resolvedFile != null) {
+                        var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
+                        var resolvedFilePath = IO.resolvePath(resolvedFile.path);
+
+                        this.fileMap.set(resolvedFilePath, referencedSnapshot);
+                    }
+                }
             }
         }
 
@@ -43,10 +70,6 @@ module Bridge {
             for (var i = 0; i < fileNames.length; i++) {
                 this.removeFile(fileNames[i]);
             }
-        }
-
-        public addFile(fileName: string) {
-            this.fileMap.set(fileName, new ScriptSnapshot(fileName));
         }
 
         public removeFile(fileName: string) {
@@ -58,7 +81,9 @@ module Bridge {
         }
 
         public updateFile(fileName: string) {
-            this.fileMap.get(fileName).updateFile(fileName);
+            var content = readFileContents(fileName);
+
+            this.fileMap.get(fileName).updateContent(content);
         }
 
         public editFile(fileName: string, offset: number, length: number, replacementText: string) {
@@ -245,6 +270,10 @@ module Bridge {
         private prefixMatch(_prefix: string, str: string): boolean {
             return str.indexOf(_prefix) === 0;
         }
+    }
+
+    function readFileContents(filePath: string): string {
+        return IO.readFile(filePath).contents();
     }
 
     export interface DetailedAutoCompletionInfo {
