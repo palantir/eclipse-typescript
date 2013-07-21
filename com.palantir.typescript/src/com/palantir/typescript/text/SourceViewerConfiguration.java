@@ -54,6 +54,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
         ContentAssistant contentAssistant = new ContentAssistant();
         contentAssistant.enableAutoActivation(true);
+        contentAssistant.setAutoActivationDelay(200);
         contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
         contentAssistant.setInformationControlCreator(new IInformationControlCreator() {
             @Override
