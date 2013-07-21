@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="TYPESCRIPT_FEATURE_ID"
-      label="TypeScript Plug-in"
+      label="TypeScript"
       version="TYPESCRIPT_PLUGIN_VERSION"
       provider-name="Palantir Technologies">
 
    <description url="https://github.com/palantir/eclipse-typescript">
-An eclipse-plugin for developing in the TypeScript language.
+An Eclipse plug-in for developing in the TypeScript language.
    </description>
 
    <copyright>

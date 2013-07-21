@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <category-def name="com.palantir.typescript" label="TypeScript Plug-in">
+   <category-def name="com.palantir.typescript" label="TypeScript">
       <description>
-         An eclipse-plugin for developing in the TypeScript language.
+         An Eclipse plug-in for developing in the TypeScript language.
       </description>
    </category-def>
 </site>
