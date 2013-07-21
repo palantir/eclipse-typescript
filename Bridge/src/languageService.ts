@@ -50,6 +50,10 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
+        public getEmitOutput(fileName: string): Services.EmitOutput {
+        	return this.languageService.getEmitOutput(fileName);
+        }
+
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }

@@ -74,6 +74,13 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
+    public EmitOutput getEmitOutput(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getEmitOutput", fileName);
+        return this.bridge.call(request, EmitOutput.class);
+    }
+
     public List<NavigateToItem> getScriptLexicalStructure(String fileName) {
         checkNotNull(fileName);
 
