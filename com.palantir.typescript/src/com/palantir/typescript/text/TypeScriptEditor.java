@@ -90,7 +90,7 @@ public final class TypeScriptEditor extends TextEditor {
         this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
 
         this.resourceChangeListener = new MyResourceChangeListener();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     @Override
@@ -210,17 +210,15 @@ public final class TypeScriptEditor extends TextEditor {
     private final class MyResourceChangeListener implements IResourceChangeListener {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
-            if (event.getType() == IResourceChangeEvent.POST_CHANGE) {
-                MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor();
+            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor();
 
-                try {
-                    event.getDelta().accept(visitor);
-                } catch (CoreException e) {
-                    throw new RuntimeException(e);
-                }
-
-                TypeScriptEditor.this.languageService.updateFiles(visitor.getDeltas());
+            try {
+                event.getDelta().accept(visitor);
+            } catch (CoreException e) {
+                throw new RuntimeException(e);
             }
+
+            TypeScriptEditor.this.languageService.updateFiles(visitor.getDeltas());
         }
     }
 
