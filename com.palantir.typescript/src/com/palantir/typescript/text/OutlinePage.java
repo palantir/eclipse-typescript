@@ -36,6 +36,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.language.LanguageService;
 import com.palantir.typescript.bridge.language.NavigateToItem;
+import com.palantir.typescript.text.icons.Icons;
 
 /**
  * The outline view.
@@ -132,7 +133,7 @@ public final class OutlinePage extends ContentOutlinePage {
     private static final class MyLabelProvider extends BaseLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
-            return null;
+            return Icons.CIRCLE;
         }
 
         @Override
