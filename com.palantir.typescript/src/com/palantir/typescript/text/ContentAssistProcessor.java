@@ -42,18 +42,15 @@ import com.palantir.typescript.bridge.language.LanguageService;
 public final class ContentAssistProcessor implements IContentAssistProcessor {
 
     private final TypeScriptEditor editor;
-    private final LocalValidator localContextInformationValidator;
 
     public ContentAssistProcessor(TypeScriptEditor editor) {
         checkNotNull(editor);
 
         this.editor = editor;
-        this.localContextInformationValidator = new LocalValidator();
     }
 
     @Override
-    public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer,
-            int offset) {
+    public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
         checkNotNull(viewer);
         checkArgument(offset >= 0);
 
@@ -88,42 +85,27 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
     }
 
     @Override
-    public IContextInformation[] computeContextInformation(ITextViewer viewer,
-            int offset) {
+    public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
         return new IContextInformation[] {};
     }
 
     @Override
     public char[] getCompletionProposalAutoActivationCharacters() {
-        char[] retu = { '.' };
-        return retu;
+        return new char[] { '.' };
     }
 
     @Override
     public char[] getContextInformationAutoActivationCharacters() {
-        char[] retu = {};
-        return retu;
+        return new char[] {};
+    }
+
+    @Override
+    public IContextInformationValidator getContextInformationValidator() {
+        return null;
     }
 
     @Override
     public String getErrorMessage() {
         return null;
-    }
-
-    @Override
-    public IContextInformationValidator getContextInformationValidator() {
-        return this.localContextInformationValidator;
-    }
-
-    private final class LocalValidator implements IContextInformationValidator {
-        @Override
-        public boolean isContextInformationValid(int offset) {
-            return false;
-        }
-
-        @Override
-        public void install(IContextInformation info, ITextViewer viewer,
-                int offset) {
-        }
     }
 }
