@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -50,12 +51,16 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         checkNotNull(sourceViewer);
 
         ContentAssistant assistant = new ContentAssistant();
-        assistant.setContentAssistProcessor(new ContentAssistProcessor(this.editor), IDocument.DEFAULT_CONTENT_TYPE);
         assistant.enableAutoActivation(true);
-        assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
-        Shell parent = null;
-        IInformationControlCreator creator = new DefaultInformationControl(parent).getInformationPresenterControlCreator();
-        assistant.setInformationControlCreator(creator); //TODO: Why does this work?
+        assistant.setContentAssistProcessor(new ContentAssistProcessor(this.editor), IDocument.DEFAULT_CONTENT_TYPE);
+        assistant.setInformationControlCreator(new IInformationControlCreator() {
+            @Override
+            public IInformationControl createInformationControl(Shell parent) {
+                return new DefaultInformationControl(parent);
+            }
+        });
+        assistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+
         return assistant;
     }
 
