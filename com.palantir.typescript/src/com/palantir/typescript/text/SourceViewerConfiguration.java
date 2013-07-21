@@ -50,12 +50,8 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         checkNotNull(sourceViewer);
 
         ContentAssistant assistant = new ContentAssistant();
-
-        assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
         assistant.setContentAssistProcessor(new ContentAssistProcessor(this.editor), IDocument.DEFAULT_CONTENT_TYPE);
-
         assistant.enableAutoActivation(true);
-        assistant.setAutoActivationDelay(100);
         assistant.setProposalPopupOrientation(IContentAssistant.PROPOSAL_OVERLAY);
         Shell parent = null;
         IInformationControlCreator creator = new DefaultInformationControl(parent).getInformationPresenterControlCreator();
