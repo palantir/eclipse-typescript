@@ -25,43 +25,49 @@ module Bridge {
 
         private compilationSettings: TypeScript.CompilationSettings;
         private diagnostics: Services.ILanguageServicesDiagnostics;
-        private snapshots: Map<string, ScriptSnapshot>;
+        private fileInfos: Map<string, FileInfo>;
 
         constructor() {
             this.compilationSettings = new TypeScript.CompilationSettings();
             this.diagnostics = new LanguageServicesDiagnostics();
-            this.snapshots = new Map();
+            this.fileInfos = new Map();
         }
 
-        public editFile(fileName: string, offset: number, length: number, replacementText: string) {
-            var snapshot = this.snapshots.get(fileName);
+        public editFile(fileName: string, offset: number, length: number, text: string) {
+            var fileInfo = this.fileInfos.get(fileName);
 
-            if (snapshot != null) {
-                snapshot.addEdit(offset, length, replacementText);
+            if (fileInfo != null) {
+                // edit the existing file info
+                fileInfo.editContents(offset, length, text);
             } else {
-                var contents = replacementText;
-                var snapshot = new ScriptSnapshot(contents);
+                var contents = text;
+                var fileInfo = new FileInfo(contents, true);
 
-                // save a snapshot of the contents
-                snapshot.setOpen(true);
-                this.snapshots.set(fileName, snapshot);
+                // save the new file info
+                this.fileInfos.set(fileName, fileInfo);
 
                 // also add the files referenced from the one being added
                 var lastSlash = fileName.lastIndexOf("/");
                 var rootPath = fileName.substring(0, lastSlash);
+                var snapshot = fileInfo.getScriptSnapshot();
                 var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
                 for (var i = 0; i < referencedFiles.length; i++) {
                     var referencedFilePath = referencedFiles[i].path;
                     var resolvedFile = IO.findFile(rootPath, referencedFilePath);
 
                     if (resolvedFile != null) {
-                        var referencedSnapshot = new ScriptSnapshot(resolvedFile.fileInformation.contents());
+                        var referencedFileContents = resolvedFile.fileInformation.contents();
+                        var referencedFileInfo = new FileInfo(referencedFileContents, false);
                         var resolvedFilePath = IO.resolvePath(resolvedFile.path);
 
-                        this.snapshots.set(resolvedFilePath, referencedSnapshot);
+                        this.fileInfos.set(resolvedFilePath, referencedFileInfo);
                     }
                 }
             }
+        }
+
+        public updateFileContents(fileName: string, contents: string) {
+            this.fileInfos.get(fileName).updateContents(contents);
         }
 
         public updateFiles(deltas: IFileDelta[]) {
@@ -70,16 +76,16 @@ module Bridge {
 
                 switch (deltas[i].delta) {
                     case "CHANGED":
-                        var snapshot = this.snapshots.get(fileName);
+                        var fileInfo = this.fileInfos.get(fileName);
 
-                        if (snapshot !== undefined) {
+                        if (fileInfo !== undefined) {
                             var contents = readFileContents(fileName);
 
-                            snapshot.updateContents(contents);
+                            fileInfo.updateContents(contents);
                         }
                         break;
                     case "REMOVED":
-                        this.snapshots.delete(fileName);
+                        this.fileInfos.delete(fileName);
                         break;
                 }
             }
@@ -90,19 +96,19 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            return <string[]> this.snapshots.keys();
+            return this.fileInfos.keys();
         }
 
         public getScriptVersion(fileName: string): number {
-            return this.snapshots.get(fileName).getVersion();
+            return this.fileInfos.get(fileName).getVersion();
         }
 
         public getScriptIsOpen(fileName: string): boolean {
-            return this.snapshots.get(fileName).isOpen();
+            return this.fileInfos.get(fileName).getOpen();
         }
 
         public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
-            return this.snapshots.get(fileName);
+            return this.fileInfos.get(fileName).getScriptSnapshot();
         }
 
         public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {
@@ -114,24 +120,28 @@ module Bridge {
         }
 
         public debug(): boolean {
-            return true;
+            return false;
         }
 
         public warning(): boolean {
-            return true;
+            return false;
         }
 
         public error(): boolean {
-            return true;
+            return false;
         }
 
         public fatal(): boolean {
-            return true;
+            return false;
         }
 
-        public log(s: string): void {
-            // does nothing
+        public log(message: string): void {
         }
+    }
+
+    export interface IFileDelta {
+        delta: string;
+        fileName: string;
     }
 
     function readFileContents(filePath: string): string {
@@ -141,12 +151,59 @@ module Bridge {
     class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
 
         public log(message: string): void {
-            // does nothing
         }
     }
 
-    export interface IFileDelta {
-        delta: string;
-        fileName: string;
+    class FileInfo {
+
+        private changes: TypeScript.TextChangeRange[];
+        private contents: string;
+        private open: boolean;
+        private version: number;
+
+        constructor(contents: string, open: boolean) {
+            this.changes = [];
+            this.contents = contents;
+            this.open = open;
+            this.version = 0;
+        }
+
+        public getVersion(): number {
+            return this.version;
+        }
+
+        public getOpen(): boolean {
+            return this.open;
+        }
+
+        public getScriptSnapshot(): TypeScript.IScriptSnapshot {
+            return new ScriptSnapshot(this.changes.slice(0), this.contents, this.version);
+        }
+
+        public editContents(offset: number, length: number, text: string): void {
+            var prefix = this.contents.substring(0, offset);
+            var suffix = this.contents.substring(offset + length);
+            var newContents = prefix + text + suffix;
+
+            var span = TypeScript.TextSpan.fromBounds(offset, offset + length);
+            var change = new TypeScript.TextChangeRange(span, text.length);
+
+            this.setContents(newContents, change);
+        }
+
+        public updateContents(contents: string) {
+            var span = TypeScript.TextSpan.fromBounds(0, this.contents.length);
+            var change = new TypeScript.TextChangeRange(span, contents.length);
+
+            this.setContents(contents, change);
+        }
+
+        private setContents(contents: string, change: TypeScript.TextChangeRange) {
+            if (this.contents !== contents) {
+                this.changes.push(change);
+                this.contents = contents;
+                this.version++;
+            }
+        }
     }
 }

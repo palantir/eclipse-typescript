@@ -20,51 +20,20 @@ module Bridge {
 
     export class ScriptSnapshot implements TypeScript.IScriptSnapshot {
 
-        private static MAX_CHANGES = 100;
-
-        private version: number;
-        private open: boolean;
-        private contents: string;
         private changes: TypeScript.TextChangeRange[];
+        private contents: string;
         private lineStartPositions: number[];
+        private version: number;
 
-        constructor(private fileContents: string) {
-            this.version = 0;
-            this.open = true;
-            this.updateContents(fileContents);
-        }
-
-        public updateContents(contents: string, resetChanges: boolean = true): void {
-            if (resetChanges) {
-                this.changes = [];
-            }
+        constructor(changes: TypeScript.TextChangeRange[], contents: string, version: number) {
+            this.changes = changes;
             this.contents = contents;
             this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(contents));
-            this.version++;
+            this.version = version;
         }
 
-        public getVersion(): number {
-            return this.version;
-        }
-
-        public isOpen(): boolean {
-            return this.open;
-        }
-
-        public setOpen(open: boolean): void {
-            this.open = open;
-        }
-
-        public addEdit(offset: number, length: number, replacementText: string): void {
-            if (this.changes.length >= ScriptSnapshot.MAX_CHANGES) {
-                this.changes = [];
-            }
-            var beforeEdit = this.contents.substring(0, offset);
-            var afterEdit = this.contents.substring(offset + length, this.contents.length);
-            var newContents = beforeEdit + replacementText + afterEdit;
-            var textChangeRange = new TypeScript.TextChangeRange(TypeScript.TextSpan.fromBounds(offset, offset + length), replacementText.length);
-            this.changes.push(textChangeRange);
-            this.updateContents(newContents, false);
+        public getLineStartPositions(): number[] {
+            return this.lineStartPositions;
         }
 
         public getText(start: number, end: number): string {
@@ -75,16 +44,13 @@ module Bridge {
             return this.contents.length;
         }
 
-        public getLineStartPositions(): number[] {
-            return this.lineStartPositions;
-        }
-
         public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
             if (this.version === version) {
                 return TypeScript.TextChangeRange.unchanged;
             } else if (this.version - version <= this.changes.length) {
                 var start = this.changes.length - (this.version - version);
                 var changes = this.changes.slice(start);
+
                 return TypeScript.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
             } else {
                 return null;

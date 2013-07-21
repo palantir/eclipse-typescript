@@ -80,7 +80,14 @@ public final class LanguageService {
         checkNotNull(replacementText);
 
         Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
+        this.bridge.call(request, Void.class);
+    }
 
+    public void updateFileContents(String fileName, String contents) {
+        checkNotNull(fileName);
+        checkNotNull(contents);
+
+        Request request = new Request(SERVICE, "updateFileContents", fileName, contents);
         this.bridge.call(request, Void.class);
     }
 

@@ -26,7 +26,6 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
@@ -214,16 +213,9 @@ public final class TypeScriptEditor extends TextEditor {
             // redraw state change - update the entire document
             if (event.getDocumentEvent() == null && offset == 0 && length == 0 && text == null) {
                 IDocument document = getSourceViewer().getDocument();
-                int editLength = document.getLength();
+                String documentText = document.get();
 
-                String replacementText;
-                try {
-                    replacementText = document.get(0, editLength);
-                } catch (BadLocationException e) {
-                    throw new RuntimeException(e);
-                }
-
-                TypeScriptEditor.this.languageService.editFile(fileName, 0, editLength, replacementText);
+                TypeScriptEditor.this.languageService.updateFileContents(fileName, documentText);
             } else if (text != null) { // normal edit
                 TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
             }

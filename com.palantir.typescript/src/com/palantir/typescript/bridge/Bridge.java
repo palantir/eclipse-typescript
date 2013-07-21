@@ -97,9 +97,7 @@ public final class Bridge {
             // process errors and logger statements
             if (line == null) {
                 throw new IllegalStateException("The node process has crashed.");
-            } else if (line.startsWith("DEBUG")) {
-                System.out.println(line);
-            } else if (line.startsWith("ERROR")) {
+            } else if (line.startsWith("ERROR: ")) {
                 line = line.substring(7, line.length()); // remove "ERROR: "
                 line = line.replaceAll("\\\\n", LINE_SEPARATOR); // put newlines back
                 line = line.replaceAll("    ", "\t"); // replace spaces with tabs (to match Java stack traces)
@@ -107,6 +105,8 @@ public final class Bridge {
                 throw new RuntimeException("The following request caused an error to be thrown:" + LINE_SEPARATOR
                         + requestJson + LINE_SEPARATOR
                         + line);
+            } else if (line.startsWith("LOG: ")) {
+                System.out.println(line.substring(5));
             } else {
                 resultJson = line;
             }
