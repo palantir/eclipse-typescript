@@ -65,6 +65,15 @@ public final class LanguageService {
         return new AutoCompleteResult(autoCompletionInfo);
     }
 
+    public List<DefinitionInfo> getDefinitionAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getDefinitionAtPosition", fileName, position);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DefinitionInfo.class);
+        return this.bridge.call(request, resultType);
+    }
+
     public List<NavigateToItem> getScriptLexicalStructure(String fileName) {
         checkNotNull(fileName);
 

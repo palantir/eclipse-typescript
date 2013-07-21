@@ -46,6 +46,10 @@ module Bridge {
             return this.getDetailedImplicitlyPrunedCompletionsAtPosition(fileName, position);
         }
 
+        public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
+            return this.languageService.getDefinitionAtPosition(fileName, position);
+        }
+
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }

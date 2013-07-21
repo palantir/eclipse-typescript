@@ -5,10 +5,12 @@ Bundle-SymbolicName: com.palantir.typescript;singleton:=true
 Bundle-Version: 0.0.0
 Bundle-Activator: com.palantir.typescript.Activator
 Bundle-Vendor: Palantir Technologies
-Require-Bundle: org.eclipse.ui,
+Require-Bundle: org.eclipse.core.filesystem;bundle-version="1.4.0",
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
+ org.eclipse.ui,
  org.eclipse.ui.editors,
+ org.eclipse.ui.ide;bundle-version="3.9.0",
  org.eclipse.ui.views;bundle-version="3.6.100"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

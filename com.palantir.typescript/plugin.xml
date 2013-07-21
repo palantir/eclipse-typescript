@@ -26,6 +26,11 @@
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.format"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="F3"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.openDefinition"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    </extension>
 
    <extension
@@ -33,6 +38,10 @@
       <command
             id="com.palantir.typescript.text.format"
             name="Format">
+      </command>
+      <command
+            id="com.palantir.typescript.text.openDefinition"
+            name="Open Definition">
       </command>
    </extension>
 
@@ -67,6 +76,9 @@
           </separator>
           <command
                 commandId="com.palantir.typescript.text.format">
+          </command>
+          <command
+                commandId="com.palantir.typescript.text.openDefinition">
           </command>
       </menuContribution>
    </extension>

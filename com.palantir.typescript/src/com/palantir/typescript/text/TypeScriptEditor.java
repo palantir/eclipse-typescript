@@ -18,6 +18,11 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.util.List;
+
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -34,13 +39,18 @@ import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.classifier.Classifier;
+import com.palantir.typescript.bridge.language.DefinitionInfo;
 import com.palantir.typescript.bridge.language.FileDelta;
 import com.palantir.typescript.bridge.language.FileDelta.Delta;
 import com.palantir.typescript.bridge.language.LanguageService;
@@ -117,7 +127,12 @@ public final class TypeScriptEditor extends TextEditor {
         // format
         FormatAction formatAction = new FormatAction();
         formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
-        this.setAction("format", formatAction);
+        this.setAction(ITypeScriptActionDefinitionIds.FORMAT, formatAction);
+
+        // open definition
+        OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction();
+        openDefinitionAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.OPEN_DEFINITION);
+        this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
     }
 
     @Override
@@ -131,7 +146,10 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     protected void initializeKeyBindingScopes() {
-        this.setKeyBindingScopes(new String[] { "com.palantir.typescript.text.typeScriptEditorScope" });
+        this.setKeyBindingScopes(new String[] {
+                "com.palantir.typescript.text.typeScriptEditorScope",
+                "org.eclipse.ui.textEditorScope"
+        });
     }
 
     private final class FormatAction extends Action implements IUpdate {
@@ -150,6 +168,34 @@ public final class TypeScriptEditor extends TextEditor {
         @Override
         public void update() {
             this.setEnabled(isEditorInputModifiable());
+        }
+    }
+
+    private final class OpenDefinitionAction extends Action {
+        @Override
+        public void run() {
+            IPathEditorInput editorInput = (IPathEditorInput) getEditorInput();
+            String fileName = editorInput.getPath().toOSString();
+            int position = getSourceViewer().getSelectedRange().x;
+            List<DefinitionInfo> definitions = TypeScriptEditor.this.languageService.getDefinitionAtPosition(fileName, position);
+
+            if (definitions != null && !definitions.isEmpty()) {
+                DefinitionInfo definition = definitions.get(0);
+                int minChar = definition.getMinChar();
+                int limChar = definition.getLimChar();
+                IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+                File definitionFile = new File(definition.getFileName());
+                IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
+
+                // open the editor and select the text
+                try {
+                    TextEditor definitionEditor = (TextEditor) IDE.openEditorOnFileStore(activePage, localFile);
+
+                    definitionEditor.selectAndReveal(minChar, limChar - minChar);
+                } catch (PartInitException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 

@@ -26,4 +26,5 @@ import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 public interface ITypeScriptActionDefinitionIds extends ITextEditorActionDefinitionIds {
 
     String FORMAT = "com.palantir.typescript.text.format";
+    String OPEN_DEFINITION = "com.palantir.typescript.text.openDefinition";
 }

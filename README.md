@@ -5,6 +5,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 ## Features
 * autocomplete
 * format code
+* open definition
 * outline view
 * syntax highlighting
 
