@@ -47,6 +47,8 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.classifier.Classifier;
@@ -62,6 +64,13 @@ import com.palantir.typescript.bridge.language.LanguageService;
  */
 public final class TypeScriptEditor extends TextEditor {
 
+    private static final Supplier<Bridge> BRIDGE_SUPPLIER = Suppliers.memoize(new Supplier<Bridge>() {
+        @Override
+        public Bridge get() {
+            return new Bridge();
+        }
+    });
+
     private final ColorManager colorManager;
 
     private final Bridge bridge;
@@ -74,7 +83,7 @@ public final class TypeScriptEditor extends TextEditor {
     public TypeScriptEditor() {
         this.colorManager = new ColorManager();
 
-        this.bridge = new Bridge();
+        this.bridge = BRIDGE_SUPPLIER.get();
         this.classifier = new Classifier(this.bridge);
         this.languageService = new LanguageService(this.bridge);
 
@@ -111,7 +120,6 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void dispose() {
-        this.bridge.dispose();
         this.colorManager.dispose();
 
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
