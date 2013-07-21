@@ -79,7 +79,7 @@ module Bridge {
                         var fileInfo = this.fileInfos.get(fileName);
 
                         if (fileInfo !== undefined) {
-                            var contents = readFileContents(fileName);
+                            var contents = IO.readFile(fileName).contents();
 
                             fileInfo.updateContents(contents);
                         }
@@ -142,10 +142,6 @@ module Bridge {
     export interface IFileDelta {
         delta: string;
         fileName: string;
-    }
-
-    function readFileContents(filePath: string): string {
-        return IO.readFile(filePath).contents();
     }
 
     class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {

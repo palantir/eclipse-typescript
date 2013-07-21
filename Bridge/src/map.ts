@@ -24,7 +24,8 @@ module Bridge {
         // if true, the iteration is ordered from least recent access to most recent access
         private accessOrder: boolean;
 
-        constructor(accessOrder?: boolean) {
+        constructor(accessOrder: boolean = false) {
+        	this.accessOrder = accessOrder;
             this.entries = {};
 
             // initialize a circular doubly linked list that allows quick access to the first or last entry
@@ -32,12 +33,6 @@ module Bridge {
             this.headEntry = new Entry();
             this.headEntry.prev = this.headEntry;
             this.headEntry.next = this.headEntry;
-
-            if (accessOrder !== undefined) {
-                this.accessOrder = accessOrder;
-            } else {
-                this.accessOrder = false;
-            }
         }
 
         public delete(key: K): boolean {
