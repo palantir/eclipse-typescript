@@ -34,40 +34,47 @@ module Bridge {
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
+            var fileInfo = this.fileInfos.get(fileName).editContents(offset, length, text);
+        }
+
+        public updateFileContents(fileName: string, contents: string) {
             var fileInfo = this.fileInfos.get(fileName);
 
             if (fileInfo != null) {
-                // edit the existing file info
-                fileInfo.editContents(offset, length, text);
+                fileInfo.updateContents(contents);
             } else {
-                var contents = text;
                 var fileInfo = new FileInfo(contents, true);
 
                 // save the new file info
                 this.fileInfos.set(fileName, fileInfo);
 
-                // also add the files referenced from the one being added
-                var lastSlash = fileName.lastIndexOf("/");
-                var rootPath = fileName.substring(0, lastSlash);
-                var snapshot = fileInfo.getScriptSnapshot();
-                var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
-                for (var i = 0; i < referencedFiles.length; i++) {
-                    var referencedFilePath = referencedFiles[i].path;
-                    var resolvedFile = IO.findFile(rootPath, referencedFilePath);
-
-                    if (resolvedFile != null) {
-                        var referencedFileContents = resolvedFile.fileInformation.contents();
-                        var referencedFileInfo = new FileInfo(referencedFileContents, false);
-                        var resolvedFilePath = IO.resolvePath(resolvedFile.path);
-
-                        this.fileInfos.set(resolvedFilePath, referencedFileInfo);
-                    }
-                }
+                this.addReferencedFiles(fileName);
             }
         }
 
-        public updateFileContents(fileName: string, contents: string) {
-            this.fileInfos.get(fileName).updateContents(contents);
+        private addReferencedFiles(fileName: string) {
+            var fileInfo = this.fileInfos.get(fileName);
+            var lastSlash = fileName.lastIndexOf("/");
+            var rootPath = fileName.substring(0, lastSlash);
+            var snapshot = fileInfo.getScriptSnapshot();
+            var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
+
+            for (var i = 0; i < referencedFiles.length; i++) {
+                var referencedFilePath = referencedFiles[i].path;
+                var resolvedFile = IO.findFile(rootPath, referencedFilePath);
+
+                if (resolvedFile != null) {
+                    var referencedFileContents = resolvedFile.fileInformation.contents();
+                    var referencedFileInfo = new FileInfo(referencedFileContents, false);
+                    var referencedFileName = IO.resolvePath(resolvedFile.path);
+
+                    if (!this.fileInfos.has(referencedFileName)) {
+                        this.fileInfos.set(referencedFileName, referencedFileInfo);
+
+                        this.addReferencedFiles(referencedFileName);
+                    }
+                }
+            }
         }
 
         public updateFiles(deltas: IFileDelta[]) {

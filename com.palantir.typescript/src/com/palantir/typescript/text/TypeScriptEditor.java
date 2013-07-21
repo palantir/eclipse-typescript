@@ -257,7 +257,7 @@ public final class TypeScriptEditor extends TextEditor {
             String fileName = editorInput.getPath().toOSString();
 
             // redraw state change - update the entire document
-            if (event.getDocumentEvent() == null && offset == 0 && length == 0 && text == null) {
+            if (event.getDocumentEvent() == null) {
                 IDocument document = getSourceViewer().getDocument();
                 String documentText = document.get();
 
