@@ -67,7 +67,7 @@ module Bridge {
 
                 // convert the result to JSON and write it to stdout
                 var resultJson = JSON.stringify(result);
-                console.log(resultJson);
+                console.log("RESULT: " + resultJson);
             } catch (e) {
                 console.log("ERROR: " + e.stack.replace(/\n/g, "\\n"));
             }

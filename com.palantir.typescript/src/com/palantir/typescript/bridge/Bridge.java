@@ -105,10 +105,10 @@ public final class Bridge {
                 throw new RuntimeException("The following request caused an error to be thrown:" + LINE_SEPARATOR
                         + requestJson + LINE_SEPARATOR
                         + line);
-            } else if (line.startsWith("LOG: ")) {
-                System.out.println(line.substring(5));
-            } else {
-                resultJson = line;
+            } else if (line.startsWith("RESULT: ")) {
+                resultJson = line.substring(8);
+            } else { // log statement
+                System.out.println(line);
             }
         } while (resultJson == null);
 
