@@ -50,18 +50,20 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
         checkNotNull(sourceViewer);
 
-        ContentAssistant assistant = new ContentAssistant();
-        assistant.enableAutoActivation(true);
-        assistant.setContentAssistProcessor(new ContentAssistProcessor(this.editor), IDocument.DEFAULT_CONTENT_TYPE);
-        assistant.setInformationControlCreator(new IInformationControlCreator() {
+        ContentAssistProcessor contentAssistProcessor = new ContentAssistProcessor(this.editor);
+
+        ContentAssistant contentAssistant = new ContentAssistant();
+        contentAssistant.enableAutoActivation(true);
+        contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
+        contentAssistant.setInformationControlCreator(new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(Shell parent) {
                 return new DefaultInformationControl(parent);
             }
         });
-        assistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
+        contentAssistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
 
-        return assistant;
+        return contentAssistant;
     }
 
     @Override
