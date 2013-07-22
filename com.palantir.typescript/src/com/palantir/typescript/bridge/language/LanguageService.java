@@ -19,10 +19,13 @@ package com.palantir.typescript.bridge.language;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.Request;
 
@@ -39,10 +42,10 @@ public final class LanguageService {
 
     private final Bridge bridge;
 
-    public LanguageService(Bridge typeScriptBridge) {
-        checkNotNull(typeScriptBridge);
+    public LanguageService(Bridge bridge) {
+        checkNotNull(bridge);
 
-        this.bridge = typeScriptBridge;
+        this.bridge = bridge;
     }
 
     public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {
@@ -87,6 +90,26 @@ public final class LanguageService {
         Request request = new Request(SERVICE, "getScriptLexicalStructure", fileName);
         CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
         return this.bridge.call(request, returnType);
+    }
+
+    public List<Diagnostic> getDiagnostics(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getDiagnostics", fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        return this.bridge.call(request, returnType);
+    }
+
+    public void addDefaultLibrary() {
+        String libraryContents;
+        try {
+            libraryContents = Resources.toString(LanguageService.class.getResource("lib.d.ts"), Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Request request = new Request(SERVICE, "addDefaultLibrary", libraryContents);
+        this.bridge.call(request, Void.class);
     }
 
     public void editFile(String fileName, int offset, int length, String replacementText) {

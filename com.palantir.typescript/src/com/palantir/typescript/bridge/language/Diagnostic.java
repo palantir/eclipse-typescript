@@ -17,7 +17,6 @@
 package com.palantir.typescript.bridge.language;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
@@ -29,37 +28,20 @@ import com.google.common.base.Objects;
  */
 public final class Diagnostic {
 
-    private final String fileName;
     private final int start;
     private final int length;
-    private final int diagnosticCode;
     private final String text;
-    private final String message;
 
     public Diagnostic(
-            @JsonProperty("fileName") String fileName,
             @JsonProperty("start") int start,
             @JsonProperty("length") int length,
-            @JsonProperty("diagnosticCode") int diagnosticCode,
-            @JsonProperty("text") String text,
-            @JsonProperty("message") String message) {
-        checkNotNull(fileName);
+            @JsonProperty("text") String text) {
         checkArgument(start >= 0);
-        checkArgument(length > 0);
-        checkArgument(diagnosticCode >= 0);
-        checkNotNull(text);
-        checkNotNull(message);
+        checkArgument(length >= 0);
 
-        this.fileName = fileName;
         this.start = start;
         this.length = length;
-        this.diagnosticCode = diagnosticCode;
         this.text = text;
-        this.message = message;
-    }
-
-    public String getFileName() {
-        return this.fileName;
     }
 
     public int getStart() {
@@ -70,27 +52,16 @@ public final class Diagnostic {
         return this.length;
     }
 
-    public int getDiagnosticCode() {
-        return this.diagnosticCode;
-    }
-
     public String getText() {
         return this.text;
-    }
-
-    public String getMessage() {
-        return this.message;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-            .add("fileName", this.fileName)
             .add("start", this.start)
             .add("length", this.length)
-            .add("diagnosticCode", this.diagnosticCode)
             .add("text", this.text)
-            .add("message", this.message)
             .toString();
     }
 }

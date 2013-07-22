@@ -17,6 +17,7 @@
 ///<reference path='../typescript/src/compiler/io.ts'/>
 ///<reference path='../typescript/src/compiler/precompile.ts'/>
 ///<reference path='../typescript/src/services/languageService.ts'/>
+///<reference path='map.ts'/>
 ///<reference path='snapshot.ts'/>
 
 module Bridge {
@@ -31,6 +32,12 @@ module Bridge {
             this.compilationSettings = new TypeScript.CompilationSettings();
             this.diagnostics = new LanguageServicesDiagnostics();
             this.fileInfos = new Map();
+        }
+
+        public addDefaultLibrary(libraryContents: string) {
+            var fileInfo = new FileInfo(libraryContents, false);
+
+            this.fileInfos.set("lib.d.ts", fileInfo);
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {

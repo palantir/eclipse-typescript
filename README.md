@@ -7,10 +7,10 @@ An Eclipse plug-in for developing in the TypeScript language.
 * format code
 * open definition
 * outline view
+* problem markers
 * syntax highlighting
 
 ## Roadmap
-* warning/error markers
 * follow references
 * compile-on-save
 

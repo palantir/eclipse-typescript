@@ -30,6 +30,10 @@ module Bridge {
             this.languageService = new Services.LanguageService(this.languageServiceHost);
         }
 
+        public addDefaultLibrary(libraryContents: string) {
+            this.languageServiceHost.addDefaultLibrary(libraryContents);
+        }
+
         public editFile(fileName: string, offset: number, length: number, text: string) {
             this.languageServiceHost.editFile(fileName, offset, length, text);
         }
@@ -48,6 +52,23 @@ module Bridge {
 
         public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
             return this.languageService.getDefinitionAtPosition(fileName, position);
+        }
+
+        public getDiagnostics(fileName: string): Diagnostic[] {
+            var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
+
+            // get the semantic diagnostics only if there were no syntax errors
+            if (diagnostics.length === 0) {
+                diagnostics = diagnostics.concat(this.languageService.getSemanticDiagnostics(fileName));
+            }
+
+            return diagnostics.map((diagnostic) => {
+                return {
+                    start: diagnostic.start(),
+                    length: diagnostic.length(),
+                    text: diagnostic.text()
+                }
+            });
         }
 
         public getEmitOutput(fileName: string): Services.EmitOutput {
@@ -188,6 +209,12 @@ module Bridge {
     export interface DetailedAutoCompletionInfo {
         pruningPrefix: string;
         entries: Services.CompletionEntryDetails[];
+    }
+
+    export interface Diagnostic {
+        start: number;
+        length: number;
+        text: string;
     }
 
     interface AutoCompletionInfo {
