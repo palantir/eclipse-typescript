@@ -123,6 +123,7 @@ public final class PresentationReconciler implements IPresentationReconciler {
         int documentLength = document.getLength();
         int offset = event.getOffset();
         int length = event.getLength();
+        String text = event.getText();
 
         // redraw state change - re-classify the entire document
         if (event.getDocumentEvent() == null && offset == 0 && length == 0) {
@@ -131,23 +132,19 @@ public final class PresentationReconciler implements IPresentationReconciler {
 
         try {
             IRegion startLineInfo = document.getLineInformationOfOffset(offset);
-            IRegion endLineInfo = document.getLineInformationOfOffset(offset + length);
-
             int startOffset = startLineInfo.getOffset();
-            int endOffset = endLineInfo.getOffset() + endLineInfo.getLength();
+            int endOffset = offset + (text != null ? text.length() : length);
+            int firstLineEndOffset = startOffset + startLineInfo.getLength();
 
-            // a region of length 0 doesn't work, so we need to damage the next line as well
-            if (startOffset == endOffset) {
-                int line = document.getLineOfOffset(endOffset);
-                String lineDelimiter = document.getLineDelimiter(line);
+            if (startOffset <= endOffset && endOffset <= firstLineEndOffset) {
+                // single line damaged: extend the damaged region to the end of the first line
+                endOffset = firstLineEndOffset;
+            } else { // multiple lines damaged
+                IRegion endLineInfo = document.getLineInformationOfOffset(endOffset);
+                int lastLineEndOffset = endLineInfo.getOffset() + endLineInfo.getLength();
 
-                if (startOffset + lineDelimiter.length() < documentLength) {
-                    IRegion nextLineInfo = document.getLineInformation(line + 1);
-
-                    endOffset = nextLineInfo.getOffset() + nextLineInfo.getLength();
-                } else {
-                    endOffset = documentLength;
-                }
+                // extend the damaged region to the end of last line
+                endOffset = lastLineEndOffset;
             }
 
             return new Region(startOffset, endOffset - startOffset);
