@@ -25,7 +25,7 @@ module Bridge {
         private accessOrder: boolean;
 
         constructor(accessOrder: boolean = false) {
-        	this.accessOrder = accessOrder;
+            this.accessOrder = accessOrder;
             this.entries = {};
 
             // initialize a circular doubly linked list that allows quick access to the first or last entry

@@ -51,7 +51,7 @@ module Bridge {
         }
 
         public getEmitOutput(fileName: string): Services.EmitOutput {
-        	return this.languageService.getEmitOutput(fileName);
+            return this.languageService.getEmitOutput(fileName);
         }
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {

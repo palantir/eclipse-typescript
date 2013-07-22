@@ -62,7 +62,7 @@
             icon="icons/typeScript.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="com.palantir.typescript.text.TypeScriptEditor"
-            id="com.palantir.typescript.text.TypeScriptEditor">
+            id="com.palantir.typescript.text.typeScriptEditor">
       </editor>
    </extension>
 
