@@ -127,6 +127,8 @@ public final class PresentationReconciler implements IPresentationReconciler {
 
         // redraw state change - re-classify the entire document
         if (event.getDocumentEvent() == null && offset == 0 && length == 0) {
+            this.finalLexStates.clear();
+
             return new Region(0, documentLength);
         }
 
@@ -154,39 +156,41 @@ public final class PresentationReconciler implements IPresentationReconciler {
     }
 
     private EndOfLineState updateFinalLexStates(TextEvent event, IRegion damagedRegion) {
-        int offset = event.getOffset();
-        String replacedText = event.getReplacedText();
-        int oldLength = replacedText != null ? replacedText.length() : 0;
-        String text = event.getText();
-        int newLength = text != null ? text.length() : 0;
-        int damagedOffset = damagedRegion.getOffset();
-        int damagedLength = oldLength + offset - damagedOffset;
-        int delta = newLength - oldLength;
         EndOfLineState lastDamagedLexState = null;
 
-        // determine which final lex states are impacted and remove them or update them as appropriate
-        Map<Integer, EndOfLineState> newFinalLexStates = Maps.newHashMap();
-        Iterator<Entry<Integer, EndOfLineState>> it = this.finalLexStates.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry<Integer, EndOfLineState> entry = it.next();
-            Integer entryOffset = entry.getKey();
+        if (!this.finalLexStates.isEmpty()) {
+            int offset = event.getOffset();
+            int oldLength = event.getLength();
+            String text = event.getText();
+            int newLength = text != null ? text.length() : 0;
+            int damagedOffset = damagedRegion.getOffset();
+            int damagedLength = oldLength + offset - damagedOffset;
+            int delta = newLength - oldLength;
 
-            // entry is after the beginning of the damaged region
-            if (entryOffset >= damagedOffset) {
-                EndOfLineState lexState = entry.getValue();
+            // determine which final lex states are impacted and remove them or update them as appropriate
+            Map<Integer, EndOfLineState> newFinalLexStates = Maps.newHashMap();
+            Iterator<Entry<Integer, EndOfLineState>> it = this.finalLexStates.entrySet().iterator();
+            while (it.hasNext()) {
+                Entry<Integer, EndOfLineState> entry = it.next();
+                Integer entryOffset = entry.getKey();
 
-                it.remove();
+                // entry is after the beginning of the damaged region
+                if (entryOffset >= damagedOffset) {
+                    EndOfLineState lexState = entry.getValue();
 
-                if (entryOffset <= damagedOffset + damagedLength) {
-                    // remove the entry but keep track of its lex state
-                    lastDamagedLexState = lexState;
-                } else {
-                    // update the entry since it occurs after the damaged area
-                    newFinalLexStates.put(entryOffset + delta, lexState);
+                    if (entryOffset <= damagedOffset + damagedLength) {
+                        // remove the entry but keep track of its lex state
+                        it.remove();
+                        lastDamagedLexState = lexState;
+                    } else if (delta != 0) {
+                        // update the entry since it occurs after the damaged area
+                        it.remove();
+                        newFinalLexStates.put(entryOffset + delta, lexState);
+                    }
                 }
             }
+            this.finalLexStates.putAll(newFinalLexStates);
         }
-        this.finalLexStates.putAll(newFinalLexStates);
 
         return lastDamagedLexState;
     }
