@@ -36,7 +36,7 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.language.LanguageService;
 import com.palantir.typescript.bridge.language.NavigateToItem;
-import com.palantir.typescript.text.icons.Icons;
+import com.palantir.typescript.bridge.language.ScriptElementKind;
 
 /**
  * The outline view.
@@ -66,7 +66,7 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());
         treeViewer.setContentProvider(new MyContentProvider(lexicalStructure));
         treeViewer.setLabelProvider(new MyLabelProvider());
-        treeViewer.setInput("");
+        treeViewer.setInput(ScriptElementKind.SCRIPT_ELEMENT);
         treeViewer.expandAll();
     }
 
@@ -87,7 +87,7 @@ public final class OutlinePage extends ContentOutlinePage {
             List<NavigateToItem> elements = Lists.newArrayList();
 
             for (NavigateToItem item : this.lexicalStructure) {
-                if (item.getContainerName().equals(inputElement)) {
+                if (item.getContainerKind() == inputElement) {
                     elements.add(item);
                 }
             }
@@ -133,7 +133,9 @@ public final class OutlinePage extends ContentOutlinePage {
     private static final class MyLabelProvider extends BaseLabelProvider implements ILabelProvider {
         @Override
         public Image getImage(Object element) {
-            return Icons.CIRCLE;
+            NavigateToItem item = (NavigateToItem) element;
+
+            return item.getImage();
         }
 
         @Override
