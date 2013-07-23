@@ -17,7 +17,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 ## Developing
 
 ### Tools
-* [Eclipse](http://www.eclipse.org/downloads/)
+* [Eclipse](http://www.eclipse.org/downloads/) (Standard distribution)
 * [Eclipse Checkstyle plug-in](http://eclipse-cs.sourceforge.net/)
 * [Eclipse FindBugs plug-in](http://findbugs.sourceforge.net/)
 * [Grunt](http://gruntjs.com/)
