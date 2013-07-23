@@ -34,6 +34,10 @@ An Eclipse plug-in for developing in the TypeScript language.
     grunt
     mvn install
 
+### Debugging
+* Run `grunt` (the first time and each time there are TypeScript changes)
+* Right-click on the TypeScript project and select Debug As -> Eclipse Application
+
 ### Contributing
 * Ensure there are no warnings/errors in Eclipse (with Checkstyle and FindBugs installed)
 * Ensure the Grunt and Maven builds succeed
