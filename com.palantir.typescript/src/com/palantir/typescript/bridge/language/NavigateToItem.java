@@ -19,13 +19,6 @@ package com.palantir.typescript.bridge.language;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.net.URL;
-
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -33,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.Activator;
 
 /**
  * Corresponds to the class with the same name in languageService.ts.
@@ -41,8 +33,6 @@ import com.palantir.typescript.Activator;
  * @author dcicerone
  */
 public final class NavigateToItem {
-
-    private static ImageRegistry REGISTRY = new ImageRegistry();
 
     private final String name;
     private final ScriptElementKind kind;
@@ -131,45 +121,7 @@ public final class NavigateToItem {
     }
 
     public Image getImage() {
-        final String imageName;
-
-        switch (this.kind) {
-            case CLASS_ELEMENT:
-                imageName = "class";
-                break;
-            case CONSTRUCTOR_IMPLEMENTATION_ELEMENT:
-                imageName = "memberFunctionPublic";
-                break;
-            case ENUM_ELEMENT:
-                imageName = "enum";
-                break;
-            case INTERFACE_ELEMENT:
-                imageName = "interface";
-                break;
-            case MEMBER_FUNCTION_ELEMENT:
-                if (this.kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
-                    imageName = "memberFunctionPrivate";
-                } else { // public
-                    imageName = "memberFunctionPublic";
-                }
-                break;
-            default:
-                imageName = "unknown";
-        }
-
-        return getImage("$nl$/icons/elements/" + imageName + ".png");
-    }
-
-    private static Image getImage(String path) {
-        if (REGISTRY.getDescriptor(path) == null) {
-            IPath path2 = new Path(path);
-            URL imageUrl = FileLocator.find(Activator.getDefault().getBundle(), path2, null);
-            ImageDescriptor descriptor = ImageDescriptor.createFromURL(imageUrl);
-
-            REGISTRY.put(path, descriptor);
-        }
-
-        return REGISTRY.get(path);
+        return this.kind.getImage(this.kindModifiers);
     }
 
     @Override
