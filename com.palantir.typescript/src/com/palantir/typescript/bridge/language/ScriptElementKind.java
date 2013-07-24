@@ -129,6 +129,10 @@ public enum ScriptElementKind {
             case ENUM_ELEMENT:
                 imageName = "enum";
                 break;
+            case LOCAL_FUNCTION_ELEMENT:
+            case FUNCTION_ELEMENT:
+                imageName = "function";
+                break;
             case INTERFACE_ELEMENT:
                 imageName = "interface";
                 break;
@@ -148,6 +152,10 @@ public enum ScriptElementKind {
                 break;
             case MODULE_ELEMENT:
                 imageName = "module";
+                break;
+            case LOCAL_VARIABLE_ELEMENT:
+            case VARIABLE_ELEMENT:
+                imageName = "variable";
                 break;
             case UNKNOWN:
             default:
