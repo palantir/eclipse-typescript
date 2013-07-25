@@ -196,7 +196,7 @@ public final class PresentationReconciler implements IPresentationReconciler {
     }
 
     private TextPresentation createPresentation(IRegion damagedRegion, EndOfLineState lastDamagedLexState) {
-        TextPresentation presentation = new TextPresentation();
+        TextPresentation presentation = new TextPresentation(damagedRegion, 1000);
         IDocument document = this.viewer.getDocument();
         int offset = damagedRegion.getOffset();
         int length = damagedRegion.getLength();
