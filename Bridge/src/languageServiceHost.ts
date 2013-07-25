@@ -40,6 +40,10 @@ module Bridge {
             this.fileInfos.set("lib.d.ts", fileInfo);
         }
 
+        public getFileText(fileName: string, start: number, end: number): string {
+            return this.fileInfos.get(fileName).getScriptSnapshot().getText(start, end);
+        }
+
         public editFile(fileName: string, offset: number, length: number, text: string) {
             var fileInfo = this.fileInfos.get(fileName).editContents(offset, length, text);
         }

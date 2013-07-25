@@ -22,17 +22,19 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IPathEditorInput;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.bridge.language.AutoCompleteResult;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
-import com.palantir.typescript.bridge.language.DetailedAutoCompletionInfo;
-import com.palantir.typescript.bridge.language.LanguageService;
+import com.palantir.typescript.bridge.language.CompletionInfo;
+import com.palantir.typescript.bridge.language.ScriptElementKind;
 
 /**
  * This class deals with making auto completions.
@@ -56,32 +58,32 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
 
         IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
         String fileName = editorInput.getPath().toOSString();
-        LanguageService languageService = this.editor.getLanguageService();
+        CompletionInfo completionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
 
-        AutoCompleteResult autoCompleteResult = languageService.getCompletionsAtPosition(fileName, offset);
-        if (autoCompleteResult == null) {
-            return null;
+        // create the completion proposals from the completion entries
+        List<CompletionProposal> proposals = Lists.newArrayList();
+        if (completionInfo != null) {
+            ImmutableList<CompletionEntryDetails> entries = completionInfo.getEntries();
+            String text = completionInfo.getText();
+
+            for (CompletionEntryDetails entry : entries) {
+                String replacementString = entry.getName();
+                int replacementOffset = offset - text.length();
+                int replacementLength = text.length();
+                int cursorPosition = replacementString.length();
+                Image image = entry.getImage();
+                String displayString = getDisplayString(entry);
+                IContextInformation contextInformation = null;
+                String additionalProposalInfo = entry.getDocComment();
+                CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
+                    cursorPosition,
+                    image, displayString, contextInformation, additionalProposalInfo);
+
+                proposals.add(proposal);
+            }
         }
 
-        DetailedAutoCompletionInfo autoCompletionInfo = autoCompleteResult.getAutoCompletionInfo();
-        if (autoCompletionInfo == null) {
-            return null;
-        }
-        CompletionEntryDetails[] rawCompletionEntryDetails = autoCompletionInfo.getEntries();
-        if (rawCompletionEntryDetails == null) {
-            return null;
-        }
-        List<CompletionEntryDetailsProposal> smartProposals = Lists.newArrayList();
-        for (CompletionEntryDetails entry : rawCompletionEntryDetails) {
-            smartProposals.add(new CompletionEntryDetailsProposal(entry));
-        }
-        List<ICompletionProposal> result = Lists.newArrayList();
-        for (CompletionEntryDetailsProposal proposal : smartProposals) {
-            result.add(proposal.getCompletionProposal(offset, autoCompletionInfo.getPruningPrefix()));
-        }
-        ICompletionProposal[] retu = new ICompletionProposal[result.size()];
-        result.toArray(retu);
-        return retu;
+        return proposals.toArray(new ICompletionProposal[proposals.size()]);
     }
 
     @Override
@@ -107,5 +109,26 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
     @Override
     public String getErrorMessage() {
         return null;
+    }
+
+    private static String getDisplayString(CompletionEntryDetails completion) {
+        String displayString = completion.getName();
+        String type = completion.getType();
+
+        if (type != null) {
+            ScriptElementKind kind = completion.getKind();
+
+            if (kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
+                    || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
+                    || kind == ScriptElementKind.FUNCTION_ELEMENT) {
+                displayString += type;
+            } else if (kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
+                    || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
+                    || kind == ScriptElementKind.VARIABLE_ELEMENT) {
+                displayString += ": " + type;
+            }
+        }
+
+        return displayString;
     }
 }

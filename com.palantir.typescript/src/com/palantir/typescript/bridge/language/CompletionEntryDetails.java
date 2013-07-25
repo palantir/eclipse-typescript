@@ -18,96 +18,83 @@ package com.palantir.typescript.bridge.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.List;
+import org.eclipse.swt.graphics.Image;
 
-import com.google.common.collect.Lists;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 
 /**
- * Port of the CompletionEntryDetails class from TypeScript.
+ * Corresponds to the class with the same name in languageService.ts.
  *
  * @author tyleradams
  */
 public final class CompletionEntryDetails {
-    private final String undefined = "UNDEFINED";
-    private String name = "UNASSIGNED";
-    private String type = "UNASSIGNED";
-    private String kind = "UNASSIGNED";
-    private String kindModifiers = "UNASSIGNED";
-    private String fullSymbolName = "UNASSIGNED";
-    private String docComment = "UNASSIGNED";
-    private List<String> args;
 
-    public CompletionEntryDetails() {
-        this.args = Lists.newArrayList();
+    private String name;
+    private ScriptElementKind kind;
+    private ImmutableList<ScriptElementModifierKind> kindModifiers;
+    private String type;
+    private String fullSymbolName;
+    private String docComment;
+
+    public CompletionEntryDetails(
+            @JsonProperty("name") String name,
+            @JsonProperty("kind") ScriptElementKind kind,
+            @JsonProperty("kindModifiers") String kindModifiers,
+            @JsonProperty("type") String type,
+            @JsonProperty("fullSymbolName") String fullSymbolName,
+            @JsonProperty("docComment") String docComment) {
+        checkNotNull(name);
+        checkNotNull(kind);
+        checkNotNull(kindModifiers);
+        checkNotNull(fullSymbolName);
+
+        this.name = name;
+        this.kind = kind;
+        this.kindModifiers = ScriptElementModifierKind.parseList(kindModifiers);
+        this.type = type;
+        this.fullSymbolName = fullSymbolName;
+        this.docComment = docComment;
     }
 
     public String getName() {
         return this.name;
     }
 
-    public void setName(String name) {
-        if (name == null) {
-            name = this.undefined; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
-        }
-        this.name = name;
+    public ScriptElementKind getKind() {
+        return this.kind;
+    }
+
+    public ImmutableList<ScriptElementModifierKind> getKindModifiers() {
+        return this.kindModifiers;
     }
 
     public String getType() {
         return this.type;
     }
 
-    public void setType(String type) {
-        if (type == null) {
-            type = ""; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
-        }
-        this.type = type;
-    }
-
-    public boolean hasArgs() {
-        checkNotNull(this.args);
-        return this.args.size() > 0;
-    }
-
-    public String getKind() {
-        return this.kind;
-    }
-
-    public void setKind(String kind) {
-        if (kind == null)
-            kind = this.undefined; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
-        this.kind = kind;
-
-    }
-
-    public String getKindModifiers() {
-        return this.kindModifiers;
-    }
-
-    public void setKindModifiers(String kindModifiers) {
-        if (kindModifiers == null)
-            kindModifiers = this.undefined; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
-        this.kindModifiers = kindModifiers;
-
-    }
-
     public String getFullSymbolName() {
         return this.fullSymbolName;
-    }
-
-    public void setFullSymbolName(String fullSymbolName) {
-        if (fullSymbolName == null)
-            fullSymbolName = this.undefined; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
-        this.fullSymbolName = fullSymbolName;
     }
 
     public String getDocComment() {
         return this.docComment;
     }
 
-    public void setDocComment(String docComment) {
-        if (docComment == null)
-            docComment = this.undefined; //HACKHACK: This is a bandaid covering up getting back null objects from the Bridge.
-        this.docComment = docComment;
+    public Image getImage() {
+        return this.kind.getImage(this.kindModifiers);
     }
 
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("name", this.name)
+            .add("kind", this.kind)
+            .add("kindModifiers", this.kindModifiers)
+            .add("type", this.type)
+            .add("fullSymbolName", this.fullSymbolName)
+            .add("docComment", this.docComment)
+            .toString();
+    }
 }

@@ -24,7 +24,6 @@ import org.eclipse.swt.graphics.Image;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -67,21 +66,13 @@ public final class NavigateToItem {
 
         this.name = name;
         this.kind = kind;
+        this.kindModifiers = ScriptElementModifierKind.parseList(kindModifiers);
         this.matchKind = matchKind;
         this.fileName = fileName;
         this.minChar = minChar;
         this.limChar = limChar;
         this.containerName = containerName;
         this.containerKind = containerKind;
-
-        // parse the kind modifiers
-        ImmutableList.Builder<ScriptElementModifierKind> kindModifiersBuilder = ImmutableList.builder();
-        if (kindModifiers.length() > 0) {
-            for (String kindModifier : Splitter.on(',').split(kindModifiers)) {
-                kindModifiersBuilder.add(ScriptElementModifierKind.fromString(kindModifier));
-            }
-        }
-        this.kindModifiers = kindModifiersBuilder.build();
     }
 
     public String getName() {

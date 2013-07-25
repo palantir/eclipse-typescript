@@ -46,8 +46,46 @@ module Bridge {
             this.languageServiceHost.updateFiles(deltas);
         }
 
-        public getCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
-            return this.getDetailedImplicitlyPrunedCompletionsAtPosition(fileName, position);
+        public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
+            var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
+
+            if (completions.entries != null) {
+                var spanText = "";
+                var span = this.languageService.getNameOrDottedNameSpan(fileName, position, position);
+
+                // get the name up to the position
+                if (span !== null) {
+                    var end = Math.min(span.limChar, position);
+                    var text = this.languageServiceHost.getFileText(fileName, span.minChar, end);
+                    var periodIndex = text.lastIndexOf(".");
+
+                    if (periodIndex >= 0) {
+                        spanText = text.substring(periodIndex + 1);
+                    } else {
+                        spanText = text;
+                    }
+                }
+
+                // filter out the entries that don't correspond to the currently typed text
+                var entries = [];
+                for (var i = 0; i < completions.entries.length; i++) {
+                    var completion = completions.entries[i];
+
+                    // get the details for entries that passed the filter
+                    if (spanText.length == 0 || completion.name.indexOf(spanText) == 0) {
+                        var entryDetails = this.languageService.getCompletionEntryDetails(fileName, position, completion.name);
+
+                        entries.push(entryDetails);
+                    }
+                }
+
+                return {
+                    entries: entries,
+                    text: spanText
+                };
+            }
+
+            return null;
         }
 
         public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
@@ -82,142 +120,16 @@ module Bridge {
         public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
-
-        private validPosition(fileName: string, position: number): boolean {
-            if (position === 0) {
-                return false;
-            }
-
-            var start: number = position - 2;
-            var end: number = position;
-            var snapshot: string = this.languageServiceHost.getScriptSnapshot(fileName).getText(start, end);
-
-            if (snapshot[1] === ".") {
-                if (!this.validMethodChar(snapshot[0])) {
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-
-            if (!this.validMethodChar(snapshot[1])) {
-                return false;
-            }
-
-            return true;
-        }
-
-        private getPrefix(fileName: string, position: number): string {
-            var start: number = 0;
-            var end: number = position;
-            var snapshot: string = this.languageServiceHost.getScriptSnapshot(fileName).getText(start, end); // HACKHACK: gets file up to this point and works backwards.  Performance probably sucks.
-
-            for (var index = snapshot.length - 1; this.validMethodChar(snapshot.charAt(index)); index--);
-
-            if (snapshot.charAt(index) === "." || snapshot.charAt(index) === " " || snapshot.charAt(index) === "\n") {
-                index++;
-                return snapshot.substring(index, snapshot.length);
-            } else {
-                return "";
-            }
-        }
-
-        private validMethodChar(orig_c: string): boolean { // is the character a valid character for a method.
-            var c: string = orig_c.toUpperCase();
-
-            if ("A" <= c && c <= "Z") { // letters
-                return true;
-            } else if (c === "(" || c === ")") { // parens
-                return true;
-            } else if ("0" <= c && c <= "9") { // numbers
-                return true;
-            } else if (c === "$" || c === "_") { //$ and _
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        private getDetailedImplicitlyPrunedCompletionsAtPosition(fileName: string, position: number): DetailedAutoCompletionInfo {
-            if (this.validPosition(fileName, position)) {
-                var pruningPrefix: string = this.getPrefix(fileName, position);
-                if (this.knownToBreak(pruningPrefix)) {
-                    return { pruningPrefix: pruningPrefix, entries: [] };
-                }
-                return this.getDetailedExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
-            } else {
-                return { "pruningPrefix": "", "entries": [] };
-            }
-        }
-
-        private knownToBreak(prefix: string) {
-            var badPrefix = [];
-            badPrefix.push("$");
-            for (var i = 0; i < badPrefix.length; i++) {
-                if (badPrefix[i] === prefix) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private getDetailedExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): DetailedAutoCompletionInfo {
-            var abbreviatedCompletionInfo: AutoCompletionInfo = this.getExplicitPrunedCompletionsAtPosition(fileName, position, pruningPrefix);
-
-            if (abbreviatedCompletionInfo.entries === null) {
-                return { "pruningPrefix": "", "entries": [] };
-            }
-
-            var abbreviatedEntry: Services.CompletionEntry;
-            var detailedEntry: Services.CompletionEntryDetails;
-            var detailedEntries: Services.CompletionEntryDetails[] = [];
-
-            for (var i = 0; i < abbreviatedCompletionInfo.entries.length; i++) {
-                abbreviatedEntry = abbreviatedCompletionInfo.entries[i];
-                detailedEntry = this.languageService.getCompletionEntryDetails(fileName, position, abbreviatedEntry.name);
-                detailedEntries.push(detailedEntry);
-            }
-
-            return { "pruningPrefix": pruningPrefix, "entries": detailedEntries };
-        }
-
-        private getExplicitPrunedCompletionsAtPosition(fileName: string, position: number, pruningPrefix: string): AutoCompletionInfo {
-            var isMemberCompletion: boolean = false;
-            var rawCompletionInfo: Services.CompletionInfo = this.languageService.getCompletionsAtPosition(fileName, position, isMemberCompletion);
-
-            if (rawCompletionInfo === null) {
-                return { "entries": [] };
-            }
-
-            var prunedEntries: Services.CompletionEntry[] = [];
-            var rawEntries: Services.CompletionEntry[] = rawCompletionInfo.entries;
-
-            for (var i = 0; i < rawEntries.length; i++) {
-                if (this.prefixMatch(pruningPrefix, rawEntries[i].name)) {
-                    prunedEntries.push(rawEntries[i]);
-                }
-            }
-
-            return { "entries": prunedEntries };
-        }
-
-        private prefixMatch(_prefix: string, str: string): boolean {
-            return str.indexOf(_prefix) === 0;
-        }
     }
 
-    export interface DetailedAutoCompletionInfo {
-        pruningPrefix: string;
+    export interface CompletionInfo {
         entries: Services.CompletionEntryDetails[];
+        text: string;
     }
 
     export interface Diagnostic {
         start: number;
         length: number;
         text: string;
-    }
-
-    interface AutoCompletionInfo {
-        entries: Services.CompletionEntry[];
     }
 }

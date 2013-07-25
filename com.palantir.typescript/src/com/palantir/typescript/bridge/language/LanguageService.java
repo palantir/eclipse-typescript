@@ -59,13 +59,12 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public AutoCompleteResult getCompletionsAtPosition(String fileName, int offset) {
+    public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
         checkNotNull(fileName);
-        checkArgument(offset >= 0);
+        checkArgument(position >= 0);
 
-        Request request = new Request(SERVICE, "getCompletionsAtPosition", fileName, offset);
-        DetailedAutoCompletionInfo autoCompletionInfo = this.bridge.call(request, DetailedAutoCompletionInfo.class);
-        return new AutoCompleteResult(autoCompletionInfo);
+        Request request = new Request(SERVICE, "getCompletionsAtPosition", fileName, position);
+        return this.bridge.call(request, CompletionInfo.class);
     }
 
     public List<DefinitionInfo> getDefinitionAtPosition(String fileName, int position) {

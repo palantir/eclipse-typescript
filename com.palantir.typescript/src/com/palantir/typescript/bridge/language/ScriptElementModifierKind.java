@@ -19,6 +19,8 @@ package com.palantir.typescript.bridge.language;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Corresponds to the class with the same name in languageService.ts.
@@ -44,11 +46,23 @@ public enum ScriptElementModifierKind {
         return this.value;
     }
 
-    public static ScriptElementModifierKind fromString(String val) {
-        checkNotNull(val);
+    public static ImmutableList<ScriptElementModifierKind> parseList(String kindModifiers) {
+        ImmutableList.Builder<ScriptElementModifierKind> kindModifiersBuilder = ImmutableList.builder();
+
+        if (kindModifiers.length() > 0) {
+            for (String kindModifier : Splitter.on(',').split(kindModifiers)) {
+                kindModifiersBuilder.add(fromString(kindModifier));
+            }
+        }
+
+        return kindModifiersBuilder.build();
+    }
+
+    private static ScriptElementModifierKind fromString(String modifierKind) {
+        checkNotNull(modifierKind);
 
         for (ScriptElementModifierKind kind : ScriptElementModifierKind.values()) {
-            if (kind.value.equals(val)) {
+            if (kind.value.equals(modifierKind)) {
                 return kind;
             }
         }
