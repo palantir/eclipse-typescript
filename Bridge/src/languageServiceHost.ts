@@ -51,7 +51,7 @@ module Bridge {
         public updateFileContents(fileName: string, contents: string) {
             var fileInfo = this.fileInfos.get(fileName);
 
-            if (fileInfo !== null) {
+            if (fileInfo !== undefined) {
                 fileInfo.updateContents(contents);
             } else {
                 var fileInfo = new FileInfo(contents, true);
