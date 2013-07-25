@@ -19,13 +19,17 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.DefaultTextHover;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
+import org.eclipse.jface.text.source.DefaultAnnotationHover;
+import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
@@ -44,6 +48,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         checkNotNull(editor);
 
         this.editor = editor;
+    }
+
+    @Override
+    public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
+        return new DefaultAnnotationHover();
     }
 
     @Override
@@ -75,5 +84,10 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         return new PresentationReconciler(this.editor);
+    }
+
+    @Override
+    public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+        return new DefaultTextHover(sourceViewer);
     }
 }
