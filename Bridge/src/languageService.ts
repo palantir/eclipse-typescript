@@ -49,7 +49,7 @@ module Bridge {
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
-            if (completions.entries != null) {
+            if (completions != null) {
                 var spanText = "";
                 var span = this.languageService.getNameOrDottedNameSpan(fileName, position, position);
 
