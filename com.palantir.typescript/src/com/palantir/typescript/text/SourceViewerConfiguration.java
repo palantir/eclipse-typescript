@@ -19,7 +19,6 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.text.DefaultInformationControl;
-import org.eclipse.jface.text.DefaultTextHover;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -88,6 +87,6 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
     @Override
     public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-        return new DefaultTextHover(sourceViewer);
+        return new TextHover(sourceViewer);
     }
 }
