@@ -48,17 +48,6 @@ public final class LanguageService {
         this.bridge = bridge;
     }
 
-    public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {
-        checkNotNull(fileName);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
-        checkNotNull(options);
-
-        Request request = new Request(SERVICE, "getFormattingEditsForRange", fileName, minChar, limChar, options);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
-        return this.bridge.call(request, resultType);
-    }
-
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
@@ -76,6 +65,14 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
+    public List<Diagnostic> getDiagnostics(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getDiagnostics", fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public EmitOutput getEmitOutput(String fileName) {
         checkNotNull(fileName);
 
@@ -83,19 +80,22 @@ public final class LanguageService {
         return this.bridge.call(request, EmitOutput.class);
     }
 
+    public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {
+        checkNotNull(fileName);
+        checkArgument(minChar >= 0);
+        checkArgument(limChar >= 0);
+        checkNotNull(options);
+
+        Request request = new Request(SERVICE, "getFormattingEditsForRange", fileName, minChar, limChar, options);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
+        return this.bridge.call(request, resultType);
+    }
+
     public List<NavigateToItem> getScriptLexicalStructure(String fileName) {
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getScriptLexicalStructure", fileName);
         CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public List<Diagnostic> getDiagnostics(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getDiagnostics", fileName);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
         return this.bridge.call(request, returnType);
     }
 
