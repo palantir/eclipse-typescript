@@ -282,15 +282,15 @@ public final class PresentationReconciler implements IPresentationReconciler {
     private static ImmutableMap<TokenClass, TextAttribute> createClassificationTextAttributes(ColorManager manager) {
         ImmutableMap.Builder<TokenClass, TextAttribute> classAttributes = ImmutableMap.builder();
 
-        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(manager.getColor(ColorConstants.PUNCTUATION)));
-        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(manager.getColor(ColorConstants.KEYWORD), null, SWT.BOLD));
-        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(manager.getColor(ColorConstants.OPERATOR)));
         classAttributes.put(TokenClass.COMMENT, new TextAttribute(manager.getColor(ColorConstants.COMMENT)));
-        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(manager.getColor(ColorConstants.WHITESPACE)));
         classAttributes.put(TokenClass.IDENTIFIER, new TextAttribute(manager.getColor(ColorConstants.IDENTIFIER)));
+        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(manager.getColor(ColorConstants.KEYWORD), null, SWT.BOLD));
         classAttributes.put(TokenClass.NUMBER_LITERAL, new TextAttribute(manager.getColor(ColorConstants.NUMBER_LITERAL)));
-        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(manager.getColor(ColorConstants.STRING_LITERAL)));
+        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(manager.getColor(ColorConstants.OPERATOR)));
+        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(manager.getColor(ColorConstants.PUNCTUATION)));
         classAttributes.put(TokenClass.REG_EXP_LITERAL, new TextAttribute(manager.getColor(ColorConstants.REG_EXP_LITERAL)));
+        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(manager.getColor(ColorConstants.STRING_LITERAL)));
+        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(manager.getColor(ColorConstants.WHITESPACE)));
 
         return classAttributes.build();
     }
