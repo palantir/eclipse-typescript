@@ -50,38 +50,14 @@ module Bridge {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
             if (completions !== null) {
-                var spanText = "";
-                var span = this.languageService.getNameOrDottedNameSpan(fileName, position, position);
-
-                // get the name up to the position
-                if (span !== null) {
-                    var end = Math.min(span.limChar, position);
-                    var text = this.languageServiceHost.getFileText(fileName, span.minChar, end);
-                    var periodIndex = text.lastIndexOf(".");
-
-                    if (periodIndex >= 0) {
-                        spanText = text.substring(periodIndex + 1);
-                    } else {
-                        spanText = text;
-                    }
-                }
-
-                // filter out the entries that don't correspond to the currently typed text
-                var entries = [];
-                for (var i = 0; i < completions.entries.length; i++) {
-                    var completion = completions.entries[i];
-
-                    // get the details for entries that passed the filter
-                    if (spanText.length === 0 || completion.name.indexOf(spanText) === 0) {
-                        var entryDetails = this.languageService.getCompletionEntryDetails(fileName, position, completion.name);
-
-                        entries.push(entryDetails);
-                    }
-                }
+                // get the details for each entry
+                var entries = completions.entries.map((completion) => {
+                    return this.languageService.getCompletionEntryDetails(fileName, position, completion.name);
+                });
 
                 return {
                     entries: entries,
-                    text: spanText
+                    memberCompletion: completions.isMemberCompletion
                 };
             }
 
@@ -126,7 +102,7 @@ module Bridge {
 
     export interface CompletionInfo {
         entries: Services.CompletionEntryDetails[];
-        text: string;
+        memberCompletion: boolean;
     }
 
     export interface Diagnostic {

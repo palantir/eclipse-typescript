@@ -21,8 +21,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
+import org.eclipse.jface.text.contentassist.ContentAssistEvent;
+import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
@@ -30,6 +33,7 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.IPathEditorInput;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
@@ -41,9 +45,14 @@ import com.palantir.typescript.bridge.language.ScriptElementKind;
  *
  * @author tyleradams
  */
-public final class ContentAssistProcessor implements IContentAssistProcessor {
+public final class ContentAssistProcessor implements ICompletionListener, IContentAssistProcessor {
+
+    private static final CharMatcher NON_IDENTIFIER = CharMatcher.WHITESPACE.or(CharMatcher.anyOf("(){}[]+-/*=%!<>?&|,;"));
 
     private final TypeScriptEditor editor;
+
+    private CompletionInfo currentCompletionInfo;
+    private int currentOffset;
 
     public ContentAssistProcessor(TypeScriptEditor editor) {
         checkNotNull(editor);
@@ -52,34 +61,63 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
     }
 
     @Override
+    public void assistSessionStarted(ContentAssistEvent event) {
+    }
+
+    @Override
+    public void assistSessionEnded(ContentAssistEvent event) {
+        this.currentCompletionInfo = null;
+    }
+
+    @Override
+    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+    }
+
+    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
         checkNotNull(viewer);
         checkArgument(offset >= 0);
 
-        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
-        String fileName = editorInput.getPath().toOSString();
-        CompletionInfo completionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
+        // get the completion info
+        if (this.currentCompletionInfo == null || offset < this.currentOffset) {
+            IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
+            String fileName = editorInput.getPath().toOSString();
+
+            this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
+            this.currentOffset = this.getOffset(offset);
+        }
 
         // create the completion proposals from the completion entries
         List<CompletionProposal> proposals = Lists.newArrayList();
-        if (completionInfo != null) {
-            ImmutableList<CompletionEntryDetails> entries = completionInfo.getEntries();
-            String text = completionInfo.getText();
+        if (this.currentCompletionInfo != null) {
+            ImmutableList<CompletionEntryDetails> entries = this.currentCompletionInfo.getEntries();
+
+            // get the current prefix
+            String prefix;
+            try {
+                prefix = this.editor.getDocument().get(this.currentOffset, offset - this.currentOffset);
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
 
             for (CompletionEntryDetails entry : entries) {
                 String replacementString = entry.getName();
-                int replacementOffset = offset - text.length();
-                int replacementLength = text.length();
-                int cursorPosition = replacementString.length();
-                Image image = entry.getImage();
-                String displayString = getDisplayString(entry);
-                IContextInformation contextInformation = null;
-                String additionalProposalInfo = entry.getDocComment();
-                CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
-                    cursorPosition,
-                    image, displayString, contextInformation, additionalProposalInfo);
 
-                proposals.add(proposal);
+                // filter the entries to only include the ones matching the current prefix
+                if (replacementString.startsWith(prefix)) {
+                    int replacementOffset = this.currentOffset;
+                    int replacementLength = offset - this.currentOffset;
+                    int cursorPosition = replacementString.length();
+                    Image image = entry.getImage();
+                    String displayString = getDisplayString(entry);
+                    IContextInformation contextInformation = null;
+                    String additionalProposalInfo = entry.getDocComment();
+                    CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
+                        cursorPosition,
+                        image, displayString, contextInformation, additionalProposalInfo);
+
+                    proposals.add(proposal);
+                }
             }
         }
 
@@ -109,6 +147,25 @@ public final class ContentAssistProcessor implements IContentAssistProcessor {
     @Override
     public String getErrorMessage() {
         return null;
+    }
+
+    private int getOffset(int offset) {
+        boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
+
+        try {
+            for (int i = offset - 1; i >= 0; i--) {
+                char character = this.editor.getDocument().getChar(i);
+
+                if ((memberCompletion && character == '.') ||
+                        (!memberCompletion && NON_IDENTIFIER.matches(character))) { // TODO
+                    return i + 1;
+                }
+            }
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+
+        return 0;
     }
 
     private static String getDisplayString(CompletionEntryDetails completion) {

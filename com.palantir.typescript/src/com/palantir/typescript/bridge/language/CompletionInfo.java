@@ -32,29 +32,30 @@ import com.google.common.collect.ImmutableList;
 public final class CompletionInfo {
 
     private final ImmutableList<CompletionEntryDetails> entries;
-    private final String text;
+    private final boolean memberCompletion;
 
-    public CompletionInfo(@JsonProperty("entries") List<CompletionEntryDetails> entries, @JsonProperty("text") String text) {
+    public CompletionInfo(
+            @JsonProperty("entries") List<CompletionEntryDetails> entries,
+            @JsonProperty("isMemberCompletion") boolean memberCompletion) {
         checkNotNull(entries);
-        checkNotNull(text);
 
         this.entries = ImmutableList.copyOf(entries);
-        this.text = text;
+        this.memberCompletion = memberCompletion;
     }
 
     public ImmutableList<CompletionEntryDetails> getEntries() {
         return this.entries;
     }
 
-    public String getText() {
-        return this.text;
+    public boolean isMemberCompletion() {
+        return this.memberCompletion;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("entries", this.entries)
-            .add("text", this.text)
+            .add("memberCompletion", this.memberCompletion)
             .toString();
     }
 }

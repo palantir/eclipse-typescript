@@ -61,15 +61,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         ContentAssistProcessor contentAssistProcessor = new ContentAssistProcessor(this.editor);
 
         ContentAssistant contentAssistant = new ContentAssistant();
+        contentAssistant.addCompletionListener(contentAssistProcessor);
         contentAssistant.enableAutoActivation(true);
         contentAssistant.setAutoActivationDelay(200);
         contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
-        contentAssistant.setInformationControlCreator(new IInformationControlCreator() {
-            @Override
-            public IInformationControl createInformationControl(Shell parent) {
-                return new DefaultInformationControl(parent);
-            }
-        });
+        contentAssistant.setInformationControlCreator(new MyInformationControlCreator());
         contentAssistant.setProposalPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
 
         return contentAssistant;
@@ -88,5 +84,12 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     @Override
     public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
         return new TextHover(sourceViewer);
+    }
+
+    private static final class MyInformationControlCreator implements IInformationControlCreator {
+        @Override
+        public IInformationControl createInformationControl(Shell parent) {
+            return new DefaultInformationControl(parent);
+        }
     }
 }
