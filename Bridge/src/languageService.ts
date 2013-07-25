@@ -49,7 +49,7 @@ module Bridge {
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
-            if (completions != null) {
+            if (completions !== null) {
                 var spanText = "";
                 var span = this.languageService.getNameOrDottedNameSpan(fileName, position, position);
 
@@ -72,7 +72,7 @@ module Bridge {
                     var completion = completions.entries[i];
 
                     // get the details for entries that passed the filter
-                    if (spanText.length == 0 || completion.name.indexOf(spanText) == 0) {
+                    if (spanText.length === 0 || completion.name.indexOf(spanText) === 0) {
                         var entryDetails = this.languageService.getCompletionEntryDetails(fileName, position, completion.name);
 
                         entries.push(entryDetails);
@@ -105,7 +105,7 @@ module Bridge {
                     start: diagnostic.start(),
                     length: diagnostic.length(),
                     text: diagnostic.text()
-                }
+                };
             });
         }
 
@@ -113,7 +113,9 @@ module Bridge {
             return this.languageService.getEmitOutput(fileName);
         }
 
-        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions): Services.TextEdit[] {
+        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions):
+            Services.TextEdit[] {
+
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 

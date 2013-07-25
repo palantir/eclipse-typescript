@@ -51,7 +51,7 @@ module Bridge {
         public updateFileContents(fileName: string, contents: string) {
             var fileInfo = this.fileInfos.get(fileName);
 
-            if (fileInfo != null) {
+            if (fileInfo !== null) {
                 fileInfo.updateContents(contents);
             } else {
                 var fileInfo = new FileInfo(contents, true);
@@ -74,7 +74,7 @@ module Bridge {
                 var referencedFilePath = referencedFiles[i].path;
                 var resolvedFile = IO.findFile(rootPath, referencedFilePath);
 
-                if (resolvedFile != null) {
+                if (resolvedFile !== null) {
                     var referencedFileContents = resolvedFile.fileInformation.contents();
                     var referencedFileInfo = new FileInfo(referencedFileContents, false);
                     var referencedFileName = IO.resolvePath(resolvedFile.path);
