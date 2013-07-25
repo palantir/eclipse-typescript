@@ -134,6 +134,10 @@ public final class TypeScriptEditor extends TextEditor {
         return this.languageService;
     }
 
+    public IDocument getDocument() {
+        return this.getSourceViewer().getDocument();
+    }
+
     @Override
     public void dispose() {
         this.colorManager.dispose();

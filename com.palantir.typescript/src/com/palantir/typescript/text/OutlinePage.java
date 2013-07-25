@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -28,6 +30,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPathEditorInput;
@@ -68,6 +71,11 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.setLabelProvider(new MyLabelProvider());
         treeViewer.setInput(ScriptElementKind.SCRIPT_ELEMENT);
         treeViewer.expandAll();
+    }
+
+    @Override
+    protected int getTreeStyle() {
+        return SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
     }
 
     private class MyContentProvider implements ITreeContentProvider {
@@ -154,7 +162,17 @@ public final class OutlinePage extends ContentOutlinePage {
             int minChar = item.getMinChar();
             int limChar = item.getLimChar();
 
-            OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar);
+            // select the name of the item
+            try {
+                IDocument document = OutlinePage.this.editor.getDocument();
+                String text = document.get(minChar, limChar - minChar);
+                String name = item.getName();
+                int start = minChar + text.indexOf(name);
+
+                OutlinePage.this.editor.selectAndReveal(start, name.length());
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
