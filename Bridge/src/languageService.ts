@@ -50,13 +50,23 @@ module Bridge {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
             if (completions !== null) {
+                // filter out the keyword & primitive entries
+                var filteredEntries = completions.entries.filter((entry) => {
+                    if (entry.kind === Services.ScriptElementKind.keyword
+                        || entry.kind === Services.ScriptElementKind.primitiveType) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
                 // get the details for each entry
-                var entries = completions.entries.map((completion) => {
-                    return this.languageService.getCompletionEntryDetails(fileName, position, completion.name);
+                var detailEntries = filteredEntries.map((entry) => {
+                    return this.languageService.getCompletionEntryDetails(fileName, position, entry.name);
                 });
 
                 return {
-                    entries: entries,
+                    entries: detailEntries,
                     memberCompletion: completions.isMemberCompletion
                 };
             }
