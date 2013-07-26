@@ -151,19 +151,21 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
     }
 
     private int getOffset(int offset) {
-        boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
+        if (this.currentCompletionInfo != null) {
+            boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
 
-        try {
-            for (int i = offset - 1; i >= 0; i--) {
-                char character = this.editor.getDocument().getChar(i);
+            try {
+                for (int i = offset - 1; i >= 0; i--) {
+                    char character = this.editor.getDocument().getChar(i);
 
-                if ((memberCompletion && character == '.') ||
-                        (!memberCompletion && NON_IDENTIFIER.matches(character))) { // TODO
-                    return i + 1;
+                    if ((memberCompletion && character == '.') ||
+                            (!memberCompletion && NON_IDENTIFIER.matches(character))) { // TODO
+                        return i + 1;
+                    }
                 }
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
             }
-        } catch (BadLocationException e) {
-            throw new RuntimeException(e);
         }
 
         return 0;
