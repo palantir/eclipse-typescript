@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
@@ -54,15 +55,32 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
             List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(fileName, offset);
 
             if (definitions != null && !definitions.isEmpty()) {
+                int spanOffset = getUndottedNameOffset(textViewer, span);
                 DefinitionInfo definition = definitions.get(0);
-                int minChar = span.getMinChar();
-                IRegion hyperlinkRegion = new Region(minChar, span.getLimChar() - minChar);
+                IRegion hyperlinkRegion = new Region(spanOffset, span.getLimChar() - spanOffset);
 
                 return new IHyperlink[] { new MyHyperlink(definition, hyperlinkRegion) };
             }
         }
 
         return null;
+    }
+
+    private static int getUndottedNameOffset(ITextViewer textViewer, SpanInfo span) {
+        int minChar = span.getMinChar();
+
+        try {
+            for (int i = span.getLimChar() - 1; i >= minChar; i--) {
+                if (textViewer.getDocument().getChar(i) == '.') {
+                    minChar = i + 1;
+                    break;
+                }
+            }
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+
+        return minChar;
     }
 
     private static final class MyHyperlink implements IHyperlink {
