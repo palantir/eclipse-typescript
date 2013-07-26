@@ -16,6 +16,14 @@
   limitations under the License.
 -->
 <plugin>
+   <extension
+         point="org.eclipse.compare.contentMergeViewers">
+      <viewer
+            id="com.palantir.typescript.mergeViewer"
+            class="com.palantir.typescript.MergeViewerCreator"
+            extensions="ts">
+      </viewer>
+   </extension>
 
    <extension
          point="org.eclipse.ui.bindings">

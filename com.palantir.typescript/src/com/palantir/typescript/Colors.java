@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,28 +27,26 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 /**
- * The color manager creates and disposes of colors.
+ * The colors.
  *
- * @author tyleradams
+ * @author dcicerone
  */
-public final class ColorManager {
+public final class Colors {
 
-    private final LoadingCache<RGB, Color> colors = CacheBuilder.newBuilder().build(new CacheLoader<RGB, Color>() {
+    private static final LoadingCache<RGB, Color> COLORS = CacheBuilder.newBuilder().build(new CacheLoader<RGB, Color>() {
         @Override
         public Color load(RGB rgb) throws Exception {
             return new Color(Display.getCurrent(), rgb);
         }
     });
 
-    public Color getColor(RGB rgb) {
+    public static Color getColor(RGB rgb) {
         checkNotNull(rgb);
 
-        return this.colors.getUnchecked(rgb);
+        return COLORS.getUnchecked(rgb);
     }
 
-    public void dispose() {
-        for (Color color : this.colors.asMap().values()) {
-            color.dispose();
-        }
+    private Colors() {
+        // prevent instantiation
     }
 }

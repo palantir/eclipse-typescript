@@ -39,9 +39,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.palantir.typescript.Colors;
+import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.classifier.ClassificationInfo;
 import com.palantir.typescript.bridge.classifier.ClassificationResult;
 import com.palantir.typescript.bridge.classifier.Classifier;
@@ -55,18 +59,25 @@ import com.palantir.typescript.bridge.classifier.TokenClass;
  */
 public final class PresentationReconciler implements IPresentationReconciler {
 
+    private static final Supplier<Classifier> CLASSIFIER_SUPPLIER = Suppliers.memoize(new Supplier<Classifier>() {
+        @Override
+        public Classifier get() {
+            Bridge bridge = new Bridge();
+
+            return new Classifier(bridge);
+        }
+    });
+
     private final ImmutableMap<TokenClass, TextAttribute> classificationTextAttributes;
-    private final TypeScriptEditor editor;
     private final Map<Integer, EndOfLineState> finalLexStates;
 
+    private Classifier classifier;
     private ITextListener listener;
     private ITextViewer viewer;
 
-    public PresentationReconciler(TypeScriptEditor editor) {
-        checkNotNull(editor);
-
-        this.classificationTextAttributes = createClassificationTextAttributes(editor.getColorManager());
-        this.editor = editor;
+    public PresentationReconciler() {
+        this.classifier = CLASSIFIER_SUPPLIER.get();
+        this.classificationTextAttributes = createClassificationTextAttributes();
         this.listener = new MyTextListener();
         this.finalLexStates = Maps.newTreeMap();
     }
@@ -235,8 +246,7 @@ public final class PresentationReconciler implements IPresentationReconciler {
         }
 
         boolean lastLexStateDiffers = false;
-        Classifier classifier = this.editor.getClassifier();
-        List<ClassificationResult> results = classifier.getClassificationsForLines(lines, lexState);
+        List<ClassificationResult> results = this.classifier.getClassificationsForLines(lines, lexState);
         for (int i = 0; i < results.size(); i++) {
             int line = startLine + i;
             int lineOffset = document.getLineOffset(line);
@@ -279,18 +289,18 @@ public final class PresentationReconciler implements IPresentationReconciler {
         presentation.addStyleRange(styleRange);
     }
 
-    private static ImmutableMap<TokenClass, TextAttribute> createClassificationTextAttributes(ColorManager manager) {
+    private static ImmutableMap<TokenClass, TextAttribute> createClassificationTextAttributes() {
         ImmutableMap.Builder<TokenClass, TextAttribute> classAttributes = ImmutableMap.builder();
 
-        classAttributes.put(TokenClass.COMMENT, new TextAttribute(manager.getColor(ColorConstants.COMMENT)));
-        classAttributes.put(TokenClass.IDENTIFIER, new TextAttribute(manager.getColor(ColorConstants.IDENTIFIER)));
-        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(manager.getColor(ColorConstants.KEYWORD), null, SWT.BOLD));
-        classAttributes.put(TokenClass.NUMBER_LITERAL, new TextAttribute(manager.getColor(ColorConstants.NUMBER_LITERAL)));
-        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(manager.getColor(ColorConstants.OPERATOR)));
-        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(manager.getColor(ColorConstants.PUNCTUATION)));
-        classAttributes.put(TokenClass.REG_EXP_LITERAL, new TextAttribute(manager.getColor(ColorConstants.REG_EXP_LITERAL)));
-        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(manager.getColor(ColorConstants.STRING_LITERAL)));
-        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(manager.getColor(ColorConstants.WHITESPACE)));
+        classAttributes.put(TokenClass.COMMENT, new TextAttribute(Colors.getColor(ColorConstants.COMMENT)));
+        classAttributes.put(TokenClass.IDENTIFIER, new TextAttribute(Colors.getColor(ColorConstants.IDENTIFIER)));
+        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(Colors.getColor(ColorConstants.KEYWORD), null, SWT.BOLD));
+        classAttributes.put(TokenClass.NUMBER_LITERAL, new TextAttribute(Colors.getColor(ColorConstants.NUMBER_LITERAL)));
+        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(Colors.getColor(ColorConstants.OPERATOR)));
+        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(Colors.getColor(ColorConstants.PUNCTUATION)));
+        classAttributes.put(TokenClass.REG_EXP_LITERAL, new TextAttribute(Colors.getColor(ColorConstants.REG_EXP_LITERAL)));
+        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(Colors.getColor(ColorConstants.STRING_LITERAL)));
+        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(Colors.getColor(ColorConstants.WHITESPACE)));
 
         return classAttributes.build();
     }

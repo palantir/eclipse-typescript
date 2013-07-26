@@ -77,8 +77,6 @@ public final class TypeScriptEditor extends TextEditor {
         }
     });
 
-    private final ColorManager colorManager;
-
     private final Bridge bridge;
     private final Classifier classifier;
     private final LanguageService languageService;
@@ -87,8 +85,6 @@ public final class TypeScriptEditor extends TextEditor {
     private MyResourceChangeListener resourceChangeListener;
 
     public TypeScriptEditor() {
-        this.colorManager = new ColorManager();
-
         this.bridge = BRIDGE_SUPPLIER.get();
         this.classifier = new Classifier(this.bridge);
         this.languageService = new LanguageService(this.bridge);
@@ -116,10 +112,6 @@ public final class TypeScriptEditor extends TextEditor {
         return this.classifier;
     }
 
-    public ColorManager getColorManager() {
-        return this.colorManager;
-    }
-
     public LanguageService getLanguageService() {
         return this.languageService;
     }
@@ -130,8 +122,6 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void dispose() {
-        this.colorManager.dispose();
-
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
         this.resourceChangeListener = null;
 

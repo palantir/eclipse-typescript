@@ -78,7 +78,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
-        return new PresentationReconciler(this.editor);
+        return new PresentationReconciler();
     }
 
     @Override
