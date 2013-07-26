@@ -83,7 +83,7 @@ public final class Bridge {
         }
     }
 
-    private synchronized String processRequest(String requestJson) throws IOException {
+    private String processRequest(String requestJson) throws IOException {
         checkNotNull(requestJson);
 
         // write the request JSON to the bridge's stdin

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -31,12 +30,7 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
@@ -44,14 +38,12 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -61,7 +53,6 @@ import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
 import com.palantir.typescript.bridge.classifier.Classifier;
 import com.palantir.typescript.bridge.language.DefinitionInfo;
-import com.palantir.typescript.bridge.language.Diagnostic;
 import com.palantir.typescript.bridge.language.FileDelta;
 import com.palantir.typescript.bridge.language.FileDelta.Delta;
 import com.palantir.typescript.bridge.language.LanguageService;
@@ -93,7 +84,6 @@ public final class TypeScriptEditor extends TextEditor {
     private final LanguageService languageService;
 
     private OutlinePage contentOutlinePage;
-    private volatile Job currentJob;
     private MyResourceChangeListener resourceChangeListener;
 
     public TypeScriptEditor() {
@@ -291,69 +281,6 @@ public final class TypeScriptEditor extends TextEditor {
                 TypeScriptEditor.this.languageService.updateFileContents(fileName, documentText);
             } else if (text != null) { // normal edit
                 TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
-
-                this.updateMarkers(fileName);
-            }
-        }
-
-        /**
-         * Updates the markers via a job which is throttled to avoid impacting typing speed.
-         */
-        private void updateMarkers(final String fileName) {
-            Job job = new Job("Getting TypeScript diagnostics...") {
-                @Override
-                protected IStatus run(IProgressMonitor monitor) {
-                    List<Diagnostic> diagnostics = TypeScriptEditor.this.languageService.getDiagnostics(fileName);
-                    Display.getDefault().asyncExec(new UpdateMarkers(this, diagnostics));
-
-                    return Status.OK_STATUS;
-                }
-            };
-            job.setSystem(true);
-            job.schedule(500);
-
-            // only allow one job to run at a time
-            if (TypeScriptEditor.this.currentJob != null) {
-                TypeScriptEditor.this.currentJob.cancel();
-            }
-            TypeScriptEditor.this.currentJob = job;
-        }
-    }
-
-    private final class UpdateMarkers implements Runnable {
-
-        private final Job job;
-        private final List<Diagnostic> diagnostics;
-
-        private UpdateMarkers(Job job, List<Diagnostic> diagnostics) {
-            this.job = job;
-            this.diagnostics = diagnostics;
-        }
-
-        @Override
-        public void run() {
-            // only perform the update if this is the most up-to-date job
-            if (TypeScriptEditor.this.currentJob == this.job) {
-                IResource resource = ResourceUtil.getResource(getEditorInput());
-
-                try {
-                    // remove the existing markers
-                    resource.deleteMarkers(IMarker.PROBLEM, false, IResource.DEPTH_ZERO);
-
-                    // create the new markers
-                    for (Diagnostic diagnostic : this.diagnostics) {
-                        int start = diagnostic.getStart();
-                        int line = getSourceViewer().getDocument().getLineOfOffset(start) + 1;
-                        IMarker marker = resource.createMarker(IMarker.PROBLEM);
-                        marker.setAttribute(IMarker.CHAR_START, start);
-                        marker.setAttribute(IMarker.CHAR_END, start + diagnostic.getLength());
-                        marker.setAttribute(IMarker.LOCATION, "line " + line);
-                        marker.setAttribute(IMarker.MESSAGE, diagnostic.getText());
-                        marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-                    }
-                } catch (BadLocationException | CoreException e) {
-                    throw new RuntimeException(e);
-                }
             }
         }
     }
