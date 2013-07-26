@@ -91,6 +91,15 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
+    public SpanInfo getNameOrDottedNameSpan(String fileName, int startPos, int endPos) {
+        checkNotNull(fileName);
+        checkArgument(startPos >= 0);
+        checkArgument(endPos >= 0);
+
+        Request request = new Request(SERVICE, "getNameOrDottedNameSpan", fileName, startPos, endPos);
+        return this.bridge.call(request, SpanInfo.class);
+    }
+
     public List<NavigateToItem> getScriptLexicalStructure(String fileName) {
         checkNotNull(fileName);
 

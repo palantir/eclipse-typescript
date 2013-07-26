@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.compare;bundle-version="3.5.400",
  org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide;bundle-version="3.9.0",
- org.eclipse.ui.views;bundle-version="3.6.100"
+ org.eclipse.ui.views;bundle-version="3.6.100",
+ org.eclipse.ui.workbench.texteditor;bundle-version="3.8.100"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/guava-14.0.1.jar,

@@ -16,6 +16,7 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
@@ -31,6 +32,7 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
@@ -121,6 +123,42 @@ public final class TypeScriptEditor extends TextEditor {
         super.dispose();
     }
 
+    public void selectAndReveal(int offset, int length, String name) {
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
+        checkNotNull(name);
+
+        try {
+            IDocument document = this.getDocument();
+            String text = document.get(offset, length);
+            int start = offset + text.indexOf(name);
+
+            this.selectAndReveal(start, name.length());
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void openDefinition(DefinitionInfo definition) {
+        checkNotNull(definition);
+
+        IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        File definitionFile = new File(definition.getFileName());
+        IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
+
+        // open the editor and select the text
+        try {
+            TypeScriptEditor definitionEditor = (TypeScriptEditor) IDE.openEditorOnFileStore(activePage, localFile);
+            int minChar = definition.getMinChar();
+            int limChar = definition.getLimChar();
+            String name = definition.getName();
+
+            definitionEditor.selectAndReveal(minChar, limChar - minChar, name);
+        } catch (PartInitException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     protected void createActions() {
         super.createActions();
@@ -182,20 +220,8 @@ public final class TypeScriptEditor extends TextEditor {
 
             if (definitions != null && !definitions.isEmpty()) {
                 DefinitionInfo definition = definitions.get(0);
-                int minChar = definition.getMinChar();
-                int limChar = definition.getLimChar();
-                IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-                File definitionFile = new File(definition.getFileName());
-                IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
 
-                // open the editor and select the text
-                try {
-                    TextEditor definitionEditor = (TextEditor) IDE.openEditorOnFileStore(activePage, localFile);
-
-                    definitionEditor.selectAndReveal(minChar, limChar - minChar);
-                } catch (PartInitException e) {
-                    throw new RuntimeException(e);
-                }
+                openDefinition(definition);
             }
         }
     }

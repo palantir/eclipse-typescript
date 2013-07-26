@@ -47,7 +47,7 @@ public final class DefinitionInfo {
             @JsonProperty("containerName") String containerName) {
         checkNotNull(fileName);
         checkArgument(minChar >= 0);
-        checkArgument(limChar > 0);
+        checkArgument(limChar >= 0);
         checkNotNull(kind);
         checkNotNull(name);
         checkNotNull(containerKind);

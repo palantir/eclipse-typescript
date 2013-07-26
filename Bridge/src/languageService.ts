@@ -88,6 +88,10 @@ module Bridge {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
+        public getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): Services.SpanInfo {
+            return this.languageService.getNameOrDottedNameSpan(fileName, startPos, endPos);
+        }
+
         public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
             return this.languageService.getScriptLexicalStructure(fileName);
         }

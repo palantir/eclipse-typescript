@@ -20,8 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -167,17 +165,7 @@ public final class OutlinePage extends ContentOutlinePage {
             int minChar = item.getMinChar();
             int limChar = item.getLimChar();
 
-            // select the name of the item
-            try {
-                IDocument document = OutlinePage.this.editor.getDocument();
-                String text = document.get(minChar, limChar - minChar);
-                String name = item.getName();
-                int start = minChar + text.indexOf(name);
-
-                OutlinePage.this.editor.selectAndReveal(start, name.length());
-            } catch (BadLocationException e) {
-                throw new RuntimeException(e);
-            }
+            OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
         }
     }
 }

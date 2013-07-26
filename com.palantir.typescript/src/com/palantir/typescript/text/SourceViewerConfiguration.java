@@ -26,6 +26,7 @@ import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
+import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
@@ -74,6 +75,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     @Override
     public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
         return new ContentFormatter(this.editor);
+    }
+
+    @Override
+    public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
+        return new IHyperlinkDetector[] { new HyperlinkDetector(this.editor) };
     }
 
     @Override
