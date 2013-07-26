@@ -107,6 +107,12 @@ public final class TypeScriptEditor extends TextEditor {
         return super.getAdapter(adapter);
     }
 
+    public String getFileName() {
+        IPathEditorInput editorInput = (IPathEditorInput) this.getEditorInput();
+
+        return editorInput.getPath().toOSString();
+    }
+
     public LanguageService getLanguageService() {
         return this.languageService;
     }
@@ -213,8 +219,7 @@ public final class TypeScriptEditor extends TextEditor {
     private final class OpenDefinitionAction extends Action {
         @Override
         public void run() {
-            IPathEditorInput editorInput = (IPathEditorInput) getEditorInput();
-            String fileName = editorInput.getPath().toOSString();
+            String fileName = getFileName();
             int position = getSourceViewer().getSelectedRange().x;
             List<DefinitionInfo> definitions = TypeScriptEditor.this.languageService.getDefinitionAtPosition(fileName, position);
 
@@ -276,11 +281,10 @@ public final class TypeScriptEditor extends TextEditor {
         public void textChanged(TextEvent event) {
             checkNotNull(event);
 
+            String fileName = getFileName();
             int offset = event.getOffset();
             int length = event.getLength();
             String text = event.getText();
-            IPathEditorInput editorInput = (IPathEditorInput) getEditorInput();
-            String fileName = editorInput.getPath().toOSString();
 
             // redraw state change - update the entire document
             if (event.getDocumentEvent() == null) {

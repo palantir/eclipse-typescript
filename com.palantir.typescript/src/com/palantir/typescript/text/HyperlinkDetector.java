@@ -25,7 +25,6 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
-import org.eclipse.ui.IPathEditorInput;
 
 import com.palantir.typescript.bridge.language.DefinitionInfo;
 import com.palantir.typescript.bridge.language.SpanInfo;
@@ -47,8 +46,7 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
 
     @Override
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
-        String fileName = editorInput.getPath().toOSString();
+        String fileName = this.editor.getFileName();
         int offset = region.getOffset();
         SpanInfo span = this.editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
 

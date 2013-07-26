@@ -31,7 +31,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
@@ -61,8 +60,7 @@ public final class OutlinePage extends ContentOutlinePage {
     public void createControl(Composite parent) {
         super.createControl(parent);
 
-        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
-        String fileName = editorInput.getPath().toOSString();
+        String fileName = this.editor.getFileName();
         LanguageService languageService = this.editor.getLanguageService();
         List<NavigateToItem> lexicalStructure = languageService.getScriptLexicalStructure(fileName);
 

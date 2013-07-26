@@ -22,7 +22,6 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
-import org.eclipse.ui.IPathEditorInput;
 
 import com.google.common.base.Strings;
 import com.palantir.typescript.bridge.language.EditorOptions;
@@ -48,8 +47,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         // check if a newline was inserted
         if (command.length == 0 && command.text != null && TextUtilities.endsWith(legalLineDelimiters, command.text) != -1) {
-            IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
-            String fileName = editorInput.getPath().toOSString();
+            String fileName = this.editor.getFileName();
             int offset = command.offset;
             EditorOptions options = new EditorOptions();
             int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, offset, options);

@@ -25,7 +25,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
-import org.eclipse.ui.IPathEditorInput;
 
 import com.google.common.collect.Lists;
 import com.palantir.typescript.bridge.language.FormatCodeOptions;
@@ -49,8 +48,7 @@ public final class ContentFormatter implements IContentFormatter {
 
     @Override
     public void format(IDocument document, IRegion region) {
-        IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
-        String fileName = editorInput.getPath().toOSString();
+        String fileName = this.editor.getFileName();
         int minChar = region.getOffset();
         int limChar = minChar + region.getLength();
         FormatCodeOptions options = new FormatCodeOptions();

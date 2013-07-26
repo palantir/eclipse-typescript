@@ -32,7 +32,6 @@ import org.eclipse.jface.text.contentassist.IContentAssistProcessor;
 import org.eclipse.jface.text.contentassist.IContextInformation;
 import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.IPathEditorInput;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
@@ -82,8 +81,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
         // get the completion info
         if (this.currentCompletionInfo == null || offset < this.currentOffset) {
-            IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
-            String fileName = editorInput.getPath().toOSString();
+            String fileName = this.editor.getFileName();
 
             this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
             this.currentOffset = this.getOffset(offset);
