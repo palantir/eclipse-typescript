@@ -51,7 +51,6 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.bridge.Bridge;
-import com.palantir.typescript.bridge.classifier.Classifier;
 import com.palantir.typescript.bridge.language.DefinitionInfo;
 import com.palantir.typescript.bridge.language.FileDelta;
 import com.palantir.typescript.bridge.language.FileDelta.Delta;
@@ -78,7 +77,6 @@ public final class TypeScriptEditor extends TextEditor {
     });
 
     private final Bridge bridge;
-    private final Classifier classifier;
     private final LanguageService languageService;
 
     private OutlinePage contentOutlinePage;
@@ -86,7 +84,6 @@ public final class TypeScriptEditor extends TextEditor {
 
     public TypeScriptEditor() {
         this.bridge = BRIDGE_SUPPLIER.get();
-        this.classifier = new Classifier(this.bridge);
         this.languageService = new LanguageService(this.bridge);
 
         this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
@@ -106,10 +103,6 @@ public final class TypeScriptEditor extends TextEditor {
         }
 
         return super.getAdapter(adapter);
-    }
-
-    public Classifier getClassifier() {
-        return this.classifier;
     }
 
     public LanguageService getLanguageService() {
