@@ -88,6 +88,10 @@ module Bridge {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
+        public getIndentationAtPosition(fileName: string, position: number, options: Services.EditorOptions): number {
+            return this.languageService.getIndentationAtPosition(fileName, position, options);
+        }
+
         public getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): Services.SpanInfo {
             return this.languageService.getNameOrDottedNameSpan(fileName, startPos, endPos);
         }

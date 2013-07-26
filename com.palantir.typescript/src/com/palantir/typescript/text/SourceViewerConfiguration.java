@@ -19,6 +19,7 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.text.DefaultInformationControl;
+import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlCreator;
@@ -53,6 +54,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     @Override
     public IAnnotationHover getAnnotationHover(ISourceViewer sourceViewer) {
         return new DefaultAnnotationHover();
+    }
+
+    @Override
+    public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
+        return new IAutoEditStrategy[] { new AutoEditStrategy(this.editor) };
     }
 
     @Override
