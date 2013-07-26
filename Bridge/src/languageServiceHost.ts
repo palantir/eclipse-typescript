@@ -35,7 +35,7 @@ module Bridge {
         }
 
         public addDefaultLibrary(libraryContents: string) {
-            var fileInfo = new FileInfo(libraryContents, false);
+            var fileInfo = new FileInfo(ByteOrderMark.None, libraryContents, false);
 
             this.fileInfos.set("lib.d.ts", fileInfo);
         }
@@ -54,7 +54,7 @@ module Bridge {
             if (fileInfo !== undefined) {
                 fileInfo.updateContents(contents);
             } else {
-                var fileInfo = new FileInfo(contents, true);
+                var fileInfo = new FileInfo(ByteOrderMark.None, contents, true);
 
                 // save the new file info
                 this.fileInfos.set(fileName, fileInfo);
@@ -75,8 +75,9 @@ module Bridge {
                 var resolvedFile = IO.findFile(rootPath, referencedFilePath);
 
                 if (resolvedFile !== null) {
-                    var referencedFileContents = resolvedFile.fileInformation.contents();
-                    var referencedFileInfo = new FileInfo(referencedFileContents, false);
+                    var referencedFileByteOrderMark = resolvedFile.fileInformation.byteOrderMark;
+                    var referencedFileContents = resolvedFile.fileInformation.contents;
+                    var referencedFileInfo = new FileInfo(referencedFileByteOrderMark, referencedFileContents, false);
                     var referencedFileName = IO.resolvePath(resolvedFile.path);
 
                     if (!this.fileInfos.has(referencedFileName)) {
@@ -97,7 +98,7 @@ module Bridge {
                         var fileInfo = this.fileInfos.get(fileName);
 
                         if (fileInfo !== undefined) {
-                            var contents = IO.readFile(fileName).contents();
+                            var contents = IO.readFile(fileName).contents;
 
                             fileInfo.updateContents(contents);
                         }
@@ -125,12 +126,16 @@ module Bridge {
             return this.fileInfos.get(fileName).getOpen();
         }
 
-        public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
-            return this.fileInfos.get(fileName).getScriptSnapshot();
+        public getScriptByteOrderMark(fileName: string): ByteOrderMark {
+            return ByteOrderMark.None;
         }
 
         public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {
             return this.diagnostics;
+        }
+
+        public getLocalizedDiagnosticMessages(): any {
+            return null;
         }
 
         public information(): boolean {
@@ -155,6 +160,26 @@ module Bridge {
 
         public log(message: string): void {
         }
+
+        public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
+            return this.fileInfos.get(fileName).getScriptSnapshot();
+        }
+
+        public resolveRelativePath(path: string, directory: string): string {
+            return IO.resolvePath(path);
+        }
+
+        public fileExists(path: string): boolean {
+            return IO.fileExists(path);
+        }
+
+        public directoryExists(path: string): boolean {
+            return IO.directoryExists(path);
+        }
+
+        public getParentDirectory(path: string): string {
+            return IO.dirName(path);
+        }
     }
 
     export interface IFileDelta {
@@ -170,12 +195,14 @@ module Bridge {
 
     class FileInfo {
 
+        private byteOrderMark: ByteOrderMark;
         private changes: TypeScript.TextChangeRange[];
         private contents: string;
         private open: boolean;
         private version: number;
 
-        constructor(contents: string, open: boolean) {
+        constructor(byteOrderMark: ByteOrderMark, contents: string, open: boolean) {
+            this.byteOrderMark = byteOrderMark;
             this.changes = [];
             this.contents = contents;
             this.open = open;

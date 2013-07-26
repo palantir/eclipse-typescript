@@ -72,7 +72,7 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());
         treeViewer.setContentProvider(new MyContentProvider(lexicalStructure));
         treeViewer.setLabelProvider(new MyLabelProvider());
-        treeViewer.setInput(ScriptElementKind.SCRIPT_ELEMENT);
+        treeViewer.setInput("");
         treeViewer.expandAll();
     }
 
@@ -98,7 +98,7 @@ public final class OutlinePage extends ContentOutlinePage {
             List<NavigateToItem> elements = Lists.newArrayList();
 
             for (NavigateToItem item : this.lexicalStructure) {
-                if (item.getContainerKind() == inputElement) {
+                if (item.getContainerName().isEmpty()) {
                     elements.add(item);
                 }
             }
