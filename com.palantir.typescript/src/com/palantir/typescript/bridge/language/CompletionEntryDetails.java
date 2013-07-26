@@ -18,8 +18,6 @@ package com.palantir.typescript.bridge.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.eclipse.swt.graphics.Image;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -80,10 +78,6 @@ public final class CompletionEntryDetails {
 
     public String getDocComment() {
         return this.docComment;
-    }
-
-    public Image getImage() {
-        return this.kind.getImage(this.kindModifiers);
     }
 
     @Override

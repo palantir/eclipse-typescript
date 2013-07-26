@@ -19,8 +19,6 @@ package com.palantir.typescript.bridge.language;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.eclipse.swt.graphics.Image;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
@@ -109,10 +107,6 @@ public final class NavigateToItem {
 
     public ScriptElementKind getContainerKind() {
         return this.containerKind;
-    }
-
-    public Image getImage() {
-        return this.kind.getImage(this.kindModifiers);
     }
 
     @Override

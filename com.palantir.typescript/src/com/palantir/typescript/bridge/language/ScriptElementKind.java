@@ -16,20 +16,7 @@
 
 package com.palantir.typescript.bridge.language;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.net.URL;
-import java.util.List;
-
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
-import org.eclipse.swt.graphics.Image;
-
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.palantir.typescript.Activator;
 
 /**
  * Corresponds to the class with the same name in languageService.ts.
@@ -102,8 +89,6 @@ public enum ScriptElementKind {
 
     PRIMITIVE_TYPE("primitive type");
 
-    private static final ImageRegistry REGISTRY = new ImageRegistry();
-
     private final String value;
 
     private ScriptElementKind(String value) {
@@ -113,68 +98,5 @@ public enum ScriptElementKind {
     @JsonValue
     public String getValue() {
         return this.value;
-    }
-
-    public Image getImage(List<ScriptElementModifierKind> kindModifiers) {
-        checkNotNull(kindModifiers);
-
-        final String imageName;
-        switch (this) {
-            case CLASS_ELEMENT:
-                imageName = "class";
-                break;
-            case CONSTRUCTOR_IMPLEMENTATION_ELEMENT:
-                imageName = "memberFunctionPublic";
-                break;
-            case ENUM_ELEMENT:
-                imageName = "enum";
-                break;
-            case LOCAL_FUNCTION_ELEMENT:
-            case FUNCTION_ELEMENT:
-                imageName = "function";
-                break;
-            case INTERFACE_ELEMENT:
-                imageName = "interface";
-                break;
-            case MEMBER_FUNCTION_ELEMENT:
-                if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
-                    imageName = "memberFunctionPrivate";
-                } else { // public
-                    imageName = "memberFunctionPublic";
-                }
-                break;
-            case MEMBER_VARIABLE_ELEMENT:
-                if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
-                    imageName = "memberVariablePrivate";
-                } else { // public
-                    imageName = "memberVariablePublic";
-                }
-                break;
-            case MODULE_ELEMENT:
-                imageName = "module";
-                break;
-            case LOCAL_VARIABLE_ELEMENT:
-            case VARIABLE_ELEMENT:
-                imageName = "variable";
-                break;
-            case UNKNOWN:
-            default:
-                imageName = "unknown";
-                break;
-        }
-
-        return getImage("$nl$/icons/elements/" + imageName + ".png");
-    }
-
-    private static Image getImage(String path) {
-        if (REGISTRY.getDescriptor(path) == null) {
-            IPath path2 = new Path(path);
-            URL imageUrl = FileLocator.find(Activator.getDefault().getBundle(), path2, null);
-            ImageDescriptor descriptor = ImageDescriptor.createFromURL(imageUrl);
-
-            REGISTRY.put(path, descriptor);
-        }
-
-        return REGISTRY.get(path);
     }
 }

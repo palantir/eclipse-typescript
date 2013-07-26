@@ -36,6 +36,7 @@ import org.eclipse.ui.IPathEditorInput;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.palantir.typescript.Images;
 import com.palantir.typescript.bridge.language.CompletionEntryDetails;
 import com.palantir.typescript.bridge.language.CompletionInfo;
 import com.palantir.typescript.bridge.language.ScriptElementKind;
@@ -108,7 +109,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     int replacementOffset = this.currentOffset;
                     int replacementLength = offset - this.currentOffset;
                     int cursorPosition = replacementString.length();
-                    Image image = entry.getImage();
+                    Image image = Images.getImage(entry.getKind(), entry.getKindModifiers());
                     String displayString = getDisplayString(entry);
                     IContextInformation contextInformation = null;
                     String additionalProposalInfo = entry.getDocComment();

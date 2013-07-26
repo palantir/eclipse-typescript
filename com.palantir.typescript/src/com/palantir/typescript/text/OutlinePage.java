@@ -36,10 +36,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.palantir.typescript.Images;
 import com.palantir.typescript.bridge.language.LanguageService;
 import com.palantir.typescript.bridge.language.NavigateToItem;
 import com.palantir.typescript.bridge.language.ScriptElementKind;
+import com.palantir.typescript.bridge.language.ScriptElementModifierKind;
 
 /**
  * The outline view.
@@ -142,8 +145,10 @@ public final class OutlinePage extends ContentOutlinePage {
         @Override
         public Image getImage(Object element) {
             NavigateToItem item = (NavigateToItem) element;
+            ScriptElementKind kind = item.getKind();
+            ImmutableList<ScriptElementModifierKind> kindModifiers = item.getKindModifiers();
 
-            return item.getImage();
+            return Images.getImage(kind, kindModifiers);
         }
 
         @Override
