@@ -79,6 +79,9 @@ public final class Images {
             case MODULE_ELEMENT:
                 imageName = "module";
                 break;
+            case PARAMETER_ELEMENT:
+                imageName = "parameter";
+                break;
             case LOCAL_VARIABLE_ELEMENT:
             case VARIABLE_ELEMENT:
                 imageName = "variable";
