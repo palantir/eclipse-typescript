@@ -50,13 +50,13 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
         IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
         String fileName = editorInput.getPath().toOSString();
         int offset = region.getOffset();
-        List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(fileName, offset);
+        SpanInfo span = this.editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
 
-        if (definitions != null && !definitions.isEmpty()) {
-            DefinitionInfo definition = definitions.get(0);
-            SpanInfo span = this.editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
+        if (span != null) {
+            List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(fileName, offset);
 
-            if (span != null) {
+            if (definitions != null && !definitions.isEmpty()) {
+                DefinitionInfo definition = definitions.get(0);
                 int minChar = span.getMinChar();
                 IRegion hyperlinkRegion = new Region(minChar, span.getLimChar() - minChar);
 
