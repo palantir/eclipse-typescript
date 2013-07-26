@@ -69,7 +69,7 @@ public final class TypeScriptEditor extends TextEditor {
         public Bridge get() {
             Bridge bridge = new Bridge();
 
-            // add the standard library
+            // HACKHACK: add the standard library
             LanguageService languageService = new LanguageService(bridge);
             languageService.addDefaultLibrary();
 
