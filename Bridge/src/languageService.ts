@@ -68,23 +68,6 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getDiagnostics(fileName: string): Diagnostic[] {
-            var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
-
-            // get the semantic diagnostics only if there were no syntax errors
-            if (diagnostics.length === 0) {
-                diagnostics = diagnostics.concat(this.languageService.getSemanticDiagnostics(fileName));
-            }
-
-            return diagnostics.map((diagnostic) => {
-                return {
-                    start: diagnostic.start(),
-                    length: diagnostic.length(),
-                    text: diagnostic.text()
-                };
-            });
-        }
-
         public getEmitOutput(fileName: string): Services.EmitOutput {
             return this.languageService.getEmitOutput(fileName);
         }
