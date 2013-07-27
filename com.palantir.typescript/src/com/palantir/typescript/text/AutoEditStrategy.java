@@ -57,9 +57,6 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
                 StringBuilder buffer = new StringBuilder(command.text);
                 buffer.append(Strings.repeat(" ", indentation));
                 command.text = buffer.toString();
-            } else if (command.text.equals("}")) {
-                command.offset = command.offset - 4;
-                command.length = 4;
             }
         }
     }
