@@ -46,16 +46,21 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         String[] legalLineDelimiters = document.getLegalLineDelimiters();
 
         // check if a newline was inserted
-        if (command.length == 0 && command.text != null && TextUtilities.endsWith(legalLineDelimiters, command.text) != -1) {
-            String fileName = this.editor.getFileName();
-            int offset = command.offset;
-            EditorOptions options = new EditorOptions();
-            int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, offset, options);
+        if (command.length == 0 && command.text != null) {
+            if (TextUtilities.endsWith(legalLineDelimiters, command.text) != -1) {
+                String fileName = this.editor.getFileName();
+                int offset = command.offset;
+                EditorOptions options = new EditorOptions();
+                int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, offset, options);
 
-            // modify the command to use the proper indentation
-            StringBuilder buffer = new StringBuilder(command.text);
-            buffer.append(Strings.repeat(" ", indentation));
-            command.text = buffer.toString();
+                // modify the command to use the proper indentation
+                StringBuilder buffer = new StringBuilder(command.text);
+                buffer.append(Strings.repeat(" ", indentation));
+                command.text = buffer.toString();
+            } else if (command.text.equals("}")) {
+                command.offset = command.offset - 4;
+                command.length = 4;
+            }
         }
     }
 }
