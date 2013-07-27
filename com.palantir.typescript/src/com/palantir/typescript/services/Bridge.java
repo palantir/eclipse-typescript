@@ -25,10 +25,13 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
+import org.eclipse.core.runtime.FileLocator;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
+import com.palantir.typescript.Activator;
 
 /**
  * This handles all requests that need to be handled by TypeScript's built in language services.
@@ -124,8 +127,13 @@ public final class Bridge {
         }
 
         // get the path to the bridge.js file
-        String pluginRoot = this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
-        File bridgeFile = new File(pluginRoot, "bin/bridge.js");
+        File bundleFile;
+        try {
+            bundleFile = FileLocator.getBundleFile(Activator.getDefault().getBundle());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        File bridgeFile = new File(bundleFile, "bin/bridge.js");
         String bridgePath = bridgeFile.getAbsolutePath();
 
         // start the node process and create a reader/writer for its stdin/stdout
