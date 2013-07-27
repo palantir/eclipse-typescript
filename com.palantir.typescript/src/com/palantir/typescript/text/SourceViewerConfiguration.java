@@ -95,7 +95,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
     @Override
     public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
-        return new TextHover(sourceViewer);
+        return new TextHover(sourceViewer, this.editor);
     }
 
     private static final class MyInformationControlCreator implements IInformationControlCreator {

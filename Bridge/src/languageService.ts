@@ -99,6 +99,19 @@ module Bridge {
         public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
+
+        public getTypeAtPosition(fileName: string, position: number): TypeInfo {
+            var type = this.languageService.getTypeAtPosition(fileName, position);
+
+            return {
+                memberName: type.memberName.toString(),
+                docComment: type.docComment,
+                fullSymbolName: type.fullSymbolName,
+                kind: type.kind,
+                minChar: type.minChar,
+                limChar: type.limChar
+            };
+        }
     }
 
     export interface CompletionInfo {
@@ -110,5 +123,14 @@ module Bridge {
         start: number;
         length: number;
         text: string;
+    }
+
+    export interface TypeInfo {
+        memberName: string;
+        docComment: string;
+        fullSymbolName: string;
+        kind: string;
+        minChar: number;
+        limChar: number;
     }
 }

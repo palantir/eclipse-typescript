@@ -117,6 +117,14 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
+    public TypeInfo getTypeAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getTypeAtPosition", fileName, position);
+        return this.bridge.call(request, TypeInfo.class);
+    }
+
     public void addDefaultLibrary() {
         String libraryContents;
         try {
