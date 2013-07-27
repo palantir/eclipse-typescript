@@ -98,7 +98,7 @@ public final class Images {
     private static Image getImage(String path) {
         if (REGISTRY.getDescriptor(path) == null) {
             IPath path2 = new Path(path);
-            URL imageUrl = FileLocator.find(Activator.getDefault().getBundle(), path2, null);
+            URL imageUrl = FileLocator.find(TypeScriptPlugin.getDefault().getBundle(), path2, null);
             ImageDescriptor descriptor = ImageDescriptor.createFromURL(imageUrl);
 
             REGISTRY.put(path, descriptor);

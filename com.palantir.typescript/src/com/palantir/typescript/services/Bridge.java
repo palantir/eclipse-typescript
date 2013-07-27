@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
-import com.palantir.typescript.Activator;
+import com.palantir.typescript.TypeScriptPlugin;
 
 /**
  * This handles all requests that need to be handled by TypeScript's built in language services.
@@ -129,7 +129,7 @@ public final class Bridge {
         // get the path to the bridge.js file
         File bundleFile;
         try {
-            bundleFile = FileLocator.getBundleFile(Activator.getDefault().getBundle());
+            bundleFile = FileLocator.getBundleFile(TypeScriptPlugin.getDefault().getBundle());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

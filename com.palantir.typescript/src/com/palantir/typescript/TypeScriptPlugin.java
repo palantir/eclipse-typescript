@@ -21,13 +21,13 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * The activator class controls the plug-in life cycle.
+ * The TypeScript plug-in for the Eclipse platform.
  *
  * @author tyleradams
  */
-public final class Activator extends AbstractUIPlugin {
+public final class TypeScriptPlugin extends AbstractUIPlugin {
 
-    private static Activator PLUGIN;
+    private static TypeScriptPlugin PLUGIN;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -48,7 +48,7 @@ public final class Activator extends AbstractUIPlugin {
      *
      * @return the shared instance
      */
-    public static Activator getDefault() {
+    public static TypeScriptPlugin getDefault() {
         return PLUGIN;
     }
 
