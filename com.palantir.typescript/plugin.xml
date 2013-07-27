@@ -77,7 +77,7 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:#TextEditorContext?after=additions">
+            locationURI="popup:#TextEditorContext?before=additions">
           <separator
                 name="com.palantir.typescript.separator"
                 visible="true">
