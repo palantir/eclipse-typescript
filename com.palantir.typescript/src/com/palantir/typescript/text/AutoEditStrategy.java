@@ -24,7 +24,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
 
 import com.google.common.base.Strings;
-import com.palantir.typescript.bridge.language.EditorOptions;
+import com.palantir.typescript.services.language.EditorOptions;
 
 /**
  * The auto-edit strategy.

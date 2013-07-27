@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.language;
+package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -26,8 +26,8 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import com.palantir.typescript.bridge.Bridge;
-import com.palantir.typescript.bridge.Request;
+import com.palantir.typescript.services.Bridge;
+import com.palantir.typescript.services.Request;
 
 /**
  * The language service.

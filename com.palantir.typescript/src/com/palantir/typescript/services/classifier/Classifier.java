@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.classifier;
+package com.palantir.typescript.services.classifier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,8 +22,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.palantir.typescript.bridge.Bridge;
-import com.palantir.typescript.bridge.Request;
+import com.palantir.typescript.services.Bridge;
+import com.palantir.typescript.services.Request;
 
 /**
  * The classifier service.

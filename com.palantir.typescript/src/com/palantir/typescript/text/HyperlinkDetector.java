@@ -27,8 +27,8 @@ import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 
-import com.palantir.typescript.bridge.language.DefinitionInfo;
-import com.palantir.typescript.bridge.language.SpanInfo;
+import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.SpanInfo;
 
 /**
  * The hyperlink detector adds links when the user holds down ctrl.

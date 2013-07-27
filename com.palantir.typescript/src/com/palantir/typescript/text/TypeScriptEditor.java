@@ -52,11 +52,11 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.bridge.Bridge;
-import com.palantir.typescript.bridge.language.DefinitionInfo;
-import com.palantir.typescript.bridge.language.FileDelta;
-import com.palantir.typescript.bridge.language.FileDelta.Delta;
-import com.palantir.typescript.bridge.language.LanguageService;
+import com.palantir.typescript.services.Bridge;
+import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.FileDelta;
+import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The editor for TypeScript files.

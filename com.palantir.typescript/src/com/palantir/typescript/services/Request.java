@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge;
+package com.palantir.typescript.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

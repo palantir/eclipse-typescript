@@ -37,9 +37,9 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
-import com.palantir.typescript.bridge.language.CompletionEntryDetails;
-import com.palantir.typescript.bridge.language.CompletionInfo;
-import com.palantir.typescript.bridge.language.ScriptElementKind;
+import com.palantir.typescript.services.language.CompletionEntryDetails;
+import com.palantir.typescript.services.language.CompletionInfo;
+import com.palantir.typescript.services.language.ScriptElementKind;
 
 /**
  * This class deals with making auto completions.

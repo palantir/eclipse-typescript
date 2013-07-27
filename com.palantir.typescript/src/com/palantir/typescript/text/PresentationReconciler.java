@@ -45,12 +45,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.palantir.typescript.Colors;
-import com.palantir.typescript.bridge.Bridge;
-import com.palantir.typescript.bridge.classifier.ClassificationInfo;
-import com.palantir.typescript.bridge.classifier.ClassificationResult;
-import com.palantir.typescript.bridge.classifier.Classifier;
-import com.palantir.typescript.bridge.classifier.EndOfLineState;
-import com.palantir.typescript.bridge.classifier.TokenClass;
+import com.palantir.typescript.services.Bridge;
+import com.palantir.typescript.services.classifier.ClassificationInfo;
+import com.palantir.typescript.services.classifier.ClassificationResult;
+import com.palantir.typescript.services.classifier.Classifier;
+import com.palantir.typescript.services.classifier.EndOfLineState;
+import com.palantir.typescript.services.classifier.TokenClass;
 
 /**
  * The presentation reconciler performs syntax highlighting.

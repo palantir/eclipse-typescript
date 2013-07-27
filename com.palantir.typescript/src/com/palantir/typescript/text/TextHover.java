@@ -26,7 +26,7 @@ import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.ui.texteditor.MarkerAnnotation;
 
-import com.palantir.typescript.bridge.language.TypeInfo;
+import com.palantir.typescript.services.language.TypeInfo;
 
 /**
  * Determines what to display when hovering over the text.

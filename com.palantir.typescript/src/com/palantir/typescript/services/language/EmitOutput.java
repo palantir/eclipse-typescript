@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.language;
+package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,33 +29,32 @@ import com.google.common.collect.ImmutableList;
  *
  * @author dcicerone
  */
-public final class CompletionInfo {
+public final class EmitOutput {
 
-    private final ImmutableList<CompletionEntryDetails> entries;
-    private final boolean memberCompletion;
+    private final ImmutableList<Diagnostic> diagnostics;
+    private final ImmutableList<OutputFile> outputFiles;
 
-    public CompletionInfo(
-            @JsonProperty("entries") List<CompletionEntryDetails> entries,
-            @JsonProperty("isMemberCompletion") boolean memberCompletion) {
-        checkNotNull(entries);
+    public EmitOutput(@JsonProperty("diagnostics") List<Diagnostic> diagnostics, @JsonProperty("outputFiles") List<OutputFile> outputFiles) {
+        checkNotNull(diagnostics);
+        checkNotNull(outputFiles);
 
-        this.entries = ImmutableList.copyOf(entries);
-        this.memberCompletion = memberCompletion;
+        this.diagnostics = ImmutableList.copyOf(diagnostics);
+        this.outputFiles = ImmutableList.copyOf(outputFiles);
     }
 
-    public ImmutableList<CompletionEntryDetails> getEntries() {
-        return this.entries;
+    public ImmutableList<Diagnostic> getDiagnostics() {
+        return this.diagnostics;
     }
 
-    public boolean isMemberCompletion() {
-        return this.memberCompletion;
+    public ImmutableList<OutputFile> getOutputFiles() {
+        return this.outputFiles;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-            .add("entries", this.entries)
-            .add("memberCompletion", this.memberCompletion)
+            .add("diagnostics", this.diagnostics)
+            .add("outputFiles", this.outputFiles)
             .toString();
     }
 }

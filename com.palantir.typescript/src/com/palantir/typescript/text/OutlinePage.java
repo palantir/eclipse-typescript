@@ -36,10 +36,10 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
-import com.palantir.typescript.bridge.language.LanguageService;
-import com.palantir.typescript.bridge.language.NavigateToItem;
-import com.palantir.typescript.bridge.language.ScriptElementKind;
-import com.palantir.typescript.bridge.language.ScriptElementModifierKind;
+import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.ScriptElementKind;
+import com.palantir.typescript.services.language.ScriptElementModifierKind;
 
 /**
  * The outline view.

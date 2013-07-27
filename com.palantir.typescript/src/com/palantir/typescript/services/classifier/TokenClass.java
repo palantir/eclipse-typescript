@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.bridge.classifier;
+package com.palantir.typescript.services.classifier;
 
 /**
  * Corresponds to the enum with the same name in classifier.ts.
  *
  * @author dcicerone
  */
-public enum EndOfLineState {
-    START,
-    IN_MULTI_LINE_COMMENT_TRIVIA,
-    IN_SINGLE_QUOTE_STRING_LITERAL,
-    IN_DOUBLE_QUOTE_STRING_LITERAL
+public enum TokenClass {
+    PUNCTUATION,
+    KEYWORD,
+    OPERATOR,
+    COMMENT,
+    WHITESPACE,
+    IDENTIFIER,
+    NUMBER_LITERAL,
+    STRING_LITERAL,
+    REG_EXP_LITERAL
 }

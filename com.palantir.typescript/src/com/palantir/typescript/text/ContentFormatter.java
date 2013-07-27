@@ -27,9 +27,9 @@ import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
 
 import com.google.common.collect.Lists;
-import com.palantir.typescript.bridge.language.FormatCodeOptions;
-import com.palantir.typescript.bridge.language.LanguageService;
-import com.palantir.typescript.bridge.language.TextEdit;
+import com.palantir.typescript.services.language.FormatCodeOptions;
+import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.TextEdit;
 
 /**
  * The TypeScript formatter.

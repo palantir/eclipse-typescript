@@ -28,8 +28,8 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
-import com.palantir.typescript.bridge.language.ScriptElementKind;
-import com.palantir.typescript.bridge.language.ScriptElementModifierKind;
+import com.palantir.typescript.services.language.ScriptElementKind;
+import com.palantir.typescript.services.language.ScriptElementModifierKind;
 
 /**
  * Provides access to all of the images.
