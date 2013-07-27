@@ -62,15 +62,17 @@ public final class TextHover extends DefaultTextHover implements ITextHoverExten
             int offset = hoverRegion.getOffset();
             TypeInfo type = this.editor.getLanguageService().getTypeAtPosition(fileName, offset);
 
-            switch (type.getKind()) {
-                case LOCAL_FUNCTION_ELEMENT:
-                case FUNCTION_ELEMENT:
-                case MEMBER_FUNCTION_ELEMENT:
-                    hoverInfo = type.getFullSymbolName() + type.getMemberName();
-                    break;
-                default:
-                    hoverInfo = type.getMemberName();
-                    break;
+            if (type != null) {
+                switch (type.getKind()) {
+                    case LOCAL_FUNCTION_ELEMENT:
+                    case FUNCTION_ELEMENT:
+                    case MEMBER_FUNCTION_ELEMENT:
+                        hoverInfo = type.getFullSymbolName() + type.getMemberName();
+                        break;
+                    default:
+                        hoverInfo = type.getMemberName();
+                        break;
+                }
             }
         }
 

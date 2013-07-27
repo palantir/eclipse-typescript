@@ -107,14 +107,18 @@ module Bridge {
         public getTypeAtPosition(fileName: string, position: number): TypeInfo {
             var type = this.languageService.getTypeAtPosition(fileName, position);
 
-            return {
-                memberName: type.memberName.toString(),
-                docComment: type.docComment,
-                fullSymbolName: type.fullSymbolName,
-                kind: type.kind,
-                minChar: type.minChar,
-                limChar: type.limChar
-            };
+            if (type !== null) {
+                return {
+                    memberName: type.memberName.toString(),
+                    docComment: type.docComment,
+                    fullSymbolName: type.fullSymbolName,
+                    kind: type.kind,
+                    minChar: type.minChar,
+                    limChar: type.limChar
+                };
+            }
+
+            return null;
         }
     }
 
