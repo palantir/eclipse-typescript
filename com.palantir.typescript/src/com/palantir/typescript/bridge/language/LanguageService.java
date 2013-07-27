@@ -147,6 +147,13 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
+    public void setFileOpen(String fileName, boolean open) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "setFileOpen", fileName, open);
+        this.bridge.call(request, Void.class);
+    }
+
     public void updateFileContents(String fileName, String contents) {
         checkNotNull(fileName);
         checkNotNull(contents);

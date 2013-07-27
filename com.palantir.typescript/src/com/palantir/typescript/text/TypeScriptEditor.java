@@ -126,6 +126,8 @@ public final class TypeScriptEditor extends TextEditor {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
         this.resourceChangeListener = null;
 
+        this.languageService.setFileOpen(this.getFileName(), false);
+
         super.dispose();
     }
 

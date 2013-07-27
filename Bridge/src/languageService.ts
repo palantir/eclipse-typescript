@@ -38,6 +38,10 @@ module Bridge {
             this.languageServiceHost.editFile(fileName, offset, length, text);
         }
 
+        public setFileOpen(fileName: string, open: boolean) {
+            this.languageServiceHost.setFileOpen(fileName, open);
+        }
+
         public updateFileContents(fileName: string, contents: string) {
             this.languageServiceHost.updateFileContents(fileName, contents);
         }
