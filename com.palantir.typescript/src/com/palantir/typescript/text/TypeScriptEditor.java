@@ -24,13 +24,6 @@ import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -40,6 +33,8 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -51,12 +46,8 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.language.DefinitionInfo;
-import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
-import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The editor for TypeScript files.
@@ -65,33 +56,21 @@ import com.palantir.typescript.services.language.FileDelta.Delta;
  */
 public final class TypeScriptEditor extends TextEditor {
 
-    private static final Supplier<Bridge> BRIDGE_SUPPLIER = Suppliers.memoize(new Supplier<Bridge>() {
+    private static final Supplier<LanguageService> LANGUAGE_SERVICE_SUPPLIER = Suppliers.memoize(new Supplier<LanguageService>() {
         @Override
-        public Bridge get() {
-            Bridge bridge = new Bridge();
-
-            // HACKHACK: add the standard library
-            LanguageService languageService = new LanguageService(bridge);
-            languageService.addDefaultLibrary();
-
-            return bridge;
+        public LanguageService get() {
+            return new LanguageService();
         }
     });
 
-    private final Bridge bridge;
     private final LanguageService languageService;
 
     private OutlinePage contentOutlinePage;
-    private MyResourceChangeListener resourceChangeListener;
 
     public TypeScriptEditor() {
-        this.bridge = BRIDGE_SUPPLIER.get();
-        this.languageService = new LanguageService(this.bridge);
+        this.languageService = LANGUAGE_SERVICE_SUPPLIER.get();
 
         this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
-
-        this.resourceChangeListener = new MyResourceChangeListener();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     @Override
@@ -122,10 +101,18 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     @Override
-    public void dispose() {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
-        this.resourceChangeListener = null;
+    public void init(IEditorSite site, IEditorInput input) throws PartInitException {
+        // inform the language service that the file is open
+        IPathEditorInput editorInput = (IPathEditorInput) input;
+        String fileName = editorInput.getPath().toOSString();
+        this.languageService.setFileOpen(fileName, true);
 
+        super.init(site, input);
+    }
+
+    @Override
+    public void dispose() {
+        // inform the language service that the file is no longer open
         this.languageService.setFileOpen(this.getFileName(), false);
 
         super.dispose();
@@ -230,50 +217,6 @@ public final class TypeScriptEditor extends TextEditor {
 
                 openDefinition(definition);
             }
-        }
-    }
-
-    private final class MyResourceChangeListener implements IResourceChangeListener {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor();
-
-            try {
-                event.getDelta().accept(visitor);
-            } catch (CoreException e) {
-                throw new RuntimeException(e);
-            }
-
-            TypeScriptEditor.this.languageService.updateFiles(visitor.getDeltas());
-        }
-    }
-
-    private final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
-
-        private final ImmutableList.Builder<FileDelta> deltas = ImmutableList.builder();
-
-        @Override
-        public boolean visit(IResourceDelta delta) throws CoreException {
-            IResource resource = delta.getResource();
-
-            if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
-                String fileName = resource.getRawLocation().toOSString();
-
-                switch (delta.getKind()) {
-                    case IResourceDelta.CHANGED:
-                        this.deltas.add(new FileDelta(Delta.CHANGED, fileName));
-                        break;
-                    case IResourceDelta.REMOVED:
-                        this.deltas.add(new FileDelta(Delta.REMOVED, fileName));
-                        break;
-                }
-            }
-
-            return true;
-        }
-
-        public ImmutableList<FileDelta> getDeltas() {
-            return this.deltas.build();
         }
     }
 

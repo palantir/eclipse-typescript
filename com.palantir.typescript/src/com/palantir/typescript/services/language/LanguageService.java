@@ -22,12 +22,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
+import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The language service.
@@ -42,10 +54,12 @@ public final class LanguageService {
 
     private final Bridge bridge;
 
-    public LanguageService(Bridge bridge) {
-        checkNotNull(bridge);
+    public LanguageService() {
+        this.bridge = new Bridge();
 
-        this.bridge = bridge;
+        this.addDefaultLibrary();
+        this.addWorkspaceFiles();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(new MyResourceChangeListener(), IResourceChangeEvent.PRE_BUILD);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -125,25 +139,6 @@ public final class LanguageService {
         return this.bridge.call(request, TypeInfo.class);
     }
 
-    public void addDefaultLibrary() {
-        String libraryContents;
-        try {
-            libraryContents = Resources.toString(LanguageService.class.getResource("lib.d.ts"), Charsets.UTF_8);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        Request request = new Request(SERVICE, "addDefaultLibrary", libraryContents);
-        this.bridge.call(request, Void.class);
-    }
-
-    public void addFiles(List<String> fileNames) {
-        checkNotNull(fileNames);
-
-        Request request = new Request(SERVICE, "addFiles", fileNames);
-        this.bridge.call(request, Void.class);
-    }
-
     public void editFile(String fileName, int offset, int length, String replacementText) {
         checkNotNull(fileName);
         checkArgument(offset >= 0);
@@ -169,10 +164,94 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    public void updateFiles(List<FileDelta> deltas) {
-        checkNotNull(deltas);
+    private void addDefaultLibrary() {
+        String libraryContents;
+        try {
+            libraryContents = Resources.toString(LanguageService.class.getResource("lib.d.ts"), Charsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        Request request = new Request(SERVICE, "updateFiles", deltas);
+        Request request = new Request(SERVICE, "addDefaultLibrary", libraryContents);
         this.bridge.call(request, Void.class);
+    }
+
+    private void addWorkspaceFiles() {
+        final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
+
+        try {
+            for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+                project.accept(new IResourceVisitor() {
+                    @Override
+                    public boolean visit(IResource resource) throws CoreException {
+                        if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
+                            String fileName = resource.getRawLocation().toOSString();
+
+                            fileNames.add(fileName);
+                        }
+
+                        return true;
+                    }
+                });
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        Request request = new Request(SERVICE, "addFiles", fileNames.build());
+        this.bridge.call(request, Void.class);
+    }
+
+    private final class MyResourceChangeListener implements IResourceChangeListener {
+        @Override
+        public void resourceChanged(IResourceChangeEvent event) {
+            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor();
+
+            try {
+                event.getDelta().accept(visitor);
+            } catch (CoreException e) {
+                throw new RuntimeException(e);
+            }
+
+            Request request = new Request(SERVICE, "updateFiles", visitor.getDeltas());
+            LanguageService.this.bridge.call(request, Void.class);
+        }
+    }
+
+    private final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
+
+        private final ImmutableList.Builder<FileDelta> deltas = ImmutableList.builder();
+
+        @Override
+        public boolean visit(IResourceDelta delta) throws CoreException {
+            IResource resource = delta.getResource();
+
+            if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
+                String fileName = resource.getRawLocation().toOSString();
+
+                final Delta deltaEnum;
+                switch (delta.getKind()) {
+                    case IResourceDelta.ADDED:
+                        deltaEnum = Delta.ADDED;
+                        break;
+                    case IResourceDelta.CHANGED:
+                        deltaEnum = Delta.CHANGED;
+                        break;
+                    case IResourceDelta.REMOVED:
+                        deltaEnum = Delta.REMOVED;
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                }
+
+                this.deltas.add(new FileDelta(deltaEnum, fileName));
+            }
+
+            return true;
+        }
+
+        public ImmutableList<FileDelta> getDeltas() {
+            return this.deltas.build();
+        }
     }
 }

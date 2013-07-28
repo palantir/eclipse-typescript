@@ -36,10 +36,8 @@ public final class Classifier {
 
     private final Bridge bridge;
 
-    public Classifier(Bridge bridge) {
-        checkNotNull(bridge);
-
-        this.bridge = bridge;
+    public Classifier() {
+        this.bridge = new Bridge();
     }
 
     public List<ClassificationResult> getClassificationsForLines(List<String> lines, EndOfLineState lexState) {

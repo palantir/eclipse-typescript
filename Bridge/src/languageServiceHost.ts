@@ -35,7 +35,7 @@ module Bridge {
         }
 
         public addDefaultLibrary(libraryContents: string) {
-            var fileInfo = new FileInfo(ByteOrderMark.None, libraryContents, false);
+            var fileInfo = new FileInfo(ByteOrderMark.None, libraryContents);
 
             this.fileInfos.set("lib.d.ts", fileInfo);
         }
@@ -43,7 +43,7 @@ module Bridge {
         public addFiles(fileNames: string[]) {
             fileNames.forEach((fileName) => {
                 var fileInformation = IO.readFile(fileName);
-                var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, false);
+                var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
                 this.fileInfos.set(fileName, fileInfo);
             });
@@ -60,63 +60,32 @@ module Bridge {
         public updateFileContents(fileName: string, contents: string) {
             var fileInfo = this.fileInfos.get(fileName);
 
-            if (fileInfo !== undefined) {
-                fileInfo.updateContents(contents);
-            } else {
-                var fileInfo = new FileInfo(ByteOrderMark.None, contents, true);
-
-                // save the new file info
-                this.fileInfos.set(fileName, fileInfo);
-
-                this.addReferencedFiles(fileName);
-            }
-        }
-
-        private addReferencedFiles(fileName: string) {
-            var fileInfo = this.fileInfos.get(fileName);
-            var lastSlash = fileName.lastIndexOf("/");
-            var rootPath = fileName.substring(0, lastSlash);
-            var snapshot = fileInfo.getScriptSnapshot();
-            var referencedFiles = TypeScript.getReferencedFiles(fileName, snapshot);
-
-            for (var i = 0; i < referencedFiles.length; i++) {
-                var referencedFilePath = referencedFiles[i].path;
-                var resolvedFile = IO.findFile(rootPath, referencedFilePath);
-
-                if (resolvedFile !== null) {
-                    var referencedFileByteOrderMark = resolvedFile.fileInformation.byteOrderMark;
-                    var referencedFileContents = resolvedFile.fileInformation.contents;
-                    var referencedFileInfo = new FileInfo(referencedFileByteOrderMark, referencedFileContents, false);
-                    var referencedFileName = IO.resolvePath(resolvedFile.path);
-
-                    if (!this.fileInfos.has(referencedFileName)) {
-                        this.fileInfos.set(referencedFileName, referencedFileInfo);
-
-                        this.addReferencedFiles(referencedFileName);
-                    }
-                }
-            }
+            fileInfo.updateContents(contents);
         }
 
         public updateFiles(deltas: IFileDelta[]) {
-            for (var i = 0; i < deltas.length; i++) {
-                var fileName = deltas[i].fileName;
+            deltas.forEach((delta) => {
+                var fileName = delta.fileName;
 
-                switch (deltas[i].delta) {
+                switch (delta.delta) {
+                    case "ADDED":
                     case "CHANGED":
+                        var fileInformation = IO.readFile(fileName);
                         var fileInfo = this.fileInfos.get(fileName);
 
                         if (fileInfo !== undefined) {
-                            var contents = IO.readFile(fileName).contents;
+                            fileInfo.updateContents(fileInformation.contents);
+                        } else {
+                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
-                            fileInfo.updateContents(contents);
+                            this.fileInfos.set(fileName, fileInfo);
                         }
                         break;
                     case "REMOVED":
                         this.fileInfos.delete(fileName);
                         break;
                 }
-            }
+            });
         }
 
         public getCompilationSettings(): TypeScript.CompilationSettings {
@@ -210,11 +179,11 @@ module Bridge {
         private open: boolean;
         private version: number;
 
-        constructor(byteOrderMark: ByteOrderMark, contents: string, open: boolean) {
+        constructor(byteOrderMark: ByteOrderMark, contents: string) {
             this.byteOrderMark = byteOrderMark;
             this.changes = [];
             this.contents = contents;
-            this.open = open;
+            this.open = false;
             this.version = 0;
         }
 

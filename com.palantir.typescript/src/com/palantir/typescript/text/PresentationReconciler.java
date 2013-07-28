@@ -45,7 +45,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.palantir.typescript.Colors;
-import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.classifier.ClassificationInfo;
 import com.palantir.typescript.services.classifier.ClassificationResult;
 import com.palantir.typescript.services.classifier.Classifier;
@@ -62,9 +61,7 @@ public final class PresentationReconciler implements IPresentationReconciler {
     private static final Supplier<Classifier> CLASSIFIER_SUPPLIER = Suppliers.memoize(new Supplier<Classifier>() {
         @Override
         public Classifier get() {
-            Bridge bridge = new Bridge();
-
-            return new Classifier(bridge);
+            return new Classifier();
         }
     });
 

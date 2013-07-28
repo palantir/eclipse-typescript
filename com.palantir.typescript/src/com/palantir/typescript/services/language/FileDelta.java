@@ -29,7 +29,7 @@ import com.google.common.base.Objects;
 public final class FileDelta {
 
     public enum Delta {
-        CHANGED, REMOVED
+        ADDED, CHANGED, REMOVED
     }
 
     @JsonProperty("delta")
