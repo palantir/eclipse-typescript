@@ -137,6 +137,13 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
+    public void addFiles(List<String> fileNames) {
+        checkNotNull(fileNames);
+
+        Request request = new Request(SERVICE, "addFiles", fileNames);
+        this.bridge.call(request, Void.class);
+    }
+
     public void editFile(String fileName, int offset, int length, String replacementText) {
         checkNotNull(fileName);
         checkArgument(offset >= 0);
