@@ -14,4 +14,51 @@
 	<natures>
 		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>
 	</natures>
+	<filteredResources>
+		<filter>
+			<id>1375042287522</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-typescript/bin</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1375042287525</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-typescript/doc</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1375042287528</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-typescript/samples</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1375042287531</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-typescript/tests</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1375042287533</id>
+			<name></name>
+			<type>26</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-projectRelativePath-matches-false-false-typescript/typings</arguments>
+			</matcher>
+		</filter>
+	</filteredResources>
 </projectDescription>
