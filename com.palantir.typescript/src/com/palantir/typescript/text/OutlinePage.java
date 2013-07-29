@@ -54,11 +54,13 @@ import com.palantir.typescript.services.language.ScriptElementModifierKind;
 public final class OutlinePage extends ContentOutlinePage {
 
     private final TypeScriptEditor editor;
+    private final MySelectionListener selectionListener;
 
     public OutlinePage(TypeScriptEditor editor) {
         checkNotNull(editor);
 
         this.editor = editor;
+        this.selectionListener = new MySelectionListener();
     }
 
     @Override
@@ -76,7 +78,14 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.setInput("");
         treeViewer.expandAll();
 
-        this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(new MySelectionListener());
+        this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this.selectionListener);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        this.getSite().getWorkbenchWindow().getSelectionService().removePostSelectionListener(this.selectionListener);
     }
 
     @Override
