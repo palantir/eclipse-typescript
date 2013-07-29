@@ -20,8 +20,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
@@ -31,6 +33,9 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
@@ -70,6 +75,8 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.setLabelProvider(new MyLabelProvider());
         treeViewer.setInput("");
         treeViewer.expandAll();
+
+        this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(new MySelectionListener());
     }
 
     @Override
@@ -167,6 +174,48 @@ public final class OutlinePage extends ContentOutlinePage {
 
                 OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
             }
+        }
+    }
+
+    private final class MySelectionListener implements ISelectionListener {
+        @Override
+        public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+            if (part instanceof TypeScriptEditor) {
+                TextSelection textSelection = (TextSelection) selection;
+                int offset = textSelection.getOffset();
+                TreeItem[] treeItems = getTreeViewer().getTree().getItems();
+
+                if (!this.selectTreeItem(treeItems, offset)) {
+                    getTreeViewer().getTree().deselectAll();
+                }
+            }
+        }
+
+        private boolean selectTreeItem(TreeItem[] treeItems, int offset) {
+            boolean selected = false;
+
+            for (TreeItem treeItem : treeItems) {
+                NavigateToItem navigateToItem = (NavigateToItem) treeItem.getData();
+
+                if (navigateToItem.getMinChar() <= offset && offset <= navigateToItem.getLimChar()) {
+                    TreeItem[] childTreeItems = treeItem.getItems();
+
+                    // check for a better match in one of the children items
+                    if (childTreeItems.length != 0) {
+                        selected = this.selectTreeItem(childTreeItems, offset);
+                    }
+
+                    // no better match found, select this item
+                    if (!selected) {
+                        getTreeViewer().getTree().select(treeItem);
+                        selected = true;
+                    }
+
+                    return selected;
+                }
+            }
+
+            return selected;
         }
     }
 }
