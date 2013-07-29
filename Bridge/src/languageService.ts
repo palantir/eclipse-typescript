@@ -38,6 +38,36 @@ module Bridge {
             this.languageServiceHost.addFiles(fileNames);
         }
 
+        public getDiagnostics(): any {
+            var diagnostics = {};
+            this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
+                var fileDiagnostics = this.languageService.getSyntacticDiagnostics(fileName);
+
+                if (fileDiagnostics.length === 0) {
+                    fileDiagnostics = this.languageService.getSemanticDiagnostics(fileName);
+                }
+
+                var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
+                var lineStarts = snapshot.getLineStartPositions();
+                var length = snapshot.getLength();
+                var lineMap = new TypeScript.LineMap(lineStarts, length);
+                var resolvedDiagnostics = fileDiagnostics.map((diagnostic) => {
+                    var line = lineMap.getLineNumberFromPosition(diagnostic.start());
+
+                    return {
+                        start: diagnostic.start(),
+                        length: diagnostic.length(),
+                        line: line,
+                        text: diagnostic.text().substring(0, 500) // truncate ridiculously long error messages
+                    };
+                });
+
+                diagnostics[fileName] = resolvedDiagnostics;
+            });
+
+            return diagnostics;
+        }
+
         public editFile(fileName: string, offset: number, length: number, text: string) {
             this.languageServiceHost.editFile(fileName, offset, length, text);
         }
@@ -86,10 +116,6 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getEmitOutput(fileName: string): Services.EmitOutput {
-            return this.languageService.getEmitOutput(fileName);
-        }
-
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions):
             Services.TextEdit[] {
 
@@ -134,6 +160,7 @@ module Bridge {
     export interface Diagnostic {
         start: number;
         length: number;
+        line: number;
         text: string;
     }
 

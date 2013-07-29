@@ -26,6 +26,17 @@
    </extension>
 
    <extension
+         id="typeScriptBuilder"
+         name="TypeScript Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder>
+         <run
+               class="com.palantir.typescript.TypeScriptBuilder">
+         </run>
+      </builder>
+   </extension>
+
+   <extension
          point="org.eclipse.ui.bindings">
       <!--  win32:  M1=CTRL,    M2=SHIFT, M3=ALT, M4=-
             carbon: M1=COMMAND, M2=SHIFT, M3=ALT, M4=CTRL -->
@@ -89,6 +100,18 @@
                 commandId="com.palantir.typescript.text.openDefinition">
           </command>
       </menuContribution>
+   </extension>
+
+   <extension
+         id="typeScriptProblem"
+         name="TypeScript Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
    </extension>
 
 </plugin>

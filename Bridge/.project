@@ -10,6 +10,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+            <name>com.palantir.typescript.typeScriptBuilder</name>
+            <arguments>
+            </arguments>
+        </buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>

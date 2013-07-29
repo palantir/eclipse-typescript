@@ -30,17 +30,21 @@ public final class Diagnostic {
 
     private final int start;
     private final int length;
+    private final int line;
     private final String text;
 
     public Diagnostic(
             @JsonProperty("start") int start,
             @JsonProperty("length") int length,
+            @JsonProperty("line") int line,
             @JsonProperty("text") String text) {
         checkArgument(start >= 0);
         checkArgument(length >= 0);
+        checkArgument(line >= 0);
 
         this.start = start;
         this.length = length;
+        this.line = line;
         this.text = text;
     }
 
@@ -50,6 +54,10 @@ public final class Diagnostic {
 
     public int getLength() {
         return this.length;
+    }
+
+    public int getLine() {
+        return this.line;
     }
 
     public String getText() {

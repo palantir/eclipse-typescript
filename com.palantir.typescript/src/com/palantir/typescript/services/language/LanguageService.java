@@ -21,25 +21,26 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
+import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
-import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The language service.
@@ -79,19 +80,12 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public List<Diagnostic> getDiagnostics(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getDiagnostics", fileName);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public EmitOutput getEmitOutput(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getEmitOutput", fileName);
-        return this.bridge.call(request, EmitOutput.class);
+    public Map<String, List<Diagnostic>> getDiagnostics() {
+        Request request = new Request(SERVICE, "getDiagnostics");
+        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
+        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
+        return LanguageService.this.bridge.call(request, returnType);
     }
 
     public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {
@@ -164,6 +158,10 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
+    public void dispose() {
+        this.bridge.dispose();
+    }
+
     private void addDefaultLibrary() {
         String libraryContents;
         try {
@@ -205,7 +203,7 @@ public final class LanguageService {
     private final class MyResourceChangeListener implements IResourceChangeListener {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
-            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor();
+            ResourceDeltaVisitor visitor = new ResourceDeltaVisitor();
 
             try {
                 event.getDelta().accept(visitor);
@@ -215,43 +213,6 @@ public final class LanguageService {
 
             Request request = new Request(SERVICE, "updateFiles", visitor.getDeltas());
             LanguageService.this.bridge.call(request, Void.class);
-        }
-    }
-
-    private final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
-
-        private final ImmutableList.Builder<FileDelta> deltas = ImmutableList.builder();
-
-        @Override
-        public boolean visit(IResourceDelta delta) throws CoreException {
-            IResource resource = delta.getResource();
-
-            if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
-                String fileName = resource.getRawLocation().toOSString();
-
-                final Delta deltaEnum;
-                switch (delta.getKind()) {
-                    case IResourceDelta.ADDED:
-                        deltaEnum = Delta.ADDED;
-                        break;
-                    case IResourceDelta.CHANGED:
-                        deltaEnum = Delta.CHANGED;
-                        break;
-                    case IResourceDelta.REMOVED:
-                        deltaEnum = Delta.REMOVED;
-                        break;
-                    default:
-                        throw new IllegalStateException();
-                }
-
-                this.deltas.add(new FileDelta(deltaEnum, fileName));
-            }
-
-            return true;
-        }
-
-        public ImmutableList<FileDelta> getDeltas() {
-            return this.deltas.build();
         }
     }
 }
