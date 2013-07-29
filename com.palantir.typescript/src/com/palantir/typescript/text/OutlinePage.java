@@ -160,10 +160,13 @@ public final class OutlinePage extends ContentOutlinePage {
         public void selectionChanged(SelectionChangedEvent event) {
             TreeSelection selection = (TreeSelection) event.getSelection();
             NavigateToItem item = (NavigateToItem) selection.getFirstElement();
-            int minChar = item.getMinChar();
-            int limChar = item.getLimChar();
 
-            OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
+            if (item != null) {
+                int minChar = item.getMinChar();
+                int limChar = item.getLimChar();
+
+                OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
+            }
         }
     }
 }
