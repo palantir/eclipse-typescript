@@ -24,6 +24,8 @@ import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -41,11 +43,13 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
+import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageService;
 
@@ -56,20 +60,17 @@ import com.palantir.typescript.services.language.LanguageService;
  */
 public final class TypeScriptEditor extends TextEditor {
 
-    private static final Supplier<LanguageService> LANGUAGE_SERVICE_SUPPLIER = Suppliers.memoize(new Supplier<LanguageService>() {
+    private static final LoadingCache<IProject, LanguageService> LANGUAGE_SERVICE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<IProject, LanguageService>() {
         @Override
-        public LanguageService get() {
-            return new LanguageService();
+        public LanguageService load(IProject project) throws Exception {
+            return new LanguageService(project);
         }
     });
 
-    private final LanguageService languageService;
-
     private OutlinePage contentOutlinePage;
+    private LanguageService languageService;
 
     public TypeScriptEditor() {
-        this.languageService = LANGUAGE_SERVICE_SUPPLIER.get();
-
         this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
     }
 
@@ -102,8 +103,14 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        // inform the language service that the file is open
         IPathEditorInput editorInput = (IPathEditorInput) input;
+
+        // create the langauge service
+        IResource resource = ResourceUtil.getResource(input);
+        IProject project = resource.getProject();
+        this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+
+        // inform the language service that the file is open
         String fileName = editorInput.getPath().toOSString();
         this.languageService.setFileOpen(fileName, true);
 

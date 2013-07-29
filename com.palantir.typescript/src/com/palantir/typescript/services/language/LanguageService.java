@@ -25,10 +25,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -38,7 +35,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
-import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
@@ -55,12 +51,11 @@ public final class LanguageService {
 
     private final Bridge bridge;
 
-    public LanguageService() {
+    public LanguageService(IProject project) {
         this.bridge = new Bridge();
 
         this.addDefaultLibrary();
-        this.addWorkspaceFiles();
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(new MyResourceChangeListener(), IResourceChangeEvent.PRE_BUILD);
+        this.addProjectFiles(project);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -174,45 +169,27 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private void addWorkspaceFiles() {
+    private void addProjectFiles(IProject project) {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
 
         try {
-            for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-                project.accept(new IResourceVisitor() {
-                    @Override
-                    public boolean visit(IResource resource) throws CoreException {
-                        if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
-                            String fileName = resource.getRawLocation().toOSString();
+            project.accept(new IResourceVisitor() {
+                @Override
+                public boolean visit(IResource resource) throws CoreException {
+                    if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
+                        String fileName = resource.getRawLocation().toOSString();
 
-                            fileNames.add(fileName);
-                        }
-
-                        return true;
+                        fileNames.add(fileName);
                     }
-                });
-            }
+
+                    return true;
+                }
+            });
         } catch (CoreException e) {
             throw new RuntimeException(e);
         }
 
         Request request = new Request(SERVICE, "addFiles", fileNames.build());
         this.bridge.call(request, Void.class);
-    }
-
-    private final class MyResourceChangeListener implements IResourceChangeListener {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            ResourceDeltaVisitor visitor = new ResourceDeltaVisitor();
-
-            try {
-                event.getDelta().accept(visitor);
-            } catch (CoreException e) {
-                throw new RuntimeException(e);
-            }
-
-            Request request = new Request(SERVICE, "updateFiles", visitor.getDeltas());
-            LanguageService.this.bridge.call(request, Void.class);
-        }
     }
 }

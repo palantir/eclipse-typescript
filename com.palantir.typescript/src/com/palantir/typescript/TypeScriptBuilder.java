@@ -59,7 +59,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void fullBuild() throws CoreException {
-        LanguageService languageService = new LanguageService();
+        IProject project = this.getProject();
+
+        LanguageService languageService = new LanguageService(project);
         try {
             Map<String, List<Diagnostic>> diagnostics = languageService.getDiagnostics();
 
