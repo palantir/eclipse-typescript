@@ -103,6 +103,15 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
             for (CompletionEntryDetails entry : entries) {
                 String replacementString = entry.getName();
 
+                // add the appropriate parentheses for functions
+                if (isFunction(entry.getKind())) {
+                    if (entry.getType().startsWith("()")) {
+                        replacementString += "()";
+                    } else {
+                        replacementString += "(";
+                    }
+                }
+
                 // filter the entries to only include the ones matching the current prefix
                 if (replacementString.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) {
                     int replacementOffset = this.currentOffset;
@@ -177,9 +186,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         if (type != null) {
             ScriptElementKind kind = completion.getKind();
 
-            if (kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
-                    || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
-                    || kind == ScriptElementKind.FUNCTION_ELEMENT) {
+            if (isFunction(kind)) {
                 displayString += type;
             } else if (kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
                     || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
@@ -189,5 +196,11 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         }
 
         return displayString;
+    }
+
+    private static boolean isFunction(ScriptElementKind kind) {
+        return kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
+                || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
+                || kind == ScriptElementKind.FUNCTION_ELEMENT;
     }
 }
