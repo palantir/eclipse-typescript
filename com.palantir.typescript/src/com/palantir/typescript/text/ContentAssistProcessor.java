@@ -167,7 +167,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     char character = this.editor.getDocument().getChar(i);
 
                     if ((memberCompletion && character == '.') ||
-                            (!memberCompletion && NON_IDENTIFIER.matches(character))) { // TODO
+                            (!memberCompletion && NON_IDENTIFIER.matches(character))) {
                         return i + 1;
                     }
                 }
