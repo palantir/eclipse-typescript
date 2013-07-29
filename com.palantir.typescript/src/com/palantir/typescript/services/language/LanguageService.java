@@ -120,6 +120,14 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
+    public SignatureInfo getSignatureAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getSignatureAtPosition", fileName, position);
+        return this.bridge.call(request, SignatureInfo.class);
+    }
+
     public TypeInfo getTypeAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);

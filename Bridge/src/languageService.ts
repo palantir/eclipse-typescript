@@ -134,6 +134,10 @@ module Bridge {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
 
+        public getSignatureAtPosition(fileName: string, position: number): Services.SignatureInfo {
+            return this.languageService.getSignatureAtPosition(fileName, position);
+        }
+
         public getTypeAtPosition(fileName: string, position: number): TypeInfo {
             var type = this.languageService.getTypeAtPosition(fileName, position);
 
