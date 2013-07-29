@@ -59,6 +59,11 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
                 DefinitionInfo definition = definitions.get(0);
                 IRegion hyperlinkRegion = new Region(spanOffset, span.getLimChar() - spanOffset);
 
+                // don't follow references to the built-in default library
+                if (definition.getFileName().equals("lib.d.ts")) {
+                    return null;
+                }
+
                 return new IHyperlink[] { new MyHyperlink(definition, hyperlinkRegion) };
             }
         }

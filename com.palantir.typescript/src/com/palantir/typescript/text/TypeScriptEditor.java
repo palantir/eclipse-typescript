@@ -138,7 +138,8 @@ public final class TypeScriptEditor extends TextEditor {
         checkNotNull(definition);
 
         IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        File definitionFile = new File(definition.getFileName());
+        String fileName = definition.getFileName();
+        File definitionFile = new File(fileName);
         IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
 
         // open the editor and select the text
@@ -215,7 +216,10 @@ public final class TypeScriptEditor extends TextEditor {
             if (definitions != null && !definitions.isEmpty()) {
                 DefinitionInfo definition = definitions.get(0);
 
-                openDefinition(definition);
+                // don't follow references to the built-in default library
+                if (!definition.getFileName().equals("lib.d.ts")) {
+                    openDefinition(definition);
+                }
             }
         }
     }
