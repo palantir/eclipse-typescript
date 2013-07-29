@@ -70,10 +70,6 @@ public final class TypeScriptEditor extends TextEditor {
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
 
-    public TypeScriptEditor() {
-        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
-    }
-
     @Override
     public Object getAdapter(Class adapter) {
         if (IContentOutlinePage.class.equals(adapter)) {
@@ -85,6 +81,13 @@ public final class TypeScriptEditor extends TextEditor {
         }
 
         return super.getAdapter(adapter);
+    }
+
+    @Override
+    protected void initializeEditor() {
+        super.initializeEditor();
+
+        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
     }
 
     public String getFileName() {
