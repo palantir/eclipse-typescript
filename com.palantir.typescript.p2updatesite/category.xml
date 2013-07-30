@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.palantir.typescript.feature_1.0.0.qualifier.jar" id="com.palantir.typescript.feature" version="1.0.0.qualifier">
+      <category name="com.palantir.typescript"/>
+   </feature>
+   <category-def name="com.palantir.typescript" label="TypeScript"/>
+</site>

@@ -31,13 +31,14 @@ An Eclipse plug-in for developing in the TypeScript language.
     git submodule update
     npm install
 
-### Building
-    grunt
-    mvn install
-
 ### Debugging
 * Run `grunt` (the first time and each time there are TypeScript changes)
 * Right-click on the TypeScript project and select Debug As -> Eclipse Application
+
+### Building the Eclipse Update Site
+    grunt
+    mvn clean install
+The update site will be in com.palantir.typescript.p2updatesite/target/repository.
 
 ### Contributing
 * Ensure there are no warnings/errors in Eclipse (with Checkstyle and FindBugs installed)

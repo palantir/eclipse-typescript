@@ -1,6 +1,4 @@
 bin/
-dist/
 ecbuild/
-export/
 node_modules/
 target/

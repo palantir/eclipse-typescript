@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TypeScript
 Bundle-SymbolicName: com.palantir.typescript;singleton:=true
-Bundle-Version: 0.0.0
+Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: com.palantir.typescript.TypeScriptPlugin
 Bundle-Vendor: Palantir Technologies
 Require-Bundle: org.eclipse.compare,
@@ -24,3 +24,4 @@ Bundle-ClassPath: lib/guava-14.0.1.jar,
  lib/jackson-databind-2.2.0.jar
 Import-Package: org.eclipse.core.resources,
  org.eclipse.ui.part
+Eclipse-BundleShape: dir

@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="TYPESCRIPT_FEATURE_ID"
+      id="com.palantir.typescript.feature"
       label="TypeScript"
-      version="TYPESCRIPT_PLUGIN_VERSION"
+      version="1.0.0.qualifier"
       provider-name="Palantir Technologies">
 
    <description url="https://github.com/palantir/eclipse-typescript">
-An Eclipse plug-in for developing in the TypeScript language.
+      An Eclipse plug-in for developing in the TypeScript language.
    </description>
 
-   <copyright>
+   <copyright url="http://www.palantir.com">
       Copyright 2013 Palantir Technologies Inc.
    </copyright>
 
    <license url="https://github.com/palantir/eclipse-typescript/blob/master/LICENSE.txt">
-      Apache License
+      .
+                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -196,7 +197,7 @@ An Eclipse plug-in for developing in the TypeScript language.
       To apply the Apache License to your work, attach the following
       boilerplate notice, with the fields enclosed by brackets &quot;[]&quot;
       replaced with your own identifying information. (Don&apos;t include
-      the brackets!) The text should be enclosed in the appropriate
+      the brackets!)  The text should be enclosed in the appropriate
       comment syntax for the file format. We also recommend that a
       file or class name and description of purpose be included on the
       same &quot;printed page&quot; as the copyright notice for easier
@@ -218,9 +219,9 @@ An Eclipse plug-in for developing in the TypeScript language.
    </license>
 
    <plugin
-         id="TYPESCRIPT_PLUGIN_ID"
+         id="com.palantir.typescript"
          download-size="0"
          install-size="0"
-         version="TYPESCRIPT_PLUGIN_VERSION"/>
+         version="1.0.0.qualifier"/>
 
 </feature>
