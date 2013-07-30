@@ -38,35 +38,42 @@ module Bridge {
             this.languageServiceHost.addFiles(fileNames);
         }
 
-        public getDiagnostics(): any {
+        public getAllDiagnostics(): any {
             var diagnostics = {};
             this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
-                var fileDiagnostics = this.languageService.getSyntacticDiagnostics(fileName);
-
-                if (fileDiagnostics.length === 0) {
-                    fileDiagnostics = this.languageService.getSemanticDiagnostics(fileName);
-                }
-
-                var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
-                var lineStarts = snapshot.getLineStartPositions();
-                var length = snapshot.getLength();
-                var lineMap = new TypeScript.LineMap(lineStarts, length);
-                var resolvedDiagnostics = fileDiagnostics.map((diagnostic) => {
-                    var line = lineMap.getLineNumberFromPosition(diagnostic.start());
-
-                    return {
-                        start: diagnostic.start(),
-                        length: diagnostic.length(),
-                        line: line,
-                        text: diagnostic.text().substring(0, 500) // truncate ridiculously long error messages
-                    };
-                });
+                var resolvedDiagnostics = this.getDiagnostics(fileName);
 
                 diagnostics[fileName] = resolvedDiagnostics;
             });
 
             return diagnostics;
         }
+
+        public getDiagnostics(fileName: string): Diagnostic[] {
+            var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
+
+            if (diagnostics.length === 0) {
+                diagnostics = this.languageService.getSemanticDiagnostics(fileName);
+            }
+
+            var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
+            var lineStarts = snapshot.getLineStartPositions();
+            var length = snapshot.getLength();
+            var lineMap = new TypeScript.LineMap(lineStarts, length);
+            var resolvedDiagnostics = diagnostics.map((diagnostic) => {
+                var line = lineMap.getLineNumberFromPosition(diagnostic.start());
+
+                return {
+                    start: diagnostic.start(),
+                    length: diagnostic.length(),
+                    line: line,
+                    text: diagnostic.text().substring(0, 500) // truncate ridiculously long error messages
+                };
+            });
+
+            return resolvedDiagnostics;
+        }
+
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
             this.languageServiceHost.editFile(fileName, offset, length, text);

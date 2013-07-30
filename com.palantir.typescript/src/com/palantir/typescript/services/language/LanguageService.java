@@ -75,12 +75,20 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public Map<String, List<Diagnostic>> getDiagnostics() {
-        Request request = new Request(SERVICE, "getDiagnostics");
+    public Map<String, List<Diagnostic>> getAllDiagnostics() {
+        Request request = new Request(SERVICE, "getAllDiagnostics");
         JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
         CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
         MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
         return LanguageService.this.bridge.call(request, returnType);
+    }
+
+    public List<Diagnostic> getDiagnostics(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getDiagnostics", fileName);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        return this.bridge.call(request, resultType);
     }
 
     public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {

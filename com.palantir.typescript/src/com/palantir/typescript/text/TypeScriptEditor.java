@@ -235,7 +235,6 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     private final class MyTextListener implements ITextListener {
-
         @Override
         public void textChanged(TextEvent event) {
             checkNotNull(event);

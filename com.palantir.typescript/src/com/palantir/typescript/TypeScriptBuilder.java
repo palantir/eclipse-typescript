@@ -63,7 +63,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         LanguageService languageService = new LanguageService(project);
         try {
-            Map<String, List<Diagnostic>> diagnostics = languageService.getDiagnostics();
+            Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
 
             for (Map.Entry<String, List<Diagnostic>> entry : diagnostics.entrySet()) {
                 String fileName = entry.getKey();
