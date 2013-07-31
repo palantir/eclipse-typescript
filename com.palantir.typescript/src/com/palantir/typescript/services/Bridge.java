@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.TypeScriptPlugin;
 
 /**
@@ -41,6 +42,8 @@ import com.palantir.typescript.TypeScriptPlugin;
 public final class Bridge {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+
+    private static final ImmutableList<String> NODE_LOCATIONS = ImmutableList.of("/usr/local/bin/node", "/usr/bin/node");
 
     private Process nodeProcess;
     private BufferedReader nodeStdout;
@@ -86,6 +89,16 @@ public final class Bridge {
         }
     }
 
+    public void dispose() {
+        this.nodeStdin.close();
+
+        try {
+            this.nodeStdout.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private String processRequest(String requestJson) throws IOException {
         checkNotNull(requestJson);
 
@@ -119,12 +132,8 @@ public final class Bridge {
     }
 
     private void start() {
-        // get the path to node
-        File nodeFile = new File("/usr/local/bin/node");
+        File nodeFile = findNode();
         String nodePath = nodeFile.getAbsolutePath();
-        if (!nodeFile.exists()) {
-            throw new RuntimeException("Could not find node at " + nodePath);
-        }
 
         // get the path to the bridge.js file
         File bundleFile;
@@ -147,13 +156,15 @@ public final class Bridge {
         this.nodeStdin = new PrintWriter(new OutputStreamWriter(this.nodeProcess.getOutputStream(), Charsets.UTF_8), true);
     }
 
-    public void dispose() {
-        this.nodeStdin.close();
+    private static File findNode() {
+        for (String location : NODE_LOCATIONS) {
+            File file = new File(location);
 
-        try {
-            this.nodeStdout.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            if (file.exists()) {
+                return file;
+            }
         }
+
+        throw new IllegalStateException("Could not find node.");
     }
 }
