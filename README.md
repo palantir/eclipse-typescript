@@ -3,7 +3,7 @@
 An Eclipse plug-in for developing in the TypeScript language.
 
 ## Installation
-1. install [node.js](http://nodejs.org/)
+1. install [Node.js](http://nodejs.org/)
 1. open Eclipse and go to Help->Install New Software
 1. add the update site: http://eclipse-update.palantir.com/eclipse-typescript/
 1. reboot Eclipse
