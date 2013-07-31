@@ -27,10 +27,13 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.TextEvent;
+import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -45,6 +48,7 @@ import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.IUpdate;
+import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.google.common.cache.CacheBuilder;
@@ -60,12 +64,16 @@ import com.palantir.typescript.services.language.LanguageService;
  */
 public final class TypeScriptEditor extends TextEditor {
 
-    private static final LoadingCache<IProject, LanguageService> LANGUAGE_SERVICE_CACHE = CacheBuilder.newBuilder().build(new CacheLoader<IProject, LanguageService>() {
-        @Override
-        public LanguageService load(IProject project) throws Exception {
-            return new LanguageService(project);
-        }
-    });
+    private static final LoadingCache<IProject, LanguageService> LANGUAGE_SERVICE_CACHE = CacheBuilder.newBuilder().build(
+        new CacheLoader<IProject, LanguageService>() {
+            @Override
+            public LanguageService load(IProject project) throws Exception {
+                return new LanguageService(project);
+            }
+        });
+
+    private static final String MATCHING_BRACKETS = "matchingBrackets";
+    private static final String MATCHING_BRACKETS_COLOR = "matchingBracketsColor";
 
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
@@ -81,13 +89,6 @@ public final class TypeScriptEditor extends TextEditor {
         }
 
         return super.getAdapter(adapter);
-    }
-
-    @Override
-    protected void initializeEditor() {
-        super.initializeEditor();
-
-        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
     }
 
     public String getFileName() {
@@ -187,6 +188,28 @@ public final class TypeScriptEditor extends TextEditor {
         sourceViewer.addTextListener(new MyTextListener());
 
         return sourceViewer;
+    }
+
+    @Override
+    protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
+        super.configureSourceViewerDecorationSupport(support);
+
+        // configure character matching
+        char[] matchChars = { '(', ')', '[', ']', '{', '}' };
+        support.setCharacterPairMatcher(new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true));
+        support.setMatchingCharacterPainterPreferenceKeys(MATCHING_BRACKETS, MATCHING_BRACKETS_COLOR);
+
+        // enable character matching and set the color to grey
+        IPreferenceStore preferencesStore = this.getPreferenceStore();
+        preferencesStore.setDefault(MATCHING_BRACKETS, true);
+        preferencesStore.setDefault(MATCHING_BRACKETS_COLOR, "128,128,128");
+    }
+
+    @Override
+    protected void initializeEditor() {
+        super.initializeEditor();
+
+        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
     }
 
     @Override

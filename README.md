@@ -12,6 +12,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 * code completion
 * error annotations/markers
 * format code
+* highlight matching brace
 * open definition
 * outline view
 * syntax highlighting
