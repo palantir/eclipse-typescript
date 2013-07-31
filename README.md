@@ -19,6 +19,9 @@ An Eclipse plug-in for developing in the TypeScript language.
 ## Roadmap
 * compile-on-save
 * find references
+* jsdoc assistance
+* rename variable, function, class, or interface
+* search (for a class, interface, etc...)
 * type hierarchy
 
 ## Additional Information
