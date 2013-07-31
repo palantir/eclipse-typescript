@@ -3,9 +3,9 @@
 An Eclipse plug-in for developing in the TypeScript language.
 
 ## Installation
-* Open Eclipse and go to Help->Install New Software
-* Add the update site: http://eclipse-update.palantir.com/eclipse-typescript/
-* Reboot Eclipse
+* open Eclipse and go to Help->Install New Software
+* add the update site: http://eclipse-update.palantir.com/eclipse-typescript/
+* reboot Eclipse
 
 ## Features
 * code completion
