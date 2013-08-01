@@ -3,10 +3,14 @@
 An Eclipse plug-in for developing in the TypeScript language.
 
 ## Installation
-1. install [Node.js](http://nodejs.org/)
-1. open Eclipse and go to Help->Install New Software
-1. add the update site: http://eclipse-update.palantir.com/eclipse-typescript/
-1. reboot Eclipse
+1. Install [Node.js](http://nodejs.org/)
+1. Open Eclipse and go to Help->Install New Software
+1. Add the update site: http://eclipse-update.palantir.com/eclipse-typescript/
+1. Reboot Eclipse
+
+### Enabling the Builder
+1. Right-click on a project containing TypeScript files
+1. Select Configure->Enable TypeScript Builder
 
 ## Features
 * code completion

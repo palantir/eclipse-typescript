@@ -7,14 +7,14 @@ Bundle-Activator: com.palantir.typescript.TypeScriptPlugin
 Bundle-Vendor: Palantir Technologies
 Require-Bundle: org.eclipse.compare,
  org.eclipse.core.filesystem,
+ org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,
  org.eclipse.ui,
  org.eclipse.ui.editors,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
- org.eclipse.ui.workbench.texteditor,
- org.eclipse.core.resources
+ org.eclipse.ui.workbench.texteditor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/guava-14.0.1.jar,

@@ -11,13 +11,14 @@
 			</arguments>
 		</buildCommand>
 		<buildCommand>
-            <name>com.palantir.typescript.typeScriptBuilder</name>
-            <arguments>
-            </arguments>
-        </buildCommand>
+			<name>com.palantir.typescript.typeScriptBuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>net.sf.eclipsecs.core.CheckstyleNature</nature>
+		<nature>com.palantir.typescript.typeScriptNature</nature>
 	</natures>
 	<filteredResources>
 		<filter>
