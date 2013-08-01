@@ -61,6 +61,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void fullBuild() throws CoreException {
         IProject project = this.getProject();
 
+        project.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
         LanguageService languageService = new LanguageService(project);
         try {
             Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
@@ -76,7 +78,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
                 Path path = new Path(fileName);
                 IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-                file.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
                 for (Diagnostic diagnostic : fileDiagnostics) {
                     Map<String, Object> attributes = Maps.newHashMap();
                     attributes.put(IMarker.CHAR_START, diagnostic.getStart());
