@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 
@@ -31,7 +32,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.palantir.typescript.TypeScriptPlugin;
 
 /**
@@ -42,8 +44,8 @@ import com.palantir.typescript.TypeScriptPlugin;
 public final class Bridge {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-
-    private static final ImmutableList<String> NODE_LOCATIONS = ImmutableList.of("/usr/local/bin/node", "/usr/bin/node");
+    private static final String OS_NAME = System.getProperty("os.name");
+    private static final Splitter PATH_SPLITTER = Splitter.on(File.pathSeparatorChar);
 
     private Process nodeProcess;
     private BufferedReader nodeStdout;
@@ -157,14 +159,32 @@ public final class Bridge {
     }
 
     private static File findNode() {
-        for (String location : NODE_LOCATIONS) {
-            File file = new File(location);
+        String nodeFileName = getNodeFileName();
+        String path = System.getenv("PATH");
+        List<String> directories = Lists.newArrayList(PATH_SPLITTER.split(path));
 
-            if (file.exists()) {
-                return file;
+        // ensure /usr/local/bin is included for OS X
+        if (OS_NAME.startsWith("Mac OS X")) {
+            directories.add("/usr/local/bin");
+        }
+
+        // search for Node.js in the PATH directories
+        for (String directory : directories) {
+            File nodeFile = new File(directory, nodeFileName);
+
+            if (nodeFile.exists()) {
+                return nodeFile;
             }
         }
 
-        throw new IllegalStateException("Could not find node.");
+        throw new IllegalStateException("Could not find Node.js.");
+    }
+
+    private static String getNodeFileName() {
+        if (OS_NAME.startsWith("Windows")) {
+            return "node.exe";
+        }
+
+        return "node";
     }
 }
