@@ -24,7 +24,6 @@ import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
-import org.eclipse.ui.texteditor.MarkerAnnotation;
 
 import com.palantir.typescript.services.language.TypeInfo;
 
@@ -47,8 +46,12 @@ public final class TextHover extends DefaultTextHover implements ITextHoverExten
 
     @Override
     protected boolean isIncluded(Annotation annotation) {
-        // only display marker annotations
-        return annotation instanceof MarkerAnnotation;
+        // suppress quick diff annotations since they are noisy and mostly useless
+        if (annotation.getType().startsWith("org.eclipse.ui.workbench.texteditor.quickdiff")) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
