@@ -123,13 +123,15 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
     private void updateAnnotations(List<Diagnostic> diagnostics) {
         IAnnotationModel annotationModel = this.sourceViewer.getAnnotationModel();
 
-        removeAnnotations(annotationModel);
+        if (annotationModel != null) {
+            removeAnnotations(annotationModel);
 
-        for (Diagnostic diagnostic : diagnostics) {
-            Annotation annotation = new Annotation(ANNOTATION_TYPE, false, diagnostic.getText());
-            Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
+            for (Diagnostic diagnostic : diagnostics) {
+                Annotation annotation = new Annotation(ANNOTATION_TYPE, false, diagnostic.getText());
+                Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
 
-            annotationModel.addAnnotation(annotation, position);
+                annotationModel.addAnnotation(annotation, position);
+            }
         }
     }
 }
