@@ -97,16 +97,15 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            locationURI="popup:#TextEditorContext?before=additions">
-          <separator
-                name="com.palantir.typescript.separator"
-                visible="true">
-          </separator>
-          <command
-                commandId="com.palantir.typescript.text.format">
-          </command>
+            locationURI="popup:#TextEditorContext?after=group.open">
           <command
                 commandId="com.palantir.typescript.text.openDefinition">
+          </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:#TextEditorContext?after=group.edit">
+          <command
+                commandId="com.palantir.typescript.text.format">
           </command>
       </menuContribution>
    </extension>
