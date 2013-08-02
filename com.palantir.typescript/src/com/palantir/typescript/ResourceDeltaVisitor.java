@@ -51,24 +51,13 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
             return false;
         }
 
+        // add the delta if its a TypeScript file
         if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
             String fileName = resource.getRawLocation().toOSString();
-            final Delta deltaEnum;
-            switch (delta.getKind()) {
-                case IResourceDelta.ADDED:
-                    deltaEnum = Delta.ADDED;
-                    break;
-                case IResourceDelta.CHANGED:
-                    deltaEnum = Delta.CHANGED;
-                    break;
-                case IResourceDelta.REMOVED:
-                    deltaEnum = Delta.REMOVED;
-                    break;
-                default:
-                    throw new IllegalStateException();
-            }
+            Delta deltaEnum = getDeltaEnum(delta);
+            FileDelta fileDelta = new FileDelta(deltaEnum, fileName);
 
-            this.deltas.add(new FileDelta(deltaEnum, fileName));
+            this.deltas.add(fileDelta);
         }
 
         return true;
@@ -76,5 +65,18 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
     public ImmutableList<FileDelta> getDeltas() {
         return this.deltas.build();
+    }
+
+    private Delta getDeltaEnum(IResourceDelta delta) {
+        switch (delta.getKind()) {
+            case IResourceDelta.ADDED:
+                return Delta.ADDED;
+            case IResourceDelta.CHANGED:
+                return Delta.CHANGED;
+            case IResourceDelta.REMOVED:
+                return Delta.REMOVED;
+            default:
+                throw new IllegalStateException();
+        }
     }
 }
