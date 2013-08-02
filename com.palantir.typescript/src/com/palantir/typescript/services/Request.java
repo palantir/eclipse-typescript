@@ -18,6 +18,10 @@ package com.palantir.typescript.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import com.google.common.base.Objects;
 
 /**
@@ -29,7 +33,7 @@ public final class Request {
 
     private final String service;
     private final String command;
-    private final Object[] args;
+    private final List<Object> args;
 
     public Request(String service, String command, Object... args) {
         checkNotNull(service);
@@ -38,7 +42,7 @@ public final class Request {
 
         this.service = service;
         this.command = command;
-        this.args = args;
+        this.args = Arrays.asList(args);
     }
 
     public String getService() {
@@ -49,8 +53,8 @@ public final class Request {
         return this.command;
     }
 
-    public Object[] getArgs() {
-        return this.args;
+    public List<Object> getArgs() {
+        return Collections.unmodifiableList(this.args);
     }
 
     @Override
