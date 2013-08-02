@@ -20,29 +20,21 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITextListener;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-import org.eclipse.jface.text.source.SourceViewer;
-import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
-import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
-import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
@@ -52,7 +44,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
-import org.eclipse.ui.texteditor.IUpdate;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
@@ -61,7 +52,9 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageService;
-import com.palantir.typescript.services.language.SpanInfo;
+import com.palantir.typescript.text.actions.FormatAction;
+import com.palantir.typescript.text.actions.OpenDefinitionAction;
+import com.palantir.typescript.text.actions.RenameAction;
 
 /**
  * The editor for TypeScript files.
@@ -177,17 +170,17 @@ public final class TypeScriptEditor extends TextEditor {
         super.createActions();
 
         // format
-        FormatAction formatAction = new FormatAction();
+        FormatAction formatAction = new FormatAction(this);
         formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
         this.setAction(ITypeScriptActionDefinitionIds.FORMAT, formatAction);
 
         // open definition
-        OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction();
+        OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction(this);
         openDefinitionAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.OPEN_DEFINITION);
         this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
 
         // rename
-        RenameAction renameAction = new RenameAction();
+        RenameAction renameAction = new RenameAction(this);
         renameAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.RENAME);
         this.setAction(ITypeScriptActionDefinitionIds.RENAME, renameAction);
     }
@@ -231,84 +224,6 @@ public final class TypeScriptEditor extends TextEditor {
         });
     }
 
-    private final class FormatAction extends Action implements IUpdate {
-
-        public FormatAction() {
-            this.update();
-        }
-
-        @Override
-        public void run() {
-            SourceViewer sourceViewer = (SourceViewer) getSourceViewer();
-
-            sourceViewer.doOperation(ISourceViewer.FORMAT);
-        }
-
-        @Override
-        public void update() {
-            this.setEnabled(isEditorInputModifiable());
-        }
-    }
-
-    private final class OpenDefinitionAction extends Action {
-        @Override
-        public void run() {
-            String fileName = getFileName();
-            int position = getSourceViewer().getSelectedRange().x;
-            List<DefinitionInfo> definitions = TypeScriptEditor.this.languageService.getDefinitionAtPosition(fileName, position);
-
-            if (definitions != null && !definitions.isEmpty()) {
-                DefinitionInfo definition = definitions.get(0);
-
-                // don't follow references to the built-in default library
-                if (!definition.getFileName().equals("lib.d.ts")) {
-                    openDefinition(definition);
-                }
-            }
-        }
-    }
-
-    private final class RenameAction extends Action {
-        @Override
-        public void run() {
-            String fileName = getFileName();
-            ITextSelection selection = (ITextSelection) getSelectionProvider().getSelection();
-            int offset = selection.getOffset();
-            String oldName = this.getOldName(offset);
-            RefactoringProcessor processor = new TypeScriptRenameProcessor(getLanguageService(), fileName, offset, oldName);
-            ProcessorBasedRefactoring refactoring = new ProcessorBasedRefactoring(processor);
-            RenameRefactoringWizard wizard = new RenameRefactoringWizard(refactoring);
-            RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(wizard);
-            Shell shell = getSite().getShell();
-
-            try {
-                operation.run(shell, "");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        private String getOldName(int offset) {
-            String fileName = getFileName();
-            SpanInfo spanInfo = getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
-            int minChar = spanInfo.getMinChar();
-            int limChar = spanInfo.getLimChar();
-
-            try {
-                String oldName = getDocument().get(minChar, limChar - minChar);
-
-                int lastPeriod = oldName.lastIndexOf('.');
-                if (lastPeriod >= 0) {
-                    oldName = oldName.substring(lastPeriod + 1);
-                }
-
-                return oldName;
-            } catch (BadLocationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private final class MyTextListener implements ITextListener {
         @Override
         public void textChanged(TextEvent event) {
@@ -321,7 +236,7 @@ public final class TypeScriptEditor extends TextEditor {
 
             // redraw state change - update the entire document
             if (event.getDocumentEvent() == null) {
-                IDocument document = getSourceViewer().getDocument();
+                IDocument document = getDocument();
                 String documentText = document.get();
 
                 TypeScriptEditor.this.languageService.updateFileContents(fileName, documentText);
