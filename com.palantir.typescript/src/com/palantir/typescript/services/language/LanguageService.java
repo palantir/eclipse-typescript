@@ -25,7 +25,11 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -35,6 +39,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
+import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
@@ -50,12 +55,17 @@ public final class LanguageService {
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
+    private final IProject project;
+    private final MyResourceChangeListener resourceChangeListener;
 
     public LanguageService(IProject project) {
         this.bridge = new Bridge();
+        this.project = project;
+        this.resourceChangeListener = new MyResourceChangeListener();
 
         this.addDefaultLibrary();
-        this.addProjectFiles(project);
+        this.addProjectFiles();
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -179,6 +189,7 @@ public final class LanguageService {
     }
 
     public void dispose() {
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
         this.bridge.dispose();
     }
 
@@ -194,11 +205,11 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private void addProjectFiles(IProject project) {
+    private void addProjectFiles() {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
 
         try {
-            project.accept(new IResourceVisitor() {
+            this.project.accept(new IResourceVisitor() {
                 @Override
                 public boolean visit(IResource resource) throws CoreException {
                     if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
@@ -216,5 +227,26 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "addFiles", fileNames.build());
         this.bridge.call(request, Void.class);
+    }
+
+    private final class MyResourceChangeListener implements IResourceChangeListener {
+        @Override
+        public void resourceChanged(IResourceChangeEvent event) {
+            IResourceDelta delta = event.getDelta();
+            ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(LanguageService.this.project);
+
+            try {
+                delta.accept(visitor);
+            } catch (CoreException e) {
+                throw new RuntimeException(e);
+            }
+
+            ImmutableList<FileDelta> fileDeltas = visitor.getDeltas();
+            if (!fileDeltas.isEmpty()) {
+                Request request = new Request(SERVICE, "updateFiles", fileDeltas);
+
+                LanguageService.this.bridge.call(request, Void.class);
+            }
+        }
     }
 }

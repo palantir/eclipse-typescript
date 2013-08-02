@@ -18,6 +18,8 @@ package com.palantir.typescript.services;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.Objects;
+
 /**
  * Represents a request which will be sent to the bridge.
  *
@@ -49,5 +51,14 @@ public final class Request {
 
     public Object[] getArgs() {
         return this.args;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("service", this.service)
+            .add("command", this.command)
+            .add("args", this.args)
+            .toString();
     }
 }

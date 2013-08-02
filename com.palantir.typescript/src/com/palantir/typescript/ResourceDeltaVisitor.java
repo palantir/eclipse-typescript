@@ -16,6 +16,7 @@
 
 package com.palantir.typescript;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
@@ -32,15 +33,26 @@ import com.palantir.typescript.services.language.FileDelta.Delta;
  */
 public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
-    private final ImmutableList.Builder<FileDelta> deltas = ImmutableList.builder();
+    private final ImmutableList.Builder<FileDelta> deltas;
+    private final IProject project;
+
+    public ResourceDeltaVisitor(IProject project) {
+        this.deltas = ImmutableList.builder();
+        this.project = project;
+    }
 
     @Override
     public boolean visit(IResourceDelta delta) throws CoreException {
         IResource resource = delta.getResource();
+        IProject resourceProject = resource.getProject();
+
+        // skip other projects
+        if (this.project != null && resourceProject != null && !this.project.equals(resourceProject)) {
+            return false;
+        }
 
         if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
             String fileName = resource.getRawLocation().toOSString();
-
             final Delta deltaEnum;
             switch (delta.getKind()) {
                 case IResourceDelta.ADDED:
