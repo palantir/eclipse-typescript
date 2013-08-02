@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 /**
@@ -31,38 +32,31 @@ import com.google.common.base.Objects;
  */
 public final class Request {
 
+    @JsonProperty("service")
     private final String service;
-    private final String command;
-    private final List<Object> args;
 
-    public Request(String service, String command, Object... args) {
+    @JsonProperty("method")
+    private final String method;
+
+    @JsonProperty("arguments")
+    private final List<Object> arguments;
+
+    public Request(String service, String method, Object... arguments) {
         checkNotNull(service);
-        checkNotNull(command);
-        checkNotNull(args);
+        checkNotNull(method);
+        checkNotNull(arguments);
 
         this.service = service;
-        this.command = command;
-        this.args = Arrays.asList(args);
-    }
-
-    public String getService() {
-        return this.service;
-    }
-
-    public String getCommand() {
-        return this.command;
-    }
-
-    public List<Object> getArgs() {
-        return Collections.unmodifiableList(this.args);
+        this.method = method;
+        this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("service", this.service)
-            .add("command", this.command)
-            .add("args", this.args)
+            .add("method", this.method)
+            .add("arguments", this.arguments)
             .toString();
     }
 }

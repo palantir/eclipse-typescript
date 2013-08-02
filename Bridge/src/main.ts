@@ -53,12 +53,12 @@ module Bridge {
 
         private processRequest(requestJson: string) {
             try {
-                var request = JSON.parse(requestJson);
+                var request: Request = JSON.parse(requestJson);
 
                 // invoke the service method with the supplied arguments
                 var service = this.services.get(request.service);
-                var method = service[request.command];
-                var result = method.apply(service, request.args);
+                var method = service[request.method];
+                var result = method.apply(service, request.arguments);
 
                 // convert undefined to null (its basically the Java equivalent of void)
                 if (result === undefined) {
@@ -72,6 +72,12 @@ module Bridge {
                 console.log("ERROR: " + e.stack.replace(/\n/g, "\\n"));
             }
         }
+    }
+
+    interface Request {
+        service: string;
+        method: string;
+        arguments: any[];
     }
 }
 
