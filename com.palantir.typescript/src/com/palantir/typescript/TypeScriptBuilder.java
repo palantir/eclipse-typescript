@@ -63,7 +63,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         project.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
-        LanguageService languageService = new LanguageService(project);
+        LanguageService languageService = new LanguageService(project, false);
         try {
             Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
 

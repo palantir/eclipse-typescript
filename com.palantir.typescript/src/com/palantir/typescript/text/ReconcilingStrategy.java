@@ -97,7 +97,7 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
             IResource resource = ResourceUtil.getResource(editorInput);
             IProject project = resource.getProject();
 
-            this.languageService = new LanguageService(project);
+            this.languageService = new LanguageService(project, true);
         }
 
         return this.languageService;

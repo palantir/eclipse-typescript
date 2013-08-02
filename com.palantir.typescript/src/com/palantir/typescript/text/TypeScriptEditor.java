@@ -74,7 +74,7 @@ public final class TypeScriptEditor extends TextEditor {
         new CacheLoader<IProject, LanguageService>() {
             @Override
             public LanguageService load(IProject project) throws Exception {
-                return new LanguageService(project);
+                return new LanguageService(project, true);
             }
         });
 
