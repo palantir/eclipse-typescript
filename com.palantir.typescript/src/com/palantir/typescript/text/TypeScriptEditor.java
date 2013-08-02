@@ -32,12 +32,17 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.ITextListener;
+import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.jface.text.source.SourceViewer;
+import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
+import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
+import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPathEditorInput;
@@ -56,6 +61,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.SpanInfo;
 
 /**
  * The editor for TypeScript files.
@@ -179,6 +185,11 @@ public final class TypeScriptEditor extends TextEditor {
         OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction();
         openDefinitionAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.OPEN_DEFINITION);
         this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
+
+        // rename
+        RenameAction renameAction = new RenameAction();
+        renameAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.RENAME);
+        this.setAction(ITypeScriptActionDefinitionIds.RENAME, renameAction);
     }
 
     @Override
@@ -253,6 +264,47 @@ public final class TypeScriptEditor extends TextEditor {
                 if (!definition.getFileName().equals("lib.d.ts")) {
                     openDefinition(definition);
                 }
+            }
+        }
+    }
+
+    private final class RenameAction extends Action {
+        @Override
+        public void run() {
+            String fileName = getFileName();
+            ITextSelection selection = (ITextSelection) getSelectionProvider().getSelection();
+            int offset = selection.getOffset();
+            String oldName = this.getOldName(offset);
+            RefactoringProcessor processor = new TypeScriptRenameProcessor(getLanguageService(), fileName, offset, oldName);
+            ProcessorBasedRefactoring refactoring = new ProcessorBasedRefactoring(processor);
+            RenameRefactoringWizard wizard = new RenameRefactoringWizard(refactoring);
+            RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(wizard);
+            Shell shell = getSite().getShell();
+
+            try {
+                operation.run(shell, "");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private String getOldName(int offset) {
+            String fileName = getFileName();
+            SpanInfo spanInfo = getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
+            int minChar = spanInfo.getMinChar();
+            int limChar = spanInfo.getLimChar();
+
+            try {
+                String oldName = getDocument().get(minChar, limChar - minChar);
+
+                int lastPeriod = oldName.lastIndexOf('.');
+                if (lastPeriod >= 0) {
+                    oldName = oldName.substring(lastPeriod + 1);
+                }
+
+                return oldName;
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
             }
         }
     }

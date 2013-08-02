@@ -120,6 +120,15 @@ public final class LanguageService {
         return this.bridge.call(request, SpanInfo.class);
     }
 
+    public List<ReferenceEntry> getReferencesAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getReferencesAtPosition", fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public List<NavigateToItem> getScriptLexicalStructure(String fileName) {
         checkNotNull(fileName);
 

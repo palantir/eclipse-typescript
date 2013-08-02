@@ -19,13 +19,13 @@ An Eclipse plug-in for developing in the TypeScript language.
 * highlight matching brace
 * open definition
 * outline view
+* rename refactor
 * syntax highlighting
 
 ## Roadmap
 * compile-on-save
 * find references
 * jsdoc assistance
-* rename variable, function, class, or interface
 * search (for a class, interface, etc...)
 * type hierarchy
 

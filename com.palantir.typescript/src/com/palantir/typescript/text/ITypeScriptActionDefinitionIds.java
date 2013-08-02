@@ -16,15 +16,15 @@
 
 package com.palantir.typescript.text;
 
-import org.eclipse.ui.texteditor.ITextEditorActionDefinitionIds;
 
 /**
  * Defines the definition IDs for the TypeScript editor actions.
  *
  * @author dcicerone
  */
-public interface ITypeScriptActionDefinitionIds extends ITextEditorActionDefinitionIds {
+public interface ITypeScriptActionDefinitionIds {
 
     String FORMAT = "com.palantir.typescript.text.format";
     String OPEN_DEFINITION = "com.palantir.typescript.text.openDefinition";
+    String RENAME = "com.palantir.typescript.text.rename";
 }

@@ -137,6 +137,10 @@ module Bridge {
             return this.languageService.getNameOrDottedNameSpan(fileName, startPos, endPos);
         }
 
+        public getReferencesAtPosition(fileName: string, position: number): Services.ReferenceEntry[] {
+            return this.languageService.getReferencesAtPosition(fileName, position);
+        }
+
         public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
             return this.languageService.getScriptLexicalStructure(fileName);
         }

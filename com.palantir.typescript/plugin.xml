@@ -76,6 +76,12 @@
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.openDefinition"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+M3+R"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.rename"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
    </extension>
 
    <extension
@@ -87,6 +93,10 @@
       <command
             id="com.palantir.typescript.text.openDefinition"
             name="Open Definition">
+      </command>
+      <command
+            id="com.palantir.typescript.text.rename"
+            name="Rename">
       </command>
       <category
             id="com.palantir.typescript.typeScriptNature.category"
@@ -142,6 +152,9 @@
             locationURI="popup:#TextEditorContext?after=group.edit">
           <command
                 commandId="com.palantir.typescript.text.format">
+          </command>
+          <command
+                commandId="com.palantir.typescript.text.rename">
           </command>
       </menuContribution>
       <menuContribution
