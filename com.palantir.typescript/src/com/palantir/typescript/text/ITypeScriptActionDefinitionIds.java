@@ -24,6 +24,7 @@ package com.palantir.typescript.text;
  */
 public interface ITypeScriptActionDefinitionIds {
 
+    String FIND_REFERENCES = "com.palantir.typescript.text.findReferences";
     String FORMAT = "com.palantir.typescript.text.format";
     String OPEN_DEFINITION = "com.palantir.typescript.text.openDefinition";
     String RENAME = "com.palantir.typescript.text.rename";

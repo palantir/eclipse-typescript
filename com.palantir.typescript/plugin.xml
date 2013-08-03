@@ -63,9 +63,23 @@
    </extension>
 
    <extension
+         point="org.eclipse.search.searchResultViewPages">
+      <viewPage
+            id="com.palantir.typescript.searchViewPage"
+            class="com.palantir.typescript.search.SearchResultPage"
+            searchResultClass="com.palantir.typescript.search.SearchResult">
+      </viewPage>
+   </extension>
+
+   <extension
          point="org.eclipse.ui.bindings">
       <!--  win32:  M1=CTRL,    M2=SHIFT, M3=ALT, M4=-
             carbon: M1=COMMAND, M2=SHIFT, M3=ALT, M4=CTRL -->
+      <key
+            sequence="M1+M2+G"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.findReferences"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+F"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
@@ -110,6 +124,10 @@
             categoryId="com.palantir.typescript.typeScriptNature.category"
             defaultHandler="com.palantir.typescript.ToggleNatureHandler"
             name="%command.toggleNature.name">
+      </command>
+      <command
+            id="com.palantir.typescript.text.findReferences"
+            name="%command.findReferences.name">
       </command>
       <command
             id="com.palantir.typescript.text.format"
@@ -177,6 +195,12 @@
           </command>
           <command
                 commandId="com.palantir.typescript.text.toggleComment">
+          </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:#TextEditorContext?after=group.find">
+          <command
+                commandId="com.palantir.typescript.text.findReferences">
           </command>
       </menuContribution>
       <menuContribution

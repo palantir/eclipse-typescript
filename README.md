@@ -15,6 +15,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 ## Features
 * code completion
 * error annotations/markers
+* find references
 * format code
 * highlight matching brace
 * open definition
@@ -25,7 +26,6 @@ An Eclipse plug-in for developing in the TypeScript language.
 
 ## Roadmap
 * compile-on-save
-* find references
 * jsdoc assistance
 * search (for a class, interface, etc...)
 * type hierarchy

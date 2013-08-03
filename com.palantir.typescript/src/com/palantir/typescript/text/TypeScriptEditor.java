@@ -42,6 +42,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
@@ -52,6 +53,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.RenameAction;
@@ -124,7 +126,9 @@ public final class TypeScriptEditor extends TextEditor {
     @Override
     public void dispose() {
         // inform the language service that the file is no longer open
-        this.languageService.setFileOpen(this.getFileName(), false);
+        if (this.getEditorInput() != null) {
+            this.languageService.setFileOpen(this.getFileName(), false);
+        }
 
         super.dispose();
     }
@@ -169,6 +173,11 @@ public final class TypeScriptEditor extends TextEditor {
     @Override
     protected void createActions() {
         super.createActions();
+
+        // find references
+        FindReferencesAction findReferencesAction = new FindReferencesAction(this);
+        findReferencesAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FIND_REFERENCES);
+        this.setAction(ITypeScriptActionDefinitionIds.FIND_REFERENCES, findReferencesAction);
 
         // format
         FormatAction formatAction = new FormatAction(this);
