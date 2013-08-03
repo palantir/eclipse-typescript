@@ -16,11 +16,8 @@
 
 package com.palantir.typescript.text.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.List;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.ITextSelection;
 
 import com.palantir.typescript.services.language.DefinitionInfo;
@@ -31,22 +28,19 @@ import com.palantir.typescript.text.TypeScriptEditor;
  *
  * @author dcicerone
  */
-public final class OpenDefinitionAction extends Action {
-
-    private final TypeScriptEditor editor;
+public final class OpenDefinitionAction extends TypeScriptEditorAction {
 
     public OpenDefinitionAction(TypeScriptEditor editor) {
-        checkNotNull(editor);
-
-        this.editor = editor;
+        super(editor);
     }
 
     @Override
     public void run() {
-        String fileName = this.editor.getFileName();
-        ITextSelection selection = (ITextSelection) this.editor.getSelectionProvider().getSelection();
+        TypeScriptEditor editor = this.getTextEditor();
+        String fileName = editor.getFileName();
+        ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
         int position = selection.getOffset();
-        List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(fileName, position);
+        List<DefinitionInfo> definitions = editor.getLanguageService().getDefinitionAtPosition(fileName, position);
 
         if (definitions != null && !definitions.isEmpty()) {
             DefinitionInfo definition = definitions.get(0);

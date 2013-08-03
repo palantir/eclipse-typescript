@@ -17,25 +17,28 @@
 package com.palantir.typescript.text.actions;
 
 import org.eclipse.jface.text.ITextOperationTarget;
-import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.ui.texteditor.TextEditorAction;
 
+import com.palantir.typescript.Resources;
 import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
- * Formats the selected code.
+ * An abstract TypeScript editor action.
  *
  * @author dcicerone
  */
-public final class FormatAction extends TypeScriptEditorAction {
+public abstract class TypeScriptEditorAction extends TextEditorAction {
 
-    public FormatAction(TypeScriptEditor editor) {
-        super(editor);
+    protected TypeScriptEditorAction(TypeScriptEditor editor) {
+        super(Resources.BUNDLE, null, editor);
     }
 
     @Override
-    public void run() {
-        ITextOperationTarget textOperationTarget = this.getTextOperationTarget();
+    protected final TypeScriptEditor getTextEditor() {
+        return (TypeScriptEditor) super.getTextEditor();
+    }
 
-        textOperationTarget.doOperation(ISourceViewer.FORMAT);
+    protected final ITextOperationTarget getTextOperationTarget() {
+        return (ITextOperationTarget) this.getTextEditor().getAdapter(ITextOperationTarget.class);
     }
 }

@@ -16,9 +16,6 @@
 
 package com.palantir.typescript.text.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.ltk.core.refactoring.participants.ProcessorBasedRefactoring;
@@ -36,27 +33,24 @@ import com.palantir.typescript.text.TypeScriptRenameProcessor;
  *
  * @author dcicerone
  */
-public final class RenameAction extends Action {
-
-    private final TypeScriptEditor editor;
+public final class RenameAction extends TypeScriptEditorAction {
 
     public RenameAction(TypeScriptEditor editor) {
-        checkNotNull(editor);
-
-        this.editor = editor;
+        super(editor);
     }
 
     @Override
     public void run() {
-        String fileName = this.editor.getFileName();
-        ITextSelection selection = (ITextSelection) this.editor.getSelectionProvider().getSelection();
+        TypeScriptEditor editor = this.getTextEditor();
+        String fileName = editor.getFileName();
+        ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
         int offset = selection.getOffset();
         String oldName = this.getOldName(offset);
-        RefactoringProcessor processor = new TypeScriptRenameProcessor(this.editor.getLanguageService(), fileName, offset, oldName);
+        RefactoringProcessor processor = new TypeScriptRenameProcessor(editor.getLanguageService(), fileName, offset, oldName);
         ProcessorBasedRefactoring refactoring = new ProcessorBasedRefactoring(processor);
         RenameRefactoringWizard wizard = new RenameRefactoringWizard(refactoring);
         RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(wizard);
-        Shell shell = this.editor.getSite().getShell();
+        Shell shell = editor.getSite().getShell();
 
         try {
             operation.run(shell, "");
@@ -66,13 +60,14 @@ public final class RenameAction extends Action {
     }
 
     private String getOldName(int offset) {
-        String fileName = this.editor.getFileName();
-        SpanInfo spanInfo = this.editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
+        TypeScriptEditor editor = this.getTextEditor();
+        String fileName = editor.getFileName();
+        SpanInfo spanInfo = editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
         int minChar = spanInfo.getMinChar();
         int limChar = spanInfo.getLimChar();
 
         try {
-            String oldName = this.editor.getDocument().get(minChar, limChar - minChar);
+            String oldName = editor.getDocument().get(minChar, limChar - minChar);
 
             int lastPeriod = oldName.lastIndexOf('.');
             if (lastPeriod >= 0) {

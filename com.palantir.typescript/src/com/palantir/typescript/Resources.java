@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text.actions;
+package com.palantir.typescript;
 
-import org.eclipse.jface.text.ITextOperationTarget;
-import org.eclipse.jface.text.source.ISourceViewer;
-
-import com.palantir.typescript.text.TypeScriptEditor;
+import java.util.ResourceBundle;
 
 /**
- * Formats the selected code.
+ * Provides access to the resources (strings, icon paths, etc...).
  *
  * @author dcicerone
  */
-public final class FormatAction extends TypeScriptEditorAction {
+public final class Resources {
 
-    public FormatAction(TypeScriptEditor editor) {
-        super(editor);
-    }
+    public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com.palantir.typescript.resources");
 
-    @Override
-    public void run() {
-        ITextOperationTarget textOperationTarget = this.getTextOperationTarget();
-
-        textOperationTarget.doOperation(ISourceViewer.FORMAT);
+    private Resources() {
+        // prevent instantiation
     }
 }

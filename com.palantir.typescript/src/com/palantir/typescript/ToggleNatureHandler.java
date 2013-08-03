@@ -34,7 +34,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
  *
  * @author dcicerone
  */
-public final class AddRemoveNatureHandler extends AbstractHandler {
+public final class ToggleNatureHandler extends AbstractHandler {
 
     @Override
     public Object execute(ExecutionEvent event) throws ExecutionException {

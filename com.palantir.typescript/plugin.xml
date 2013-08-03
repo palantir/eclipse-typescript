@@ -101,31 +101,31 @@
 
    <extension
          point="org.eclipse.ui.commands">
+      <category
+            id="com.palantir.typescript.typeScriptNature.category"
+            name="%command.category">
+      </category>
+      <command
+            id="com.palantir.typescript.toggleNature"
+            categoryId="com.palantir.typescript.typeScriptNature.category"
+            defaultHandler="com.palantir.typescript.ToggleNatureHandler"
+            name="%command.toggleNature.name">
+      </command>
       <command
             id="com.palantir.typescript.text.format"
-            name="Format">
+            name="%command.format.name">
       </command>
       <command
             id="com.palantir.typescript.text.openDefinition"
-            name="Open Definition">
+            name="%command.openDefinition.name">
       </command>
       <command
             id="com.palantir.typescript.text.rename"
-            name="Rename">
+            name="%command.rename.name">
       </command>
       <command
             id="com.palantir.typescript.text.toggleComment"
-            name="Toggle Comment">
-      </command>
-      <category
-            id="com.palantir.typescript.typeScriptNature.category"
-            name="TypeScript Project Nature commands">
-      </category>
-      <command
-            categoryId="com.palantir.typescript.typeScriptNature.category"
-            defaultHandler="com.palantir.typescript.AddRemoveNatureHandler"
-            id="com.palantir.typescript.addRemoveTypeScriptNature"
-            name="Add/Remove TypeScript Project Nature">
+            name="%command.toggleComment.name">
       </command>
    </extension>
 
@@ -182,7 +182,7 @@
       <menuContribution
             locationURI="popup:org.eclipse.ui.projectConfigure?after=additions">
          <command
-               commandId="com.palantir.typescript.addRemoveTypeScriptNature"
+               commandId="com.palantir.typescript.toggleNature"
                label="Disable TypeScript Builder"
                style="push">
             <visibleWhen
@@ -207,7 +207,7 @@
             </visibleWhen>
          </command>
          <command
-               commandId="com.palantir.typescript.addRemoveTypeScriptNature"
+               commandId="com.palantir.typescript.toggleNature"
                label="Enable TypeScript Builder"
                style="push">
             <visibleWhen
