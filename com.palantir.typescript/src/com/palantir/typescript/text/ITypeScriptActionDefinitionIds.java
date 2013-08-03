@@ -27,4 +27,5 @@ public interface ITypeScriptActionDefinitionIds {
     String FORMAT = "com.palantir.typescript.text.format";
     String OPEN_DEFINITION = "com.palantir.typescript.text.openDefinition";
     String RENAME = "com.palantir.typescript.text.rename";
+    String TOGGLE_COMMENT = "com.palantir.typescript.text.toggleComment";
 }

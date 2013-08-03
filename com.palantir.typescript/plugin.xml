@@ -82,6 +82,21 @@
             commandId="com.palantir.typescript.text.rename"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
       </key>
+      <key
+            sequence="M1+M2+C"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.toggleComment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+7"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.toggleComment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
+            sequence="M1+/"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.toggleComment"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
    </extension>
 
    <extension
@@ -97,6 +112,10 @@
       <command
             id="com.palantir.typescript.text.rename"
             name="Rename">
+      </command>
+      <command
+            id="com.palantir.typescript.text.toggleComment"
+            name="Toggle Comment">
       </command>
       <category
             id="com.palantir.typescript.typeScriptNature.category"
@@ -155,6 +174,9 @@
           </command>
           <command
                 commandId="com.palantir.typescript.text.rename">
+          </command>
+          <command
+                commandId="com.palantir.typescript.text.toggleComment">
           </command>
       </menuContribution>
       <menuContribution

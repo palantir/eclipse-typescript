@@ -55,6 +55,7 @@ import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FormatAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.RenameAction;
+import com.palantir.typescript.text.actions.ToggleCommentAction;
 
 /**
  * The editor for TypeScript files.
@@ -183,6 +184,11 @@ public final class TypeScriptEditor extends TextEditor {
         RenameAction renameAction = new RenameAction(this);
         renameAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.RENAME);
         this.setAction(ITypeScriptActionDefinitionIds.RENAME, renameAction);
+
+        // toggle comment
+        ToggleCommentAction toggleCommentAction = new ToggleCommentAction(this);
+        toggleCommentAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.TOGGLE_COMMENT);
+        this.setAction(ITypeScriptActionDefinitionIds.TOGGLE_COMMENT, toggleCommentAction);
     }
 
     @Override

@@ -86,6 +86,11 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     }
 
     @Override
+    public String[] getDefaultPrefixes(ISourceViewer sourceViewer, String contentType) {
+        return new String[] { "//", "" };
+    }
+
+    @Override
     public IHyperlinkDetector[] getHyperlinkDetectors(ISourceViewer sourceViewer) {
         return new IHyperlinkDetector[] { new HyperlinkDetector(this.editor) };
     }
