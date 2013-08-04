@@ -23,6 +23,7 @@ import java.text.MessageFormat;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledString;
@@ -46,14 +47,14 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
     private static final CharMatcher NON_WHITESPACE_MATCHER = CharMatcher.WHITESPACE.negate();
 
     private final boolean isTree;
-    private final WorkbenchLabelProvider labelProvider;
+    private final ILabelProvider labelProvider;
     private final SearchResultPage page;
 
     public SearchResultLabelProvider(SearchResultPage page, boolean isTree) {
         checkNotNull(page);
 
         this.isTree = isTree;
-        this.labelProvider = new WorkbenchLabelProvider();
+        this.labelProvider = WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider();
         this.page = page;
     }
 
