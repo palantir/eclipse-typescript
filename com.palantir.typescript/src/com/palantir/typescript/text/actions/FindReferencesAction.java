@@ -61,7 +61,14 @@ public final class FindReferencesAction extends TypeScriptEditorAction {
         int limChar = spanInfo.getLimChar();
 
         try {
-            return editor.getDocument().get(minChar, limChar - minChar);
+            String searchString = editor.getDocument().get(minChar, limChar - minChar);
+
+            int lastPeriod = searchString.lastIndexOf('.');
+            if (lastPeriod >= 0) {
+                searchString = searchString.substring(lastPeriod + 1);
+            }
+
+            return searchString;
         } catch (BadLocationException e) {
             throw new RuntimeException(e);
         }
