@@ -176,13 +176,15 @@ module Bridge {
                 var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
                 var lineStart = lineMap.getLineStartPosition(lineNumber);
                 var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
-                var line = snapshot.getText(lineStart, lineEnd);
+                var line = snapshot.getText(lineStart, lineEnd).substring(0, 500); // truncate long lines
 
             	return {
                   	fileName: reference.fileName,
                     minChar: reference.minChar,
                     limChar: reference.limChar,
-                    line: line
+                    line: line,
+                    lineNumber: lineNumber,
+                    lineStart: lineStart
                 };
             });
         }
@@ -205,6 +207,8 @@ module Bridge {
         minChar: number;
         limChar: number;
         line: string;
+        lineNumber: number;
+        lineStart: number;
     }
 
     export interface TypeInfo {

@@ -69,12 +69,11 @@ public final class SearchQuery implements ISearchQuery {
 
         for (Reference reference : references) {
             String referenceFileName = reference.getFileName();
-            int minChar = reference.getMinChar();
-            int limChar = reference.getLimChar();
-            String line = reference.getLine();
             IPath path = Path.fromOSString(referenceFileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-            TypeScriptMatch match = new TypeScriptMatch(file, minChar, limChar - minChar, line);
+            int minChar = reference.getMinChar();
+            int limChar = reference.getLimChar();
+            FindReferenceMatch match = new FindReferenceMatch(file, minChar, limChar - minChar, reference);
 
             this.result.addMatch(match);
         }

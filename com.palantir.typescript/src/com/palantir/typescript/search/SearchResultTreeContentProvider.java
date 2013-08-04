@@ -16,6 +16,8 @@
 
 package com.palantir.typescript.search;
 
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.ITreeContentProvider;
@@ -24,7 +26,8 @@ import org.eclipse.search.ui.text.Match;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.palantir.typescript.search.TypeScriptMatch.MatchLine;
+import com.google.common.collect.SetMultimap;
+import com.google.common.collect.TreeMultimap;
 
 /**
  * The search result tree view content provider.
@@ -54,11 +57,22 @@ final class SearchResultTreeContentProvider implements ITreeContentProvider {
         this.children.clear();
 
         for (Object element : searchResult.getElements()) {
-            for (Match match : searchResult.getMatches(element)) {
-                TypeScriptMatch typeScriptMatch = (TypeScriptMatch) match;
-                Object matchLine = typeScriptMatch.getMatchLine();
+            SetMultimap<Integer, FindReferenceMatch> matchesByLineNumber = TreeMultimap.create();
 
-                this.add(searchResult, matchLine);
+            // collect the matches for each line
+            for (Match match : searchResult.getMatches(element)) {
+                FindReferenceMatch findReferenceMatch = (FindReferenceMatch) match;
+                int lineNumber = findReferenceMatch.getReference().getLineNumber();
+
+                matchesByLineNumber.put(lineNumber, findReferenceMatch);
+            }
+
+            // add the lines
+            for (Integer lineNumber : matchesByLineNumber.keySet()) {
+                Set<FindReferenceMatch> lineMatches = matchesByLineNumber.get(lineNumber);
+                LineResult lineResult = new LineResult(lineMatches);
+
+                this.add(searchResult, lineResult);
             }
         }
     }
@@ -86,14 +100,10 @@ final class SearchResultTreeContentProvider implements ITreeContentProvider {
 
                 return resource.getParent();
             }
-        } else if (element instanceof MatchLine) {
-            MatchLine line = (MatchLine) element;
+        } else if (element instanceof LineResult) {
+            LineResult lineResult = (LineResult) element;
 
-            return line.getMatch().getElement();
-        } else if (element instanceof TypeScriptMatch) {
-            TypeScriptMatch match = (TypeScriptMatch) element;
-
-            return match.getMatchLine();
+            return lineResult.getMatches().get(0).getElement();
         }
 
         return null;

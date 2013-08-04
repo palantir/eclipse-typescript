@@ -17,6 +17,7 @@
 package com.palantir.typescript.search;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -26,7 +27,7 @@ import org.eclipse.search.ui.text.Match;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 
-import com.palantir.typescript.search.TypeScriptMatch.MatchLine;
+import com.google.common.collect.ImmutableList;
 
 /**
  * The TypeScript search result page.
@@ -63,19 +64,20 @@ public final class SearchResultPage extends AbstractTextSearchViewPage {
 
     @Override
     public int getDisplayedMatchCount(Object element) {
-        if (element instanceof MatchLine) {
-            return 1;
-        }
-
-        return super.getDisplayedMatchCount(element);
+        return this.getDisplayedMatches(element).length;
     }
 
     @Override
     public Match[] getDisplayedMatches(Object element) {
-        if (element instanceof MatchLine) {
-            MatchLine matchLine = (MatchLine) element;
+        if (element instanceof LineResult) {
+            LineResult lineResult = (LineResult) element;
+            ImmutableList<FindReferenceMatch> matches = lineResult.getMatches();
 
-            return new Match[] { matchLine.getMatch() };
+            return matches.toArray(new Match[matches.size()]);
+        } else if (element instanceof IResource) {
+            SearchResult input = (SearchResult) this.getInput();
+
+            return input.getMatches(element);
         }
 
         return super.getDisplayedMatches(element);

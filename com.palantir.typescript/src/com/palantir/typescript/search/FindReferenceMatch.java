@@ -20,45 +20,41 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.search.ui.text.Match;
 
+import com.google.common.primitives.Ints;
+import com.palantir.typescript.services.language.Reference;
+
 /**
- * A TypeScript search match.
+ * A find references match.
  *
  * @author dcicerone
  */
-public final class TypeScriptMatch extends Match {
+public final class FindReferenceMatch extends Match implements Comparable {
 
-    private final String line;
-    private final MatchLine matchLine;
+    private final Reference reference;
 
-    public TypeScriptMatch(Object element, int offset, int length, String line) {
+    public FindReferenceMatch(Object element, int offset, int length, Reference reference) {
         super(element, offset, length);
 
-        checkNotNull(line);
-
-        this.line = line;
-        this.matchLine = new MatchLine(this);
+        this.reference = checkNotNull(reference);
     }
 
-    public String getLine() {
-        return this.line;
+    public Reference getReference() {
+        return this.reference;
     }
 
-    public MatchLine getMatchLine() {
-        return this.matchLine;
-    }
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof Match) {
+            Match other = (Match) o;
 
-    public static final class MatchLine {
-
-        private final TypeScriptMatch match;
-
-        public MatchLine(TypeScriptMatch match) {
-            checkNotNull(match);
-
-            this.match = match;
+            return Ints.compare(this.getOffset(), other.getOffset());
         }
 
-        public TypeScriptMatch getMatch() {
-            return this.match;
-        }
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public String toString() {
+        return this.reference.toString();
     }
 }
