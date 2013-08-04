@@ -120,6 +120,7 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
             TextFileChange change = new TextFileChange(file.getName(), file);
             change.setEdit(new MultiTextEdit());
+            change.setTextType("ts");
 
             for (ReferenceEntry reference : fileReferences) {
                 int minChar = reference.getMinChar();

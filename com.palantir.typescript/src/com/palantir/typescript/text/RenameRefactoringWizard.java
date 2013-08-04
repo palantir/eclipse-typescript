@@ -39,7 +39,7 @@ import com.google.common.base.CharMatcher;
 public final class RenameRefactoringWizard extends RefactoringWizard {
 
     public RenameRefactoringWizard(Refactoring refactoring) {
-        super(refactoring, 0);
+        super(refactoring, SWT.NONE);
 
         this.setWindowTitle("Rename TypeScript Element");
     }
