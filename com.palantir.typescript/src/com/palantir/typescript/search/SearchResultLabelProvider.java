@@ -102,8 +102,11 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
             // match count
             SearchResult result = (SearchResult) this.page.getInput();
             int matchCount = result.getMatchCount(element);
-            String count = MessageFormat.format(" ({0,choice,1#1 match|1<{0,number,integer} matches})", matchCount);
-            string.append(count, StyledString.COUNTER_STYLER);
+            if (matchCount > 1) {
+                String count = MessageFormat.format(" ({0,number,integer} matches)", matchCount);
+
+                string.append(count, StyledString.COUNTER_STYLER);
+            }
 
             return string;
         } else if (element instanceof IResource) {
