@@ -18,8 +18,6 @@ package com.palantir.typescript.search;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.text.MessageFormat;
-
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
@@ -29,6 +27,7 @@ import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
+import com.palantir.typescript.Resources;
 import com.palantir.typescript.search.TypeScriptMatch.MatchLine;
 
 /**
@@ -103,9 +102,9 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
             SearchResult result = (SearchResult) this.page.getInput();
             int matchCount = result.getMatchCount(element);
             if (matchCount > 1) {
-                String count = MessageFormat.format(" ({0,number,integer} matches)", matchCount);
+                String matches = " " + Resources.format("search.result.match", matchCount);
 
-                string.append(count, StyledString.COUNTER_STYLER);
+                string.append(matches, StyledString.COUNTER_STYLER);
             }
 
             return string;

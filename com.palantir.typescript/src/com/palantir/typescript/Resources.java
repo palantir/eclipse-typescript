@@ -16,6 +16,9 @@
 
 package com.palantir.typescript;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
@@ -26,6 +29,14 @@ import java.util.ResourceBundle;
 public final class Resources {
 
     public static final ResourceBundle BUNDLE = ResourceBundle.getBundle("com.palantir.typescript.resources");
+
+    public static String format(String key, Object... arguments) {
+        checkNotNull(key);
+
+        String pattern = BUNDLE.getString(key);
+
+        return MessageFormat.format(pattern, arguments);
+    }
 
     private Resources() {
         // prevent instantiation
