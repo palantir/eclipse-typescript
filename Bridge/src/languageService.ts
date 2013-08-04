@@ -165,6 +165,27 @@ module Bridge {
 
             return null;
         }
+
+        public findReferences(fileName: string, position: number): Reference[] {
+            var references = this.getReferencesAtPosition(fileName, position);
+
+            return references.map((reference) => {
+                var snapshot = this.languageServiceHost.getScriptSnapshot(reference.fileName);
+                var lineStarts = snapshot.getLineStartPositions();
+                var lineMap = new TypeScript.LineMap(lineStarts, snapshot.getLength());
+                var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
+                var lineStart = lineMap.getLineStartPosition(lineNumber);
+                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
+                var line = snapshot.getText(lineStart, lineEnd);
+
+            	return {
+                  	fileName: reference.fileName,
+                    minChar: reference.minChar,
+                    limChar: reference.limChar,
+                    line: line
+                };
+            });
+        }
     }
 
     export interface CompletionInfo {
@@ -177,6 +198,13 @@ module Bridge {
         length: number;
         line: number;
         text: string;
+    }
+
+    export interface Reference {
+        fileName: string;
+        minChar: number;
+        limChar: number;
+        line: string;
     }
 
     export interface TypeInfo {

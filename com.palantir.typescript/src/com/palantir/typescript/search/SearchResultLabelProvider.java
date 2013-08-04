@@ -21,12 +21,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+
+import com.palantir.typescript.search.TypeScriptMatch.MatchLine;
 
 /**
  * The label provider for a search result.
@@ -35,12 +38,14 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
  */
 final class SearchResultLabelProvider extends LabelProvider implements IStyledLabelProvider {
 
+    private final boolean isTree;
     private final WorkbenchLabelProvider labelProvider;
     private final SearchResultPage page;
 
-    public SearchResultLabelProvider(SearchResultPage page) {
+    public SearchResultLabelProvider(SearchResultPage page, boolean isTree) {
         checkNotNull(page);
 
+        this.isTree = isTree;
         this.labelProvider = new WorkbenchLabelProvider();
         this.page = page;
     }
@@ -68,7 +73,11 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
 
     @Override
     public Image getImage(Object element) {
-        return this.labelProvider.getImage(element);
+        if (element instanceof IResource) {
+            return this.labelProvider.getImage(element);
+        }
+
+        return null;
     }
 
     @Override
@@ -78,20 +87,36 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
 
     @Override
     public StyledString getStyledText(Object element) {
-        IFile file = (IFile) element;
-        String fileName = file.getName();
-        StyledString string = new StyledString(fileName);
+        if (element instanceof IFile) {
+            IFile file = (IFile) element;
+            String fileName = file.getName();
+            StyledString string = new StyledString(fileName);
 
-        // file parent path
-        String path = " - " + file.getParent().getFullPath().makeRelative().toString();
-        string.append(path, StyledString.QUALIFIER_STYLER);
+            // file parent path
+            if (!this.isTree) {
+                String path = " - " + file.getParent().getFullPath().makeRelative().toString();
 
-        // match count
-        SearchResult result = (SearchResult) this.page.getInput();
-        int matchCount = result.getMatchCount(element);
-        String count = MessageFormat.format(" ({0,choice,1#1 match|1<{0,number,integer} matches})", matchCount);
-        string.append(count, StyledString.COUNTER_STYLER);
+                string.append(path, StyledString.QUALIFIER_STYLER);
+            }
 
-        return string;
+            // match count
+            SearchResult result = (SearchResult) this.page.getInput();
+            int matchCount = result.getMatchCount(element);
+            String count = MessageFormat.format(" ({0,choice,1#1 match|1<{0,number,integer} matches})", matchCount);
+            string.append(count, StyledString.COUNTER_STYLER);
+
+            return string;
+        } else if (element instanceof IResource) {
+            IResource resource = (IResource) element;
+
+            return new StyledString(resource.getName());
+        } else if (element instanceof MatchLine) {
+            MatchLine matchLine = (MatchLine) element;
+            String line = matchLine.getMatch().getLine().trim();
+
+            return new StyledString(line);
+        }
+
+        return new StyledString();
     }
 }

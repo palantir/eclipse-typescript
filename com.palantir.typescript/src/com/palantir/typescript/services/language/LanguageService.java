@@ -166,6 +166,15 @@ public final class LanguageService {
         return this.bridge.call(request, TypeInfo.class);
     }
 
+    public List<Reference> findReferences(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "findReferences", fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Reference.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public void editFile(String fileName, int offset, int length, String replacementText) {
         checkNotNull(fileName);
         checkArgument(offset >= 0);

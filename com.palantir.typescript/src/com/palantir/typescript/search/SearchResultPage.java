@@ -18,14 +18,15 @@ package com.palantir.typescript.search;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.search.ui.text.AbstractTextSearchResult;
 import org.eclipse.search.ui.text.AbstractTextSearchViewPage;
 import org.eclipse.search.ui.text.Match;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+
+import com.palantir.typescript.search.TypeScriptMatch.MatchLine;
 
 /**
  * The TypeScript search result page.
@@ -35,31 +36,49 @@ import org.eclipse.ui.PartInitException;
 public final class SearchResultPage extends AbstractTextSearchViewPage {
 
     @Override
-    public boolean isLayoutSupported(int layout) {
-        // TODO: support tree view as well
-        return layout == FLAG_LAYOUT_FLAT;
-    }
-
-    @Override
     protected void clear() {
-        this.getViewer().refresh();
+        this.getViewer().setInput(null);
     }
 
     @Override
     protected void configureTableViewer(TableViewer viewer) {
-        viewer.setContentProvider(new MyContentProvider());
-        viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new SearchResultLabelProvider(this)));
+        viewer.setContentProvider(new SearchResultTableContentProvider());
+        viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new SearchResultLabelProvider(this, false)));
         viewer.setUseHashlookup(true);
     }
 
     @Override
     protected void configureTreeViewer(TreeViewer viewer) {
-        throw new UnsupportedOperationException();
+        viewer.setContentProvider(new SearchResultTreeContentProvider());
+        viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new SearchResultLabelProvider(this, true)));
+        viewer.setUseHashlookup(true);
     }
 
     @Override
     protected void elementsChanged(Object[] objects) {
-        this.getViewer().refresh();
+        AbstractTextSearchResult input = this.getInput();
+
+        this.getViewer().setInput(input);
+    }
+
+    @Override
+    public int getDisplayedMatchCount(Object element) {
+        if (element instanceof MatchLine) {
+            return 1;
+        }
+
+        return super.getDisplayedMatchCount(element);
+    }
+
+    @Override
+    public Match[] getDisplayedMatches(Object element) {
+        if (element instanceof MatchLine) {
+            MatchLine matchLine = (MatchLine) element;
+
+            return new Match[] { matchLine.getMatch() };
+        }
+
+        return super.getDisplayedMatches(element);
     }
 
     @Override
@@ -68,23 +87,5 @@ public final class SearchResultPage extends AbstractTextSearchViewPage {
         IFile file = (IFile) match.getElement();
 
         this.openAndSelect(page, file, offset, length, activate);
-    }
-
-    private static final class MyContentProvider implements IStructuredContentProvider {
-
-        @Override
-        public void dispose() {
-        }
-
-        @Override
-        public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-        }
-
-        @Override
-        public Object[] getElements(Object inputElement) {
-            SearchResult searchResult = (SearchResult) inputElement;
-
-            return searchResult.getElements();
-        }
     }
 }

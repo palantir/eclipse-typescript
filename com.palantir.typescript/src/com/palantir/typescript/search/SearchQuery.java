@@ -31,10 +31,9 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
-import org.eclipse.search.ui.text.Match;
 
 import com.palantir.typescript.services.language.LanguageService;
-import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.services.language.Reference;
 
 /**
  * A TypeScript search query.
@@ -66,15 +65,16 @@ public final class SearchQuery implements ISearchQuery {
 
     @Override
     public IStatus run(IProgressMonitor monitor) throws OperationCanceledException {
-        List<ReferenceEntry> references = this.languageService.getReferencesAtPosition(this.fileName, this.offset);
+        List<Reference> references = this.languageService.findReferences(this.fileName, this.offset);
 
-        for (ReferenceEntry reference : references) {
+        for (Reference reference : references) {
             String referenceFileName = reference.getFileName();
             int minChar = reference.getMinChar();
             int limChar = reference.getLimChar();
+            String line = reference.getLine();
             IPath path = Path.fromOSString(referenceFileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-            Match match = new Match(file, minChar, limChar - minChar);
+            TypeScriptMatch match = new TypeScriptMatch(file, minChar, limChar - minChar, line);
 
             this.result.addMatch(match);
         }
