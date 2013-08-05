@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "repository": {
     "type": "git",
-    "url": "git://github.com/palantir/eclipse-typescript"
+    "url": "git@github.com:palantir/eclipse-typescript.git"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
