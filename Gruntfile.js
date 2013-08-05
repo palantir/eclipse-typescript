@@ -21,6 +21,15 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    tslint: {
+      options: {
+        configuration: grunt.file.readJSON('.tslintrc')
+      },
+      files: {
+        src: ["Bridge/src/**/*.ts"]
+      }
+    },
+
     typescript: {
       compile: {
         options: {
@@ -33,9 +42,10 @@ module.exports = function(grunt) {
   });
 
   // load NPM tasks
+  grunt.loadNpmTasks('grunt-tslint');
   grunt.loadNpmTasks('grunt-typescript');
 
   // other tasks
-  grunt.registerTask('default', ['typescript']);
-  grunt.registerTask('travis', ['typescript']);
+  grunt.registerTask('default', ['typescript', 'tslint']);
+  grunt.registerTask('travis', ['default']);
 };

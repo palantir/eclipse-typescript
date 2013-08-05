@@ -1,8 +1,13 @@
 {
   "name": "eclipse-typescript",
   "version": "0.1.2",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/palantir/eclipse-typescript"
+  },
   "devDependencies": {
     "grunt": "~0.4.1",
+    "grunt-tslint": "~0.1.1",
     "grunt-typescript": "~0.2.1"
   }
 }

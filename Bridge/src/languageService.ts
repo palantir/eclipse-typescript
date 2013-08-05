@@ -178,8 +178,8 @@ module Bridge {
                 var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
                 var line = snapshot.getText(lineStart, lineEnd).substring(0, 500); // truncate long lines
 
-            	return {
-                  	fileName: reference.fileName,
+                return {
+                    fileName: reference.fileName,
                     minChar: reference.minChar,
                     limChar: reference.limChar,
                     line: line,
