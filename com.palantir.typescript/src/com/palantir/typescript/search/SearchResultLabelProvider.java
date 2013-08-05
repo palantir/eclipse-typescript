@@ -22,13 +22,14 @@ import java.text.MessageFormat;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.viewers.DecoratingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
-import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 
 import com.google.common.base.CharMatcher;
@@ -47,42 +48,42 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
     private static final CharMatcher NON_WHITESPACE_MATCHER = CharMatcher.WHITESPACE.negate();
 
     private final boolean isTree;
-    private final ILabelProvider labelProvider;
     private final SearchResultPage page;
+    private final MyWorkbenchLabelProvider workbenchlabelProvider;
 
     public SearchResultLabelProvider(SearchResultPage page, boolean isTree) {
         checkNotNull(page);
 
         this.isTree = isTree;
-        this.labelProvider = WorkbenchLabelProvider.getDecoratingWorkbenchLabelProvider();
         this.page = page;
+        this.workbenchlabelProvider = new MyWorkbenchLabelProvider();
     }
 
     @Override
     public void addListener(ILabelProviderListener listener) {
         super.addListener(listener);
 
-        this.labelProvider.addListener(listener);
+        this.workbenchlabelProvider.addListener(listener);
     }
 
     @Override
     public void removeListener(ILabelProviderListener listener) {
         super.removeListener(listener);
 
-        this.labelProvider.removeListener(listener);
+        this.workbenchlabelProvider.removeListener(listener);
     }
 
     @Override
     public void dispose() {
         super.dispose();
 
-        this.labelProvider.dispose();
+        this.workbenchlabelProvider.dispose();
     }
 
     @Override
     public Image getImage(Object element) {
         if (element instanceof IResource) {
-            return this.labelProvider.getImage(element);
+            return this.workbenchlabelProvider.getImage(element);
         }
 
         return null;
@@ -90,7 +91,7 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
 
     @Override
     public boolean isLabelProperty(Object element, String property) {
-        return this.labelProvider.isLabelProperty(element, property);
+        return this.workbenchlabelProvider.isLabelProperty(element, property);
     }
 
     @Override
@@ -98,9 +99,7 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
         if (element instanceof IFile) {
             return this.getFileStyledText(element);
         } else if (element instanceof IResource) {
-            IResource resource = (IResource) element;
-
-            return new StyledString(resource.getName());
+            return this.workbenchlabelProvider.getStyledText(element);
         } else if (element instanceof LineResult) {
             return this.getLineStyledText(element);
         }
@@ -162,5 +161,16 @@ final class SearchResultLabelProvider extends LabelProvider implements IStyledLa
         }
 
         return string;
+    }
+
+    private final class MyWorkbenchLabelProvider extends DecoratingStyledCellLabelProvider {
+        private MyWorkbenchLabelProvider() {
+            super(new WorkbenchLabelProvider(), PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator(), null);
+        }
+
+        @Override
+        public StyledString getStyledText(Object element) {
+            return super.getStyledText(element);
+        }
     }
 }
