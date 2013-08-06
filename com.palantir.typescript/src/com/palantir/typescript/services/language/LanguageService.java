@@ -104,6 +104,14 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
+    public List<String> getEmitOutput(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getEmitOutput", fileName);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, String.class);
+        return this.bridge.call(request, resultType);
+    }
+
     public List<TextEdit> getFormattingEditsForRange(String fileName, int minChar, int limChar, FormatCodeOptions options) {
         checkNotNull(fileName);
         checkArgument(minChar >= 0);
@@ -190,6 +198,14 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "setFileOpen", fileName, open);
         this.bridge.call(request, Void.class);
+    }
+
+    public void setCompilationSettings(CompilationSettings compilationSettings) {
+        checkNotNull(compilationSettings);
+
+        Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
+        this.bridge.call(request, Void.class);
+
     }
 
     public void updateFileContents(String fileName, String contents) {

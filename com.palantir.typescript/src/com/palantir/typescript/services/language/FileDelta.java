@@ -46,6 +46,14 @@ public final class FileDelta {
         this.fileName = fileName;
     }
 
+    public Delta getDelta() {
+        return this.delta;
+    }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)

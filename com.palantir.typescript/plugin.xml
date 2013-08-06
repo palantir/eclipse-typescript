@@ -17,6 +17,14 @@
 -->
 <plugin>
    <extension
+      point = "org.eclipse.ui.preferencePages">
+      <page id="com.palantir.typescript.PreferencePage"
+            class="com.palantir.typescript.PreferencePageCreator"
+            name="TypeScript Compiler">
+       </page>
+   </extension>
+
+   <extension
          point="org.eclipse.compare.contentMergeViewers">
       <viewer
             id="com.palantir.typescript.mergeViewer"

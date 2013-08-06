@@ -91,6 +91,10 @@ module Bridge {
             this.languageServiceHost.updateFiles(deltas);
         }
 
+        public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
+            this.languageServiceHost.setCompilationSettings(compilationSettings);
+        }
+
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
@@ -121,6 +125,13 @@ module Bridge {
 
         public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
             return this.languageService.getDefinitionAtPosition(fileName, position);
+        }
+
+        public getEmitOutput(fileName: string): string[] {
+            return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFileName) {
+                IO.writeFile(outputFileName.name, outputFileName.text, outputFileName.writeByteOrderMark);
+                return outputFileName.name;
+            });
         }
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions):

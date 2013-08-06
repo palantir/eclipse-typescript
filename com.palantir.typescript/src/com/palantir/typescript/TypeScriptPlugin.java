@@ -16,9 +16,13 @@
 
 package com.palantir.typescript;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import com.palantir.typescript.services.language.LanguageVersion;
+import com.palantir.typescript.services.language.ModuleGenTarget;
 
 /**
  * The TypeScript plug-in for the Eclipse platform.
@@ -28,6 +32,7 @@ import org.osgi.framework.BundleContext;
 public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     private static TypeScriptPlugin PLUGIN;
+    public static final String ID = "com.palantir.typescript";
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -59,6 +64,16 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
      * @return the image descriptor
      */
     public static ImageDescriptor getImageDescriptor(String path) {
-        return imageDescriptorFromPlugin("com.palantir.typescript", path);
+        return imageDescriptorFromPlugin(TypeScriptPlugin.ID, path);
+    }
+
+    @Override
+    protected void initializeDefaultPluginPreferences() {
+        IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
+        store.setDefault(IPreferenceConstants.NO_LIB, false);
+        store.setDefault(IPreferenceConstants.CODE_GEN_TARGET, LanguageVersion.ECMASCRIPT5.toString());
+        store.setDefault(IPreferenceConstants.MODULE_GEN_TARGET, ModuleGenTarget.SYNCHRONOUS.toString());
+        store.setDefault(IPreferenceConstants.MAP_SOURCE_FILES, false);
+        store.setDefault(IPreferenceConstants.REMOVE_COMMENTS, true);
     }
 }

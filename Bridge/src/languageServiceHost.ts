@@ -92,6 +92,10 @@ module Bridge {
             return this.compilationSettings;
         }
 
+        public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
+            this.compilationSettings = compilationSettings;
+        }
+
         public getScriptFileNames(): string[] {
             return this.fileInfos.keys();
         }
