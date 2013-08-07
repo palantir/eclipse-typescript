@@ -26,9 +26,13 @@ An Eclipse plug-in for developing in the TypeScript language.
 
 ## Roadmap
 * compile-on-save
-* jsdoc assistance
-* search (for a class, interface, etc...)
+* quick outline
+* save actions (format on save)
 * type hierarchy
+
+Waiting on TypeScript support:
+* jsdoc assistance
+* search
 
 ## Additional Information
 * [wiki](https://github.com/palantir/eclipse-typescript/wiki) (contains information about developing the plug-in)
