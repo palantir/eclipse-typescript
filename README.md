@@ -24,9 +24,9 @@ An Eclipse plug-in for developing in the TypeScript language.
 * rename refactor
 * syntax highlighting
 * toggle comments
+* compile-on-save
 
 ## Roadmap
-* compile-on-save (in-progress)
 * incremental builder (next)
 * quick outline
 * save actions (format on save)
