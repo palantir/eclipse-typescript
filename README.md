@@ -25,7 +25,8 @@ An Eclipse plug-in for developing in the TypeScript language.
 * toggle comments
 
 ## Roadmap
-* compile-on-save
+* compile-on-save (in-progress)
+* incremental builder (next)
 * quick outline
 * save actions (format on save)
 * type hierarchy
