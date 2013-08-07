@@ -31,8 +31,9 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
  */
 public final class TypeScriptPlugin extends AbstractUIPlugin {
 
-    private static TypeScriptPlugin PLUGIN;
     public static final String ID = "com.palantir.typescript";
+
+    private static TypeScriptPlugin PLUGIN;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -70,10 +71,11 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     @Override
     protected void initializeDefaultPluginPreferences() {
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
-        store.setDefault(IPreferenceConstants.NO_LIB, false);
-        store.setDefault(IPreferenceConstants.CODE_GEN_TARGET, LanguageVersion.ECMASCRIPT5.toString());
-        store.setDefault(IPreferenceConstants.MODULE_GEN_TARGET, ModuleGenTarget.SYNCHRONOUS.toString());
-        store.setDefault(IPreferenceConstants.MAP_SOURCE_FILES, false);
-        store.setDefault(IPreferenceConstants.REMOVE_COMMENTS, true);
+
+        store.setDefault(IPreferenceConstants.COMPILER_CODE_GEN_TARGET, LanguageVersion.ECMASCRIPT3.toString());
+        store.setDefault(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES, false);
+        store.setDefault(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET, ModuleGenTarget.SYNCHRONOUS.toString());
+        store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
+        store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
     }
 }

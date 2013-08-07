@@ -83,11 +83,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private CompilationSettings getWorkspaceCompilationSettings() {
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
         return new CompilationSettings(
-            store.getBoolean(IPreferenceConstants.NO_LIB),
-            LanguageVersion.valueOf(store.getString(IPreferenceConstants.CODE_GEN_TARGET)),
-            ModuleGenTarget.valueOf(store.getString(IPreferenceConstants.MODULE_GEN_TARGET)),
-            store.getBoolean(IPreferenceConstants.MAP_SOURCE_FILES),
-            store.getBoolean(IPreferenceConstants.REMOVE_COMMENTS));
+            store.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
+            LanguageVersion.valueOf(store.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),
+            ModuleGenTarget.valueOf(store.getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)),
+            store.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES),
+            store.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
     }
 
     private void incrementalBuild(LanguageService languageService, IProgressMonitor monitor)

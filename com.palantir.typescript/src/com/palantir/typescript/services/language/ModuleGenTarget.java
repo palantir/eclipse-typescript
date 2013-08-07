@@ -26,9 +26,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum ModuleGenTarget {
 
     UNSPECIFIED,
-
     SYNCHRONOUS,
-
     ASYNCHRONOUS;
 
     @JsonValue

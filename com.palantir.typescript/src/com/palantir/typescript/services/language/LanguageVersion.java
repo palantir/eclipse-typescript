@@ -26,7 +26,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum LanguageVersion {
 
     ECMASCRIPT3,
-
     ECMASCRIPT5;
 
     @JsonValue

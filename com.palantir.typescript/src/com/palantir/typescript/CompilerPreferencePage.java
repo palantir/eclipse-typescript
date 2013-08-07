@@ -33,14 +33,13 @@ import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 
 /**
- * Generates the preference page. Currently it is used to set compiler settings but it is expected
- * to be extended.
+ * The compiler preference page.
  *
  * @author tyleradams
  */
-public final class PreferencePageCreator extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public final class CompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    public PreferencePageCreator() {
+    public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
 
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
@@ -48,9 +47,13 @@ public final class PreferencePageCreator extends FieldEditorPreferencePage imple
     }
 
     @Override
+    public void init(IWorkbench workbench) {
+    }
+
+    @Override
     protected void createFieldEditors() {
         this.addField(new BooleanFieldEditor(
-            IPreferenceConstants.NO_LIB,
+            IPreferenceConstants.COMPILER_NO_LIB,
             getResource("no.lib"),
             getFieldEditorParent()));
 
@@ -59,7 +62,7 @@ public final class PreferencePageCreator extends FieldEditorPreferencePage imple
         languageVersionKeys.add(LanguageVersion.ECMASCRIPT5);
 
         this.addField(new ComboFieldEditor(
-            IPreferenceConstants.CODE_GEN_TARGET,
+            IPreferenceConstants.COMPILER_CODE_GEN_TARGET,
             getResource("code.gen.target"),
             this.createComboFieldValues(languageVersionKeys.build()),
             getFieldEditorParent()));
@@ -70,17 +73,17 @@ public final class PreferencePageCreator extends FieldEditorPreferencePage imple
         moduleGenTargetKeys.add(ModuleGenTarget.ASYNCHRONOUS);
 
         this.addField(new ComboFieldEditor(
-            IPreferenceConstants.MODULE_GEN_TARGET,
+            IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
             getResource("module.gen.target"),
             this.createComboFieldValues(moduleGenTargetKeys.build()),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
-            IPreferenceConstants.MAP_SOURCE_FILES,
+            IPreferenceConstants.COMPILER_MAP_SOURCE_FILES,
             getResource("map.source.files"),
             getFieldEditorParent()));
 
-        this.addField(new BooleanFieldEditor(IPreferenceConstants.REMOVE_COMMENTS,
+        this.addField(new BooleanFieldEditor(IPreferenceConstants.COMPILER_REMOVE_COMMENTS,
             getResource("remove.comments"),
             getFieldEditorParent()));
     }
@@ -96,10 +99,6 @@ public final class PreferencePageCreator extends FieldEditorPreferencePage imple
             fieldValues[i][1] = key;
         }
         return fieldValues;
-    }
-
-    @Override
-    public void init(IWorkbench workbench) {
     }
 
     private static String getResource(String key) {

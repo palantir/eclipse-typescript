@@ -22,13 +22,9 @@ package com.palantir.typescript;
  * @author tyleradams
  */
 public interface IPreferenceConstants {
-    String NO_LIB = "No Library";
-
-    String CODE_GEN_TARGET = "Code Generation Target";
-
-    String MODULE_GEN_TARGET = "Module Generation Target";
-
-    String MAP_SOURCE_FILES = "Map Source Files";
-
-    String REMOVE_COMMENTS = "No Comments";
+    String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
+    String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
+    String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
+    String COMPILER_NO_LIB = "compiler.noLib";
+    String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
 }

@@ -16,13 +16,6 @@
   limitations under the License.
 -->
 <plugin>
-   <extension
-      point = "org.eclipse.ui.preferencePages">
-      <page id="com.palantir.typescript.PreferencePage"
-            class="com.palantir.typescript.PreferencePageCreator"
-            name="TypeScript Compiler">
-       </page>
-   </extension>
 
    <extension
          point="org.eclipse.compare.contentMergeViewers">
@@ -266,6 +259,14 @@
             </visibleWhen>
          </command>
       </menuContribution>
+   </extension>
+
+   <extension
+      point = "org.eclipse.ui.preferencePages">
+      <page id="com.palantir.typescript.PreferencePage"
+            class="com.palantir.typescript.CompilerPreferencePage"
+            name="TypeScript">
+       </page>
    </extension>
 
 </plugin>
