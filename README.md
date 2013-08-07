@@ -9,6 +9,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 1. Reboot Eclipse
 
 ### Enabling the Builder
+1. Switch to the Navigator view
 1. Right-click on a project containing TypeScript files
 1. Select Configure->Enable TypeScript Builder
 
@@ -36,4 +37,7 @@ Waiting on TypeScript support:
 * search
 
 ## Additional Information
-* [wiki](https://github.com/palantir/eclipse-typescript/wiki) (contains information about developing the plug-in)
+* Eclipse Kepler (4.3) is currently the only supported version
+    * if this is a problem for your project, please let us know and we'll look into supporting older versions as well
+* Eclipse must be running via Java 6+
+* [Wiki](https://github.com/palantir/eclipse-typescript/wiki) (contains information about developing the plug-in)
