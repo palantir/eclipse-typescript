@@ -18,19 +18,19 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.google.common.base.Ascii;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 
@@ -41,23 +41,29 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
  */
 public final class CompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    private final ImmutableList.Builder<FieldEditor> compilerSettingFieldEditorsBuilder;
+    private final Set<FieldEditor> fields;
 
-    // cannot be made final because they are initialized in createFieldEditors instead of the constructor.
     private BooleanFieldEditor compileOnSaveFieldEditor;
-    private ImmutableList<FieldEditor> compilerSettingFieldEditors;
 
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
 
-        IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
-        this.setPreferenceStore(store);
-        this.compilerSettingFieldEditorsBuilder = ImmutableList.builder();
+        this.fields = Sets.newHashSet();
 
+        this.setPreferenceStore(TypeScriptPlugin.getDefault().getPreferenceStore());
     }
 
     @Override
     public void init(IWorkbench workbench) {
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event) {
+        super.propertyChange(event);
+
+        if (event.getSource().equals(this.compileOnSaveFieldEditor) && event.getProperty().equals(FieldEditor.VALUE)) {
+            synchronizeCompileOnSave();
+        }
     }
 
     @Override
@@ -66,105 +72,85 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,
             getResource("compile.on.save"),
             getFieldEditorParent());
-
         this.addField(this.compileOnSaveFieldEditor);
 
-        this.compilerSettingFieldEditorsBuilder.add(
-            new BooleanFieldEditor(
-                IPreferenceConstants.COMPILER_NO_LIB,
-                getResource("no.lib"),
-                getFieldEditorParent()));
+        this.addField(new ComboFieldEditor(
+            IPreferenceConstants.COMPILER_CODE_GEN_TARGET,
+            getResource("code.gen.target"),
+            this.createComboFieldValues(LanguageVersion.values()),
+            getFieldEditorParent()));
 
-        ImmutableList.Builder<LanguageVersion> languageVersionKeys = ImmutableList.builder();
-        languageVersionKeys.add(LanguageVersion.ECMASCRIPT3);
-        languageVersionKeys.add(LanguageVersion.ECMASCRIPT5);
+        this.addField(new ComboFieldEditor(
+            IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
+            getResource("module.gen.target"),
+            this.createComboFieldValues(ModuleGenTarget.values()),
+            getFieldEditorParent()));
 
-        this.compilerSettingFieldEditorsBuilder.add(
-            new ComboFieldEditor(
-                IPreferenceConstants.COMPILER_CODE_GEN_TARGET,
-                getResource("code.gen.target"),
-                this.createComboFieldValues(languageVersionKeys.build()),
-                getFieldEditorParent())
-            );
+        this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_MAP_SOURCE_FILES,
+            getResource("map.source.files"),
+            getFieldEditorParent()));
 
-        ImmutableList.Builder<ModuleGenTarget> moduleGenTargetKeys = ImmutableList.builder();
-        moduleGenTargetKeys.add(ModuleGenTarget.UNSPECIFIED);
-        moduleGenTargetKeys.add(ModuleGenTarget.SYNCHRONOUS);
-        moduleGenTargetKeys.add(ModuleGenTarget.ASYNCHRONOUS);
+        this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_REMOVE_COMMENTS,
+            getResource("remove.comments"),
+            getFieldEditorParent()));
 
-        this.compilerSettingFieldEditorsBuilder.add(
-            new ComboFieldEditor(
-                IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
-                getResource("module.gen.target"),
-                this.createComboFieldValues(moduleGenTargetKeys.build()),
-                getFieldEditorParent()));
-
-        this.compilerSettingFieldEditorsBuilder.add(
-            new BooleanFieldEditor(
-                IPreferenceConstants.COMPILER_MAP_SOURCE_FILES,
-                getResource("map.source.files"),
-                getFieldEditorParent()));
-
-        this.compilerSettingFieldEditorsBuilder.add(
-            new BooleanFieldEditor(
-                IPreferenceConstants.COMPILER_REMOVE_COMMENTS,
-                getResource("remove.comments"),
-                getFieldEditorParent()));
-
-        this.compilerSettingFieldEditors = this.compilerSettingFieldEditorsBuilder.build();
-
-        for (FieldEditor fieldEditor : this.compilerSettingFieldEditors) {
-            this.addField(fieldEditor);
-        }
-
-        boolean compileOnSaveValue = this.getPreferenceStore().getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE);
-
-        this.setFieldsEnabled(compileOnSaveValue);
+        this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_NO_LIB,
+            getResource("no.lib"),
+            getFieldEditorParent()));
     }
 
-    private String[][] createComboFieldValues(List<? extends Enum> keys) {
-        checkNotNull(keys);
+    @Override
+    protected void addField(FieldEditor field) {
+        super.addField(field);
 
-        String[][] fieldValues = new String[keys.size()][2];
-
-        for (int i = 0; i < keys.size(); i++) {
-            String key = keys.get(i).name();
-            fieldValues[i][0] = getResource(Ascii.toLowerCase(key).replace("_", "."));
-            fieldValues[i][1] = key;
-        }
-        return fieldValues;
+        // keep track of all of the fields
+        this.fields.add(field);
     }
 
-    private static String getResource(String key) {
-        checkNotNull(key);
+    @Override
+    protected void initialize() {
+        super.initialize();
 
-        return Resources.BUNDLE.getString("preferences.compiler." + key);
-    }
-
-    private void setFieldsEnabled(boolean enabled) {
-        for (FieldEditor fieldEditor : this.compilerSettingFieldEditors) {
-            fieldEditor.setEnabled(enabled, getFieldEditorParent());
-        }
+        this.synchronizeCompileOnSave();
     }
 
     @Override
     protected void performDefaults() {
         super.performDefaults();
 
-        boolean enabled = this.compileOnSaveFieldEditor.getBooleanValue();
-
-        this.setFieldsEnabled(enabled);
+        this.synchronizeCompileOnSave();
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent event) {
-        checkNotNull(event);
+    private String[][] createComboFieldValues(Enum[] enums) {
+        checkNotNull(enums);
 
-        super.propertyChange(event);
+        String[][] fieldValues = new String[enums.length][2];
+        for (int i = 0; i < enums.length; i++) {
+            String key = enums[i].name();
+            String resourceKey = Ascii.toLowerCase(key).replace("_", ".");
 
-        if (event.getSource().equals(this.compileOnSaveFieldEditor)) {
-            boolean compileOnSaveFlag = (Boolean) event.getNewValue();
-            setFieldsEnabled(compileOnSaveFlag);
+            fieldValues[i][0] = getResource(resourceKey);
+            fieldValues[i][1] = key;
         }
+
+        return fieldValues;
+    }
+
+    private void synchronizeCompileOnSave() {
+        boolean enabled = this.compileOnSaveFieldEditor.getBooleanValue();
+        Composite fieldEditorParent = this.getFieldEditorParent();
+
+        for (FieldEditor field : this.fields) {
+            if (!field.equals(this.compileOnSaveFieldEditor)) {
+                field.setEnabled(enabled, fieldEditorParent);
+            }
+        }
+    }
+
+    private static String getResource(String key) {
+        return Resources.BUNDLE.getString("preferences.compiler." + key);
     }
 }
