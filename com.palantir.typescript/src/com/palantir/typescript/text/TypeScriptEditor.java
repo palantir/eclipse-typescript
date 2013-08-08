@@ -25,6 +25,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -42,7 +43,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.TextEditor;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
@@ -70,7 +70,7 @@ public final class TypeScriptEditor extends TextEditor {
         new CacheLoader<IProject, LanguageService>() {
             @Override
             public LanguageService load(IProject project) throws Exception {
-                return new LanguageService(project, true);
+                return new LanguageService(project, IResourceChangeEvent.POST_CHANGE);
             }
         });
 

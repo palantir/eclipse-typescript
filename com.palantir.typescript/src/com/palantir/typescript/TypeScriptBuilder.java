@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -37,6 +38,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.texteditor.MarkerUtilities;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.CompilationSettings;
@@ -53,6 +57,14 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
  */
 public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
+    private static final LoadingCache<IProject, LanguageService> LANGUAGE_SERVICE_CACHE = CacheBuilder.newBuilder().build(
+        new CacheLoader<IProject, LanguageService>() {
+            @Override
+            public LanguageService load(IProject project) throws Exception {
+                return new LanguageService(project, IResourceChangeEvent.PRE_BUILD);
+            }
+        });
+
     public static final String ID = "com.palantir.typescript.typeScriptBuilder";
 
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
@@ -62,27 +74,22 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         checkNotNull(monitor);
 
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
-        LanguageService languageService = new LanguageService(this.getProject(), true);
+        LanguageService languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(this.getProject());
 
-        try {
-            if (store.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-                languageService.setCompilationSettings(this.getWorkspaceCompilationSettings(store));
+        if (store.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            languageService.setCompilationSettings(this.getWorkspaceCompilationSettings(store));
 
-                switch (kind) {
-                    case IncrementalProjectBuilder.AUTO_BUILD:
-                    case IncrementalProjectBuilder.INCREMENTAL_BUILD:
-                        this.incrementalBuild(languageService, monitor);
-                        break;
-                    case IncrementalProjectBuilder.FULL_BUILD:
-                        this.fullBuild(languageService, monitor);
-                        break;
-                }
-            } else {
-                this.updateMarkers(languageService);
+            switch (kind) {
+                case IncrementalProjectBuilder.AUTO_BUILD:
+                case IncrementalProjectBuilder.INCREMENTAL_BUILD:
+                    this.incrementalBuild(languageService, monitor);
+                    break;
+                case IncrementalProjectBuilder.FULL_BUILD:
+                    this.fullBuild(languageService, monitor);
+                    break;
             }
-
-        } finally {
-            languageService.dispose();
+        } else {
+            this.updateMarkers(languageService);
         }
         return null;
     }

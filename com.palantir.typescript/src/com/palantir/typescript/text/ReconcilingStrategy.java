@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.Position;
@@ -97,7 +98,7 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
             IResource resource = ResourceUtil.getResource(editorInput);
             IProject project = resource.getProject();
 
-            this.languageService = new LanguageService(project, true);
+            this.languageService = new LanguageService(project, IResourceChangeEvent.POST_CHANGE);
         }
 
         return this.languageService;

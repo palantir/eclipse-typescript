@@ -58,7 +58,12 @@ public final class LanguageService {
     private final IProject project;
     private final MyResourceChangeListener resourceChangeListener;
 
-    public LanguageService(IProject project, boolean listenToResourceChanges) {
+    public LanguageService(IProject project, int resourceChangeEventID) {
+        this(project);
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, resourceChangeEventID);
+    }
+
+    public LanguageService(IProject project) {
         this.bridge = new Bridge();
         this.project = project;
         this.resourceChangeListener = new MyResourceChangeListener();
@@ -66,9 +71,6 @@ public final class LanguageService {
         this.addDefaultLibrary();
         this.addProjectFiles();
 
-        if (listenToResourceChanges) {
-            ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
-        }
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
