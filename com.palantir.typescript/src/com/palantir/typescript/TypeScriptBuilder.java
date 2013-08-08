@@ -241,6 +241,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
+        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
         for (FileDelta fileDelta : this.getAllTypeScriptFiles(FileDelta.Delta.REMOVED)) {
             this.removeDerivedFiles(fileDelta.getFileName(), monitor);
         }
