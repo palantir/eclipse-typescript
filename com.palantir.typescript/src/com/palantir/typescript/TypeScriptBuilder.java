@@ -60,12 +60,15 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private LanguageService languageService;
 
     @Override
+    protected void startupOnInitialize() {
+        super.startupOnInitialize();
+
+        this.languageService = new LanguageService(this.getProject());
+    }
+
+    @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
-
-        if (this.languageService == null) {
-            this.languageService = new LanguageService(this.getProject());
-        }
 
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
 
@@ -84,6 +87,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         } else {
             this.updateMarkers();
         }
+
         return null;
     }
 
