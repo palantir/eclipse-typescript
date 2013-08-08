@@ -61,27 +61,33 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
+        IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
         LanguageService languageService = new LanguageService(this.getProject(), true);
-        try {
-            languageService.setCompilationSettings(this.getWorkspaceCompilationSettings());
 
-            switch (kind) {
-                case IncrementalProjectBuilder.AUTO_BUILD:
-                case IncrementalProjectBuilder.INCREMENTAL_BUILD:
-                    this.incrementalBuild(languageService, monitor);
-                    break;
-                case IncrementalProjectBuilder.FULL_BUILD:
-                    this.fullBuild(languageService, monitor);
-                    break;
+        try {
+            if (store.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+                languageService.setCompilationSettings(this.getWorkspaceCompilationSettings(store));
+
+                switch (kind) {
+                    case IncrementalProjectBuilder.AUTO_BUILD:
+                    case IncrementalProjectBuilder.INCREMENTAL_BUILD:
+                        this.incrementalBuild(languageService, monitor);
+                        break;
+                    case IncrementalProjectBuilder.FULL_BUILD:
+                        this.fullBuild(languageService, monitor);
+                        break;
+                }
+            } else {
+                this.updateMarkers(languageService);
             }
+
         } finally {
             languageService.dispose();
         }
         return null;
     }
 
-    private CompilationSettings getWorkspaceCompilationSettings() {
-        IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
+    private CompilationSettings getWorkspaceCompilationSettings(IPreferenceStore store) {
         return new CompilationSettings(
             store.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
             LanguageVersion.valueOf(store.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),

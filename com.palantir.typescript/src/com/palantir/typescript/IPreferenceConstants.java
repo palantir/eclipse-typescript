@@ -22,6 +22,8 @@ package com.palantir.typescript;
  * @author tyleradams
  */
 public interface IPreferenceConstants {
+    String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
+
     String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
     String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";

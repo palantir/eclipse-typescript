@@ -53,6 +53,11 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
     @Override
     protected void createFieldEditors() {
         this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,
+            getResource("compile.on.save"),
+            getFieldEditorParent()));
+
+        this.addField(new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
             getResource("no.lib"),
             getFieldEditorParent()));
