@@ -46,7 +46,7 @@ import com.palantir.typescript.services.Request;
 /**
  * The language service.
  * <p>
- * This service provides autocompletion, formatting, compiling, etc...
+ * This service provides code completion, formatting, compiling, etc...
  *
  * @author tyleradams
  */
@@ -58,11 +58,6 @@ public final class LanguageService {
     private final IProject project;
     private final MyResourceChangeListener resourceChangeListener;
 
-    public LanguageService(IProject project, int resourceChangeEventID) {
-        this(project);
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, resourceChangeEventID);
-    }
-
     public LanguageService(IProject project) {
         this.bridge = new Bridge();
         this.project = project;
@@ -71,6 +66,7 @@ public final class LanguageService {
         this.addDefaultLibrary();
         this.addProjectFiles();
 
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {

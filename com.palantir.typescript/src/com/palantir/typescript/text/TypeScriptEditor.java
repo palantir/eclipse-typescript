@@ -25,7 +25,6 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -70,7 +69,7 @@ public final class TypeScriptEditor extends TextEditor {
         new CacheLoader<IProject, LanguageService>() {
             @Override
             public LanguageService load(IProject project) throws Exception {
-                return new LanguageService(project, IResourceChangeEvent.POST_CHANGE);
+                return new LanguageService(project);
             }
         });
 
@@ -111,7 +110,7 @@ public final class TypeScriptEditor extends TextEditor {
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         IPathEditorInput editorInput = (IPathEditorInput) input;
 
-        // create the langauge service
+        // create the language service
         IResource resource = ResourceUtil.getResource(input);
         IProject project = resource.getProject();
         this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
