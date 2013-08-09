@@ -39,12 +39,9 @@ import org.eclipse.ui.texteditor.MarkerUtilities;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.palantir.typescript.services.language.CompilationSettings;
 import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
-import com.palantir.typescript.services.language.LanguageVersion;
-import com.palantir.typescript.services.language.ModuleGenTarget;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -70,11 +67,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
-
-        if (store.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            this.languageService.setCompilationSettings(this.getWorkspaceCompilationSettings(store));
-
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
             switch (kind) {
                 case IncrementalProjectBuilder.AUTO_BUILD:
                 case IncrementalProjectBuilder.INCREMENTAL_BUILD:
@@ -89,15 +83,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
 
         return null;
-    }
-
-    private CompilationSettings getWorkspaceCompilationSettings(IPreferenceStore store) {
-        return new CompilationSettings(
-            store.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
-            LanguageVersion.valueOf(store.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),
-            ModuleGenTarget.valueOf(store.getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)),
-            store.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES),
-            store.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
     }
 
     private void incrementalBuild(IProgressMonitor monitor)

@@ -31,6 +31,9 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -39,7 +42,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.ResourceDeltaVisitor;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
@@ -56,17 +61,21 @@ public final class LanguageService {
 
     private final Bridge bridge;
     private final IProject project;
+    private final MyPropertyChangeListener preferencesListener;
     private final MyResourceChangeListener resourceChangeListener;
 
     public LanguageService(IProject project) {
         this.bridge = new Bridge();
         this.project = project;
+        this.preferencesListener = new MyPropertyChangeListener();
         this.resourceChangeListener = new MyResourceChangeListener();
 
         this.addDefaultLibrary();
         this.addProjectFiles();
+        this.updateCompilationSettings();
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
+        TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -198,14 +207,6 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    public void setCompilationSettings(CompilationSettings compilationSettings) {
-        checkNotNull(compilationSettings);
-
-        Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
-        this.bridge.call(request, Void.class);
-
-    }
-
     public void updateFileContents(String fileName, String contents) {
         checkNotNull(fileName);
         checkNotNull(contents);
@@ -253,6 +254,30 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "addFiles", fileNames.build());
         this.bridge.call(request, Void.class);
+    }
+
+    private void updateCompilationSettings() {
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        CompilationSettings compilationSettings = new CompilationSettings(
+            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
+            LanguageVersion.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),
+            ModuleGenTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)),
+            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES),
+            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
+        this.bridge.call(request, Void.class);
+    }
+
+    private final class MyPropertyChangeListener implements IPropertyChangeListener {
+        @Override
+        public void propertyChange(PropertyChangeEvent event) {
+            String property = event.getProperty();
+
+            if (IPreferenceConstants.COMPILER_PREFERENCES.contains(property)) {
+                updateCompilationSettings();
+            }
+        }
     }
 
     private final class MyResourceChangeListener implements IResourceChangeListener {

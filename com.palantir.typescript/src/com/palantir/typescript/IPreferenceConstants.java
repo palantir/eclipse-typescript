@@ -16,6 +16,8 @@
 
 package com.palantir.typescript;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * The preference constants used for handling preferences.
  *
@@ -28,4 +30,12 @@ public interface IPreferenceConstants {
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
     String COMPILER_NO_LIB = "compiler.noLib";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
+
+    ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
+        COMPILER_CODE_GEN_TARGET,
+        COMPILER_COMPILE_ON_SAVE,
+        COMPILER_MAP_SOURCE_FILES,
+        COMPILER_MODULE_GEN_TARGET,
+        COMPILER_NO_LIB,
+        COMPILER_REMOVE_COMMENTS);
 }
