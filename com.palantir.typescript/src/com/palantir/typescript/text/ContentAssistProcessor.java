@@ -26,7 +26,6 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
 import org.eclipse.jface.text.contentassist.ContentAssistEvent;
-import org.eclipse.jface.text.contentassist.ContextInformation;
 import org.eclipse.jface.text.contentassist.ContextInformationValidator;
 import org.eclipse.jface.text.contentassist.ICompletionListener;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
@@ -41,10 +40,7 @@ import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
 import com.palantir.typescript.services.language.CompletionEntryDetails;
 import com.palantir.typescript.services.language.CompletionInfo;
-import com.palantir.typescript.services.language.FormalParameterInfo;
-import com.palantir.typescript.services.language.FormalSignatureItemInfo;
 import com.palantir.typescript.services.language.ScriptElementKind;
-import com.palantir.typescript.services.language.SignatureInfo;
 
 /**
  * This class deals with making auto completions.
@@ -131,18 +127,6 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
     @Override
     public IContextInformation[] computeContextInformation(ITextViewer viewer, int offset) {
-        String fileName = this.editor.getFileName();
-        SignatureInfo signature = this.editor.getLanguageService().getSignatureAtPosition(fileName, offset);
-
-        if (signature != null) {
-            FormalSignatureItemInfo formalSignature = signature.getFormal().get(signature.getActiveFormal());
-            int currentParameter = signature.getActual().getCurrentParameter();
-            FormalParameterInfo parameter = formalSignature.getParameters().get(currentParameter);
-            ContextInformation contextInformation = new ContextInformation(null, parameter.getName());
-
-            return new IContextInformation[] { contextInformation };
-        }
-
         return null;
     }
 
@@ -153,7 +137,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
     @Override
     public char[] getContextInformationAutoActivationCharacters() {
-        return new char[] { '(', ',', ' ' };
+        return null;
     }
 
     @Override
