@@ -289,15 +289,15 @@ public final class PresentationReconciler implements IPresentationReconciler {
     private static ImmutableMap<TokenClass, TextAttribute> createClassificationTextAttributes() {
         ImmutableMap.Builder<TokenClass, TextAttribute> classAttributes = ImmutableMap.builder();
 
-        classAttributes.put(TokenClass.COMMENT, new TextAttribute(Colors.getColor(ColorConstants.COMMENT)));
-        classAttributes.put(TokenClass.IDENTIFIER, new TextAttribute(Colors.getColor(ColorConstants.IDENTIFIER)));
-        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(Colors.getColor(ColorConstants.KEYWORD), null, SWT.BOLD));
-        classAttributes.put(TokenClass.NUMBER_LITERAL, new TextAttribute(Colors.getColor(ColorConstants.NUMBER_LITERAL)));
-        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(Colors.getColor(ColorConstants.OPERATOR)));
-        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(Colors.getColor(ColorConstants.PUNCTUATION)));
-        classAttributes.put(TokenClass.REG_EXP_LITERAL, new TextAttribute(Colors.getColor(ColorConstants.REG_EXP_LITERAL)));
-        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(Colors.getColor(ColorConstants.STRING_LITERAL)));
-        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(Colors.getColor(ColorConstants.WHITESPACE)));
+        classAttributes.put(TokenClass.COMMENT, new TextAttribute(Colors.getColor(Colors.COMMENT)));
+        classAttributes.put(TokenClass.IDENTIFIER, new TextAttribute(Colors.getColor(Colors.IDENTIFIER)));
+        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(Colors.getColor(Colors.KEYWORD), null, SWT.BOLD));
+        classAttributes.put(TokenClass.NUMBER_LITERAL, new TextAttribute(Colors.getColor(Colors.NUMBER_LITERAL)));
+        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(Colors.getColor(Colors.OPERATOR)));
+        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(Colors.getColor(Colors.PUNCTUATION)));
+        classAttributes.put(TokenClass.REG_EXP_LITERAL, new TextAttribute(Colors.getColor(Colors.REG_EXP_LITERAL)));
+        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(Colors.getColor(Colors.STRING_LITERAL)));
+        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(Colors.getColor(Colors.WHITESPACE)));
 
         return classAttributes.build();
     }

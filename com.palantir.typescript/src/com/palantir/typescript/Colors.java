@@ -33,6 +33,16 @@ import com.google.common.cache.LoadingCache;
  */
 public final class Colors {
 
+    public static final RGB COMMENT = new RGB(63, 127, 95);
+    public static final RGB IDENTIFIER = new RGB(0, 0, 0);
+    public static final RGB KEYWORD = new RGB(127, 0, 85);
+    public static final RGB NUMBER_LITERAL = new RGB(0, 0, 0);
+    public static final RGB OPERATOR = new RGB(0, 0, 0);
+    public static final RGB PUNCTUATION = new RGB(0, 0, 0);
+    public static final RGB REG_EXP_LITERAL = new RGB(219, 0, 0);
+    public static final RGB STRING_LITERAL = new RGB(42, 0, 255);
+    public static final RGB WHITESPACE = new RGB(0, 0, 0);
+
     private static final LoadingCache<RGB, Color> COLORS = CacheBuilder.newBuilder().build(new CacheLoader<RGB, Color>() {
         @Override
         public Color load(RGB rgb) throws Exception {
