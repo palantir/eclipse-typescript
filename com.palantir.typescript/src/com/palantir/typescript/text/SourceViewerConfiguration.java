@@ -103,7 +103,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     public IReconciler getReconciler(ISourceViewer sourceViewer) {
         ReconcilingStrategy strategy = new ReconcilingStrategy(this.editor, sourceViewer);
 
-        return new MonoReconciler(strategy, false);
+        return new MonoReconciler(strategy, true);
     }
 
     @Override

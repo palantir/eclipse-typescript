@@ -48,8 +48,8 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
 
     private static final String ANNOTATION_TYPE = "com.palantir.typescript.diagnostic";
 
+    private LanguageService cachedLanguageService;
     private IDocument document;
-    private LanguageService languageService;
 
     private final TypeScriptEditor editor;
     private final ISourceViewer sourceViewer;
@@ -69,20 +69,38 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
 
     @Override
     public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
-        throw new UnsupportedOperationException();
+        LanguageService languageService = this.getLanguageService();
+        String fileName = this.editor.getFileName();
+
+        // edit the file
+        int offset = dirtyRegion.getOffset();
+        int length = dirtyRegion.getLength();
+        String text = dirtyRegion.getText();
+        if (dirtyRegion.getType().equals(DirtyRegion.INSERT)) {
+            length = 0;
+        } else { // replace
+            text = "";
+        }
+        languageService.editFile(fileName, offset, length, text);
+
+        this.reconcile(languageService, fileName);
     }
 
     @Override
     public void reconcile(IRegion partition) {
-        LanguageService localLanguageService = this.getLanguageService();
+        LanguageService languageService = this.getLanguageService();
+        String fileName = this.editor.getFileName();
 
         // update the file contents
-        String fileName = this.editor.getFileName();
         String contents = this.document.get();
-        localLanguageService.updateFileContents(fileName, contents);
+        languageService.updateFileContents(fileName, contents);
 
-        // update the annotations for the diagnostics
-        final List<Diagnostic> diagnostics = localLanguageService.getDiagnostics(fileName);
+        this.reconcile(languageService, fileName);
+    }
+
+    private void reconcile(LanguageService languageService, String fileName) {
+        final List<Diagnostic> diagnostics = languageService.getDiagnostics(fileName);
+
         Display.getDefault().asyncExec(new Runnable() {
             @Override
             public void run() {
@@ -92,15 +110,15 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
     }
 
     private LanguageService getLanguageService() {
-        if (this.languageService == null) {
+        if (this.cachedLanguageService == null) {
             IPathEditorInput editorInput = (IPathEditorInput) this.editor.getEditorInput();
             IResource resource = ResourceUtil.getResource(editorInput);
             IProject project = resource.getProject();
 
-            this.languageService = new LanguageService(project);
+            this.cachedLanguageService = new LanguageService(project);
         }
 
-        return this.languageService;
+        return this.cachedLanguageService;
     }
 
     private void removeAnnotations(IAnnotationModel annotationModel) {
