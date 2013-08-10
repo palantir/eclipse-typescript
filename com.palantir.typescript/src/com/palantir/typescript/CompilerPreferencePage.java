@@ -18,6 +18,15 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
@@ -38,6 +47,8 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
  */
 public final class CompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
+    private boolean compilerPreferencesModified;
+
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor sourceMapField;
     private BooleanFieldEditor removeCommentsField;
@@ -53,11 +64,63 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
     }
 
     @Override
+    public boolean performOk() {
+        final boolean process;
+
+        // offer to rebuild the workspace if the compiler preferences were modified
+        if (this.compilerPreferencesModified) {
+            String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
+            String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
+            String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
+            MessageDialog dialog = new MessageDialog(getShell(), title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
+            int result = dialog.open();
+
+            if (result == 1) { // cancel
+                process = false;
+            } else {
+                // yes/no
+                process = super.performOk();
+
+                // rebuild the workspace
+                if (result == 2) {
+                    String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
+                    Job job = new Job(name) {
+                        @Override
+                        protected IStatus run(IProgressMonitor monitor) {
+                            try {
+                                ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+                            } catch (CoreException e) {
+                                return e.getStatus();
+                            }
+
+                            return Status.OK_STATUS;
+                        }
+                    };
+                    job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
+                    job.schedule();
+                }
+            }
+
+            this.compilerPreferencesModified = false;
+        } else {
+            process = super.performOk();
+        }
+
+        return process;
+    }
+
+    @Override
     public void propertyChange(PropertyChangeEvent event) {
         super.propertyChange(event);
 
-        if (event.getSource().equals(this.compileOnSaveField) && event.getProperty().equals(FieldEditor.VALUE)) {
-            synchronizeCompileOnSave();
+        Object source = event.getSource();
+
+        if (source.equals(this.compileOnSaveField) && event.getProperty().equals(FieldEditor.VALUE)) {
+            this.synchronizeCompileOnSave();
+        }
+
+        if (source.equals(this.compileOnSaveField) || source.equals(this.removeCommentsField) || source.equals(this.sourceMapField)) {
+            this.compilerPreferencesModified = true;
         }
     }
 
