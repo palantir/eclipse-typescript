@@ -42,10 +42,14 @@ module Bridge {
 
         public addFiles(fileNames: string[]) {
             fileNames.forEach((fileName) => {
-                var fileInformation = IO.readFile(fileName);
-                var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
+                try {
+                    var fileInformation = IO.readFile(fileName);
+                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
-                this.fileInfos.set(fileName, fileInfo);
+                    this.fileInfos.set(fileName, fileInfo);
+                } catch (e) {
+                    // ignore failures (they are likely due to the workspace being out-of-sync)
+                }
             });
         }
 
