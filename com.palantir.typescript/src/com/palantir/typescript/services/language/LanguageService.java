@@ -148,6 +148,15 @@ public final class LanguageService {
         return this.bridge.call(request, SpanInfo.class);
     }
 
+    public List<ReferenceEntry> getOccurrencesAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getOccurrencesAtPosition", fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public List<ReferenceEntry> getReferencesAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
@@ -217,6 +226,7 @@ public final class LanguageService {
 
     public void dispose() {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
+        TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
         this.bridge.dispose();
     }
 

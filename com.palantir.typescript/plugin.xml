@@ -172,10 +172,41 @@
    <extension
          point="org.eclipse.ui.editors.annotationTypes">
       <type
-            markerType="com.palantir.typescript.typeScriptProblem"
             name="com.palantir.typescript.diagnostic"
+            markerType="com.palantir.typescript.typeScriptProblem"
             super="org.eclipse.ui.workbench.texteditor.error">
       </type>
+      <type
+            name="com.palantir.typescript.occurrences">
+      </type>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.editors.markerAnnotationSpecification">
+      <specification
+            annotationType="com.palantir.typescript.occurrences"
+            colorPreferenceKey="occurrencesColor"
+            colorPreferenceValue="212,212,212"
+            contributesToHeader="false"
+            highlightPreferenceKey="occurrencesHighlight"
+            highlightPreferenceValue="true"
+            isGoToNextNavigationTargetKey="occurrencesIsGoToNextNavigationTarget"
+            isGoToNextNavigationTarget="false"
+            isGoToPreviousNavigationTargetKey="occurrencesIsGoToPreviousNavigationTarget"
+            isGoToPreviousNavigationTarget="false"
+            label="Occurrences (TypeScript)"
+            overviewRulerPreferenceKey="occurrencesOverviewRuler"
+            overviewRulerPreferenceValue="true"
+            presentationLayer="4"
+            showInNextPrevDropdownToolbarActionKey="occurrencesShowInNextPrevDropdownToolbarAction"
+            showInNextPrevDropdownToolbarAction="true"
+            textPreferenceKey="occurrencesText"
+            textPreferenceValue="false"
+            textStylePreferenceKey="occurrencesTextStyle"
+            textStylePreferenceValue="NONE"
+            verticalRulerPreferenceKey="occurrencesVerticalRuler"
+            verticalRulerPreferenceValue="false">
+      </specification>
    </extension>
 
    <extension

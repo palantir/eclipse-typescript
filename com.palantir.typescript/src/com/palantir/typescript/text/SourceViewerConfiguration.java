@@ -30,7 +30,6 @@ import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
-import org.eclipse.jface.text.reconciler.MonoReconciler;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -101,9 +100,7 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
 
     @Override
     public IReconciler getReconciler(ISourceViewer sourceViewer) {
-        ReconcilingStrategy strategy = new ReconcilingStrategy(this.editor, sourceViewer);
-
-        return new MonoReconciler(strategy, true);
+        return new Reconciler(this.editor, sourceViewer);
     }
 
     @Override

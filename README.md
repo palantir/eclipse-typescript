@@ -20,6 +20,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 * find references
 * format code
 * highlight matching brace
+* mark occurrences
 * open definition
 * outline view
 * rename refactor
