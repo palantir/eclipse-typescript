@@ -18,8 +18,8 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -29,13 +29,13 @@ import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.reconciler.DirtyRegion;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.text.source.IAnnotationModel;
+import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.ide.ResourceUtil;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.LanguageService;
 
@@ -50,6 +50,7 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
 
     private LanguageService cachedLanguageService;
     private IDocument document;
+    private Annotation[] lastAnnotations;
 
     private final TypeScriptEditor editor;
     private final ISourceViewer sourceViewer;
@@ -121,35 +122,23 @@ public final class ReconcilingStrategy implements IReconcilingStrategy {
         return this.cachedLanguageService;
     }
 
-    private void removeAnnotations(IAnnotationModel annotationModel) {
-        List<Annotation> annotationsToRemove = Lists.newArrayList();
-
-        Iterator<Annotation> it = annotationModel.getAnnotationIterator();
-        while (it.hasNext()) {
-            Annotation annotation = it.next();
-
-            if (annotation.getType().equals(ANNOTATION_TYPE)) {
-                annotationsToRemove.add(annotation);
-            }
-        }
-
-        for (Annotation annotation : annotationsToRemove) {
-            annotationModel.removeAnnotation(annotation);
-        }
-    }
-
     private void updateAnnotations(List<Diagnostic> diagnostics) {
-        IAnnotationModel annotationModel = this.sourceViewer.getAnnotationModel();
+        IAnnotationModelExtension annotationModel = (IAnnotationModelExtension) this.sourceViewer.getAnnotationModel();
 
         if (annotationModel != null) {
-            removeAnnotations(annotationModel);
+            Map<Annotation, Position> annotationsToAdd = Maps.newHashMap();
 
             for (Diagnostic diagnostic : diagnostics) {
                 Annotation annotation = new Annotation(ANNOTATION_TYPE, false, diagnostic.getText());
                 Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
 
-                annotationModel.addAnnotation(annotation, position);
+                annotationsToAdd.put(annotation, position);
             }
+
+            annotationModel.replaceAnnotations(this.lastAnnotations, annotationsToAdd);
+
+            // keep the annotations around in case they will be replaced later
+            this.lastAnnotations = annotationsToAdd.keySet().toArray(new Annotation[diagnostics.size()]);
         }
     }
 }
