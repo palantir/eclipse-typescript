@@ -20,11 +20,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -42,15 +44,19 @@ import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
+import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageService;
@@ -75,14 +81,21 @@ public final class TypeScriptEditor extends TextEditor {
             }
         });
 
-    private static final String MATCHING_BRACKETS = "matchingBrackets";
-    private static final String MATCHING_BRACKETS_COLOR = "matchingBracketsColor";
-
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
 
-    public TypeScriptEditor() {
-        this.setPreferenceStore(TypeScriptPlugin.getDefault().getPreferenceStore());
+    @Override
+    protected void doSetInput(IEditorInput input) throws CoreException {
+        super.doSetInput(input);
+
+        List<IPreferenceStore> preferenceStores = Lists.newArrayList();
+        preferenceStores.add(TypeScriptPlugin.getDefault().getPreferenceStore());
+        preferenceStores.add(EditorsUI.getPreferenceStore());
+        preferenceStores.add(PlatformUI.getPreferenceStore());
+        IPreferenceStore[] array = preferenceStores.toArray(new IPreferenceStore[preferenceStores.size()]);
+        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(array);
+
+        this.setPreferenceStore(chainedPreferenceStore);
     }
 
     @Override
@@ -221,19 +234,15 @@ public final class TypeScriptEditor extends TextEditor {
         // configure character matching
         char[] matchChars = { '(', ')', '[', ']', '{', '}' };
         support.setCharacterPairMatcher(new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true));
-        support.setMatchingCharacterPainterPreferenceKeys(MATCHING_BRACKETS, MATCHING_BRACKETS_COLOR);
-
-        // enable character matching and set the color to grey
-        IPreferenceStore preferencesStore = this.getPreferenceStore();
-        preferencesStore.setDefault(MATCHING_BRACKETS, true);
-        preferencesStore.setDefault(MATCHING_BRACKETS_COLOR, "128,128,128");
+        support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
+            IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
     }
 
     @Override
     protected void initializeEditor() {
         super.initializeEditor();
 
-        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this));
+        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this, this.getPreferenceStore()));
     }
 
     @Override

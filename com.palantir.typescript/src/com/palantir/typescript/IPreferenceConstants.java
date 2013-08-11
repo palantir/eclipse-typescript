@@ -40,6 +40,8 @@ public interface IPreferenceConstants {
         COMPILER_REMOVE_COMMENTS);
 
     String EDITOR_INDENT_SIZE = "editor.indentSize";
+    String EDITOR_MATCHING_BRACKETS = "editor.matchingBrackets";
+    String EDITOR_MATCHING_BRACKETS_COLOR = "editor.matchingBracketsColor";
 
     String FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER = "formatter.insertSpaceAfterCommaDelimiter";
     String FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS = "formatter.insertSpaceAfterFunctionKeywordForAnonymousFunctions";
