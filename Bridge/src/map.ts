@@ -30,7 +30,7 @@ module Bridge {
 
             // initialize a circular doubly linked list that allows quick access to the first or last entry
             // and also maintains order of entries
-            this.headEntry = new Entry();
+            this.headEntry = new Entry<K, V>();
             this.headEntry.prev = this.headEntry;
             this.headEntry.next = this.headEntry;
         }
@@ -57,7 +57,6 @@ module Bridge {
             var entry = this.entries[stringKey];
 
             if (entry !== undefined) {
-
                 if (this.accessOrder) {
                     this.recordAccess(entry);
                 }
@@ -90,7 +89,7 @@ module Bridge {
                     this.recordAccess(entry);
                 }
             } else {
-                entry = new Entry();
+                entry = new Entry<K, V>();
                 entry.key = key;
                 entry.value = value;
 
