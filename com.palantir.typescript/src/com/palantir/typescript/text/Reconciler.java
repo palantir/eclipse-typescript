@@ -18,15 +18,13 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor.DiscardPolicy;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -34,28 +32,24 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITextInputListener;
-import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.ITextViewer;
-import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
-import org.eclipse.jface.text.source.Annotation;
-import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPathEditorInput;
+import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.ide.ResourceUtil;
+import org.eclipse.ui.texteditor.spelling.SpellingReconcileStrategy;
+import org.eclipse.ui.texteditor.spelling.SpellingService;
 
-import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.LanguageService;
-import com.palantir.typescript.services.language.ReferenceEntry;
 
 /**
  * A reconciler which also reconciles for selection changes.
@@ -64,34 +58,32 @@ import com.palantir.typescript.services.language.ReferenceEntry;
  */
 public final class Reconciler implements IReconciler {
 
-    private static final String DIAGNOSTIC_TYPE = "com.palantir.typescript.diagnostic";
-    private static final String OCCURRENCES_TYPE = "com.palantir.typescript.occurrences";
-
     private final TypeScriptEditor editor;
-    private final ISourceViewer sourceViewer;
 
+    private final AnnotationReconcilingStrategy annotationStrategy;
     private final CaretListener caretListener;
     private final Queue<DocumentEvent> eventQueue;
     private final ScheduledExecutorService executor;
     private final MyListener listener;
     private final AtomicBoolean reconcileRequired;
+    private final SpellingReconcileStrategy spellingStrategy;
 
     private LanguageService cachedLanguageService;
     private ITextViewer cachedTextViewer;
-    private Annotation[] lastAnnotations;
 
     public Reconciler(TypeScriptEditor editor, ISourceViewer sourceViewer) {
         checkNotNull(editor);
         checkNotNull(sourceViewer);
 
         this.editor = editor;
-        this.sourceViewer = sourceViewer;
 
+        this.annotationStrategy = new AnnotationReconcilingStrategy(editor, sourceViewer);
         this.caretListener = new MyCaretListener();
         this.eventQueue = Queues.newConcurrentLinkedQueue();
         this.executor = createExecutor();
         this.listener = new MyListener();
         this.reconcileRequired = new AtomicBoolean();
+        this.spellingStrategy = new SpellingReconcileStrategy(sourceViewer, EditorsUI.getSpellingService());
     }
 
     @Override
@@ -130,40 +122,20 @@ public final class Reconciler implements IReconciler {
         return this.cachedLanguageService;
     }
 
-    private void reconcile() {
+    private void scheduleReconcile() {
         this.reconcileRequired.set(true);
         this.executor.schedule(new Runnable() {
             @Override
             public void run() {
-                // check that a reconcile is still required (many tasks may be queued but only one should run at any given time)
-                if (Reconciler.this.reconcileRequired.compareAndSet(true, false)) {
-                    processEvents();
-                    reconcileAnnotations();
-                }
+                reconcile();
             }
         }, 500, TimeUnit.MILLISECONDS);
     }
 
-    private int getOffset() {
-        final AtomicInteger offset = new AtomicInteger();
-
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                ITextSelection selection = (ITextSelection) Reconciler.this.editor.getSelectionProvider().getSelection();
-
-                offset.set(selection.getOffset());
-            }
-        });
-
-        return offset.get();
-    }
-
-    private void processEvents() {
+    private void processEvents(LanguageService languageService) {
         DocumentEvent event;
 
         while ((event = Reconciler.this.eventQueue.poll()) != null) {
-            LanguageService languageService = getLanguageService();
             String fileName = Reconciler.this.editor.getFileName();
             int offset = event.getOffset();
             int length = event.getLength();
@@ -173,64 +145,36 @@ public final class Reconciler implements IReconciler {
         }
     }
 
-    private void reconcileAnnotations() {
+    private void reconcile() {
         LanguageService languageService = getLanguageService();
-        String fileName = Reconciler.this.editor.getFileName();
-        int offset = this.getOffset();
 
-        // update the annotations
-        final List<Diagnostic> diagnostics = languageService.getDiagnostics(fileName);
-        final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(fileName, offset);
+        // check that a reconcile is still required (many tasks may be queued but only one should run at any given time)
+        if (this.reconcileRequired.compareAndSet(true, false)) {
+            // spelling
+            if (EditorsUI.getPreferenceStore().getBoolean(SpellingService.PREFERENCE_SPELLING_ENABLED)) {
+                int length = this.editor.getDocument().getLength();
+                Region region = new Region(0, length);
 
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                updateAnnotations(diagnostics, occurrences);
-            }
-        });
-    }
-
-    private void updateAnnotations(List<Diagnostic> diagnostics, List<ReferenceEntry> occurrences) {
-        IAnnotationModelExtension annotationModel = (IAnnotationModelExtension) this.sourceViewer.getAnnotationModel();
-
-        if (annotationModel != null) {
-            Map<Annotation, Position> annotationsToAdd = Maps.newHashMap();
-
-            // add the diagnostics
-            for (Diagnostic diagnostic : diagnostics) {
-                Annotation annotation = new Annotation(DIAGNOSTIC_TYPE, false, diagnostic.getText());
-                Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
-
-                annotationsToAdd.put(annotation, position);
+                this.spellingStrategy.reconcile(region);
             }
 
-            // add the occurrences
-            for (ReferenceEntry occurrence : occurrences) {
-                Annotation annotation = new Annotation(OCCURRENCES_TYPE, false, null);
-                int minChar = occurrence.getMinChar();
-                int limChar = occurrence.getLimChar();
-                Position position = new Position(minChar, limChar - minChar);
-
-                annotationsToAdd.put(annotation, position);
-            }
-
-            annotationModel.replaceAnnotations(this.lastAnnotations, annotationsToAdd);
-
-            // keep the annotations around in case they will be replaced later
-            this.lastAnnotations = annotationsToAdd.keySet().toArray(new Annotation[diagnostics.size()]);
+            // annotations
+            this.processEvents(languageService);
+            this.annotationStrategy.reconcile(languageService);
         }
     }
 
     private static ScheduledExecutorService createExecutor() {
         ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true).setPriority(Thread.MIN_PRIORITY).build();
+        DiscardPolicy policy = new DiscardPolicy();
 
-        return Executors.newSingleThreadScheduledExecutor(threadFactory);
+        return new ScheduledThreadPoolExecutor(1, threadFactory, policy);
     }
 
     private final class MyCaretListener implements CaretListener {
         @Override
         public void caretMoved(CaretEvent event) {
-            reconcile();
+            scheduleReconcile();
         }
     }
 
@@ -243,7 +187,7 @@ public final class Reconciler implements IReconciler {
         public void documentChanged(DocumentEvent event) {
             Reconciler.this.eventQueue.add(event);
 
-            reconcile();
+            scheduleReconcile();
         }
 
         @Override
@@ -255,8 +199,20 @@ public final class Reconciler implements IReconciler {
 
         @Override
         public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-            if (newInput != null)
+            Reconciler.this.spellingStrategy.setDocument(newInput);
+
+            if (newInput != null) {
                 newInput.addDocumentListener(this);
+
+                // initial reconcile
+                Reconciler.this.reconcileRequired.set(true);
+                Reconciler.this.executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        reconcile();
+                    }
+                });
+            }
         }
     }
 }
