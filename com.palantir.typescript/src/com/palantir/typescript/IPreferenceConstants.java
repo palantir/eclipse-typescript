@@ -38,4 +38,13 @@ public interface IPreferenceConstants {
         COMPILER_MODULE_GEN_TARGET,
         COMPILER_NO_LIB,
         COMPILER_REMOVE_COMMENTS);
+
+    String FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER = "formatter.insertSpaceAfterCommaDelimiter";
+    String FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS = "formatter.insertSpaceAfterFunctionKeywordForAnonymousFunctions";
+    String FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS = "formatter.insertSpaceAfterKeywordsInControlFlowStatements";
+    String FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS = "formatter.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis";
+    String FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS = "formatter.insertSpaceAfterSemicolonInForStatements";
+    String FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS = "formatter.insertSpaceBeforeAndAfterBinaryOperators";
+    String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS = "formatter.placeOpenBraceOnNewLineForControlBlocks";
+    String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS = "formatter.placeOpenBraceOnNewLineForFunctions";
 }

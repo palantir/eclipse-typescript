@@ -294,9 +294,15 @@
 
    <extension
       point = "org.eclipse.ui.preferencePages">
-      <page id="com.palantir.typescript.PreferencePage"
+      <page id="com.palantir.typescript.compilerPreferencePage"
             class="com.palantir.typescript.CompilerPreferencePage"
             name="TypeScript">
+       </page>
+       <page
+             id="com.palantir.typescript.formatterPreferencePage"
+             category="com.palantir.typescript.compilerPreferencePage"
+             class="com.palantir.typescript.FormatterPreferencePage"
+             name="Formatter">
        </page>
    </extension>
 

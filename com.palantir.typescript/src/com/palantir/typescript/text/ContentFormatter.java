@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
@@ -27,6 +28,8 @@ import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
 
 import com.google.common.collect.Lists;
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.FormatCodeOptions;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.TextEdit;
@@ -51,7 +54,7 @@ public final class ContentFormatter implements IContentFormatter {
         String fileName = this.editor.getFileName();
         int minChar = region.getOffset();
         int limChar = minChar + region.getLength();
-        FormatCodeOptions options = new FormatCodeOptions();
+        FormatCodeOptions options = createFormatCodeOptions();
         LanguageService languageService = this.editor.getLanguageService();
         List<TextEdit> edits = languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
 
@@ -72,5 +75,19 @@ public final class ContentFormatter implements IContentFormatter {
     @Override
     public IFormattingStrategy getFormattingStrategy(String contentType) {
         throw new UnsupportedOperationException();
+    }
+
+    private static FormatCodeOptions createFormatCodeOptions() {
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+
+        return new FormatCodeOptions(
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS),
+            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS));
     }
 }

@@ -49,10 +49,22 @@ public final class FormatCodeOptions extends EditorOptions {
     @JsonProperty("PlaceOpenBraceOnNewLineForControlBlocks")
     private boolean placeOpenBraceOnNewLineForControlBlocks;
 
-    public FormatCodeOptions() {
-        this.insertSpaceAfterCommaDelimiter = true;
-        this.insertSpaceAfterSemicolonInForStatements = true;
-        this.insertSpaceBeforeAndAfterBinaryOperators = true;
-        this.insertSpaceAfterKeywordsInControlFlowStatements = true;
+    public FormatCodeOptions(
+            boolean insertSpaceAfterCommaDelimiter,
+            boolean insertSpaceAfterSemicolonInForStatements,
+            boolean insertSpaceBeforeAndAfterBinaryOperators,
+            boolean insertSpaceAfterKeywordsInControlFlowStatements,
+            boolean insertSpaceAfterFunctionKeywordForAnonymousFunctions,
+            boolean insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis,
+            boolean placeOpenBraceOnNewLineForFunctions,
+            boolean placeOpenBraceOnNewLineForControlBlocks) {
+        this.insertSpaceAfterCommaDelimiter = insertSpaceAfterCommaDelimiter;
+        this.insertSpaceAfterSemicolonInForStatements = insertSpaceAfterSemicolonInForStatements;
+        this.insertSpaceBeforeAndAfterBinaryOperators = insertSpaceBeforeAndAfterBinaryOperators;
+        this.insertSpaceAfterKeywordsInControlFlowStatements = insertSpaceAfterKeywordsInControlFlowStatements;
+        this.insertSpaceAfterFunctionKeywordForAnonymousFunctions = insertSpaceAfterFunctionKeywordForAnonymousFunctions;
+        this.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis;
+        this.placeOpenBraceOnNewLineForFunctions = placeOpenBraceOnNewLineForFunctions;
+        this.placeOpenBraceOnNewLineForControlBlocks = placeOpenBraceOnNewLineForControlBlocks;
     }
 }
