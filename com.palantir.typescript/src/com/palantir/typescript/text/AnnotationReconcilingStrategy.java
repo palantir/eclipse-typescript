@@ -22,12 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
-import org.eclipse.jface.text.reconciler.DirtyRegion;
-import org.eclipse.jface.text.reconciler.IReconcilingStrategy;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -44,7 +40,7 @@ import com.palantir.typescript.services.language.ReferenceEntry;
  *
  * @author dcicerone
  */
-public final class AnnotationReconcilingStrategy implements IReconcilingStrategy {
+public final class AnnotationReconcilingStrategy {
 
     private static final String DIAGNOSTIC_TYPE = "com.palantir.typescript.diagnostic";
     private static final String OCCURRENCES_TYPE = "com.palantir.typescript.occurrences";
@@ -60,20 +56,6 @@ public final class AnnotationReconcilingStrategy implements IReconcilingStrategy
 
         this.editor = editor;
         this.sourceViewer = sourceViewer;
-    }
-
-    @Override
-    public void setDocument(IDocument document) {
-    }
-
-    @Override
-    public void reconcile(DirtyRegion dirtyRegion, IRegion subRegion) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void reconcile(IRegion partition) {
-        throw new UnsupportedOperationException();
     }
 
     public void reconcile(LanguageService languageService) {
