@@ -28,7 +28,6 @@ An Eclipse plug-in for developing in the TypeScript language.
 * toggle comments
 
 ## Roadmap
-* folding (outline regions)
 * quick outline
 * save actions (format on save)
 * type hierarchy
