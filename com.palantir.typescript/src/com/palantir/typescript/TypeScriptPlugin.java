@@ -79,6 +79,10 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
 
+        store.setDefault(IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES, true);
+        store.setDefault(IPreferenceConstants.EDITOR_INDENT_SIZE, 4);
+        store.setDefault(IPreferenceConstants.EDITOR_TAB_SIZE, 4);
+
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER, true);
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS, false);
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS, true);

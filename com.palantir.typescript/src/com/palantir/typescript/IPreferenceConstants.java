@@ -39,6 +39,10 @@ public interface IPreferenceConstants {
         COMPILER_NO_LIB,
         COMPILER_REMOVE_COMMENTS);
 
+    String EDITOR_CONVERT_TABS_TO_SPACES = "editor.convertTabsToSpaces";
+    String EDITOR_INDENT_SIZE = "editor.indentSize";
+    String EDITOR_TAB_SIZE = "editor.tabSize";
+
     String FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER = "formatter.insertSpaceAfterCommaDelimiter";
     String FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS = "formatter.insertSpaceAfterFunctionKeywordForAnonymousFunctions";
     String FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS = "formatter.insertSpaceAfterKeywordsInControlFlowStatements";

@@ -16,6 +16,8 @@
 
 package com.palantir.typescript.services.language;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -37,10 +39,13 @@ public class EditorOptions {
     @JsonProperty("ConvertTabsToSpaces")
     private boolean convertTabsToSpaces;
 
-    public EditorOptions() {
-        this.indentSize = 4;
-        this.tabSize = 4;
+    public EditorOptions(int indentSize, int tabSize, boolean convertTabsToSpaces) {
+        checkArgument(indentSize >= 0);
+        checkArgument(tabSize >= 0);
+
+        this.indentSize = indentSize;
+        this.tabSize = tabSize;
         this.newLineCharacter = System.getProperty("line.separator");
-        this.convertTabsToSpaces = true;
+        this.convertTabsToSpaces = convertTabsToSpaces;
     }
 }

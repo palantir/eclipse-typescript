@@ -50,6 +50,9 @@ public final class FormatCodeOptions extends EditorOptions {
     private boolean placeOpenBraceOnNewLineForControlBlocks;
 
     public FormatCodeOptions(
+            int indentSize,
+            int tabSize,
+            boolean convertTabsToSpaces,
             boolean insertSpaceAfterCommaDelimiter,
             boolean insertSpaceAfterSemicolonInForStatements,
             boolean insertSpaceBeforeAndAfterBinaryOperators,
@@ -58,6 +61,8 @@ public final class FormatCodeOptions extends EditorOptions {
             boolean insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis,
             boolean placeOpenBraceOnNewLineForFunctions,
             boolean placeOpenBraceOnNewLineForControlBlocks) {
+        super(indentSize, tabSize, convertTabsToSpaces);
+
         this.insertSpaceAfterCommaDelimiter = insertSpaceAfterCommaDelimiter;
         this.insertSpaceAfterSemicolonInForStatements = insertSpaceAfterSemicolonInForStatements;
         this.insertSpaceBeforeAndAfterBinaryOperators = insertSpaceBeforeAndAfterBinaryOperators;

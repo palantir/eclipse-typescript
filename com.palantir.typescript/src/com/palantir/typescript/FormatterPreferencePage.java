@@ -18,6 +18,7 @@ package com.palantir.typescript;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -41,47 +42,64 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
     @Override
     protected void createFieldEditors() {
         this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES,
+            getResource("preferences.editor.convert.tabs.to.spaces"),
+            getFieldEditorParent()));
+
+        this.addField(new IntegerFieldEditor(
+            IPreferenceConstants.EDITOR_INDENT_SIZE,
+            getResource("preferences.editor.indent.size"),
+            getFieldEditorParent(),
+            1));
+
+        this.addField(new IntegerFieldEditor(
+            IPreferenceConstants.EDITOR_TAB_SIZE,
+            getResource("preferences.editor.tab.size"),
+            getFieldEditorParent(),
+            1));
+
+        this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER,
-            getResource("insert.space.after.comma.delimiter"),
+            getResource("preferences.formatter.insert.space.after.comma.delimiter"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS,
-            getResource("insert.space.after.semicolon.in.for.statements"),
+            getResource("preferences.formatter.insert.space.after.semicolon.in.for.statements"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS,
-            getResource("insert.space.before.and.after.binary.operators"),
+            getResource("preferences.formatter.insert.space.before.and.after.binary.operators"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS,
-            getResource("insert.space.after.keywords.in.control.flow.statements"),
+            getResource("preferences.formatter.insert.space.after.keywords.in.control.flow.statements"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS,
-            getResource("insert.space.after.function.keyword.for.anonymous.functions"),
+            getResource("preferences.formatter.insert.space.after.function.keyword.for.anonymous.functions"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS,
-            getResource("insert.space.after.opening.and.before.closing.nonempty.parenthesis"),
+            getResource("preferences.formatter.insert.space.after.opening.and.before.closing.nonempty.parenthesis"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS,
-            getResource("place.open.brace.on.new.line.for.functions"),
+            getResource("preferences.formatter.place.open.brace.on.new.line.for.functions"),
             getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS,
-            getResource("place.open.brace.on.new.line.for.control.blocks"),
+            getResource("preferences.formatter.place.open.brace.on.new.line.for.control.blocks"),
             getFieldEditorParent()));
     }
 
     private static String getResource(String key) {
-        return Resources.BUNDLE.getString("preferences.formatter." + key);
+        return Resources.BUNDLE.getString(key);
     }
 }

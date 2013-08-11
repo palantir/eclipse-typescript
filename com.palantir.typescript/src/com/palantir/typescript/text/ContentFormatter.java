@@ -81,6 +81,9 @@ public final class ContentFormatter implements IContentFormatter {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
         return new FormatCodeOptions(
+            preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
+            preferenceStore.getInt(IPreferenceConstants.EDITOR_TAB_SIZE),
+            preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES),
             preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER),
             preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS),
             preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS),

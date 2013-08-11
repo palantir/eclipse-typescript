@@ -18,12 +18,15 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
 
 import com.google.common.base.Strings;
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.EditorOptions;
 
 /**
@@ -50,7 +53,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
             if (TextUtilities.endsWith(legalLineDelimiters, command.text) != -1) {
                 String fileName = this.editor.getFileName();
                 int offset = command.offset;
-                EditorOptions options = new EditorOptions();
+                EditorOptions options = createEditorOptions();
                 int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, offset, options);
 
                 // modify the command to use the proper indentation
@@ -59,5 +62,14 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
                 command.text = buffer.toString();
             }
         }
+    }
+
+    private static EditorOptions createEditorOptions() {
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+
+        return new EditorOptions(
+            preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
+            preferenceStore.getInt(IPreferenceConstants.EDITOR_TAB_SIZE),
+            preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES));
     }
 }
