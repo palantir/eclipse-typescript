@@ -83,10 +83,6 @@ module Bridge {
             this.languageServiceHost.setFileOpen(fileName, open);
         }
 
-        public updateFileContents(fileName: string, contents: string) {
-            this.languageServiceHost.updateFileContents(fileName, contents);
-        }
-
         public updateFiles(deltas: IFileDelta[]) {
             this.languageServiceHost.updateFiles(deltas);
         }

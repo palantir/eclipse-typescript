@@ -61,12 +61,6 @@ module Bridge {
             this.fileInfos.get(fileName).setOpen(open);
         }
 
-        public updateFileContents(fileName: string, contents: string) {
-            var fileInfo = this.fileInfos.get(fileName);
-
-            fileInfo.updateContents(contents);
-        }
-
         public updateFiles(deltas: IFileDelta[]) {
             deltas.forEach((delta) => {
                 var fileName = delta.fileName;

@@ -71,11 +71,10 @@ public final class Reconciler implements IReconciler {
     private final ISourceViewer sourceViewer;
 
     private final CaretListener caretListener;
-    private final IDocumentListener documentListener;
     private final Queue<DocumentEvent> eventQueue;
     private final ScheduledExecutorService executor;
+    private final MyListener listener;
     private final AtomicBoolean reconcileRequired;
-    private final ITextInputListener textInputListener;
 
     private LanguageService cachedLanguageService;
     private ITextViewer cachedTextViewer;
@@ -89,11 +88,10 @@ public final class Reconciler implements IReconciler {
         this.sourceViewer = sourceViewer;
 
         this.caretListener = new MyCaretListener();
-        this.documentListener = new MyDocumentListener();
         this.eventQueue = Queues.newConcurrentLinkedQueue();
         this.executor = createExecutor();
+        this.listener = new MyListener();
         this.reconcileRequired = new AtomicBoolean();
-        this.textInputListener = new MyTextInputListener();
     }
 
     @Override
@@ -102,7 +100,7 @@ public final class Reconciler implements IReconciler {
         control.addCaretListener(this.caretListener);
 
         this.cachedTextViewer = textViewer;
-        this.cachedTextViewer.addTextInputListener(this.textInputListener);
+        this.cachedTextViewer.addTextInputListener(this.listener);
     }
 
     @Override
@@ -110,7 +108,7 @@ public final class Reconciler implements IReconciler {
         StyledText control = (StyledText) this.editor.getAdapter(Control.class);
         control.removeCaretListener(this.caretListener);
 
-        this.cachedTextViewer.removeTextInputListener(this.textInputListener);
+        this.cachedTextViewer.removeTextInputListener(this.listener);
 
         this.executor.shutdown();
     }
@@ -236,7 +234,7 @@ public final class Reconciler implements IReconciler {
         }
     }
 
-    private final class MyDocumentListener implements IDocumentListener {
+    private final class MyListener implements IDocumentListener, ITextInputListener {
         @Override
         public void documentAboutToBeChanged(DocumentEvent event) {
         }
@@ -247,21 +245,18 @@ public final class Reconciler implements IReconciler {
 
             reconcile();
         }
-    }
 
-    private final class MyTextInputListener implements ITextInputListener {
         @Override
         public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
+            if (oldInput != null) {
+                oldInput.removeDocumentListener(this);
+            }
         }
 
         @Override
         public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-            if (oldInput != null) {
-                oldInput.removeDocumentListener(Reconciler.this.documentListener);
-            }
-
             if (newInput != null)
-                newInput.addDocumentListener(Reconciler.this.documentListener);
+                newInput.addDocumentListener(this);
         }
     }
 }

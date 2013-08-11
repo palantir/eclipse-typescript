@@ -27,10 +27,11 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
-import org.eclipse.jface.text.ITextListener;
-import org.eclipse.jface.text.TextEvent;
+import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -203,7 +204,7 @@ public final class TypeScriptEditor extends TextEditor {
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
         ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
 
-        sourceViewer.addTextListener(new MyTextListener());
+        sourceViewer.addTextInputListener(new MyListener());
 
         return sourceViewer;
     }
@@ -238,24 +239,32 @@ public final class TypeScriptEditor extends TextEditor {
         });
     }
 
-    private final class MyTextListener implements ITextListener {
+    private final class MyListener implements IDocumentListener, ITextInputListener {
         @Override
-        public void textChanged(TextEvent event) {
-            checkNotNull(event);
+        public void documentAboutToBeChanged(DocumentEvent event) {
+        }
 
+        @Override
+        public void documentChanged(DocumentEvent event) {
             String fileName = getFileName();
             int offset = event.getOffset();
             int length = event.getLength();
             String text = event.getText();
 
-            // redraw state change - update the entire document
-            if (event.getDocumentEvent() == null) {
-                IDocument document = getDocument();
-                String documentText = document.get();
+            TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
+        }
 
-                TypeScriptEditor.this.languageService.updateFileContents(fileName, documentText);
-            } else if (text != null) { // normal edit
-                TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
+        @Override
+        public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
+            if (oldInput != null) {
+                oldInput.removeDocumentListener(this);
+            }
+        }
+
+        @Override
+        public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
+            if (newInput != null) {
+                newInput.addDocumentListener(this);
             }
         }
     }

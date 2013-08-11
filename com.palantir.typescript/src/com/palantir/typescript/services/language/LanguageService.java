@@ -216,14 +216,6 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    public void updateFileContents(String fileName, String contents) {
-        checkNotNull(fileName);
-        checkNotNull(contents);
-
-        Request request = new Request(SERVICE, "updateFileContents", fileName, contents);
-        this.bridge.call(request, Void.class);
-    }
-
     public void dispose() {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
         TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
