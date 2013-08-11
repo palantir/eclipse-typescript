@@ -36,7 +36,6 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
-import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 
 /**
@@ -106,11 +105,6 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
     @Override
     public IReconciler getReconciler(ISourceViewer sourceViewer) {
         return new Reconciler(this.editor, sourceViewer);
-    }
-
-    @Override
-    public int getTabWidth(ISourceViewer sourceViewer) {
-        return this.fPreferenceStore.getInt(IPreferenceConstants.EDITOR_TAB_SIZE);
     }
 
     @Override

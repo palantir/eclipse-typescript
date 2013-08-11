@@ -23,6 +23,7 @@ import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
@@ -69,7 +70,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         return new EditorOptions(
             preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
-            preferenceStore.getInt(IPreferenceConstants.EDITOR_TAB_SIZE),
-            preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES));
+            preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH),
+            preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS));
     }
 }

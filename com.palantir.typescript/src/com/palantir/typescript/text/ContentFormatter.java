@@ -26,6 +26,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.formatter.IFormattingStrategy;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
@@ -82,8 +83,8 @@ public final class ContentFormatter implements IContentFormatter {
 
         return new FormatCodeOptions(
             preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
-            preferenceStore.getInt(IPreferenceConstants.EDITOR_TAB_SIZE),
-            preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES),
+            preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH),
+            preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS),
             preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER),
             preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS),
             preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS),

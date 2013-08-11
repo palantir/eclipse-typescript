@@ -19,6 +19,7 @@ package com.palantir.typescript;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.osgi.framework.BundleContext;
 
 import com.palantir.typescript.services.language.LanguageVersion;
@@ -79,9 +80,9 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
 
-        store.setDefault(IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES, true);
+        store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS, true);
+        store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
         store.setDefault(IPreferenceConstants.EDITOR_INDENT_SIZE, 4);
-        store.setDefault(IPreferenceConstants.EDITOR_TAB_SIZE, 4);
 
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER, true);
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS, false);

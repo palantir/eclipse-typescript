@@ -21,6 +21,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 /**
  * The formatter preference page.
@@ -42,7 +43,7 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
     @Override
     protected void createFieldEditors() {
         this.addField(new BooleanFieldEditor(
-            IPreferenceConstants.EDITOR_CONVERT_TABS_TO_SPACES,
+            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS,
             getResource("preferences.editor.convert.tabs.to.spaces"),
             getFieldEditorParent()));
 
@@ -53,7 +54,7 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
             1));
 
         this.addField(new IntegerFieldEditor(
-            IPreferenceConstants.EDITOR_TAB_SIZE,
+            AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH,
             getResource("preferences.editor.tab.size"),
             getFieldEditorParent(),
             1));

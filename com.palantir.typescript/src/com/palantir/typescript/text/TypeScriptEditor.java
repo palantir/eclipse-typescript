@@ -51,6 +51,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FindReferencesAction;
@@ -79,6 +80,10 @@ public final class TypeScriptEditor extends TextEditor {
 
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
+
+    public TypeScriptEditor() {
+        this.setPreferenceStore(TypeScriptPlugin.getDefault().getPreferenceStore());
+    }
 
     @Override
     public Object getAdapter(Class adapter) {
