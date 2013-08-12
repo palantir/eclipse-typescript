@@ -100,9 +100,17 @@ public final class Reconciler implements IReconciler {
         StyledText control = (StyledText) this.editor.getAdapter(Control.class);
         control.removeCaretListener(this.caretListener);
 
-        this.cachedLanguageService.dispose();
         this.cachedTextViewer.removeTextInputListener(this.listener);
 
+        // dispose the language service via the executor service since it can take a few seconds
+        this.executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                Reconciler.this.cachedLanguageService.dispose();
+            }
+        });
+
+        // shut down the executor (remaining tasks will be allowed to complete)
         this.executor.shutdown();
     }
 
