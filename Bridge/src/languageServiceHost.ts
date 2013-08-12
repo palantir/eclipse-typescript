@@ -72,7 +72,10 @@ module Bridge {
                         var fileInfo = this.fileInfos.get(fileName);
 
                         if (fileInfo !== undefined) {
-                            fileInfo.updateContents(fileInformation.contents);
+                            // only update files not currently open in an editor
+                            if (!fileInfo.getOpen()) {
+                                fileInfo.updateContents(fileInformation.contents);
+                            }
                         } else {
                             fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 

@@ -69,7 +69,7 @@ public final class Bridge {
         return this.call(request, type);
     }
 
-    public <T> T call(Request request, JavaType resultType) {
+    public synchronized <T> T call(Request request, JavaType resultType) {
         checkNotNull(request);
         checkNotNull(resultType);
 

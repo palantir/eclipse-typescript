@@ -117,6 +117,10 @@ public final class Reconciler implements IReconciler {
             IProject project = resource.getProject();
 
             this.cachedLanguageService = new LanguageService(project);
+
+            // set the file as open so that resource change events are not processed for it
+            String fileName = this.editor.getFileName();
+            this.cachedLanguageService.setFileOpen(fileName, true);
         }
 
         return this.cachedLanguageService;
