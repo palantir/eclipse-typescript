@@ -26,11 +26,11 @@ An Eclipse plug-in for developing in the TypeScript language.
 ## Roadmap
 * quick outline
 * save actions (format on save)
-* type hierarchy
 
 Waiting on TypeScript support:
 * jsdoc assistance
 * search
+* type hierarchy (waiting on a bug in 0.9.1 to be fixed)
 
 ## Additional Information
 * Eclipse Kepler (4.3) is currently the only supported version
