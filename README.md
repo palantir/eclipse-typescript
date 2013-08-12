@@ -7,10 +7,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 1. Open Eclipse and go to Help->Install New Software
 1. Add the update site: http://eclipse-update.palantir.com/eclipse-typescript/
 1. Reboot Eclipse
-
-### Enabling the Builder
-1. Right-click on a project containing TypeScript files
-1. Select Configure->Enable TypeScript Builder
+1. (optional) Right-click on a project and select Configure->Enable TypeScript Builder
 
 ## Features
 * code completion
