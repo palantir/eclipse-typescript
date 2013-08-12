@@ -100,6 +100,7 @@ public final class Reconciler implements IReconciler {
         StyledText control = (StyledText) this.editor.getAdapter(Control.class);
         control.removeCaretListener(this.caretListener);
 
+        this.cachedLanguageService.dispose();
         this.cachedTextViewer.removeTextInputListener(this.listener);
 
         this.executor.shutdown();
