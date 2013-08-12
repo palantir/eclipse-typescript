@@ -9,7 +9,6 @@ An Eclipse plug-in for developing in the TypeScript language.
 1. Reboot Eclipse
 
 ### Enabling the Builder
-1. Switch to the Navigator view
 1. Right-click on a project containing TypeScript files
 1. Select Configure->Enable TypeScript Builder
 
