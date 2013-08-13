@@ -63,6 +63,8 @@ public final class Images {
                 imageName = "interface";
                 break;
             case MEMBER_FUNCTION_ELEMENT:
+            case MEMBER_GET_ACCESSOR_ELEMENT:
+            case MEMBER_SET_ACCESSOR_ELEMENT:
                 if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
                     imageName = "memberFunctionPrivate";
                 } else { // public
