@@ -62,6 +62,8 @@ public final class Images {
             case INTERFACE_ELEMENT:
                 imageName = "interface";
                 break;
+            case call_signature_element:
+            case INDEX_SIGNATURE_ELEMENT:
             case MEMBER_FUNCTION_ELEMENT:
             case MEMBER_GET_ACCESSOR_ELEMENT:
             case MEMBER_SET_ACCESSOR_ELEMENT:
