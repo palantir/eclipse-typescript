@@ -55,8 +55,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
 
-    private LanguageService cachedLanguageService;
-
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
@@ -81,12 +79,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         // clear the problem markers
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
-        // dispose the language service (in case it is out of sync with the file system)
-        this.cachedLanguageService.dispose();
-        this.cachedLanguageService = null;
-
         // remove the built files
-        for (FileDelta fileDelta : this.getAllTypeScriptFiles(FileDelta.Delta.REMOVED)) {
+        for (FileDelta fileDelta : this.getAllTypeScriptFiles()) {
             this.removeBuiltFiles(fileDelta.getFileName(), monitor);
         }
     }
@@ -96,17 +90,18 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         IResourceDelta delta = this.getDelta(project);
         ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
 
-        this.getLanguageService().updateFiles(fileDeltas);
-        this.buildFiles(fileDeltas, monitor);
+        if (!fileDeltas.isEmpty()) {
+            this.buildFiles(fileDeltas, monitor);
+        }
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
-        ImmutableList<FileDelta> fileDeltas = this.getAllTypeScriptFiles(FileDelta.Delta.ADDED);
+        ImmutableList<FileDelta> fileDeltas = this.getAllTypeScriptFiles();
 
         this.buildFiles(fileDeltas, monitor);
     }
 
-    private ImmutableList<FileDelta> getAllTypeScriptFiles(final FileDelta.Delta delta) throws CoreException {
+    private ImmutableList<FileDelta> getAllTypeScriptFiles() throws CoreException {
         final ImmutableList.Builder<FileDelta> files = ImmutableList.builder();
 
         this.getProject().accept(new IResourceVisitor() {
@@ -114,7 +109,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             public boolean visit(IResource resource) throws CoreException {
                 if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
                     String fileName = resource.getRawLocation().toOSString();
-                    files.add(new FileDelta(delta, fileName));
+
+                    files.add(new FileDelta(Delta.ADDED, fileName));
                 }
 
                 return true;
@@ -125,37 +121,39 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void buildFiles(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        this.updateMarkers();
+        // HACKHACK: create a new language service for each build since it seems to have some incorrect caching behavior
+        LanguageService languageService = new LanguageService(this.getProject());
+        try {
+            this.updateMarkers(languageService);
 
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            for (FileDelta fileDelta : fileDeltas) {
-                String fileName = fileDelta.getFileName();
-                Delta delta = fileDelta.getDelta();
+            IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+            if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+                for (FileDelta fileDelta : fileDeltas) {
+                    String fileName = fileDelta.getFileName();
+                    Delta delta = fileDelta.getDelta();
 
-                this.removeBuiltFiles(fileName, monitor);
+                    this.removeBuiltFiles(fileName, monitor);
 
-                if (delta == Delta.ADDED || delta == Delta.CHANGED) {
-                    try {
-                        if (!fileName.endsWith("d.ts")) {
-                            this.compileFile(fileName, monitor);
+                    if (delta == Delta.ADDED || delta == Delta.CHANGED) {
+                        try {
+                            if (!fileName.endsWith("d.ts")) {
+                                this.compileFile(fileName, languageService, monitor);
+                            }
+                        } catch (RuntimeException e) {
+                            String errorMessage = "Could not compile " + fileName;
+                            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+
+                            TypeScriptPlugin.getDefault().getLog().log(status);
                         }
-                    } catch (RuntimeException e) {
-                        String errorMessage = "Could not compile " + fileName;
-                        Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-
-                        TypeScriptPlugin.getDefault().getLog().log(status);
                     }
                 }
             }
+        } finally {
+            languageService.dispose();
         }
     }
 
-    private void compileFile(String fileName, IProgressMonitor monitor) throws CoreException {
-        checkNotNull(fileName);
-        checkNotNull(monitor);
-
-        LanguageService languageService = this.getLanguageService();
+    private void compileFile(String fileName, LanguageService languageService, IProgressMonitor monitor) throws CoreException {
         for (String outputFileName : languageService.getEmitOutput(fileName)) {
             Path path = new Path(outputFileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
@@ -185,9 +183,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return builtFiles.build();
     }
 
-    private void updateMarkers() throws CoreException {
-        LanguageService languageService = this.getLanguageService();
-
+    private void updateMarkers(LanguageService languageService) throws CoreException {
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
         Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
@@ -214,13 +210,5 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 MarkerUtilities.createMarker(file, attributes, MARKER_TYPE);
             }
         }
-    }
-
-    private LanguageService getLanguageService() {
-        if (this.cachedLanguageService == null) {
-            this.cachedLanguageService = new LanguageService(this.getProject());
-        }
-
-        return this.cachedLanguageService;
     }
 }
