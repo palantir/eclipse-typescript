@@ -50,8 +50,9 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
     private boolean compilerPreferencesModified;
 
     private BooleanFieldEditor compileOnSaveField;
-    private BooleanFieldEditor sourceMapField;
+    private ComboFieldEditor moduleGenTargetField;
     private BooleanFieldEditor removeCommentsField;
+    private BooleanFieldEditor sourceMapField;
 
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
@@ -119,7 +120,10 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             this.synchronizeCompileOnSave();
         }
 
-        if (source.equals(this.compileOnSaveField) || source.equals(this.removeCommentsField) || source.equals(this.sourceMapField)) {
+        if (source.equals(this.compileOnSaveField)
+                || source.equals(this.moduleGenTargetField)
+                || source.equals(this.removeCommentsField)
+                || source.equals(this.sourceMapField)) {
             this.compilerPreferencesModified = true;
         }
     }
@@ -132,11 +136,12 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             this.createComboFieldValues(LanguageVersion.values()),
             getFieldEditorParent()));
 
-        this.addField(new ComboFieldEditor(
+        this.moduleGenTargetField = new ComboFieldEditor(
             IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
             getResource("module.gen.target"),
             this.createComboFieldValues(ModuleGenTarget.values()),
-            getFieldEditorParent()));
+            getFieldEditorParent());
+        this.addField(this.moduleGenTargetField);
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
