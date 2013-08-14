@@ -61,48 +61,54 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            switch (kind) {
-                case IncrementalProjectBuilder.AUTO_BUILD:
-                case IncrementalProjectBuilder.INCREMENTAL_BUILD:
-                    this.incrementalBuild(monitor);
-                    break;
-                case IncrementalProjectBuilder.FULL_BUILD:
-                    this.fullBuild(monitor);
-                    break;
-            }
-        } else {
-            this.updateMarkers();
+        switch (kind) {
+            case IncrementalProjectBuilder.AUTO_BUILD:
+            case IncrementalProjectBuilder.INCREMENTAL_BUILD:
+                this.incrementalBuild(monitor);
+                break;
+            case IncrementalProjectBuilder.FULL_BUILD:
+                this.fullBuild(monitor);
+                break;
         }
 
         return null;
     }
 
-    private void incrementalBuild(IProgressMonitor monitor)
-            throws CoreException {
+    @Override
+    protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        this.processFiles(this.getChangedTypeScriptFiles(this.getDelta(this.getProject())), monitor);
+        // clear the problem markers
+        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
+        // dispose the language service (in case it is out of sync with the file system)
+        this.cachedLanguageService.dispose();
+        this.cachedLanguageService = null;
+
+        // remove the built files
+        for (FileDelta fileDelta : this.getAllTypeScriptFiles(FileDelta.Delta.REMOVED)) {
+            this.removeBuiltFiles(fileDelta.getFileName(), monitor);
+        }
     }
 
-    private void fullBuild(IProgressMonitor monitor)
-            throws CoreException {
-        checkNotNull(monitor);
+    private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
+        IProject project = this.getProject();
+        IResourceDelta delta = this.getDelta(project);
+        ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
 
-        this.processFiles(this.getAllTypeScriptFiles(FileDelta.Delta.ADDED), monitor);
+        this.getLanguageService().updateFiles(fileDeltas);
+        this.buildFiles(fileDeltas, monitor);
     }
 
-    private List<FileDelta> getChangedTypeScriptFiles(IResourceDelta delta) throws CoreException {
-        checkNotNull(delta);
+    private void fullBuild(IProgressMonitor monitor) throws CoreException {
+        ImmutableList<FileDelta> fileDeltas = this.getAllTypeScriptFiles(FileDelta.Delta.ADDED);
 
-        ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(this.getProject());
-        delta.accept(visitor);
-        return visitor.getDeltas();
+        this.buildFiles(fileDeltas, monitor);
     }
 
     private ImmutableList<FileDelta> getAllTypeScriptFiles(final FileDelta.Delta delta) throws CoreException {
         final ImmutableList.Builder<FileDelta> files = ImmutableList.builder();
+
         this.getProject().accept(new IResourceVisitor() {
             @Override
             public boolean visit(IResource resource) throws CoreException {
@@ -110,35 +116,36 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                     String fileName = resource.getRawLocation().toOSString();
                     files.add(new FileDelta(delta, fileName));
                 }
+
                 return true;
             }
         });
+
         return files.build();
     }
 
-    private void processFiles(List<FileDelta> fileDeltas, IProgressMonitor monitor)
-            throws CoreException {
-        checkNotNull(fileDeltas);
-        checkNotNull(monitor);
-
+    private void buildFiles(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         this.updateMarkers();
 
-        for (FileDelta fileDelta : fileDeltas) {
-            String fileName = fileDelta.getFileName();
-            Delta delta = fileDelta.getDelta();
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            for (FileDelta fileDelta : fileDeltas) {
+                String fileName = fileDelta.getFileName();
+                Delta delta = fileDelta.getDelta();
 
-            this.removeDerivedFiles(fileName, monitor);
+                this.removeBuiltFiles(fileName, monitor);
 
-            if (delta == Delta.ADDED || delta == Delta.CHANGED) {
-                try {
-                    if (!fileName.endsWith("d.ts")) {
-                        this.compileFile(fileName, monitor);
+                if (delta == Delta.ADDED || delta == Delta.CHANGED) {
+                    try {
+                        if (!fileName.endsWith("d.ts")) {
+                            this.compileFile(fileName, monitor);
+                        }
+                    } catch (RuntimeException e) {
+                        String errorMessage = "Could not compile " + fileName;
+                        Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+
+                        TypeScriptPlugin.getDefault().getLog().log(status);
                     }
-                } catch (RuntimeException e) {
-                    String errorMessage = "Could not compile " + fileName;
-                    Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-
-                    TypeScriptPlugin.getDefault().getLog().log(status);
                 }
             }
         }
@@ -157,13 +164,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void removeDerivedFiles(String fileName, IProgressMonitor monitor) throws CoreException {
-        checkNotNull(fileName);
-        checkNotNull(monitor);
-
-        for (String derivedFile : this.getDerivedFiles(fileName)) {
-            Path path = new Path(derivedFile);
+    private void removeBuiltFiles(String fileName, IProgressMonitor monitor) throws CoreException {
+        for (String builtFile : this.getBuiltFiles(fileName)) {
+            Path path = new Path(builtFile);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+
             file.refreshLocal(IResource.DEPTH_ZERO, monitor);
             if (file.exists()) {
                 file.delete(false, monitor);
@@ -171,15 +176,13 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private ImmutableList<String> getDerivedFiles(String fileName) {
-        checkNotNull(fileName);
+    private ImmutableList<String> getBuiltFiles(String fileName) {
+        ImmutableList.Builder<String> builtFiles = ImmutableList.builder();
 
-        ImmutableList.Builder<String> derivedFiles = ImmutableList.builder();
+        builtFiles.add(fileName.replaceFirst(".ts$", ".js"));
+        builtFiles.add(fileName.replaceFirst(".ts$", ".js.map"));
 
-        derivedFiles.add(fileName.replaceFirst(".ts$", ".js"));
-        derivedFiles.add(fileName.replaceFirst(".ts$", ".js.map"));
-
-        return derivedFiles.build();
+        return builtFiles.build();
     }
 
     private void updateMarkers() throws CoreException {
@@ -210,23 +213,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
                 MarkerUtilities.createMarker(file, attributes, MARKER_TYPE);
             }
-        }
-    }
-
-    @Override
-    protected void clean(IProgressMonitor monitor) throws CoreException {
-        checkNotNull(monitor);
-
-        // clear the problem markers
-        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-
-        // dispose the language service (in case it is out of sync with the file system)
-        this.cachedLanguageService.dispose();
-        this.cachedLanguageService = null;
-
-        // remove the emitted files
-        for (FileDelta fileDelta : this.getAllTypeScriptFiles(FileDelta.Delta.REMOVED)) {
-            this.removeDerivedFiles(fileDelta.getFileName(), monitor);
         }
     }
 

@@ -26,6 +26,10 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -55,10 +59,13 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
@@ -77,7 +84,30 @@ public final class TypeScriptEditor extends TextEditor {
         new CacheLoader<IProject, LanguageService>() {
             @Override
             public LanguageService load(IProject project) throws Exception {
-                return new LanguageService(project);
+                LanguageService languageService = new LanguageService(project);
+                MyResourceChangeListener resourceChangeListener = new MyResourceChangeListener(languageService, project);
+                ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
+
+                return languageService;
+            }
+
+            final class MyResourceChangeListener implements IResourceChangeListener {
+
+                private final LanguageService languageService;
+                private final IProject project;
+
+                public MyResourceChangeListener(LanguageService languageService, IProject project) {
+                    this.languageService = languageService;
+                    this.project = project;
+                }
+
+                @Override
+                public void resourceChanged(IResourceChangeEvent event) {
+                    IResourceDelta delta = event.getDelta();
+                    final ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, this.project);
+
+                    this.languageService.updateFiles(fileDeltas);
+                }
             }
         });
 

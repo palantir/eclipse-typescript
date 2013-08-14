@@ -36,7 +36,7 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
     private final ImmutableList.Builder<FileDelta> deltas;
     private final IProject project;
 
-    public ResourceDeltaVisitor(IProject project) {
+    private ResourceDeltaVisitor(IProject project) {
         this.deltas = ImmutableList.builder();
         this.project = project;
     }
@@ -63,8 +63,20 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
         return true;
     }
 
-    public ImmutableList<FileDelta> getDeltas() {
+    public ImmutableList<FileDelta> getFileDeltas() {
         return this.deltas.build();
+    }
+
+    public static ImmutableList<FileDelta> getFileDeltas(IResourceDelta delta, IProject project) {
+        ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(project);
+
+        try {
+            delta.accept(visitor);
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        return visitor.getFileDeltas();
     }
 
     private Delta getDeltaEnum(IResourceDelta delta) {

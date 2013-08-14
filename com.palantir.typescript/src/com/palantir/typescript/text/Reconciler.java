@@ -28,6 +28,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -47,8 +51,11 @@ import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.spelling.SpellingReconcileStrategy;
 import org.eclipse.ui.texteditor.spelling.SpellingService;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.palantir.typescript.ResourceDeltaVisitor;
+import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
 
 /**
@@ -58,6 +65,8 @@ import com.palantir.typescript.services.language.LanguageService;
  */
 public final class Reconciler implements IReconciler {
 
+    private static final int DELAY = 500;
+
     private final TypeScriptEditor editor;
 
     private final AnnotationReconcilingStrategy annotationStrategy;
@@ -66,6 +75,7 @@ public final class Reconciler implements IReconciler {
     private final ScheduledExecutorService executor;
     private final MyListener listener;
     private final AtomicBoolean reconcileRequired;
+    private final MyResourceChangeListener resourceChangeListener;
     private final SpellingReconcileStrategy spellingStrategy;
 
     private LanguageService cachedLanguageService;
@@ -83,6 +93,7 @@ public final class Reconciler implements IReconciler {
         this.executor = createExecutor();
         this.listener = new MyListener();
         this.reconcileRequired = new AtomicBoolean();
+        this.resourceChangeListener = new MyResourceChangeListener();
         this.spellingStrategy = new SpellingReconcileStrategy(sourceViewer, EditorsUI.getSpellingService());
     }
 
@@ -93,6 +104,8 @@ public final class Reconciler implements IReconciler {
 
         this.cachedTextViewer = textViewer;
         this.cachedTextViewer.addTextInputListener(this.listener);
+
+        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     @Override
@@ -101,6 +114,8 @@ public final class Reconciler implements IReconciler {
         control.removeCaretListener(this.caretListener);
 
         this.cachedTextViewer.removeTextInputListener(this.listener);
+
+        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
 
         // dispose the language service via the executor service since it can take a few seconds
         this.executor.execute(new Runnable() {
@@ -121,9 +136,7 @@ public final class Reconciler implements IReconciler {
 
     private LanguageService getLanguageService() {
         if (this.cachedLanguageService == null) {
-            IPathEditorInput editorInput = (IPathEditorInput) Reconciler.this.editor.getEditorInput();
-            IResource resource = ResourceUtil.getResource(editorInput);
-            IProject project = resource.getProject();
+            IProject project = this.getProject();
 
             this.cachedLanguageService = new LanguageService(project);
 
@@ -135,14 +148,21 @@ public final class Reconciler implements IReconciler {
         return this.cachedLanguageService;
     }
 
-    private void scheduleReconcile() {
+    private IProject getProject() {
+        IPathEditorInput editorInput = (IPathEditorInput) Reconciler.this.editor.getEditorInput();
+        IResource resource = ResourceUtil.getResource(editorInput);
+
+        return resource.getProject();
+    }
+
+    private void scheduleReconcile(long delay) {
         this.reconcileRequired.set(true);
         this.executor.schedule(new Runnable() {
             @Override
             public void run() {
                 reconcile();
             }
-        }, 500, TimeUnit.MILLISECONDS);
+        }, delay, TimeUnit.MILLISECONDS);
     }
 
     private void processEvents(LanguageService languageService) {
@@ -159,7 +179,7 @@ public final class Reconciler implements IReconciler {
     }
 
     private void reconcile() {
-        LanguageService languageService = getLanguageService();
+        LanguageService languageService = this.getLanguageService();
 
         // check that a reconcile is still required (many tasks may be queued but only one should run at any given time)
         if (this.reconcileRequired.compareAndSet(true, false)) {
@@ -187,7 +207,7 @@ public final class Reconciler implements IReconciler {
     private final class MyCaretListener implements CaretListener {
         @Override
         public void caretMoved(CaretEvent event) {
-            scheduleReconcile();
+            scheduleReconcile(DELAY);
         }
     }
 
@@ -200,7 +220,7 @@ public final class Reconciler implements IReconciler {
         public void documentChanged(DocumentEvent event) {
             Reconciler.this.eventQueue.add(event);
 
-            scheduleReconcile();
+            scheduleReconcile(DELAY);
         }
 
         @Override
@@ -218,14 +238,27 @@ public final class Reconciler implements IReconciler {
                 newInput.addDocumentListener(this);
 
                 // initial reconcile
-                Reconciler.this.reconcileRequired.set(true);
-                Reconciler.this.executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        reconcile();
-                    }
-                });
+                scheduleReconcile(0);
             }
+        }
+    }
+
+    private final class MyResourceChangeListener implements IResourceChangeListener {
+        @Override
+        public void resourceChanged(IResourceChangeEvent event) {
+            IResourceDelta delta = event.getDelta();
+            IProject project = getProject();
+            final ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
+
+            // update the files on the reconciler thread
+            Reconciler.this.executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    LanguageService languageService = getLanguageService();
+
+                    languageService.updateFiles(fileDeltas);
+                }
+            });
         }
     }
 }

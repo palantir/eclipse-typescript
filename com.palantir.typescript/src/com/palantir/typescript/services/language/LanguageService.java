@@ -25,11 +25,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -43,7 +39,6 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.palantir.typescript.IPreferenceConstants;
-import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
@@ -62,19 +57,16 @@ public final class LanguageService {
     private final Bridge bridge;
     private final IProject project;
     private final MyPropertyChangeListener preferencesListener;
-    private final MyResourceChangeListener resourceChangeListener;
 
     public LanguageService(IProject project) {
         this.bridge = new Bridge();
         this.project = project;
         this.preferencesListener = new MyPropertyChangeListener();
-        this.resourceChangeListener = new MyResourceChangeListener();
 
         this.addDefaultLibrary();
         this.addProjectFiles();
         this.updateCompilationSettings();
 
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
     }
 
@@ -216,8 +208,17 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
+    public void updateFiles(List<FileDelta> fileDeltas) {
+        checkNotNull(fileDeltas);
+
+        if (!fileDeltas.isEmpty()) {
+            Request request = new Request(SERVICE, "updateFiles", fileDeltas);
+
+            LanguageService.this.bridge.call(request, Void.class);
+        }
+    }
+
     public void dispose() {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
         TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
         this.bridge.dispose();
     }
@@ -278,27 +279,6 @@ public final class LanguageService {
 
             if (IPreferenceConstants.COMPILER_PREFERENCES.contains(property)) {
                 updateCompilationSettings();
-            }
-        }
-    }
-
-    private final class MyResourceChangeListener implements IResourceChangeListener {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            IResourceDelta delta = event.getDelta();
-            ResourceDeltaVisitor visitor = new ResourceDeltaVisitor(LanguageService.this.project);
-
-            try {
-                delta.accept(visitor);
-            } catch (CoreException e) {
-                throw new RuntimeException(e);
-            }
-
-            ImmutableList<FileDelta> fileDeltas = visitor.getDeltas();
-            if (!fileDeltas.isEmpty()) {
-                Request request = new Request(SERVICE, "updateFiles", fileDeltas);
-
-                LanguageService.this.bridge.call(request, Void.class);
             }
         }
     }
