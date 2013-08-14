@@ -68,15 +68,18 @@ module Bridge {
                 switch (delta.delta) {
                     case "ADDED":
                     case "CHANGED":
-                        var fileInformation = IO.readFile(fileName);
                         var fileInfo = this.fileInfos.get(fileName);
 
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
                             if (!fileInfo.getOpen()) {
-                                fileInfo.updateContents(fileInformation.contents);
+                                var fileInformation = IO.readFile(fileName);
+
+                                fileInfo.updateFile(fileInformation);
                             }
                         } else {
+                            var fileInformation = IO.readFile(fileName);
+
                             fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
                             this.fileInfos.set(fileName, fileInfo);
@@ -182,18 +185,16 @@ module Bridge {
         private changes: TypeScript.TextChangeRange[];
         private contents: string;
         private open: boolean;
-        private version: number;
 
         constructor(byteOrderMark: ByteOrderMark, contents: string) {
             this.byteOrderMark = byteOrderMark;
             this.changes = [];
             this.contents = contents;
             this.open = false;
-            this.version = 0;
         }
 
         public getVersion(): number {
-            return this.version;
+            return this.changes.length;
         }
 
         public getOpen(): boolean {
@@ -205,33 +206,30 @@ module Bridge {
         }
 
         public getScriptSnapshot(): TypeScript.IScriptSnapshot {
-            return new ScriptSnapshot(this.changes.slice(0), this.contents, this.version);
+            return new ScriptSnapshot(this.changes.slice(0), this.contents, this.getVersion());
         }
 
         public editContents(offset: number, length: number, text: string): void {
             var prefix = this.contents.substring(0, offset);
             var suffix = this.contents.substring(offset + length);
             var newContents = prefix + text + suffix;
-
-            var span = TypeScript.TextSpan.fromBounds(offset, offset + length);
+            var span = new TypeScript.TextSpan(offset, length);
             var change = new TypeScript.TextChangeRange(span, text.length);
 
-            this.setContents(newContents, change);
+            this.contents = newContents;
+
+            this.changes.push(change);
         }
 
-        public updateContents(contents: string) {
-            var span = TypeScript.TextSpan.fromBounds(0, this.contents.length);
-            var change = new TypeScript.TextChangeRange(span, contents.length);
+        public updateFile(fileInformation: FileInformation) {
+            var newContents = fileInformation.contents;
+            var span = new TypeScript.TextSpan(0, this.contents.length);
+            var change = new TypeScript.TextChangeRange(span, newContents.length);
 
-            this.setContents(contents, change);
-        }
+            this.byteOrderMark = fileInformation.byteOrderMark;
+            this.contents = newContents;
 
-        private setContents(contents: string, change: TypeScript.TextChangeRange) {
-            if (this.contents !== contents) {
-                this.changes.push(change);
-                this.contents = contents;
-                this.version++;
-            }
+            this.changes.push(change);
         }
     }
 }
