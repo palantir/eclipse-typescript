@@ -33,6 +33,11 @@ import com.palantir.typescript.services.language.FileDelta.Delta;
  */
 public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
+    /*
+     * The flags used when the content (or encoding) of a file changes.
+     */
+    private static final int FLAGS = IResourceDelta.CONTENT | IResourceDelta.ENCODING;
+
     private final ImmutableList.Builder<FileDelta> deltas;
     private final IProject project;
 
@@ -51,8 +56,8 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
             return false;
         }
 
-        // add the delta if its a TypeScript file
-        if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
+        // add the delta if its a TypeScript file and a change to the contents (or encoding) of the file
+        if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts") && (delta.getFlags() & FLAGS) != 0) {
             String fileName = resource.getRawLocation().toOSString();
             Delta deltaEnum = getDeltaEnum(delta);
             FileDelta fileDelta = new FileDelta(deltaEnum, fileName);
