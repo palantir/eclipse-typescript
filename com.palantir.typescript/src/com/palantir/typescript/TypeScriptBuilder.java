@@ -41,6 +41,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.FileDelta;
+import com.palantir.typescript.services.language.FileDelta.Delta;
 import com.palantir.typescript.services.language.LanguageService;
 
 /**
@@ -54,14 +55,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
 
-    private LanguageService languageService;
-
-    @Override
-    protected void startupOnInitialize() {
-        super.startupOnInitialize();
-
-        this.languageService = new LanguageService(this.getProject());
-    }
+    private LanguageService cachedLanguageService;
 
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
@@ -131,25 +125,21 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         for (FileDelta fileDelta : fileDeltas) {
             String fileName = fileDelta.getFileName();
+            Delta delta = fileDelta.getDelta();
 
             this.removeDerivedFiles(fileName, monitor);
 
-            switch (fileDelta.getDelta()) {
-                case ADDED:
-                case CHANGED:
-                    try {
-                        if (!fileName.endsWith("d.ts")) {
-                            this.compileFile(fileName, monitor);
-                        }
-                    } catch (RuntimeException e) {
-                        String errorMessage = "Could not compile " + fileName;
-                        Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-
-                        TypeScriptPlugin.getDefault().getLog().log(status);
+            if (delta == Delta.ADDED || delta == Delta.CHANGED) {
+                try {
+                    if (!fileName.endsWith("d.ts")) {
+                        this.compileFile(fileName, monitor);
                     }
-                    break;
-                default:
-                    break;
+                } catch (RuntimeException e) {
+                    String errorMessage = "Could not compile " + fileName;
+                    Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+
+                    TypeScriptPlugin.getDefault().getLog().log(status);
+                }
             }
         }
     }
@@ -158,7 +148,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         checkNotNull(fileName);
         checkNotNull(monitor);
 
-        for (String outputFileName : this.languageService.getEmitOutput(fileName)) {
+        LanguageService languageService = this.getLanguageService();
+        for (String outputFileName : languageService.getEmitOutput(fileName)) {
             Path path = new Path(outputFileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
 
@@ -178,7 +169,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 file.delete(false, monitor);
             }
         }
-
     }
 
     private ImmutableList<String> getDerivedFiles(String fileName) {
@@ -193,11 +183,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void updateMarkers() throws CoreException {
+        LanguageService languageService = this.getLanguageService();
 
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
-        Map<String, List<Diagnostic>> diagnostics = this.languageService.getAllDiagnostics();
-
+        Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
         for (Map.Entry<String, List<Diagnostic>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
             List<Diagnostic> fileDiagnostics = entry.getValue();
@@ -227,10 +217,24 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
+        // clear the problem markers
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
+        // dispose the language service (in case it is out of sync with the file system)
+        this.cachedLanguageService.dispose();
+        this.cachedLanguageService = null;
+
+        // remove the emitted files
         for (FileDelta fileDelta : this.getAllTypeScriptFiles(FileDelta.Delta.REMOVED)) {
             this.removeDerivedFiles(fileDelta.getFileName(), monitor);
         }
+    }
+
+    private LanguageService getLanguageService() {
+        if (this.cachedLanguageService == null) {
+            this.cachedLanguageService = new LanguageService(this.getProject());
+        }
+
+        return this.cachedLanguageService;
     }
 }
