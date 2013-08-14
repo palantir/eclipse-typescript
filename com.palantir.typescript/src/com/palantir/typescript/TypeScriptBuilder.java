@@ -138,7 +138,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 case ADDED:
                 case CHANGED:
                     try {
-                        this.compileFile(fileName, monitor);
+                        if (!fileName.endsWith("d.ts")) {
+                            this.compileFile(fileName, monitor);
+                        }
                     } catch (RuntimeException e) {
                         String errorMessage = "Could not compile " + fileName;
                         Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
