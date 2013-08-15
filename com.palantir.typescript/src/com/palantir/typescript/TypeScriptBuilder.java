@@ -122,6 +122,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void buildFiles(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         // HACKHACK: create a new language service for each build since it seems to have some incorrect caching behavior
+        // fix is: https://typescript.codeplex.com/SourceControl/changeset/8b1915815ce48b5c17772de750a02a38bb309044
         LanguageService languageService = new LanguageService(this.getProject());
         try {
             this.updateMarkers(languageService);
