@@ -18,6 +18,7 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -88,8 +89,11 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
                     Job job = new Job(name) {
                         @Override
                         protected IStatus run(IProgressMonitor monitor) {
+                            IWorkspace workspace = ResourcesPlugin.getWorkspace();
+
                             try {
-                                ResourcesPlugin.getWorkspace().build(IncrementalProjectBuilder.FULL_BUILD, monitor);
+                                workspace.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
+                                workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
                             } catch (CoreException e) {
                                 return e.getStatus();
                             }
