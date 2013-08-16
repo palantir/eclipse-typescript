@@ -56,13 +56,17 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
             return false;
         }
 
-        // add the delta if its a TypeScript file and a change to the contents (or encoding) of the file
-        if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts") && (delta.getFlags() & FLAGS) != 0) {
+        // add the delta if its a TypeScript file
+        if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
             String fileName = resource.getRawLocation().toOSString();
             Delta deltaEnum = getDeltaEnum(delta);
-            FileDelta fileDelta = new FileDelta(deltaEnum, fileName);
 
-            this.deltas.add(fileDelta);
+            // check that the delta is a change that impacts the contents (or encoding) of the file
+            if (deltaEnum != Delta.CHANGED || (delta.getFlags() & FLAGS) != 0) {
+                FileDelta fileDelta = new FileDelta(deltaEnum, fileName);
+
+                this.deltas.add(fileDelta);
+            }
         }
 
         return true;
