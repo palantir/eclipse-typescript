@@ -259,6 +259,8 @@ public final class Reconciler implements IReconciler {
                     languageService.updateFiles(fileDeltas);
                 }
             });
+
+            scheduleReconcile(0);
         }
     }
 }

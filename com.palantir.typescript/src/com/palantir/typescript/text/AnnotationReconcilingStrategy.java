@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.jface.text.ITextSelection;
@@ -75,6 +76,19 @@ public final class AnnotationReconcilingStrategy {
         });
     }
 
+    private boolean isDirty() {
+        final AtomicBoolean dirty = new AtomicBoolean();
+
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                dirty.set(AnnotationReconcilingStrategy.this.editor.isDirty());
+            }
+        });
+
+        return dirty.get();
+    }
+
     private int getOffset() {
         final AtomicInteger offset = new AtomicInteger();
 
@@ -97,12 +111,14 @@ public final class AnnotationReconcilingStrategy {
         if (annotationModel != null) {
             Map<Annotation, Position> annotationsToAdd = Maps.newHashMap();
 
-            // add the diagnostics
-            for (Diagnostic diagnostic : diagnostics) {
-                Annotation annotation = new Annotation(DIAGNOSTIC_TYPE, false, diagnostic.getText());
-                Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
+            // add the diagnostics if the editor is dirty
+            if (this.isDirty()) {
+                for (Diagnostic diagnostic : diagnostics) {
+                    Annotation annotation = new Annotation(DIAGNOSTIC_TYPE, false, diagnostic.getText());
+                    Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
 
-                annotationsToAdd.put(annotation, position);
+                    annotationsToAdd.put(annotation, position);
+                }
             }
 
             // add the occurrences
