@@ -200,21 +200,23 @@ public final class TypeScriptEditor extends TextEditor {
     public static void openDefinition(DefinitionInfo definition) {
         checkNotNull(definition);
 
-        IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         String fileName = definition.getFileName();
-        File definitionFile = new File(fileName);
-        IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
+        if (!fileName.isEmpty()) {
+            IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+            File definitionFile = new File(fileName);
+            IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
 
-        // open the editor and select the text
-        try {
-            TypeScriptEditor definitionEditor = (TypeScriptEditor) IDE.openEditorOnFileStore(activePage, localFile);
-            int minChar = definition.getMinChar();
-            int limChar = definition.getLimChar();
-            String name = definition.getName();
+            // open the editor and select the text
+            try {
+                TypeScriptEditor definitionEditor = (TypeScriptEditor) IDE.openEditorOnFileStore(activePage, localFile);
+                int minChar = definition.getMinChar();
+                int limChar = definition.getLimChar();
+                String name = definition.getName();
 
-            definitionEditor.selectAndReveal(minChar, limChar - minChar, name);
-        } catch (PartInitException e) {
-            throw new RuntimeException(e);
+                definitionEditor.selectAndReveal(minChar, limChar - minChar, name);
+            } catch (PartInitException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
