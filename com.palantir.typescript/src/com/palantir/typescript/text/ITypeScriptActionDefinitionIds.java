@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.text;
 
-
 /**
  * Defines the definition IDs for the TypeScript editor actions.
  *
@@ -27,6 +26,7 @@ public interface ITypeScriptActionDefinitionIds {
     String FIND_REFERENCES = "com.palantir.typescript.text.findReferences";
     String FORMAT = "com.palantir.typescript.text.format";
     String OPEN_DEFINITION = "com.palantir.typescript.text.openDefinition";
+    String QUICK_OUTLINE = "com.palantir.typescript.text.quickOutline";
     String RENAME = "com.palantir.typescript.text.rename";
     String TOGGLE_COMMENT = "com.palantir.typescript.text.toggleComment";
 }

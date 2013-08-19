@@ -92,6 +92,11 @@
             commandId="com.palantir.typescript.text.openDefinition"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
+            sequence="M1+O"
+            contextId="com.palantir.typescript.text.typeScriptEditorScope"
+            commandId="com.palantir.typescript.text.quickOutline"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
             sequence="M1+M3+R"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.rename"
@@ -137,6 +142,10 @@
       <command
             id="com.palantir.typescript.text.openDefinition"
             name="%command.openDefinition.name">
+      </command>
+      <command
+            id="com.palantir.typescript.text.quickOutline"
+            name="%command.quickOutline.name">
       </command>
       <command
             id="com.palantir.typescript.text.rename"
@@ -215,6 +224,9 @@
             locationURI="popup:#TextEditorContext?after=group.open">
           <command
                 commandId="com.palantir.typescript.text.openDefinition">
+          </command>
+          <command
+                commandId="com.palantir.typescript.text.quickOutline">
           </command>
       </menuContribution>
       <menuContribution
