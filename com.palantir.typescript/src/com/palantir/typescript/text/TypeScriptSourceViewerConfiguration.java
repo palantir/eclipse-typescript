@@ -19,6 +19,7 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.text.AbstractInformationControlManager;
 import org.eclipse.jface.text.DefaultInformationControl;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
@@ -29,11 +30,14 @@ import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.formatter.IContentFormatter;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
+import org.eclipse.jface.text.information.IInformationPresenter;
+import org.eclipse.jface.text.information.InformationPresenter;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.reconciler.IReconciler;
 import org.eclipse.jface.text.source.DefaultAnnotationHover;
 import org.eclipse.jface.text.source.IAnnotationHover;
 import org.eclipse.jface.text.source.ISourceViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
@@ -43,11 +47,11 @@ import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
  *
  * @author tyleradams
  */
-public final class SourceViewerConfiguration extends TextSourceViewerConfiguration {
+public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerConfiguration {
 
     private final TypeScriptEditor editor;
 
-    public SourceViewerConfiguration(TypeScriptEditor editor, IPreferenceStore preferenceStore) {
+    public TypeScriptSourceViewerConfiguration(TypeScriptEditor editor, IPreferenceStore preferenceStore) {
         super(preferenceStore);
 
         checkNotNull(editor);
@@ -96,6 +100,30 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
         return new IHyperlinkDetector[] { new HyperlinkDetector(this.editor) };
     }
 
+    public IInformationPresenter getOutlinePresenter(TypeScriptSourceViewer typeScriptSourceViewer) {
+        checkNotNull(typeScriptSourceViewer);
+
+        InformationPresenter outlinePresenter = new InformationPresenter(this.getOutlinePresenterControlCreator());
+        outlinePresenter.setAnchor(AbstractInformationControlManager.ANCHOR_GLOBAL);
+        outlinePresenter.setInformationProvider(new InformationProvider(this.editor), IDocument.DEFAULT_CONTENT_TYPE);
+        outlinePresenter.setSizeConstraints(50, 20, true, false);
+
+        return outlinePresenter;
+    }
+
+    private IInformationControlCreator getOutlinePresenterControlCreator() {
+        return new IInformationControlCreator() {
+            @Override
+            public IInformationControl createInformationControl(Shell parent) {
+                int shellStyle = SWT.RESIZE;
+                int treeStyle = SWT.V_SCROLL | SWT.H_SCROLL;
+
+                return new TypeScriptOutlineInformationControl(parent, shellStyle, TypeScriptSourceViewerConfiguration.this.editor,
+                    treeStyle);
+            }
+        };
+    }
+
     @Override
     public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
         return new PresentationReconciler();
@@ -117,4 +145,5 @@ public final class SourceViewerConfiguration extends TextSourceViewerConfigurati
             return new DefaultInformationControl(parent);
         }
     }
+
 }

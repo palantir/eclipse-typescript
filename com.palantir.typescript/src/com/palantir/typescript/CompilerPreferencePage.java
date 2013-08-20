@@ -74,7 +74,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
             String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
             String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
-            MessageDialog dialog = new MessageDialog(getShell(), title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
+            MessageDialog dialog = new MessageDialog(this.getShell(), title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
             int result = dialog.open();
 
             if (result == 1) { // cancel

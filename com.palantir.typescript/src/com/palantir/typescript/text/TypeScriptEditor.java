@@ -70,6 +70,7 @@ import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
+import com.palantir.typescript.text.actions.QuickOutlineAction;
 import com.palantir.typescript.text.actions.RenameAction;
 import com.palantir.typescript.text.actions.ToggleCommentAction;
 
@@ -115,17 +116,13 @@ public final class TypeScriptEditor extends TextEditor {
     private LanguageService languageService;
 
     @Override
-    protected void doSetInput(IEditorInput input) throws CoreException {
-        super.doSetInput(input);
+    public void dispose() {
+        // inform the language service that the file is no longer open
+        if (this.getEditorInput() != null) {
+            this.languageService.setFileOpen(this.getFileName(), false);
+        }
 
-        List<IPreferenceStore> preferenceStores = Lists.newArrayList();
-        preferenceStores.add(TypeScriptPlugin.getDefault().getPreferenceStore());
-        preferenceStores.add(EditorsUI.getPreferenceStore());
-        preferenceStores.add(PlatformUI.getPreferenceStore());
-        IPreferenceStore[] array = preferenceStores.toArray(new IPreferenceStore[preferenceStores.size()]);
-        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(array);
-
-        this.setPreferenceStore(chainedPreferenceStore);
+        super.dispose();
     }
 
     @Override
@@ -141,6 +138,10 @@ public final class TypeScriptEditor extends TextEditor {
         return super.getAdapter(adapter);
     }
 
+    public IDocument getDocument() {
+        return this.getSourceViewer().getDocument();
+    }
+
     public String getFileName() {
         IPathEditorInput editorInput = (IPathEditorInput) this.getEditorInput();
 
@@ -149,10 +150,6 @@ public final class TypeScriptEditor extends TextEditor {
 
     public LanguageService getLanguageService() {
         return this.languageService;
-    }
-
-    public IDocument getDocument() {
-        return this.getSourceViewer().getDocument();
     }
 
     @Override
@@ -169,32 +166,6 @@ public final class TypeScriptEditor extends TextEditor {
         this.languageService.setFileOpen(fileName, true);
 
         super.init(site, input);
-    }
-
-    @Override
-    public void dispose() {
-        // inform the language service that the file is no longer open
-        if (this.getEditorInput() != null) {
-            this.languageService.setFileOpen(this.getFileName(), false);
-        }
-
-        super.dispose();
-    }
-
-    public void selectAndReveal(int offset, int length, String name) {
-        checkArgument(offset >= 0);
-        checkArgument(length >= 0);
-        checkNotNull(name);
-
-        try {
-            IDocument document = this.getDocument();
-            String text = document.get(offset, length);
-            int start = offset + text.indexOf(name);
-
-            this.selectAndReveal(start, name.length());
-        } catch (BadLocationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static void openDefinition(DefinitionInfo definition) {
@@ -220,6 +191,33 @@ public final class TypeScriptEditor extends TextEditor {
         }
     }
 
+    public void selectAndReveal(int offset, int length, String name) {
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
+        checkNotNull(name);
+
+        try {
+            IDocument document = this.getDocument();
+            String text = document.get(offset, length);
+            int start = offset + text.indexOf(name);
+
+            this.selectAndReveal(start, name.length());
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
+        super.configureSourceViewerDecorationSupport(support);
+
+        // configure character matching
+        char[] matchChars = { '(', ')', '[', ']', '{', '}' };
+        support.setCharacterPairMatcher(new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true));
+        support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
+            IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
+    }
+
     @Override
     protected void createActions() {
         super.createActions();
@@ -239,6 +237,11 @@ public final class TypeScriptEditor extends TextEditor {
         openDefinitionAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.OPEN_DEFINITION);
         this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
 
+        // quick outline
+        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this, (TypeScriptSourceViewer) this.getSourceViewer());
+        quickOutlineAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.QUICK_OUTLINE);
+        this.setAction(ITypeScriptActionDefinitionIds.QUICK_OUTLINE, quickOutlineAction);
+
         // rename
         RenameAction renameAction = new RenameAction(this);
         renameAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.RENAME);
@@ -252,7 +255,14 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-        ISourceViewer sourceViewer = super.createSourceViewer(parent, ruler, styles);
+
+        this.fAnnotationAccess = this.getAnnotationAccess();
+        this.fOverviewRuler = createOverviewRuler(this.getSharedColors());
+
+        ISourceViewer sourceViewer = new TypeScriptSourceViewer(parent, ruler, this.getOverviewRuler(), this.isOverviewRulerVisible(),
+            styles);
+        // ensure decoration support has been created and configured
+        this.getSourceViewerDecorationSupport(sourceViewer);
 
         sourceViewer.addTextInputListener(new MyListener());
 
@@ -260,21 +270,24 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     @Override
-    protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
-        super.configureSourceViewerDecorationSupport(support);
+    protected void doSetInput(IEditorInput input) throws CoreException {
+        super.doSetInput(input);
 
-        // configure character matching
-        char[] matchChars = { '(', ')', '[', ']', '{', '}' };
-        support.setCharacterPairMatcher(new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true));
-        support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
-            IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
+        List<IPreferenceStore> preferenceStores = Lists.newArrayList();
+        preferenceStores.add(TypeScriptPlugin.getDefault().getPreferenceStore());
+        preferenceStores.add(EditorsUI.getPreferenceStore());
+        preferenceStores.add(PlatformUI.getPreferenceStore());
+        IPreferenceStore[] array = preferenceStores.toArray(new IPreferenceStore[preferenceStores.size()]);
+        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(array);
+
+        this.setPreferenceStore(chainedPreferenceStore);
     }
 
     @Override
     protected void initializeEditor() {
         super.initializeEditor();
 
-        this.setSourceViewerConfiguration(new SourceViewerConfiguration(this, this.getPreferenceStore()));
+        this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
     }
 
     @Override
@@ -292,7 +305,7 @@ public final class TypeScriptEditor extends TextEditor {
 
         @Override
         public void documentChanged(DocumentEvent event) {
-            String fileName = getFileName();
+            String fileName = TypeScriptEditor.this.getFileName();
             int offset = event.getOffset();
             int length = event.getLength();
             String text = event.getText();
