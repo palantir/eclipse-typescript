@@ -19,12 +19,12 @@ An Eclipse plug-in for developing in the TypeScript language.
 * mark occurrences
 * open definition
 * outline view
+* quick outline
 * rename refactor
 * syntax highlighting
 * toggle comments
 
 ## Roadmap
-* quick outline (in-progress)
 * save actions (format on save)
 
 Waiting on TypeScript support:
