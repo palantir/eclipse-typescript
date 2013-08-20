@@ -74,6 +74,7 @@ public final class Reconciler implements IReconciler {
     private final Queue<DocumentEvent> eventQueue;
     private final ScheduledExecutorService executor;
     private final MyListener listener;
+    private final OutlineViewReconcilingStrategy outlineViewStrategy;
     private final AtomicBoolean reconcileRequired;
     private final MyResourceChangeListener resourceChangeListener;
     private final SpellingReconcileStrategy spellingStrategy;
@@ -88,6 +89,7 @@ public final class Reconciler implements IReconciler {
         this.editor = editor;
 
         this.annotationStrategy = new AnnotationReconcilingStrategy(editor, sourceViewer);
+        this.outlineViewStrategy = new OutlineViewReconcilingStrategy(editor);
         this.caretListener = new MyCaretListener();
         this.eventQueue = Queues.newConcurrentLinkedQueue();
         this.executor = createExecutor();
@@ -194,6 +196,7 @@ public final class Reconciler implements IReconciler {
             // annotations
             this.processEvents(languageService);
             this.annotationStrategy.reconcile(languageService);
+            this.outlineViewStrategy.reconcile(languageService);
         }
     }
 
