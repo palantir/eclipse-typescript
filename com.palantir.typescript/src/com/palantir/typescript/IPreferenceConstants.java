@@ -30,6 +30,7 @@ public interface IPreferenceConstants {
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
     String COMPILER_NO_LIB = "compiler.noLib";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
+    String COMPILER_SOURCE_PATH = "compiler.sourcePath";
 
     ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
         COMPILER_CODE_GEN_TARGET,
