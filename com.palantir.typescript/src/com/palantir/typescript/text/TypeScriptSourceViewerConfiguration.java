@@ -81,6 +81,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
         contentAssistant.setAutoActivationDelay(200);
         contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
         contentAssistant.setInformationControlCreator(new MyInformationControlCreator());
+        contentAssistant.enableAutoInsert(true);
 
         return contentAssistant;
     }
