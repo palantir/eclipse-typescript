@@ -43,7 +43,7 @@ module Bridge {
         public addFiles(fileNames: string[]) {
             fileNames.forEach((fileName) => {
                 try {
-                    var fileInformation = IO.readFile(fileName);
+                    var fileInformation = IO.readFile(fileName, null);
                     var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
                     this.fileInfos.set(fileName, fileInfo);
@@ -73,12 +73,12 @@ module Bridge {
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
                             if (!fileInfo.getOpen()) {
-                                var fileInformation = IO.readFile(fileName);
+                                var fileInformation = IO.readFile(fileName, null);
 
                                 fileInfo.updateFile(fileInformation);
                             }
                         } else {
-                            var fileInformation = IO.readFile(fileName);
+                            var fileInformation = IO.readFile(fileName, null);
 
                             fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
