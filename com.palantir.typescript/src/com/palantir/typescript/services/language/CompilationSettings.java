@@ -81,6 +81,9 @@ public final class CompilationSettings {
     @JsonProperty("updateTC")
     private final boolean updateTC;
 
+    @JsonProperty("codepage")
+    private final Integer codepage;
+
     public CompilationSettings(
             boolean noLib,
             LanguageVersion codeGenTarget,
@@ -113,5 +116,7 @@ public final class CompilationSettings {
         this.gatherDiagnostics = false;
 
         this.updateTC = false;
+
+        this.codepage = null;
     }
 }
