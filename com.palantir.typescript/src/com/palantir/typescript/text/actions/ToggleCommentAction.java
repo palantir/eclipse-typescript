@@ -36,10 +36,9 @@ public final class ToggleCommentAction extends TypeScriptEditorAction {
 
     @Override
     public void run() {
-        ITextOperationTarget textOperationTarget = this.getTextOperationTarget();
         int operation = this.isCommented() ? ITextOperationTarget.STRIP_PREFIX : ITextOperationTarget.PREFIX;
 
-        textOperationTarget.doOperation(operation);
+        this.doOperation(operation);
     }
 
     private boolean isCommented() {

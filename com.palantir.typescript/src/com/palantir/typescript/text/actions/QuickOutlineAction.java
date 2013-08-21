@@ -32,6 +32,6 @@ public final class QuickOutlineAction extends TypeScriptEditorAction {
 
     @Override
     public void run() {
-        this.getTextOperationTarget().doOperation(TypeScriptSourceViewer.SHOW_OUTLINE);
+        this.doOperation(TypeScriptSourceViewer.SHOW_OUTLINE);
     }
 }
