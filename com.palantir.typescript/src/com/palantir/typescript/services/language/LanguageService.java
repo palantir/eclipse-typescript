@@ -22,16 +22,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IClasspathEntry;
-import org.eclipse.jdt.core.IJavaProject;
-import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -42,7 +37,6 @@ import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Resources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
@@ -61,16 +55,24 @@ public final class LanguageService {
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
-    private final IProject project;
     private final MyPropertyChangeListener preferencesListener;
 
+    public LanguageService(String fileName) {
+        this(ImmutableList.of(fileName));
+    }
+
     public LanguageService(IProject project) {
+        this(getProjectFiles(project));
+    }
+
+    private LanguageService(List<String> fileNames) {
+        checkNotNull(fileNames);
+
         this.bridge = new Bridge();
-        this.project = project;
         this.preferencesListener = new MyPropertyChangeListener();
 
         this.addDefaultLibrary();
-        this.addProjectFiles();
+        this.addFiles(fileNames);
         this.updateCompilationSettings();
 
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
@@ -241,28 +243,19 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private void addProjectFiles() {
+    private void addFiles(List<String> fileNames) {
+        Request request = new Request(SERVICE, "addFiles", fileNames);
+        this.bridge.call(request, Void.class);
+    }
+
+    private static List<String> getProjectFiles(final IProject project) {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
-        ImmutableSet.Builder<IPath> outputPaths = ImmutableSet.builder();
 
         try {
-            if (this.project.hasNature("org.eclipse.jdt.core.javanature")){
-                IJavaProject javaProject = JavaCore.create(this.project);
-                for (IClasspathEntry entry : javaProject.getRawClasspath()) {
-                    if (entry.getOutputLocation()!=null){
-                        outputPaths.add(entry.getOutputLocation());
-                    }
-                }
-            }
-
-            final Set<IPath> outputFolders = outputPaths.build();
-
-            this.project.accept(new IResourceVisitor() {
+            project.accept(new IResourceVisitor() {
                 @Override
                 public boolean visit(IResource resource) throws CoreException {
-                    if (resource.getType() == IResource.FILE
-                            && resource.getName().endsWith(".ts")
-                            && !isResourceContained(resource,outputFolders)) {
+                    if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
                         String fileName = resource.getRawLocation().toOSString();
 
                         fileNames.add(fileName);
@@ -270,22 +263,12 @@ public final class LanguageService {
 
                     return true;
                 }
-
-                private boolean isResourceContained(IResource resource, Set<IPath> paths) {
-                    for (IPath path : paths) {
-                        if (path.isPrefixOf(resource.getFullPath())){
-                            return true;
-                        }
-                    }
-                    return false;
-                }
             });
         } catch (CoreException e) {
             throw new RuntimeException(e);
         }
 
-        Request request = new Request(SERVICE, "addFiles", fileNames.build());
-        this.bridge.call(request, Void.class);
+        return fileNames.build();
     }
 
     private void updateCompilationSettings() {

@@ -110,6 +110,40 @@ public final class NavigateToItem {
     }
 
     @Override
+    public boolean equals(Object item) {
+        if (item == this) {
+            return true;
+        } else if (item instanceof NavigateToItem) {
+            NavigateToItem other = (NavigateToItem) item;
+
+            return this.name.equals(other.name)
+                    && this.kind.equals(other.kind)
+                    && this.kindModifiers.equals(other.kindModifiers)
+                    && this.matchKind.equals(other.matchKind)
+                    && this.fileName.equals(other.fileName)
+                    && this.minChar == other.minChar
+                    && this.limChar == other.limChar
+                    && this.containerName.equals(other.containerName);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(
+            this.name,
+            this.kind,
+            this.kindModifiers,
+            this.matchKind,
+            this.fileName,
+            this.minChar,
+            this.limChar,
+            this.containerName,
+            this.containerKind);
+    }
+
+    @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("name", this.name)
