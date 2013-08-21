@@ -242,7 +242,7 @@ public final class TypeScriptEditor extends TextEditor {
         this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
 
         // quick outline
-        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this, (TypeScriptSourceViewer) this.getSourceViewer());
+        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this);
         quickOutlineAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.QUICK_OUTLINE);
         this.setAction(ITypeScriptActionDefinitionIds.QUICK_OUTLINE, quickOutlineAction);
 
