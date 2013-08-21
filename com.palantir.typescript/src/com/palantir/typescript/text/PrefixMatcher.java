@@ -49,7 +49,7 @@ public final class PrefixMatcher {
         this.pattern = Pattern.compile(prefix);
     }
 
-    public boolean matches(String test) {
-        return this.pattern.matcher(test).matches();
+    public boolean matches(String text) {
+        return this.pattern.matcher(text).matches();
     }
 }
