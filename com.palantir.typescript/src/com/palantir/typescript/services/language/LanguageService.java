@@ -55,16 +55,24 @@ public final class LanguageService {
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
-    private final IProject project;
     private final MyPropertyChangeListener preferencesListener;
 
+    public LanguageService(String fileName) {
+        this(ImmutableList.of(fileName));
+    }
+
     public LanguageService(IProject project) {
+        this(getProjectFiles(project));
+    }
+
+    private LanguageService(List<String> fileNames) {
+        checkNotNull(fileNames);
+
         this.bridge = new Bridge();
-        this.project = project;
         this.preferencesListener = new MyPropertyChangeListener();
 
         this.addDefaultLibrary();
-        this.addProjectFiles();
+        this.addFiles(fileNames);
         this.updateCompilationSettings();
 
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
@@ -235,11 +243,16 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private void addProjectFiles() {
+    private void addFiles(List<String> fileNames) {
+        Request request = new Request(SERVICE, "addFiles", fileNames);
+        this.bridge.call(request, Void.class);
+    }
+
+    private static List<String> getProjectFiles(final IProject project) {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
 
         try {
-            this.project.accept(new IResourceVisitor() {
+            project.accept(new IResourceVisitor() {
                 @Override
                 public boolean visit(IResource resource) throws CoreException {
                     if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
@@ -255,8 +268,7 @@ public final class LanguageService {
             throw new RuntimeException(e);
         }
 
-        Request request = new Request(SERVICE, "addFiles", fileNames.build());
-        this.bridge.call(request, Void.class);
+        return fileNames.build();
     }
 
     private void updateCompilationSettings() {

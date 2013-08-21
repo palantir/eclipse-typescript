@@ -45,8 +45,10 @@ import org.eclipse.swt.custom.CaretEvent;
 import org.eclipse.swt.custom.CaretListener;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.spelling.SpellingReconcileStrategy;
 import org.eclipse.ui.texteditor.spelling.SpellingService;
@@ -138,23 +140,23 @@ public final class Reconciler implements IReconciler {
 
     private LanguageService getLanguageService() {
         if (this.cachedLanguageService == null) {
-            IProject project = this.getProject();
+            IEditorInput input = Reconciler.this.editor.getEditorInput();
+            String fileName = this.editor.getFileName();
 
-            this.cachedLanguageService = new LanguageService(project);
+            if (input instanceof IPathEditorInput) {
+                IResource resource = ResourceUtil.getResource(input);
+                IProject project = resource.getProject();
+
+                this.cachedLanguageService = new LanguageService(project);
+            } else if (input instanceof FileStoreEditorInput) {
+                this.cachedLanguageService = new LanguageService(fileName);
+            }
 
             // set the file as open so that resource change events are not processed for it
-            String fileName = this.editor.getFileName();
             this.cachedLanguageService.setFileOpen(fileName, true);
         }
 
         return this.cachedLanguageService;
-    }
-
-    private IProject getProject() {
-        IPathEditorInput editorInput = (IPathEditorInput) Reconciler.this.editor.getEditorInput();
-        IResource resource = ResourceUtil.getResource(editorInput);
-
-        return resource.getProject();
     }
 
     private void scheduleReconcile(long delay) {
@@ -249,21 +251,27 @@ public final class Reconciler implements IReconciler {
     private final class MyResourceChangeListener implements IResourceChangeListener {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
-            IResourceDelta delta = event.getDelta();
-            IProject project = getProject();
-            final ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
+            IEditorInput input = Reconciler.this.editor.getEditorInput();
 
-            // update the files on the reconciler thread
-            Reconciler.this.executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    LanguageService languageService = getLanguageService();
+            if (input instanceof IPathEditorInput) {
+                IResourceDelta delta = event.getDelta();
+                IResource resource = ResourceUtil.getResource(input);
+                IProject project = resource.getProject();
 
-                    languageService.updateFiles(fileDeltas);
-                }
-            });
+                final ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
 
-            scheduleReconcile(0);
+                // update the files on the reconciler thread
+                Reconciler.this.executor.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        LanguageService languageService = getLanguageService();
+
+                        languageService.updateFiles(fileDeltas);
+                    }
+                });
+
+                scheduleReconcile(0);
+            }
         }
     }
 }

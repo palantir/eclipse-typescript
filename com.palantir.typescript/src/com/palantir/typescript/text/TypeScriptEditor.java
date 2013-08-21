@@ -50,6 +50,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -143,9 +144,9 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     public String getFileName() {
-        IPathEditorInput editorInput = (IPathEditorInput) this.getEditorInput();
+        IEditorInput input = this.getEditorInput();
 
-        return editorInput.getPath().toOSString();
+        return this.getFileName(input);
     }
 
     public LanguageService getLanguageService() {
@@ -154,15 +155,18 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        IPathEditorInput editorInput = (IPathEditorInput) input;
+        String fileName = this.getFileName(input);
 
-        // create the language service
-        IResource resource = ResourceUtil.getResource(input);
-        IProject project = resource.getProject();
-        this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+        if (input instanceof IPathEditorInput) {
+            IResource resource = ResourceUtil.getResource(input);
+            IProject project = resource.getProject();
+
+            this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+        } else if (input instanceof FileStoreEditorInput) {
+            this.languageService = new LanguageService(fileName);
+        }
 
         // inform the language service that the file is open
-        String fileName = editorInput.getPath().toOSString();
         this.languageService.setFileOpen(fileName, true);
 
         super.init(site, input);
@@ -296,6 +300,20 @@ public final class TypeScriptEditor extends TextEditor {
                 "com.palantir.typescript.text.typeScriptEditorScope",
                 "org.eclipse.ui.textEditorScope"
         });
+    }
+
+    private String getFileName(IEditorInput input) {
+        if (input instanceof IPathEditorInput) {
+            IPathEditorInput editorInput = (IPathEditorInput) input;
+
+            return editorInput.getPath().toOSString();
+        } else if (input instanceof FileStoreEditorInput) {
+            FileStoreEditorInput editorInput = (FileStoreEditorInput) input;
+
+            return editorInput.getURI().getPath();
+        }
+
+        throw new UnsupportedOperationException();
     }
 
     private final class MyListener implements IDocumentListener, ITextInputListener {
