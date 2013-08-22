@@ -65,10 +65,32 @@ public final class Diagnostic {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        } else if (obj instanceof Diagnostic) {
+            Diagnostic other = (Diagnostic) obj;
+
+            return this.start == other.start
+                    && this.length == other.length
+                    && this.line == other.line
+                    && Objects.equal(this.text, other.text);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.start, this.length, this.line, this.text);
+    }
+
+    @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("start", this.start)
             .add("length", this.length)
+            .add("line", this.line)
             .add("text", this.text)
             .toString();
     }
