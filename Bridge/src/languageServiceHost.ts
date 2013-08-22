@@ -54,7 +54,7 @@ module Bridge {
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
-            var fileInfo = this.fileInfos.get(fileName).editContents(offset, length, text);
+            this.fileInfos.get(fileName).editContents(offset, length, text);
         }
 
         public setFileOpen(fileName: string, open: boolean) {
