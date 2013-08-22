@@ -71,10 +71,6 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
     }
 
     @Override
-    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
-    }
-
-    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
         checkNotNull(viewer);
         checkArgument(offset >= 0);
@@ -150,25 +146,8 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         return null;
     }
 
-    private int getOffset(int offset) {
-        if (this.currentCompletionInfo != null) {
-            boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
-
-            try {
-                for (int i = offset - 1; i >= 0; i--) {
-                    char character = this.editor.getDocument().getChar(i);
-
-                    if ((memberCompletion && character == '.') ||
-                            (!memberCompletion && NON_IDENTIFIER.matches(character))) {
-                        return i + 1;
-                    }
-                }
-            } catch (BadLocationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return 0;
+    @Override
+    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
     }
 
     private static String getDisplayString(CompletionEntryDetails completion) {
@@ -188,6 +167,27 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         }
 
         return displayString;
+    }
+
+    private int getOffset(int offset) {
+        if (this.currentCompletionInfo != null) {
+            boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
+
+            try {
+                for (int i = offset - 1; i >= 0; i--) {
+                    char character = this.editor.getDocument().getChar(i);
+
+                    if ((memberCompletion && character == '.') ||
+                            (!memberCompletion && NON_IDENTIFIER.matches(character))) {
+                        return i + 1;
+                    }
+                }
+            } catch (BadLocationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return 0;
     }
 
     private static boolean isFunction(ScriptElementKind kind) {
