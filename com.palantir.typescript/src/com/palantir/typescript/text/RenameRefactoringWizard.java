@@ -38,10 +38,12 @@ import com.google.common.base.CharMatcher;
  */
 public final class RenameRefactoringWizard extends RefactoringWizard {
 
+    private static final String WINDOW_TITLE = "Rename TypeScript Element";
+
     public RenameRefactoringWizard(Refactoring refactoring) {
         super(refactoring, SWT.NONE);
 
-        this.setWindowTitle("Rename TypeScript Element");
+        this.setWindowTitle(WINDOW_TITLE);
     }
 
     @Override
@@ -59,7 +61,7 @@ public final class RenameRefactoringWizard extends RefactoringWizard {
         private final TypeScriptRenameProcessor processor;
 
         public MyUserInputWizardPage(TypeScriptRenameProcessor processor) {
-            super("MyUserInputWizardPage");
+            super(MyUserInputWizardPage.class.getSimpleName());
 
             this.processor = processor;
         }
@@ -96,6 +98,13 @@ public final class RenameRefactoringWizard extends RefactoringWizard {
         }
 
         @Override
+        public IWizardPage getNextPage() {
+            this.setNewName();
+
+            return super.getNextPage();
+        }
+
+        @Override
         public void setVisible(boolean visible) {
             // put the focus in the name field when the page is first displayed
             if (visible) {
@@ -103,13 +112,6 @@ public final class RenameRefactoringWizard extends RefactoringWizard {
             }
 
             super.setVisible(visible);
-        }
-
-        @Override
-        public IWizardPage getNextPage() {
-            this.setNewName();
-
-            return super.getNextPage();
         }
 
         @Override
