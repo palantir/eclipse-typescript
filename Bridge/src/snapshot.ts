@@ -32,16 +32,16 @@ module Bridge {
             this.version = version;
         }
 
-        public getLineStartPositions(): number[] {
-            return this.lineStartPositions;
-        }
-
         public getText(start: number, end: number): string {
             return this.contents.substring(start, end);
         }
 
         public getLength(): number {
             return this.contents.length;
+        }
+
+        public getLineStartPositions(): number[] {
+            return this.lineStartPositions;
         }
 
         public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
