@@ -44,59 +44,51 @@ public final class Images {
         checkNotNull(kind);
         checkNotNull(kindModifiers);
 
-        final String imageName;
+        final String imageName = getImageName(kind, kindModifiers);
+
+        return getImage("$nl$/icons/elements/" + imageName + ".png");
+    }
+
+    private static String getImageName(ScriptElementKind kind, List<ScriptElementModifierKind> kindModifiers) {
         switch (kind) {
             case CLASS_ELEMENT:
-                imageName = "class";
-                break;
+                return "class";
             case CONSTRUCTOR_IMPLEMENTATION_ELEMENT:
-                imageName = "memberFunctionPublic";
-                break;
+                return "memberFunctionPublic";
             case ENUM_ELEMENT:
-                imageName = "enum";
-                break;
+                return "enum";
             case LOCAL_FUNCTION_ELEMENT:
             case FUNCTION_ELEMENT:
-                imageName = "function";
-                break;
+                return "function";
             case INTERFACE_ELEMENT:
-                imageName = "interface";
-                break;
+                return "interface";
             case CALL_SIGNATURE_ELEMENT:
             case INDEX_SIGNATURE_ELEMENT:
             case MEMBER_FUNCTION_ELEMENT:
             case MEMBER_GET_ACCESSOR_ELEMENT:
             case MEMBER_SET_ACCESSOR_ELEMENT:
                 if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
-                    imageName = "memberFunctionPrivate";
+                    return "memberFunctionPrivate";
                 } else { // public
-                    imageName = "memberFunctionPublic";
+                    return "memberFunctionPublic";
                 }
-                break;
             case MEMBER_VARIABLE_ELEMENT:
                 if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
-                    imageName = "memberVariablePrivate";
+                    return "memberVariablePrivate";
                 } else { // public
-                    imageName = "memberVariablePublic";
+                    return "memberVariablePublic";
                 }
-                break;
             case MODULE_ELEMENT:
-                imageName = "module";
-                break;
+                return "module";
             case PARAMETER_ELEMENT:
-                imageName = "parameter";
-                break;
+                return "parameter";
             case LOCAL_VARIABLE_ELEMENT:
             case VARIABLE_ELEMENT:
-                imageName = "variable";
-                break;
+                return "variable";
             case UNKNOWN:
             default:
-                imageName = "unknown";
-                break;
+                return "unknown";
         }
-
-        return getImage("$nl$/icons/elements/" + imageName + ".png");
     }
 
     private static Image getImage(String path) {
