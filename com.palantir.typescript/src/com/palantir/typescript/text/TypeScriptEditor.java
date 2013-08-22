@@ -62,7 +62,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.ClasspathUtils;
+import com.palantir.typescript.BuildPathUtils;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.TypeScriptPlugin;
@@ -162,7 +162,7 @@ public final class TypeScriptEditor extends TextEditor {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
 
-            if (ClasspathUtils.isResourceAccepted(resource, project)){
+            if (BuildPathUtils.isResourceAccepted(resource, project)){
                 this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
             } else {
                 this.languageService = new LanguageService(fileName);

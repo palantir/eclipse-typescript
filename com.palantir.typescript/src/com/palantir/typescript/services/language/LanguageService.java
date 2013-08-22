@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
-import com.palantir.typescript.ClasspathUtils;
+import com.palantir.typescript.BuildPathUtils;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
@@ -60,7 +60,7 @@ public final class LanguageService {
     }
 
     public LanguageService(IProject project) {
-        this(ClasspathUtils.getProjectFiles(project));
+        this(BuildPathUtils.getProjectFiles(project));
     }
 
     private LanguageService(List<String> fileNames) {

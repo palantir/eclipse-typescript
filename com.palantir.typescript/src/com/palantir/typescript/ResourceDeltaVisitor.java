@@ -40,10 +40,12 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
 
     private final ImmutableList.Builder<FileDelta> deltas;
     private final IProject project;
+    private final BuildPathUtils.BuildPath buildPath;
 
     private ResourceDeltaVisitor(IProject project) {
         this.deltas = ImmutableList.builder();
         this.project = project;
+        this.buildPath = BuildPathUtils.getProjectBuildPath(project);
     }
 
     @Override
@@ -57,7 +59,7 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
         }
 
         // add the delta if its a TypeScript file
-        if (ClasspathUtils.isResourceAccepted(resource, resourceProject)) {
+        if (BuildPathUtils.isResourceAccepted(resource, this.buildPath)) {
             String fileName = resource.getRawLocation().toOSString();
             Delta deltaEnum = getDeltaEnum(delta);
 

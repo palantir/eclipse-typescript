@@ -32,7 +32,6 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
@@ -55,7 +54,6 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
     private ComboFieldEditor moduleGenTargetField;
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
-    private StringFieldEditor classPathField;
 
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
@@ -129,8 +127,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.moduleGenTargetField)
                 || source.equals(this.removeCommentsField)
-                || source.equals(this.sourceMapField)
-                || source.equals(this.classPathField)) {
+                || source.equals(this.sourceMapField)) {
             this.compilerPreferencesModified = true;
         }
     }
@@ -172,12 +169,6 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             getResource("remove.comments"),
             getFieldEditorParent());
         this.addField(this.removeCommentsField);
-
-        this.classPathField = new StringFieldEditor(
-            IPreferenceConstants.COMPILER_SOURCE_PATH,
-            getResource("classpath"),
-            getFieldEditorParent());
-        this.addField(this.classPathField);
     }
 
     @Override

@@ -76,7 +76,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        this.clean(ClasspathUtils.getAllSourceFilesDeltas(this.getProject()), monitor);
+        this.clean(BuildPathUtils.getAllSourceFilesDeltas(this.getProject()), monitor);
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -121,7 +121,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
-        this.build(ClasspathUtils.getAllSourceFilesDeltas(this.getProject()), monitor);
+        this.build(BuildPathUtils.getAllSourceFilesDeltas(this.getProject()), monitor);
     }
 
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
