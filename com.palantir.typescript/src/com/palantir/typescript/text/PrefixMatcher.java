@@ -29,8 +29,8 @@ import com.google.common.base.Ascii;
  */
 public final class PrefixMatcher {
 
-    private final Pattern pattern;
     private final Pattern lowerCasePattern;
+    private final Pattern pattern;
 
     public PrefixMatcher(String prefix) {
         checkNotNull(prefix);
