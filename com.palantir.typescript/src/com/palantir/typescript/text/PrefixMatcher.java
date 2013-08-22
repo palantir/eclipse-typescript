@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.regex.Pattern;
 
+import com.google.common.base.Ascii;
+
 /**
  * This creates a string matcher which matches prefixes to strings using * and camel case.
  *
@@ -28,12 +30,14 @@ import java.util.regex.Pattern;
 public final class PrefixMatcher {
 
     private final Pattern pattern;
+    private final Pattern lowerCasePattern;
 
     public PrefixMatcher(String prefix) {
         checkNotNull(prefix);
 
         // turn the * wildcard into the regex .*
         prefix = prefix.replaceAll("\\*", ".\\*");
+        this.lowerCasePattern = Pattern.compile("^" + prefix + ".*");
 
         if (!prefix.isEmpty()) {
             // the first character is treated special because we don't want to match lower
@@ -50,6 +54,6 @@ public final class PrefixMatcher {
     }
 
     public boolean matches(String text) {
-        return this.pattern.matcher(text).matches();
+        return this.pattern.matcher(text).matches() || this.lowerCasePattern.matcher(Ascii.toLowerCase(text)).matches();
     }
 }
