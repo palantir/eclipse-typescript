@@ -44,12 +44,13 @@ public final class ToggleNatureHandler extends AbstractHandler {
             for (Iterator<?> it = ((IStructuredSelection) currentSelection).iterator(); it.hasNext();) {
                 Object element = it.next();
                 IProject project = null;
+
                 if (element instanceof IProject) {
                     project = (IProject) element;
                 } else if (element instanceof IAdaptable) {
-                    project = (IProject) ((IAdaptable) element)
-                        .getAdapter(IProject.class);
+                    project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
                 }
+
                 if (project != null) {
                     try {
                         toggleNature(project);
