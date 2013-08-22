@@ -76,19 +76,6 @@ public final class AnnotationReconcilingStrategy {
         });
     }
 
-    private boolean isDirty() {
-        final AtomicBoolean dirty = new AtomicBoolean();
-
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                dirty.set(AnnotationReconcilingStrategy.this.editor.isDirty());
-            }
-        });
-
-        return dirty.get();
-    }
-
     private int getOffset() {
         final AtomicInteger offset = new AtomicInteger();
 
@@ -103,6 +90,19 @@ public final class AnnotationReconcilingStrategy {
         });
 
         return offset.get();
+    }
+
+    private boolean isDirty() {
+        final AtomicBoolean dirty = new AtomicBoolean();
+
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                dirty.set(AnnotationReconcilingStrategy.this.editor.isDirty());
+            }
+        });
+
+        return dirty.get();
     }
 
     private void updateAnnotations(List<Diagnostic> diagnostics, List<ReferenceEntry> occurrences) {
