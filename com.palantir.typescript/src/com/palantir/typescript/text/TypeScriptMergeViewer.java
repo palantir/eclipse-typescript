@@ -24,6 +24,8 @@ import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
+import com.palantir.typescript.text.reconciler.PresentationReconciler;
+
 /**
  * The TypeScript merge viewer.
  *

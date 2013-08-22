@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript.text.reconciler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,6 +26,8 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.text.OutlinePage;
+import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
  * Reconciles the outline view.

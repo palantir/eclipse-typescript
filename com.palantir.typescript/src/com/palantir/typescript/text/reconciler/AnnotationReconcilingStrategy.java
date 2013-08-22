@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript.text.reconciler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,6 +35,7 @@ import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
  * The reconciling strategy for showing occurrences and diagnostics annotations.
