@@ -16,19 +16,25 @@
 
 package com.palantir.typescript;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
 import com.google.common.base.Function;
 import com.google.common.base.Strings;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
@@ -50,14 +56,23 @@ public final class ClasspathUtils {
         });
     }
 
-    private static IPath getSourceFolder(IProject project) {
+    private static Collection<IPath> getSourceFolder(IProject project) {
         // The project can be null if we are analyzing a resource from outside the workspace.
         if (project != null) {
-            IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-            String sourcePath = preferenceStore.getString(IPreferenceConstants.COMPILER_SOURCE_PATH);
+            Collection<String> sourcePaths = getProjectSourcePaths(project);
 
-            if (!Strings.isNullOrEmpty(sourcePath)) {
-                return new Path(sourcePath);
+            if (sourcePaths.isEmpty()) {
+                sourcePaths = getPluginSourcePaths(sourcePaths);
+            }
+
+            if (!sourcePaths.isEmpty()) {
+                return Collections2.transform(sourcePaths, new Function<String, IPath>() {
+
+                    @Override
+                    public IPath apply(String path) {
+                        return new Path(path);
+                    }
+                });
             }
 
         }
@@ -65,11 +80,33 @@ public final class ClasspathUtils {
         return null;
     }
 
+    private static Collection<String> getPluginSourcePaths(Collection<String> sourcePaths) {
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        String workspaceSourcePath = preferenceStore.getString(IPreferenceConstants.COMPILER_SOURCE_PATH);
+        if (!Strings.isNullOrEmpty(workspaceSourcePath)) {
+            sourcePaths = ImmutableList.of(workspaceSourcePath);
+        }
+        return sourcePaths;
+    }
+
+    private static Collection<String> getProjectSourcePaths(IProject project) {
+        IPreferenceStore preferenceStore = new ScopedPreferenceStore(new ProjectScope(project), TypeScriptPlugin.ID);
+        String pathList = preferenceStore.getString(IPreferenceConstants.COMPILER_SOURCE_PATH);
+        StringTokenizer st = new StringTokenizer(pathList, "," + "\n\r");
+
+        ImmutableSet.Builder<String> pathBuilder = ImmutableSet.builder();
+        while (st.hasMoreTokens()) {
+            pathBuilder.add(st.nextToken());
+        }
+
+        return pathBuilder.build();
+    }
+
     public static List<String> getProjectFiles(final IProject project) {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
 
         try {
-            final IPath sourceFolder = getSourceFolder(project);
+            final Collection<IPath> sourceFolder = getSourceFolder(project);
 
             project.accept(new IResourceVisitor() {
                 @Override
@@ -94,10 +131,21 @@ public final class ClasspathUtils {
         return isResourceAccepted(resource, getSourceFolder(project));
     }
 
-    private static boolean isResourceAccepted(IResource resource, IPath sourceFolder) {
+    private static boolean isResourceAccepted(IResource resource, Collection<IPath> sourcePaths) {
         if (resource.getType() == IResource.FILE
                 && resource.getName().endsWith(".ts")) {
-            return (sourceFolder == null || sourceFolder.isPrefixOf(resource.getProjectRelativePath()));
+            System.out.print("Examining resource: '" + resource + "' with respect to '" + sourcePaths + "': ");
+            if (sourcePaths != null && !sourcePaths.isEmpty()) {
+                IPath resourcePath = resource.getProjectRelativePath();
+                for (IPath sourcePath : sourcePaths) {
+                    if (!sourcePath.isPrefixOf(resourcePath)) {
+                        System.out.println("not accepted");
+                        return false;
+                    }
+                }
+            }
+            System.out.println("accepted");
+            return true;
         } else {
             return false;
         }

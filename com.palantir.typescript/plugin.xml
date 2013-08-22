@@ -323,5 +323,26 @@
              name="Formatter">
        </page>
    </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="com.palantir.typescript.ProjectPropertiesPage"
+            id="com.palantir.typescript.projectPropetiesPage"
+            name="TypeScript">
+         <enabledWhen>
+            <!--and>
+                <instanceof
+                    value="org.eclipse.core.resources.IProject">
+                </instanceof-->
+                <adapt type="org.eclipse.core.resources.IResource" >
+                    <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.palantir.typescript.typeScriptNature">
+                    </test>
+                </adapt>
+            <!--/and-->
+         </enabledWhen>
+      </page>
+   </extension>
 
 </plugin>
