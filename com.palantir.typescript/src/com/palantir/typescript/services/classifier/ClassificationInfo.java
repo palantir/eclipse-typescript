@@ -30,24 +30,24 @@ import com.google.common.base.Objects;
  */
 public final class ClassificationInfo {
 
-    private final int length;
     private final TokenClass classification;
+    private final int length;
 
     @JsonCreator
     public ClassificationInfo(@JsonProperty("length") int length, @JsonProperty("classification") TokenClass classification) {
-        checkArgument(length >= 0);
         checkNotNull(classification);
+        checkArgument(length >= 0);
 
-        this.length = length;
         this.classification = classification;
-    }
-
-    public int getLength() {
-        return this.length;
+        this.length = length;
     }
 
     public TokenClass getClassification() {
         return this.classification;
+    }
+
+    public int getLength() {
+        return this.length;
     }
 
     @Override
