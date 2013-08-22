@@ -83,6 +83,7 @@ public final class OutlinePage extends ContentOutlinePage {
 
     public boolean isVisible() {
         Control control = this.getControl();
+
         return control != null && !control.isDisposed() && control.isVisible();
     }
 
