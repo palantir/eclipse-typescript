@@ -45,59 +45,59 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
         this.addField(new BooleanFieldEditor(
             AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS,
             getResource("preferences.editor.convert.tabs.to.spaces"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new IntegerFieldEditor(
             IPreferenceConstants.EDITOR_INDENT_SIZE,
             getResource("preferences.editor.indent.size"),
-            getFieldEditorParent(),
+            this.getFieldEditorParent(),
             1));
 
         this.addField(new IntegerFieldEditor(
             AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH,
             getResource("preferences.editor.tab.size"),
-            getFieldEditorParent(),
+            this.getFieldEditorParent(),
             1));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER,
             getResource("preferences.formatter.insert.space.after.comma.delimiter"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS,
             getResource("preferences.formatter.insert.space.after.semicolon.in.for.statements"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS,
             getResource("preferences.formatter.insert.space.before.and.after.binary.operators"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS,
             getResource("preferences.formatter.insert.space.after.keywords.in.control.flow.statements"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS,
             getResource("preferences.formatter.insert.space.after.function.keyword.for.anonymous.functions"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS,
             getResource("preferences.formatter.insert.space.after.opening.and.before.closing.nonempty.parenthesis"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS,
             getResource("preferences.formatter.place.open.brace.on.new.line.for.functions"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS,
             getResource("preferences.formatter.place.open.brace.on.new.line.for.control.blocks"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
     }
 
     private static String getResource(String key) {
