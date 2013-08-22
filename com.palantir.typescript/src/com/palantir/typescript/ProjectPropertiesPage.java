@@ -22,12 +22,15 @@ import java.util.StringTokenizer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 /**
@@ -102,7 +105,19 @@ public final class ProjectPropertiesPage extends FieldEditorPreferencePage imple
 
         @Override
         protected String getNewInputObject() {
-            return "src/main/java";
+            InputDialog dialog = new InputDialog(this.getShell(),
+                getResource("classpath.dialog.newpattern.title"),
+                getResource("classpath.dialog.newpattern.message"),
+                "",
+                null);
+            if (dialog.open() == IStatus.OK){
+                String value = dialog.getValue();
+                if (!Strings.isNullOrEmpty(value)){
+                    return value;
+                }
+            }
+
+            return null;
         }
 
         @Override

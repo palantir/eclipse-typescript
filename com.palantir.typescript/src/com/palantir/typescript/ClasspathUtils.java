@@ -38,6 +38,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
+import com.palantir.typescript.util.CharOperation;
 
 /**
  * Utility class used to filter resources based on the configured classpath.
@@ -132,24 +133,31 @@ public final class ClasspathUtils {
     }
 
     private static boolean isResourceAccepted(IResource resource, Collection<IPath> sourcePaths) {
-        if (resource.getType() == IResource.FILE
-                && resource.getName().endsWith(".ts")) {
-            System.out.print("Examining resource: '" + resource + "' with respect to '" + sourcePaths + "': ");
-            if (sourcePaths != null && !sourcePaths.isEmpty()) {
-                IPath resourcePath = resource.getProjectRelativePath();
-                for (IPath sourcePath : sourcePaths) {
-                    if (!sourcePath.isPrefixOf(resourcePath)) {
-                        System.out.println("not accepted");
-                        return false;
-                    }
-                }
-            }
-            System.out.println("accepted");
-            return true;
-        } else {
-            return false;
-        }
+        return resource.getType() == IResource.FILE
+                && resource.getName().endsWith(".ts")
+                && isResourceContained(resource, sourcePaths);
     }
+
+    private static boolean isResourceContained(IResource resource, Collection<IPath> sourcePaths) {
+        return sourcePaths == null
+                || sourcePaths.isEmpty()
+                || sourcePathsContains(resource, sourcePaths);
+    }
+
+    private static boolean sourcePathsContains(IResource resource, Collection<IPath> sourcePaths) {
+        System.out.print("Examining resource: '" + resource.getProjectRelativePath().toString() + "' with respect to '" + sourcePaths + "': ");
+        IPath resourcePath = resource.getProjectRelativePath();
+        for (IPath sourcePath : sourcePaths) {
+            if (CharOperation.pathMatch(sourcePath.toString().toCharArray(), resourcePath.toString().toCharArray(), true, '/')) {
+                System.out.println("accepted");
+                return true;
+            }
+        }
+        System.out.println("not accepted");
+        return false;
+    }
+
+
 
     private ClasspathUtils() {
         // Hiding constructor.
