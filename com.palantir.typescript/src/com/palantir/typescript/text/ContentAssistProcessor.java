@@ -110,8 +110,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     IContextInformation contextInformation = null;
                     String additionalProposalInfo = entry.getDocComment();
                     CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
-                        cursorPosition,
-                        image, displayString, contextInformation, additionalProposalInfo);
+                        cursorPosition, image, displayString, contextInformation, additionalProposalInfo);
 
                     proposals.add(proposal);
                 }
@@ -159,9 +158,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
             if (isFunction(kind)) {
                 displayString += type;
-            } else if (kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
-                    || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
-                    || kind == ScriptElementKind.VARIABLE_ELEMENT) {
+            } else if (isVariable(kind)) {
                 displayString += ": " + type;
             }
         }
@@ -194,5 +191,11 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         return kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
                 || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
                 || kind == ScriptElementKind.FUNCTION_ELEMENT;
+    }
+
+    private static boolean isVariable(ScriptElementKind kind) {
+        return kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
+                || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
+                || kind == ScriptElementKind.VARIABLE_ELEMENT;
     }
 }
