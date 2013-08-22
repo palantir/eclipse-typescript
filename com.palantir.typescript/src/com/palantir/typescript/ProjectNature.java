@@ -81,5 +81,4 @@ public final class ProjectNature implements IProjectNature {
     public void setProject(IProject project) {
         this.project = project;
     }
-
 }
