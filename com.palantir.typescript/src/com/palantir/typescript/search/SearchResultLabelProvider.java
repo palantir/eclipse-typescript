@@ -59,16 +59,15 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
     @Override
     public StyledString getStyledText(Object element) {
         if (element instanceof IFile) {
-            return this.getFileStyledText(element);
+            return this.getFileStyledText((IFile) element);
         } else if (element instanceof LineResult) {
-            return this.getLineStyledText(element);
+            return this.getLineStyledText((LineResult) element);
         }
 
         return super.getStyledText(element);
     }
 
-    private StyledString getFileStyledText(Object element) {
-        IFile file = (IFile) element;
+    private StyledString getFileStyledText(IFile file) {
         String fileName = file.getName();
         StyledString string = new StyledString(fileName);
 
@@ -81,7 +80,7 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
 
         // match count
         SearchResult result = (SearchResult) this.page.getInput();
-        int matchCount = result.getMatchCount(element);
+        int matchCount = result.getMatchCount(file);
         if (matchCount > 1) {
             String matches = " " + Resources.format("search.result.match", matchCount);
 
@@ -91,9 +90,8 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
         return string;
     }
 
-    private StyledString getLineStyledText(Object element) {
+    private StyledString getLineStyledText(LineResult lineResult) {
         StyledString string = new StyledString();
-        LineResult lineResult = (LineResult) element;
         Reference firstReference = lineResult.getMatches().get(0).getReference();
 
         // line number
