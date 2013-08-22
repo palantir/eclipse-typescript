@@ -28,7 +28,6 @@ import com.palantir.typescript.text.TypeScriptSourceViewer;
  */
 public final class QuickOutlineAction extends TypeScriptEditorAction {
 
-
     private final TypeScriptSourceViewer sourceViewer;
 
     public QuickOutlineAction(TypeScriptEditor editor, TypeScriptSourceViewer sourceViewer) {
@@ -38,7 +37,6 @@ public final class QuickOutlineAction extends TypeScriptEditorAction {
 
         this.sourceViewer = sourceViewer;
     }
-
 
     @Override
     public void run() {

@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
@@ -100,12 +99,13 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
+            PrefixMatcher prefixMatcher = new PrefixMatcher(prefix);
 
             for (CompletionEntryDetails entry : entries) {
                 String replacementString = entry.getName();
 
                 // filter the entries to only include the ones matching the current prefix
-                if (replacementString.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) {
+                if (prefixMatcher.matches(replacementString)) {
                     int replacementOffset = this.currentOffset;
                     int replacementLength = offset - this.currentOffset;
                     int cursorPosition = replacementString.length();

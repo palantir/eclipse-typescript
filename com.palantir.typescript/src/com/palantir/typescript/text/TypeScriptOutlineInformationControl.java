@@ -52,7 +52,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
-import com.google.common.base.Ascii;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.NavigateToItem;
 
@@ -68,9 +67,10 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
     private final TypeScriptEditor editor;
     private final int treeStyle;
 
-    private String baseString;
     private Text textBox;
     private TreeViewer treeViewer;
+
+    private PrefixMatcher matcher;
 
     public TypeScriptOutlineInformationControl(Shell parent, int shellStyle, TypeScriptEditor editor, int treeStyle) {
         super(parent, shellStyle, true, true, false, true, true, null, null);
@@ -197,7 +197,7 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
             @Override
             public void modifyText(ModifyEvent modifyEvent) {
                 String filterString = ((Text) modifyEvent.widget).getText();
-                TypeScriptOutlineInformationControl.this.baseString = Ascii.toLowerCase(filterString);
+                TypeScriptOutlineInformationControl.this.matcher = new PrefixMatcher(filterString);
                 TypeScriptOutlineInformationControl.this.refreshTree();
             }
         });
@@ -288,14 +288,11 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
     private boolean matchesSearchString(String rawString) {
         checkNotNull(rawString);
 
-        if (this.baseString == null) {
+        if (this.matcher == null) {
             return true;
         }
 
-        // ensure both strings are lower case.
-        String string = Ascii.toLowerCase(rawString);
-        String pattern = "^" + this.baseString.replaceAll("\\*", ".\\*") + ".*";
-        return string.matches(pattern);
+        return this.matcher.matches(rawString);
     }
 
     private void refreshTree() {
