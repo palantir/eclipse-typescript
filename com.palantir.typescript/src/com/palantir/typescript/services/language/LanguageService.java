@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -38,6 +35,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
+import com.palantir.typescript.BuildPathUtils;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
@@ -62,7 +60,7 @@ public final class LanguageService {
     }
 
     public LanguageService(IProject project) {
-        this(getProjectFiles(project));
+        this(BuildPathUtils.getProjectFiles(project));
     }
 
     private LanguageService(List<String> fileNames) {
@@ -248,28 +246,6 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private static List<String> getProjectFiles(final IProject project) {
-        final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
-
-        try {
-            project.accept(new IResourceVisitor() {
-                @Override
-                public boolean visit(IResource resource) throws CoreException {
-                    if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
-                        String fileName = resource.getRawLocation().toOSString();
-
-                        fileNames.add(fileName);
-                    }
-
-                    return true;
-                }
-            });
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        return fileNames.build();
-    }
 
     private void updateCompilationSettings() {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();

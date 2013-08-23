@@ -322,6 +322,28 @@
              class="com.palantir.typescript.FormatterPreferencePage"
              name="Formatter">
        </page>
+       <page
+             id="com.palantir.typescript.exclusionInclusionPatternsPage"
+             category="com.palantir.typescript.compilerPreferencePage"
+             class="com.palantir.typescript.ExclusionInclusionPatternsPage"
+             name="Include/exclude">
+       </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="com.palantir.typescript.ExclusionInclusionPatternsPage"
+            id="com.palantir.typescript.exclusionInclusionPatternsPage"
+            name="TypeScript">
+         <enabledWhen>
+            <adapt type="org.eclipse.core.resources.IResource" >
+                <test
+                    property="org.eclipse.core.resources.projectNature"
+                    value="com.palantir.typescript.typeScriptNature">
+                </test>
+            </adapt>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

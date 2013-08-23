@@ -135,7 +135,7 @@
     <property name="message" value="Please delete the period."/>
   </module>
   <module name="RegexpSingleline">
-    <property name="format" value="\s+$"/>
+    <property name="format" value="[^\*]\s+$"/>
     <property name="message" value="Trailing whitespace is not allowed."/>
   </module>
   <module name="RegexpSingleline">
