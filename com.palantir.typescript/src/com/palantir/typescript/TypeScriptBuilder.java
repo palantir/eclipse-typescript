@@ -198,7 +198,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             // refresh the resource for the file if it is within the workspace
             if (file != null) {
                 file.refreshLocal(IResource.DEPTH_ZERO, monitor);
-                file.setDerived(true, monitor);
             }
         }
     }
