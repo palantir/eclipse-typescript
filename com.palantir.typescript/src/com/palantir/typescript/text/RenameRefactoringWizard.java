@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import com.google.common.base.CharMatcher;
+import com.palantir.typescript.Resources;
 
 /**
  * The refactoring wizard for renaming TypeScript elements.
@@ -38,12 +39,11 @@ import com.google.common.base.CharMatcher;
  */
 public final class RenameRefactoringWizard extends RefactoringWizard {
 
-    private static final String WINDOW_TITLE = "Rename TypeScript Element";
 
     public RenameRefactoringWizard(Refactoring refactoring) {
         super(refactoring, SWT.NONE);
 
-        this.setWindowTitle(WINDOW_TITLE);
+        this.setWindowTitle(Resources.BUNDLE.getString("wizard.refactoring.window.title"));
     }
 
     @Override
