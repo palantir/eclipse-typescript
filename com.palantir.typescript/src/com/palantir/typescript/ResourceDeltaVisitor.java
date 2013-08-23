@@ -16,12 +16,19 @@
 
 package com.palantir.typescript;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
@@ -39,30 +46,41 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
     private static final int FLAGS = IResourceDelta.CONTENT | IResourceDelta.ENCODING;
 
     private final ImmutableList.Builder<FileDelta> deltas;
-    private final IProject project;
+    private final IPath sourceFolderPath;
 
     private ResourceDeltaVisitor(IProject project) {
         this.deltas = ImmutableList.builder();
-        this.project = project;
+
+        IScopeContext projectScope = new ProjectScope(project);
+        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
+        String sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        if (!Strings.isNullOrEmpty(sourceFolderName)) {
+            IPath relativeSourceFolderPath = Path.fromPortableString(sourceFolderName);
+            IFolder sourceFolder = project.getFolder(relativeSourceFolderPath);
+
+            this.sourceFolderPath = sourceFolder.getRawLocation();
+        } else {
+            this.sourceFolderPath = project.getRawLocation();
+        }
     }
 
     @Override
     public boolean visit(IResourceDelta delta) throws CoreException {
         IResource resource = delta.getResource();
-        IProject resourceProject = resource.getProject();
 
-        // skip other projects
-        if (this.project != null && resourceProject != null && !this.project.equals(resourceProject)) {
-            return false;
+        // check that the resource is in the source root
+        IPath resourcePath = resource.getRawLocation();
+        if (!this.sourceFolderPath.isPrefixOf(resourcePath)) {
+            return resourcePath.isPrefixOf(this.sourceFolderPath);
         }
 
         // add the delta if its a TypeScript file
         if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
-            String fileName = resource.getRawLocation().toOSString();
             Delta deltaEnum = this.getDeltaEnum(delta);
 
             // check that the delta is a change that impacts the contents (or encoding) of the file
             if (deltaEnum != Delta.CHANGED || (delta.getFlags() & FLAGS) != 0) {
+                String fileName = resourcePath.toOSString();
                 FileDelta fileDelta = new FileDelta(deltaEnum, fileName);
 
                 this.deltas.add(fileDelta);

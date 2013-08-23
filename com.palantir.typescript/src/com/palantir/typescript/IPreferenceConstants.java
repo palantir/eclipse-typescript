@@ -24,11 +24,15 @@ import com.google.common.collect.ImmutableList;
  * @author tyleradams
  */
 public interface IPreferenceConstants {
+
+    String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
+
     String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
     String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
     String COMPILER_NO_LIB = "compiler.noLib";
+    String COMPILER_OUTPUT_DIR_OPTION = "compiler.optionDirOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
 
     ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
@@ -37,6 +41,7 @@ public interface IPreferenceConstants {
         COMPILER_MAP_SOURCE_FILES,
         COMPILER_MODULE_GEN_TARGET,
         COMPILER_NO_LIB,
+        COMPILER_OUTPUT_DIR_OPTION,
         COMPILER_REMOVE_COMMENTS);
 
     String EDITOR_INDENT_SIZE = "editor.indentSize";

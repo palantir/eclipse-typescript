@@ -23,10 +23,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -36,6 +42,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.palantir.typescript.IPreferenceConstants;
@@ -56,20 +63,22 @@ public final class LanguageService {
 
     private final Bridge bridge;
     private final MyPropertyChangeListener preferencesListener;
+    private final IProject project;
 
     public LanguageService(String fileName) {
-        this(ImmutableList.of(fileName));
+        this(null, ImmutableList.of(fileName));
     }
 
     public LanguageService(IProject project) {
-        this(getProjectFiles(project));
+        this(project, getProjectFiles(project));
     }
 
-    private LanguageService(List<String> fileNames) {
+    private LanguageService(IProject project, List<String> fileNames) {
         checkNotNull(fileNames);
 
         this.bridge = new Bridge();
         this.preferencesListener = new MyPropertyChangeListener();
+        this.project = project;
 
         this.addDefaultLibrary();
         this.addFiles(fileNames);
@@ -251,8 +260,18 @@ public final class LanguageService {
     private static List<String> getProjectFiles(final IProject project) {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
 
+        final IResource sourceFolder;
+        String sourceFolderName = getProjectPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+        if (!Strings.isNullOrEmpty(sourceFolderName)) {
+            IPath sourceFolderPath = Path.fromPortableString(sourceFolderName);
+
+            sourceFolder = project.getFolder(sourceFolderPath);
+        } else {
+            sourceFolder = project;
+        }
+
         try {
-            project.accept(new IResourceVisitor() {
+            sourceFolder.accept(new IResourceVisitor() {
                 @Override
                 public boolean visit(IResource resource) throws CoreException {
                     if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
@@ -271,6 +290,13 @@ public final class LanguageService {
         return fileNames.build();
     }
 
+    private static String getProjectPreference(IProject project, String key) {
+        IScopeContext projectScope = new ProjectScope(project);
+        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
+
+        return projectPreferences.get(key, "");
+    }
+
     private void updateCompilationSettings() {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
@@ -283,6 +309,18 @@ public final class LanguageService {
             .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));
         compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
         compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        // set the output directory if it was specified
+        if (this.project != null) {
+            String relativePath = getProjectPreference(this.project, IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+
+            if (!Strings.isNullOrEmpty(relativePath)) {
+                IFolder sourceFolder = this.project.getFolder(relativePath);
+                String outDir = sourceFolder.getRawLocation().toOSString() + "/";
+
+                compilationSettings.setOutDirOption(outDir);
+            }
+        }
 
         Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
         this.bridge.call(request, Void.class);

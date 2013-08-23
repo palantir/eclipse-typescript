@@ -30,12 +30,15 @@ import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.collect.ImmutableList;
@@ -98,12 +101,17 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        // clear the problem markers
-        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        IProject project = this.getProject();
+        IScopeContext projectScope = new ProjectScope(project);
+        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
 
-        // remove the built files if compile-on-save is enabled
+        // clear the problem markers
+        project.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
+        // remove the built files if compile-on-save is enabled and an output directory is not specified
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)
+                && projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, null) != null) {
             for (FileDelta fileDelta : fileDeltas) {
                 String fileName = fileDelta.getFileName();
                 ImmutableList<String> builtFiles = getBuiltFiles(fileName);

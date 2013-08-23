@@ -324,4 +324,27 @@
        </page>
    </extension>
 
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="com.palantir.typescript.BuildPathPropertyPage"
+            id="com.palantir.typescript.buildPathPropertyPage"
+            name="TypeScript Build Path">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IProject">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.palantir.typescript.typeScriptNature">
+                  </test>
+               </and>
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+
 </plugin>
