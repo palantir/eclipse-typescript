@@ -273,12 +273,16 @@ public final class LanguageService {
 
     private void updateCompilationSettings() {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        CompilationSettings compilationSettings = new CompilationSettings(
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
-            LanguageVersion.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),
-            ModuleGenTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)),
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES),
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        // create the compilation settings from the preferences
+        CompilationSettings compilationSettings = new CompilationSettings();
+        compilationSettings.setCodeGenTarget(LanguageVersion.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)));
+        compilationSettings.setMapSourceFiles(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES));
+        compilationSettings.setModuleGenTarget(ModuleGenTarget.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));
+        compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
+        compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
 
         Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
         this.bridge.call(request, Void.class);

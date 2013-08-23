@@ -28,86 +28,78 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public final class CompilationSettings {
 
     @JsonProperty("propagateEnumConstants")
-    private final boolean propagateEnumConstants;
+    private boolean propagateEnumConstants;
 
     @JsonProperty("removeComments")
-    private final boolean removeComments;
+    private boolean removeComments;
 
     @JsonProperty("watch")
-    private final boolean watch;
+    private boolean watch;
 
     @JsonProperty("noResolve")
-    private final boolean noResolve;
+    private boolean noResolve;
 
     @JsonProperty("allowAutomaticSemicolonInsertion")
-    private final boolean allowAutomaticSemicolonInsertion;
+    private boolean allowAutomaticSemicolonInsertion;
 
     @JsonProperty("noImplicitAny")
-    private final boolean noImplicitAny;
+    private boolean noImplicitAny;
 
     @JsonProperty("noLib")
-    private final boolean noLib;
+    private boolean noLib;
 
     @JsonProperty("codeGenTarget")
-    private final LanguageVersion codeGenTarget;
+    private LanguageVersion codeGenTarget;
 
     @JsonProperty("moduleGenTarget")
-    private final ModuleGenTarget moduleGenTarget;
+    private ModuleGenTarget moduleGenTarget;
 
     @JsonProperty("outFileOption")
-    private final String outFileOption;
+    private String outFileOption;
 
     @JsonProperty("outDirOption")
-    private final String outDirOption;
+    private String outDirOption;
 
     @JsonProperty("mapSourceFiles")
-    private final boolean mapSourceFiles;
+    private boolean mapSourceFiles;
 
     @JsonProperty("mapRoot")
-    private final String mapRoot;
+    private String mapRoot;
 
     @JsonProperty("sourceRoot")
-    private final String sourceRoot;
+    private String sourceRoot;
 
     @JsonProperty("generateDeclarationFiles")
-    private final boolean generateDeclarationFiles;
+    private boolean generateDeclarationFiles;
 
     @JsonProperty("useCaseSensitiveFileResolution")
-    private final boolean useCaseSensitiveFileResolution;
+    private boolean useCaseSensitiveFileResolution;
 
     @JsonProperty("gatherDiagnostics")
-    private final boolean gatherDiagnostics;
+    private boolean gatherDiagnostics;
 
     @JsonProperty("updateTC")
-    private final boolean updateTC;
+    private boolean updateTC;
 
     @JsonProperty("codepage")
-    private final Integer codepage;
+    private Integer codepage;
 
-    public CompilationSettings(
-            boolean noLib,
-            LanguageVersion codeGenTarget,
-            ModuleGenTarget moduleGenTarget,
-            boolean mapSourceFiles,
-            boolean removeComments) {
-        checkNotNull(codeGenTarget);
-        checkNotNull(moduleGenTarget);
-
+    public CompilationSettings() {
         this.propagateEnumConstants = false;
-        this.removeComments = removeComments;
+        this.removeComments = false;
         this.watch = false;
         this.noResolve = false;
         this.allowAutomaticSemicolonInsertion = true;
         this.noImplicitAny = false;
 
-        this.noLib = noLib;
+        this.noLib = false;
 
-        this.codeGenTarget = codeGenTarget;
-        this.moduleGenTarget = moduleGenTarget;
+        this.codeGenTarget = LanguageVersion.ECMASCRIPT3;
+        this.moduleGenTarget = ModuleGenTarget.UNSPECIFIED;
 
         this.outFileOption = "";
         this.outDirOption = "";
-        this.mapSourceFiles = mapSourceFiles;
+        this.mapSourceFiles = false;
         this.mapRoot = "";
         this.sourceRoot = "";
         this.generateDeclarationFiles = false;
@@ -118,5 +110,93 @@ public final class CompilationSettings {
         this.updateTC = false;
 
         this.codepage = null;
+    }
+
+    public void setPropagateEnumConstants(boolean propagateEnumConstants) {
+        this.propagateEnumConstants = propagateEnumConstants;
+    }
+
+    public void setRemoveComments(boolean removeComments) {
+        this.removeComments = removeComments;
+    }
+
+    public void setWatch(boolean watch) {
+        this.watch = watch;
+    }
+
+    public void setNoResolve(boolean noResolve) {
+        this.noResolve = noResolve;
+    }
+
+    public void setAllowAutomaticSemicolonInsertion(boolean allowAutomaticSemicolonInsertion) {
+        this.allowAutomaticSemicolonInsertion = allowAutomaticSemicolonInsertion;
+    }
+
+    public void setNoImplicitAny(boolean noImplicitAny) {
+        this.noImplicitAny = noImplicitAny;
+    }
+
+    public void setNoLib(boolean noLib) {
+        this.noLib = noLib;
+    }
+
+    public void setCodeGenTarget(LanguageVersion codeGenTarget) {
+        checkNotNull(codeGenTarget);
+
+        this.codeGenTarget = codeGenTarget;
+    }
+
+    public void setModuleGenTarget(ModuleGenTarget moduleGenTarget) {
+        checkNotNull(moduleGenTarget);
+
+        this.moduleGenTarget = moduleGenTarget;
+    }
+
+    public void setOutFileOption(String outFileOption) {
+        checkNotNull(outFileOption);
+
+        this.outFileOption = outFileOption;
+    }
+
+    public void setOutDirOption(String outDirOption) {
+        checkNotNull(outDirOption);
+
+        this.outDirOption = outDirOption;
+    }
+
+    public void setMapSourceFiles(boolean mapSourceFiles) {
+        this.mapSourceFiles = mapSourceFiles;
+    }
+
+    public void setMapRoot(String mapRoot) {
+        checkNotNull(mapRoot);
+
+        this.mapRoot = mapRoot;
+    }
+
+    public void setSourceRoot(String sourceRoot) {
+        checkNotNull(sourceRoot);
+
+        this.sourceRoot = sourceRoot;
+    }
+
+    public void setGenerateDeclarationFiles(boolean generateDeclarationFiles) {
+        this.generateDeclarationFiles = generateDeclarationFiles;
+    }
+
+    public void setUseCaseSensitiveFileResolution(boolean useCaseSensitiveFileResolution) {
+        this.useCaseSensitiveFileResolution = useCaseSensitiveFileResolution;
+    }
+
+    public void setGatherDiagnostics(boolean gatherDiagnostics) {
+        this.gatherDiagnostics = gatherDiagnostics;
+    }
+
+    public void setUpdateTC(boolean updateTC) {
+        this.updateTC = updateTC;
+    }
+
+    public void setCodepage(Integer codepage) {
+        this.codepage = codepage;
     }
 }
