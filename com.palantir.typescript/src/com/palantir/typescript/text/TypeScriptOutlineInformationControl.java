@@ -288,11 +288,7 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
     private boolean matchesSearchString(String rawString) {
         checkNotNull(rawString);
 
-        if (this.matcher == null) {
-            return true;
-        }
-
-        return this.matcher.matches(rawString);
+        return this.matcher == null || this.matcher.matches(rawString);
     }
 
     private void refreshTree() {
@@ -313,11 +309,7 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
             String processedElementName = ((ILabelProvider) localTreeViewer.getLabelProvider()).getText(element);
             String elementName = TextProcessor.deprocess(processedElementName);
 
-            if (TypeScriptOutlineInformationControl.this.matchesSearchString(elementName) || hasSelectedChild(localTreeViewer, element)) {
-                return true;
-            }
-
-            return false;
+            return TypeScriptOutlineInformationControl.this.matchesSearchString(elementName) || hasSelectedChild(localTreeViewer, element);
         }
 
         private boolean hasSelectedChild(TreeViewer viewer, Object element) {
