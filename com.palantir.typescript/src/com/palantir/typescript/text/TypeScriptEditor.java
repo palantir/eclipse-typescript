@@ -318,7 +318,7 @@ public final class TypeScriptEditor extends TextEditor {
         } else if (input instanceof FileStoreEditorInput) {
             FileStoreEditorInput editorInput = (FileStoreEditorInput) input;
 
-            return editorInput.getURI().getPath();
+            return new File(editorInput.getURI()).getAbsolutePath();
         }
 
         throw new UnsupportedOperationException();
