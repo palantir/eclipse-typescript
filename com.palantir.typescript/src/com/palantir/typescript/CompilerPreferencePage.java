@@ -18,14 +18,6 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -85,24 +77,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
                 // rebuild the workspace
                 if (result == 2) {
-                    String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
-                    Job job = new Job(name) {
-                        @Override
-                        protected IStatus run(IProgressMonitor monitor) {
-                            IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-                            try {
-                                workspace.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-                                workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-                            } catch (CoreException e) {
-                                return e.getStatus();
-                            }
-
-                            return Status.OK_STATUS;
-                        }
-                    };
-                    job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
-                    job.schedule();
+                    BuildUtils.rebuildWorkspace();
                 }
             }
 

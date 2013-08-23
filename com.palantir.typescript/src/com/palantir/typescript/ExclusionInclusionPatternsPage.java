@@ -21,17 +21,10 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -55,7 +48,7 @@ import com.google.common.collect.Lists;
  * If used as a preference page, it will store the preferences in the plugin
  * {@link IPreferenceStore}. If used a property page, only available for project resources with the
  * {@link ProjectNature}, it will store the preferences in the project properties.
- * 
+ *
  * @author rserafin
  */
 public final class ExclusionInclusionPatternsPage extends FieldEditorPreferencePage implements IWorkbenchPropertyPage,
@@ -154,45 +147,11 @@ public final class ExclusionInclusionPatternsPage extends FieldEditorPreferenceP
 
                 // rebuild the workspace
                 if (result == 2) {
-                    final String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
-                    final Job job = new Job(name) {
-                        @Override
-                        protected IStatus run(final IProgressMonitor monitor) {
-                            if (ExclusionInclusionPatternsPage.this.project != null) {
-                                final IProject proj = ExclusionInclusionPatternsPage.this.project;
-
-                                try {
-                                    this.rebuildProject(proj, monitor);
-                                } catch (final CoreException e) {
-                                    return e.getStatus();
-                                }
-
-                                return Status.OK_STATUS;
-                            } else {
-                                final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-                                try {
-                                    final IProject[] projects = workspace.getRoot().getProjects();
-                                    for (final IProject proj : projects) {
-                                        this.rebuildProject(proj, monitor);
-                                    }
-                                } catch (final CoreException e) {
-                                    return e.getStatus();
-                                }
-
-                                return Status.OK_STATUS;
-                            }
-                        }
-
-                        private void rebuildProject(final IProject proj, final IProgressMonitor monitor) throws CoreException {
-                            if (proj.hasNature(ProjectNature.ID)) {
-                                proj.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-                                proj.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-                            }
-                        }
-                    };
-                    job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
-                    job.schedule();
+                    if (this.project != null) {
+                        BuildUtils.rebuildProject(this.project);
+                    } else {
+                        BuildUtils.rebuildWorkspace();
+                    }
                 }
             }
 
