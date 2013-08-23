@@ -47,29 +47,6 @@ public final class SearchResult extends AbstractTextSearchResult {
     }
 
     @Override
-    public String getLabel() {
-        String searchString = this.query.getSearchString();
-        int matchCount = this.getMatchCount();
-
-        return MessageFormat.format("''{0}'' - {1,choice,1#1 match|1<{1,number,integer} matches} in project", searchString, matchCount);
-    }
-
-    @Override
-    public String getTooltip() {
-        return null;
-    }
-
-    @Override
-    public ImageDescriptor getImageDescriptor() {
-        return null;
-    }
-
-    @Override
-    public ISearchQuery getQuery() {
-        return this.query;
-    }
-
-    @Override
     public IEditorMatchAdapter getEditorMatchAdapter() {
         return new MyEditorMatchAdapter();
     }
@@ -79,20 +56,30 @@ public final class SearchResult extends AbstractTextSearchResult {
         return new MyFileMatchAdapter();
     }
 
+    @Override
+    public ImageDescriptor getImageDescriptor() {
+        return null;
+    }
+
+    @Override
+    public String getLabel() {
+        String searchString = this.query.getSearchString();
+        int matchCount = this.getMatchCount();
+
+        return MessageFormat.format("''{0}'' - {1,choice,1#1 match|1<{1,number,integer} matches} in project", searchString, matchCount);
+    }
+
+    @Override
+    public ISearchQuery getQuery() {
+        return this.query;
+    }
+
+    @Override
+    public String getTooltip() {
+        return null;
+    }
+
     private static final class MyEditorMatchAdapter implements IEditorMatchAdapter {
-        @Override
-        public boolean isShownInEditor(Match match, IEditorPart editor) {
-            IFile file = (IFile) match.getElement();
-            IEditorInput editorInput = editor.getEditorInput();
-
-            if (editorInput instanceof IFileEditorInput) {
-                IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
-
-                return fileEditorInput.getFile().equals(file);
-            }
-
-            return false;
-        }
 
         @Override
         public Match[] computeContainedMatches(AbstractTextSearchResult result, IEditorPart editor) {
@@ -107,17 +94,34 @@ public final class SearchResult extends AbstractTextSearchResult {
 
             return null;
         }
+
+        @Override
+        public boolean isShownInEditor(Match match, IEditorPart editor) {
+            IFile file = (IFile) match.getElement();
+            IEditorInput editorInput = editor.getEditorInput();
+
+            if (editorInput instanceof IFileEditorInput) {
+                IFileEditorInput fileEditorInput = (IFileEditorInput) editorInput;
+
+                return fileEditorInput.getFile().equals(file);
+            }
+
+            return false;
+        }
+
     }
 
     private static final class MyFileMatchAdapter implements IFileMatchAdapter {
-        @Override
-        public IFile getFile(Object element) {
-            return (IFile) element;
-        }
 
         @Override
         public Match[] computeContainedMatches(AbstractTextSearchResult result, IFile file) {
             return result.getMatches(file);
         }
+
+        @Override
+        public IFile getFile(Object element) {
+            return (IFile) element;
+        }
+
     }
 }

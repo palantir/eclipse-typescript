@@ -138,36 +138,36 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             IPreferenceConstants.COMPILER_CODE_GEN_TARGET,
             getResource("code.gen.target"),
             this.createComboFieldValues(LanguageVersion.values()),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.moduleGenTargetField = new ComboFieldEditor(
             IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
             getResource("module.gen.target"),
             this.createComboFieldValues(ModuleGenTarget.values()),
-            getFieldEditorParent());
+            this.getFieldEditorParent());
         this.addField(this.moduleGenTargetField);
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
             getResource("no.lib"),
-            getFieldEditorParent()));
+            this.getFieldEditorParent()));
 
         this.compileOnSaveField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,
             getResource("compile.on.save"),
-            getFieldEditorParent());
+            this.getFieldEditorParent());
         this.addField(this.compileOnSaveField);
 
         this.sourceMapField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_MAP_SOURCE_FILES,
             getResource("map.source.files"),
-            getFieldEditorParent());
+            this.getFieldEditorParent());
         this.addField(this.sourceMapField);
 
         this.removeCommentsField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_REMOVE_COMMENTS,
             getResource("remove.comments"),
-            getFieldEditorParent());
+            this.getFieldEditorParent());
         this.addField(this.removeCommentsField);
     }
 

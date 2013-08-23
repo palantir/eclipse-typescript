@@ -46,6 +46,8 @@ public final class Bridge {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final String OS_NAME = System.getProperty("os.name");
     private static final Splitter PATH_SPLITTER = Splitter.on(File.pathSeparatorChar);
+    private static final String ERROR_PREFIX = "ERROR: ";
+    private static final String RESULT_PREFIX = "RESULT: ";
 
     private Process nodeProcess;
     private BufferedReader nodeStdout;
@@ -115,16 +117,19 @@ public final class Bridge {
             // process errors and logger statements
             if (line == null) {
                 throw new IllegalStateException("The node process has crashed.");
-            } else if (line.startsWith("ERROR: ")) {
-                line = line.substring(7, line.length()); // remove "ERROR: "
+            } else if (line.startsWith(ERROR_PREFIX)) {
+                // remove prefix
+                line = line.substring(ERROR_PREFIX.length(), line.length());
+                // put newlines back
                 line = line.replaceAll("\\\\n", LINE_SEPARATOR); // put newlines back
-                line = line.replaceAll("    ", "\t"); // replace spaces with tabs (to match Java stack traces)
+                // replace soft tabs with hardtabs to match Java's error stack trace.
+                line = line.replaceAll("    ", "\t");
 
                 throw new RuntimeException("The following request caused an error to be thrown:" + LINE_SEPARATOR
                         + requestJson + LINE_SEPARATOR
                         + line);
-            } else if (line.startsWith("RESULT: ")) {
-                resultJson = line.substring(8);
+            } else if (line.startsWith(RESULT_PREFIX)) {
+                resultJson = line.substring(RESULT_PREFIX.length());
             } else { // log statement
                 System.out.println(line);
             }

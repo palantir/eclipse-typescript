@@ -74,7 +74,7 @@ public enum ScriptElementKind {
     CONSTRUCTOR_IMPLEMENTATION_ELEMENT("constructor"),
 
     // interface Y { ():number), }
-    call_signature_element("call"),
+    CALL_SIGNATURE_ELEMENT("call"),
 
     // interface Y { []:number), }
     INDEX_SIGNATURE_ELEMENT("index"),

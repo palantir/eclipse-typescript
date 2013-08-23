@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
-import java.util.Locale;
 
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
@@ -72,10 +71,6 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
     }
 
     @Override
-    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
-    }
-
-    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
         checkNotNull(viewer);
         checkArgument(offset >= 0);
@@ -100,12 +95,13 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
             } catch (BadLocationException e) {
                 throw new RuntimeException(e);
             }
+            PrefixMatcher prefixMatcher = new PrefixMatcher(prefix);
 
             for (CompletionEntryDetails entry : entries) {
                 String replacementString = entry.getName();
 
                 // filter the entries to only include the ones matching the current prefix
-                if (replacementString.toLowerCase(Locale.US).startsWith(prefix.toLowerCase(Locale.US))) {
+                if (prefixMatcher.matches(replacementString)) {
                     int replacementOffset = this.currentOffset;
                     int replacementLength = offset - this.currentOffset;
                     int cursorPosition = replacementString.length();
@@ -114,8 +110,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     IContextInformation contextInformation = null;
                     String additionalProposalInfo = entry.getDocComment();
                     CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
-                        cursorPosition,
-                        image, displayString, contextInformation, additionalProposalInfo);
+                        cursorPosition, image, displayString, contextInformation, additionalProposalInfo);
 
                     proposals.add(proposal);
                 }
@@ -150,6 +145,27 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         return null;
     }
 
+    @Override
+    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+    }
+
+    private static String getDisplayString(CompletionEntryDetails completion) {
+        String displayString = completion.getName();
+        String type = completion.getType();
+
+        if (type != null) {
+            ScriptElementKind kind = completion.getKind();
+
+            if (isFunction(kind)) {
+                displayString += type;
+            } else if (isVariable(kind)) {
+                displayString += ": " + type;
+            }
+        }
+
+        return displayString;
+    }
+
     private int getOffset(int offset) {
         if (this.currentCompletionInfo != null) {
             boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
@@ -171,28 +187,15 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         return 0;
     }
 
-    private static String getDisplayString(CompletionEntryDetails completion) {
-        String displayString = completion.getName();
-        String type = completion.getType();
-
-        if (type != null) {
-            ScriptElementKind kind = completion.getKind();
-
-            if (isFunction(kind)) {
-                displayString += type;
-            } else if (kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
-                    || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
-                    || kind == ScriptElementKind.VARIABLE_ELEMENT) {
-                displayString += ": " + type;
-            }
-        }
-
-        return displayString;
-    }
-
     private static boolean isFunction(ScriptElementKind kind) {
         return kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
                 || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
                 || kind == ScriptElementKind.FUNCTION_ELEMENT;
+    }
+
+    private static boolean isVariable(ScriptElementKind kind) {
+        return kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
+                || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
+                || kind == ScriptElementKind.VARIABLE_ELEMENT;
     }
 }

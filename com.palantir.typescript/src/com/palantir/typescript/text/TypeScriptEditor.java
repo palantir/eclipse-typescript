@@ -30,7 +30,6 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -39,6 +38,7 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
@@ -50,6 +50,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
@@ -143,9 +144,9 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     public String getFileName() {
-        IPathEditorInput editorInput = (IPathEditorInput) this.getEditorInput();
+        IEditorInput input = this.getEditorInput();
 
-        return editorInput.getPath().toOSString();
+        return this.getFileName(input);
     }
 
     public LanguageService getLanguageService() {
@@ -154,15 +155,18 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        IPathEditorInput editorInput = (IPathEditorInput) input;
+        String fileName = this.getFileName(input);
 
-        // create the language service
-        IResource resource = ResourceUtil.getResource(input);
-        IProject project = resource.getProject();
-        this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+        if (input instanceof IPathEditorInput) {
+            IResource resource = ResourceUtil.getResource(input);
+            IProject project = resource.getProject();
+
+            this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+        } else if (input instanceof FileStoreEditorInput) {
+            this.languageService = new LanguageService(fileName);
+        }
 
         // inform the language service that the file is open
-        String fileName = editorInput.getPath().toOSString();
         this.languageService.setFileOpen(fileName, true);
 
         super.init(site, input);
@@ -238,7 +242,7 @@ public final class TypeScriptEditor extends TextEditor {
         this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
 
         // quick outline
-        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this, (TypeScriptSourceViewer) this.getSourceViewer());
+        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this);
         quickOutlineAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.QUICK_OUTLINE);
         this.setAction(ITypeScriptActionDefinitionIds.QUICK_OUTLINE, quickOutlineAction);
 
@@ -255,39 +259,34 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-
         this.fAnnotationAccess = this.getAnnotationAccess();
-        this.fOverviewRuler = createOverviewRuler(this.getSharedColors());
+        this.fOverviewRuler = this.createOverviewRuler(this.getSharedColors());
 
-        ISourceViewer sourceViewer = new TypeScriptSourceViewer(parent, ruler, this.getOverviewRuler(), this.isOverviewRulerVisible(),
-            styles);
+        IOverviewRuler overviewRuler = this.getOverviewRuler();
+        boolean overviewRulerVisible = this.isOverviewRulerVisible();
+        ISourceViewer sourceViewer = new TypeScriptSourceViewer(parent, ruler, overviewRuler, overviewRulerVisible, styles);
+
         // ensure decoration support has been created and configured
         this.getSourceViewerDecorationSupport(sourceViewer);
 
+        // listen for text input events to keep the language services in sync
         sourceViewer.addTextInputListener(new MyListener());
 
         return sourceViewer;
     }
 
     @Override
-    protected void doSetInput(IEditorInput input) throws CoreException {
-        super.doSetInput(input);
+    protected void initializeEditor() {
+        super.initializeEditor();
 
+        // set the preference store
         List<IPreferenceStore> preferenceStores = Lists.newArrayList();
         preferenceStores.add(TypeScriptPlugin.getDefault().getPreferenceStore());
         preferenceStores.add(EditorsUI.getPreferenceStore());
         preferenceStores.add(PlatformUI.getPreferenceStore());
         IPreferenceStore[] array = preferenceStores.toArray(new IPreferenceStore[preferenceStores.size()]);
         ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(array);
-
         this.setPreferenceStore(chainedPreferenceStore);
-    }
-
-    @Override
-    protected void initializeEditor() {
-        super.initializeEditor();
-
-        this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
     }
 
     @Override
@@ -296,6 +295,28 @@ public final class TypeScriptEditor extends TextEditor {
                 "com.palantir.typescript.text.typeScriptEditorScope",
                 "org.eclipse.ui.textEditorScope"
         });
+    }
+
+    @Override
+    protected void setPreferenceStore(IPreferenceStore store) {
+        super.setPreferenceStore(store);
+
+        // set a new source viewer configuration when the preference store is changed
+        this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
+    }
+
+    private String getFileName(IEditorInput input) {
+        if (input instanceof IPathEditorInput) {
+            IPathEditorInput editorInput = (IPathEditorInput) input;
+
+            return editorInput.getPath().toOSString();
+        } else if (input instanceof FileStoreEditorInput) {
+            FileStoreEditorInput editorInput = (FileStoreEditorInput) input;
+
+            return editorInput.getURI().getPath();
+        }
+
+        throw new UnsupportedOperationException();
     }
 
     private final class MyListener implements IDocumentListener, ITextInputListener {

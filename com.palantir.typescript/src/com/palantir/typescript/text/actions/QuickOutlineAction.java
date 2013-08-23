@@ -16,8 +16,6 @@
 
 package com.palantir.typescript.text.actions;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.palantir.typescript.text.TypeScriptEditor;
 import com.palantir.typescript.text.TypeScriptSourceViewer;
 
@@ -28,20 +26,12 @@ import com.palantir.typescript.text.TypeScriptSourceViewer;
  */
 public final class QuickOutlineAction extends TypeScriptEditorAction {
 
-
-    private final TypeScriptSourceViewer sourceViewer;
-
-    public QuickOutlineAction(TypeScriptEditor editor, TypeScriptSourceViewer sourceViewer) {
+    public QuickOutlineAction(TypeScriptEditor editor) {
         super(editor);
-
-        checkNotNull(sourceViewer);
-
-        this.sourceViewer = sourceViewer;
     }
-
 
     @Override
     public void run() {
-        this.sourceViewer.doOperation(TypeScriptSourceViewer.SHOW_OUTLINE);
+        this.doOperation(TypeScriptSourceViewer.SHOW_OUTLINE);
     }
 }

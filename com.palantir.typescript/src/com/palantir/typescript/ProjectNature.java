@@ -37,8 +37,8 @@ public final class ProjectNature implements IProjectNature {
 
     @Override
     public void configure() throws CoreException {
-        IProjectDescription desc = this.project.getDescription();
-        ICommand[] commands = desc.getBuildSpec();
+        IProjectDescription description = this.project.getDescription();
+        ICommand[] commands = description.getBuildSpec();
 
         for (int i = 0; i < commands.length; ++i) {
             if (commands[i].getBuilderName().equals(TypeScriptBuilder.ID)) {
@@ -48,11 +48,11 @@ public final class ProjectNature implements IProjectNature {
 
         ICommand[] newCommands = new ICommand[commands.length + 1];
         System.arraycopy(commands, 0, newCommands, 0, commands.length);
-        ICommand command = desc.newCommand();
+        ICommand command = description.newCommand();
         command.setBuilderName(TypeScriptBuilder.ID);
         newCommands[newCommands.length - 1] = command;
-        desc.setBuildSpec(newCommands);
-        this.project.setDescription(desc, null);
+        description.setBuildSpec(newCommands);
+        this.project.setDescription(description, null);
     }
 
     @Override
@@ -81,5 +81,4 @@ public final class ProjectNature implements IProjectNature {
     public void setProject(IProject project) {
         this.project = project;
     }
-
 }

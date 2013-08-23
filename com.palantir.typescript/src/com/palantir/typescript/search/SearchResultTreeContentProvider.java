@@ -47,10 +47,57 @@ final class SearchResultTreeContentProvider implements ITreeContentProvider {
     }
 
     @Override
+    public Object[] getChildren(Object parentElement) {
+        return this.children.get(parentElement).toArray();
+    }
+
+    @Override
+    public Object[] getElements(Object inputElement) {
+        return this.getChildren(inputElement);
+    }
+
+    @Override
+    public Object getParent(Object element) {
+        if (element instanceof IResource) {
+            if (!(element instanceof IProject)) {
+                IResource resource = (IResource) element;
+
+                return resource.getParent();
+            }
+        } else if (element instanceof LineResult) {
+            LineResult lineResult = (LineResult) element;
+
+            return lineResult.getMatches().get(0).getElement();
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean hasChildren(Object element) {
+        return !this.children.get(element).isEmpty();
+    }
+
+    @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
         if (newInput instanceof SearchResult) {
             this.setSearchResult((SearchResult) newInput);
         }
+    }
+
+    private void add(SearchResult searchResult, Object child) {
+        Object parent = this.getParent(child);
+
+        while (parent != null) {
+            if (!this.children.put(parent, child)) {
+                return;
+            }
+
+            child = parent;
+            parent = this.getParent(child);
+        }
+
+        this.children.put(searchResult, child);
     }
 
     private void setSearchResult(SearchResult searchResult) {
@@ -75,52 +122,5 @@ final class SearchResultTreeContentProvider implements ITreeContentProvider {
                 this.add(searchResult, lineResult);
             }
         }
-    }
-
-    @Override
-    public Object[] getElements(Object inputElement) {
-        return this.getChildren(inputElement);
-    }
-
-    @Override
-    public Object[] getChildren(Object parentElement) {
-        return this.children.get(parentElement).toArray();
-    }
-
-    @Override
-    public boolean hasChildren(Object element) {
-        return !this.children.get(element).isEmpty();
-    }
-
-    @Override
-    public Object getParent(Object element) {
-        if (element instanceof IResource) {
-            if (!(element instanceof IProject)) {
-                IResource resource = (IResource) element;
-
-                return resource.getParent();
-            }
-        } else if (element instanceof LineResult) {
-            LineResult lineResult = (LineResult) element;
-
-            return lineResult.getMatches().get(0).getElement();
-        }
-
-        return null;
-    }
-
-    private void add(SearchResult searchResult, Object child) {
-        Object parent = this.getParent(child);
-
-        while (parent != null) {
-            if (!this.children.put(parent, child)) {
-                return;
-            }
-
-            child = parent;
-            parent = this.getParent(child);
-        }
-
-        this.children.put(searchResult, child);
     }
 }

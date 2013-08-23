@@ -24,15 +24,18 @@ import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.NavigateToItem;
 
@@ -78,9 +81,63 @@ public final class OutlinePage extends ContentOutlinePage {
         this.getSite().getWorkbenchWindow().getSelectionService().removePostSelectionListener(this.selectionListener);
     }
 
+    public boolean isVisible() {
+        Control control = this.getControl();
+
+        return control != null && !control.isDisposed() && control.isVisible();
+    }
+
+    public void refreshInput() {
+        String fileName = this.editor.getFileName();
+        List<NavigateToItem> lexicalStructure = this.editor.getLanguageService().getScriptLexicalStructure(fileName);
+
+        this.setInput(lexicalStructure);
+    }
+
+    public void setInput(List<NavigateToItem> lexicalStructure) {
+        checkNotNull(lexicalStructure);
+
+        if (!lexicalStructure.equals(this.getTreeViewer().getInput())) {
+            List<TreePath> newExpandedTreePaths = mapTreePaths(lexicalStructure);
+
+            this.getTreeViewer().setInput(lexicalStructure);
+            this.getTreeViewer().setExpandedTreePaths(newExpandedTreePaths.toArray(new TreePath[0]));
+        }
+    }
+
     @Override
     protected int getTreeStyle() {
         return SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
+    }
+
+    private NavigateToItem mapSegment(List<NavigateToItem> lexicalStructure, NavigateToItem segment) {
+        for (NavigateToItem item : lexicalStructure) {
+            if (segment.getName().equals(item.getName()) && segment.getContainerName().equals(item.getContainerName())) {
+                return item;
+            }
+        }
+
+        return null;
+    }
+
+    private List<TreePath> mapTreePaths(List<NavigateToItem> lexicalStructure) {
+        ImmutableList.Builder<TreePath> treePaths = ImmutableList.builder();
+
+        for (TreePath treePath : this.getTreeViewer().getExpandedTreePaths()) {
+            TreePath newTreePath = TreePath.EMPTY;
+
+            for (int i = 0; i < treePath.getSegmentCount(); i++) {
+                NavigateToItem segment = (NavigateToItem) treePath.getSegment(i);
+                NavigateToItem newSegment = mapSegment(lexicalStructure, segment);
+                if (newSegment != null) {
+                    newTreePath = newTreePath.createChildPath(newSegment);
+                }
+            }
+
+            treePaths.add(newTreePath);
+        }
+
+        return treePaths.build();
     }
 
     private final class MySelectionChangedListener implements ISelectionChangedListener {
@@ -107,7 +164,7 @@ public final class OutlinePage extends ContentOutlinePage {
                 TreeItem[] treeItems = getTreeViewer().getTree().getItems();
 
                 if (!this.selectTreeItem(treeItems, offset)) {
-                    getTreeViewer().getTree().deselectAll();
+                    OutlinePage.this.getTreeViewer().getTree().deselectAll();
                 }
             }
         }
@@ -117,6 +174,10 @@ public final class OutlinePage extends ContentOutlinePage {
 
             for (TreeItem treeItem : treeItems) {
                 NavigateToItem navigateToItem = (NavigateToItem) treeItem.getData();
+
+                if (navigateToItem == null) {
+                    continue;
+                }
 
                 if (navigateToItem.getMinChar() <= offset && offset <= navigateToItem.getLimChar()) {
                     TreeItem[] childTreeItems = treeItem.getItems();
@@ -128,7 +189,7 @@ public final class OutlinePage extends ContentOutlinePage {
 
                     // no better match found, select this item
                     if (!selected) {
-                        getTreeViewer().getTree().select(treeItem);
+                        OutlinePage.this.getTreeViewer().getTree().select(treeItem);
                         selected = true;
                     }
 

@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.text.actions;
 
-import org.eclipse.jface.text.ITextOperationTarget;
 import org.eclipse.jface.text.source.ISourceViewer;
 
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -34,8 +33,6 @@ public final class FormatAction extends TypeScriptEditorAction {
 
     @Override
     public void run() {
-        ITextOperationTarget textOperationTarget = this.getTextOperationTarget();
-
-        textOperationTarget.doOperation(ISourceViewer.FORMAT);
+        this.doOperation(ISourceViewer.FORMAT);
     }
 }

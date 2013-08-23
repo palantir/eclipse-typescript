@@ -55,19 +55,59 @@ public final class LanguageService {
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
-    private final IProject project;
     private final MyPropertyChangeListener preferencesListener;
 
+    public LanguageService(String fileName) {
+        this(ImmutableList.of(fileName));
+    }
+
     public LanguageService(IProject project) {
+        this(getProjectFiles(project));
+    }
+
+    private LanguageService(List<String> fileNames) {
+        checkNotNull(fileNames);
+
         this.bridge = new Bridge();
-        this.project = project;
         this.preferencesListener = new MyPropertyChangeListener();
 
         this.addDefaultLibrary();
-        this.addProjectFiles();
+        this.addFiles(fileNames);
         this.updateCompilationSettings();
 
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
+    }
+
+    public void dispose() {
+        TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
+        this.bridge.dispose();
+    }
+
+    public void editFile(String fileName, int offset, int length, String replacementText) {
+        checkNotNull(fileName);
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
+        checkNotNull(replacementText);
+
+        Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
+        this.bridge.call(request, Void.class);
+    }
+
+    public List<Reference> findReferences(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "findReferences", fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Reference.class);
+        return this.bridge.call(request, returnType);
+    }
+
+    public Map<String, List<Diagnostic>> getAllDiagnostics() {
+        Request request = new Request(SERVICE, "getAllDiagnostics");
+        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
+        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
+        return LanguageService.this.bridge.call(request, returnType);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -85,14 +125,6 @@ public final class LanguageService {
         Request request = new Request(SERVICE, "getDefinitionAtPosition", fileName, position);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DefinitionInfo.class);
         return this.bridge.call(request, resultType);
-    }
-
-    public Map<String, List<Diagnostic>> getAllDiagnostics() {
-        Request request = new Request(SERVICE, "getAllDiagnostics");
-        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
-        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
-        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
-        return LanguageService.this.bridge.call(request, returnType);
     }
 
     public List<Diagnostic> getDiagnostics(String fileName) {
@@ -182,25 +214,6 @@ public final class LanguageService {
         return this.bridge.call(request, TypeInfo.class);
     }
 
-    public List<Reference> findReferences(String fileName, int position) {
-        checkNotNull(fileName);
-        checkArgument(position >= 0);
-
-        Request request = new Request(SERVICE, "findReferences", fileName, position);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Reference.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public void editFile(String fileName, int offset, int length, String replacementText) {
-        checkNotNull(fileName);
-        checkArgument(offset >= 0);
-        checkArgument(length >= 0);
-        checkNotNull(replacementText);
-
-        Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
-        this.bridge.call(request, Void.class);
-    }
-
     public void setFileOpen(String fileName, boolean open) {
         checkNotNull(fileName);
 
@@ -218,11 +231,6 @@ public final class LanguageService {
         }
     }
 
-    public void dispose() {
-        TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
-        this.bridge.dispose();
-    }
-
     private void addDefaultLibrary() {
         String libraryContents;
         try {
@@ -235,11 +243,16 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private void addProjectFiles() {
+    private void addFiles(List<String> fileNames) {
+        Request request = new Request(SERVICE, "addFiles", fileNames);
+        this.bridge.call(request, Void.class);
+    }
+
+    private static List<String> getProjectFiles(final IProject project) {
         final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
 
         try {
-            this.project.accept(new IResourceVisitor() {
+            project.accept(new IResourceVisitor() {
                 @Override
                 public boolean visit(IResource resource) throws CoreException {
                     if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
@@ -255,8 +268,7 @@ public final class LanguageService {
             throw new RuntimeException(e);
         }
 
-        Request request = new Request(SERVICE, "addFiles", fileNames.build());
-        this.bridge.call(request, Void.class);
+        return fileNames.build();
     }
 
     private void updateCompilationSettings() {
