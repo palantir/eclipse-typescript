@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript.text.reconciler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

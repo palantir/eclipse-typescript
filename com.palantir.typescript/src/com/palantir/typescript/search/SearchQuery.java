@@ -42,12 +42,11 @@ import com.palantir.typescript.services.language.Reference;
  */
 public final class SearchQuery implements ISearchQuery {
 
-    private final LanguageService languageService;
     private final String fileName;
+    private final LanguageService languageService;
     private final int offset;
-    private final String searchString;
-
     private final SearchResult result;
+    private final String searchString;
 
     public SearchQuery(LanguageService languageService, String fileName, int offset, String searchString) {
         checkNotNull(languageService);
@@ -55,8 +54,8 @@ public final class SearchQuery implements ISearchQuery {
         checkArgument(offset >= 0);
         checkNotNull(searchString);
 
-        this.languageService = languageService;
         this.fileName = fileName;
+        this.languageService = languageService;
         this.offset = offset;
         this.searchString = searchString;
 

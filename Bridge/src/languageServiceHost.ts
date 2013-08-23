@@ -54,7 +54,7 @@ module Bridge {
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
-            var fileInfo = this.fileInfos.get(fileName).editContents(offset, length, text);
+            this.fileInfos.get(fileName).editContents(offset, length, text);
         }
 
         public setFileOpen(fileName: string, open: boolean) {
@@ -193,8 +193,16 @@ module Bridge {
             this.open = false;
         }
 
-        public getVersion(): number {
-            return this.changes.length;
+        public editContents(offset: number, length: number, text: string): void {
+            var prefix = this.contents.substring(0, offset);
+            var suffix = this.contents.substring(offset + length);
+            var newContents = prefix + text + suffix;
+            var span = new TypeScript.TextSpan(offset, length);
+            var change = new TypeScript.TextChangeRange(span, text.length);
+
+            this.contents = newContents;
+
+            this.changes.push(change);
         }
 
         public getOpen(): boolean {
@@ -209,16 +217,8 @@ module Bridge {
             return new ScriptSnapshot(this.changes.slice(0), this.contents, this.getVersion());
         }
 
-        public editContents(offset: number, length: number, text: string): void {
-            var prefix = this.contents.substring(0, offset);
-            var suffix = this.contents.substring(offset + length);
-            var newContents = prefix + text + suffix;
-            var span = new TypeScript.TextSpan(offset, length);
-            var change = new TypeScript.TextChangeRange(span, text.length);
-
-            this.contents = newContents;
-
-            this.changes.push(change);
+        public getVersion(): number {
+            return this.changes.length;
         }
 
         public updateFile(fileInformation: FileInformation) {

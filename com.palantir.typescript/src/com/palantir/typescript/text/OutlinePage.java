@@ -83,6 +83,7 @@ public final class OutlinePage extends ContentOutlinePage {
 
     public boolean isVisible() {
         Control control = this.getControl();
+
         return control != null && !control.isDisposed() && control.isVisible();
     }
 
@@ -96,10 +97,9 @@ public final class OutlinePage extends ContentOutlinePage {
     public void setInput(List<NavigateToItem> lexicalStructure) {
         checkNotNull(lexicalStructure);
 
-        List<TreePath> newExpandedTreePaths = mapTreePaths(lexicalStructure);
-        List<NavigateToItem> input = (List<NavigateToItem>) this.getTreeViewer().getInput();
+        if (!lexicalStructure.equals(this.getTreeViewer().getInput())) {
+            List<TreePath> newExpandedTreePaths = mapTreePaths(lexicalStructure);
 
-        if (!lexicalStructure.equals(input)) {
             this.getTreeViewer().setInput(lexicalStructure);
             this.getTreeViewer().setExpandedTreePaths(newExpandedTreePaths.toArray(new TreePath[0]));
         }
@@ -164,7 +164,7 @@ public final class OutlinePage extends ContentOutlinePage {
                 TreeItem[] treeItems = getTreeViewer().getTree().getItems();
 
                 if (!this.selectTreeItem(treeItems, offset)) {
-                    getTreeViewer().getTree().deselectAll();
+                    OutlinePage.this.getTreeViewer().getTree().deselectAll();
                 }
             }
         }
@@ -189,7 +189,7 @@ public final class OutlinePage extends ContentOutlinePage {
 
                     // no better match found, select this item
                     if (!selected) {
-                        getTreeViewer().getTree().select(treeItem);
+                        OutlinePage.this.getTreeViewer().getTree().select(treeItem);
                         selected = true;
                     }
 

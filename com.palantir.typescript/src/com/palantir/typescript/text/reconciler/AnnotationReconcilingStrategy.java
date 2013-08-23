@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript.text.reconciler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -35,6 +35,7 @@ import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
  * The reconciling strategy for showing occurrences and diagnostics annotations.
@@ -76,19 +77,6 @@ public final class AnnotationReconcilingStrategy {
         });
     }
 
-    private boolean isDirty() {
-        final AtomicBoolean dirty = new AtomicBoolean();
-
-        Display.getDefault().syncExec(new Runnable() {
-            @Override
-            public void run() {
-                dirty.set(AnnotationReconcilingStrategy.this.editor.isDirty());
-            }
-        });
-
-        return dirty.get();
-    }
-
     private int getOffset() {
         final AtomicInteger offset = new AtomicInteger();
 
@@ -103,6 +91,19 @@ public final class AnnotationReconcilingStrategy {
         });
 
         return offset.get();
+    }
+
+    private boolean isDirty() {
+        final AtomicBoolean dirty = new AtomicBoolean();
+
+        Display.getDefault().syncExec(new Runnable() {
+            @Override
+            public void run() {
+                dirty.set(AnnotationReconcilingStrategy.this.editor.isDirty());
+            }
+        });
+
+        return dirty.get();
     }
 
     private void updateAnnotations(List<Diagnostic> diagnostics, List<ReferenceEntry> occurrences) {

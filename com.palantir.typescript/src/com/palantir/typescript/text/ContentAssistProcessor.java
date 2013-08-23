@@ -71,10 +71,6 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
     }
 
     @Override
-    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
-    }
-
-    @Override
     public ICompletionProposal[] computeCompletionProposals(ITextViewer viewer, int offset) {
         checkNotNull(viewer);
         checkArgument(offset >= 0);
@@ -114,8 +110,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     IContextInformation contextInformation = null;
                     String additionalProposalInfo = entry.getDocComment();
                     CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
-                        cursorPosition,
-                        image, displayString, contextInformation, additionalProposalInfo);
+                        cursorPosition, image, displayString, contextInformation, additionalProposalInfo);
 
                     proposals.add(proposal);
                 }
@@ -150,6 +145,27 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         return null;
     }
 
+    @Override
+    public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+    }
+
+    private static String getDisplayString(CompletionEntryDetails completion) {
+        String displayString = completion.getName();
+        String type = completion.getType();
+
+        if (type != null) {
+            ScriptElementKind kind = completion.getKind();
+
+            if (isFunction(kind)) {
+                displayString += type;
+            } else if (isVariable(kind)) {
+                displayString += ": " + type;
+            }
+        }
+
+        return displayString;
+    }
+
     private int getOffset(int offset) {
         if (this.currentCompletionInfo != null) {
             boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
@@ -171,28 +187,15 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         return 0;
     }
 
-    private static String getDisplayString(CompletionEntryDetails completion) {
-        String displayString = completion.getName();
-        String type = completion.getType();
-
-        if (type != null) {
-            ScriptElementKind kind = completion.getKind();
-
-            if (isFunction(kind)) {
-                displayString += type;
-            } else if (kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
-                    || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
-                    || kind == ScriptElementKind.VARIABLE_ELEMENT) {
-                displayString += ": " + type;
-            }
-        }
-
-        return displayString;
-    }
-
     private static boolean isFunction(ScriptElementKind kind) {
         return kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
                 || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
                 || kind == ScriptElementKind.FUNCTION_ELEMENT;
+    }
+
+    private static boolean isVariable(ScriptElementKind kind) {
+        return kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
+                || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
+                || kind == ScriptElementKind.VARIABLE_ELEMENT;
     }
 }

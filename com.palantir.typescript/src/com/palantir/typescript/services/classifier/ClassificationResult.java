@@ -44,12 +44,12 @@ public final class ClassificationResult {
         this.finalLexState = finalLexState;
     }
 
-    public EndOfLineState getFinalLexState() {
-        return this.finalLexState;
-    }
-
     public ImmutableList<ClassificationInfo> getEntries() {
         return this.entries;
+    }
+
+    public EndOfLineState getFinalLexState() {
+        return this.finalLexState;
     }
 
     @Override

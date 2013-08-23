@@ -49,12 +49,13 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     public void customizeDocumentCommand(IDocument document, DocumentCommand command) {
         String[] legalLineDelimiters = document.getLegalLineDelimiters();
 
-        // check if a newline was inserted
         if (command.length == 0 && command.text != null) {
+
+            // check if a newline was inserted, also insert the proper indentation.
             if (TextUtilities.endsWith(legalLineDelimiters, command.text) != -1) {
                 String fileName = this.editor.getFileName();
                 int offset = command.offset;
-                EditorOptions options = createEditorOptions();
+                EditorOptions options = getEditorOptions();
                 int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, offset, options);
 
                 // modify the command to use the proper indentation
@@ -65,7 +66,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         }
     }
 
-    private static EditorOptions createEditorOptions() {
+    private static EditorOptions getEditorOptions() {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
         return new EditorOptions(

@@ -38,6 +38,33 @@ module Bridge {
             this.languageServiceHost.addFiles(fileNames);
         }
 
+        public editFile(fileName: string, offset: number, length: number, text: string) {
+            this.languageServiceHost.editFile(fileName, offset, length, text);
+        }
+
+        public findReferences(fileName: string, position: number): Reference[] {
+            var references = this.getReferencesAtPosition(fileName, position);
+
+            return references.map((reference) => {
+                var snapshot = this.languageServiceHost.getScriptSnapshot(reference.fileName);
+                var lineStarts = snapshot.getLineStartPositions();
+                var lineMap = new TypeScript.LineMap(lineStarts, snapshot.getLength());
+                var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
+                var lineStart = lineMap.getLineStartPosition(lineNumber);
+                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
+                var line = snapshot.getText(lineStart, lineEnd).substring(0, 500); // truncate long lines
+
+                return {
+                    fileName: reference.fileName,
+                    minChar: reference.minChar,
+                    limChar: reference.limChar,
+                    line: line,
+                    lineNumber: lineNumber,
+                    lineStart: lineStart
+                };
+            });
+        }
+
         public getAllDiagnostics(): any {
             var diagnostics = {};
             this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
@@ -47,48 +74,6 @@ module Bridge {
             });
 
             return diagnostics;
-        }
-
-        public getDiagnostics(fileName: string): Diagnostic[] {
-            var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
-
-            if (diagnostics.length === 0) {
-                diagnostics = this.languageService.getSemanticDiagnostics(fileName);
-            }
-
-            var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
-            var lineStarts = snapshot.getLineStartPositions();
-            var length = snapshot.getLength();
-            var lineMap = new TypeScript.LineMap(lineStarts, length);
-            var resolvedDiagnostics = diagnostics.map((diagnostic) => {
-                var line = lineMap.getLineNumberFromPosition(diagnostic.start());
-
-                return {
-                    start: diagnostic.start(),
-                    length: diagnostic.length(),
-                    line: line,
-                    text: diagnostic.text().substring(0, 500) // truncate ridiculously long error messages
-                };
-            });
-
-            return resolvedDiagnostics;
-        }
-
-
-        public editFile(fileName: string, offset: number, length: number, text: string) {
-            this.languageServiceHost.editFile(fileName, offset, length, text);
-        }
-
-        public setFileOpen(fileName: string, open: boolean) {
-            this.languageServiceHost.setFileOpen(fileName, open);
-        }
-
-        public updateFiles(deltas: IFileDelta[]) {
-            this.languageServiceHost.updateFiles(deltas);
-        }
-
-        public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
-            this.languageServiceHost.setCompilationSettings(compilationSettings);
         }
 
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
@@ -121,6 +106,31 @@ module Bridge {
 
         public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
             return this.languageService.getDefinitionAtPosition(fileName, position);
+        }
+
+        public getDiagnostics(fileName: string): Diagnostic[] {
+            var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
+
+            if (diagnostics.length === 0) {
+                diagnostics = this.languageService.getSemanticDiagnostics(fileName);
+            }
+
+            var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
+            var lineStarts = snapshot.getLineStartPositions();
+            var length = snapshot.getLength();
+            var lineMap = new TypeScript.LineMap(lineStarts, length);
+            var resolvedDiagnostics = diagnostics.map((diagnostic) => {
+                var line = lineMap.getLineNumberFromPosition(diagnostic.start());
+
+                return {
+                    start: diagnostic.start(),
+                    length: diagnostic.length(),
+                    line: line,
+                    text: diagnostic.text().substring(0, 500) // truncate ridiculously long error messages
+                };
+            });
+
+            return resolvedDiagnostics;
         }
 
         public getEmitOutput(fileName: string): string[] {
@@ -177,27 +187,16 @@ module Bridge {
             return null;
         }
 
-        public findReferences(fileName: string, position: number): Reference[] {
-            var references = this.getReferencesAtPosition(fileName, position);
+        public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
+            this.languageServiceHost.setCompilationSettings(compilationSettings);
+        }
 
-            return references.map((reference) => {
-                var snapshot = this.languageServiceHost.getScriptSnapshot(reference.fileName);
-                var lineStarts = snapshot.getLineStartPositions();
-                var lineMap = new TypeScript.LineMap(lineStarts, snapshot.getLength());
-                var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
-                var lineStart = lineMap.getLineStartPosition(lineNumber);
-                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
-                var line = snapshot.getText(lineStart, lineEnd).substring(0, 500); // truncate long lines
+        public setFileOpen(fileName: string, open: boolean) {
+            this.languageServiceHost.setFileOpen(fileName, open);
+        }
 
-                return {
-                    fileName: reference.fileName,
-                    minChar: reference.minChar,
-                    limChar: reference.limChar,
-                    line: line,
-                    lineNumber: lineNumber,
-                    lineStart: lineStart
-                };
-            });
+        public updateFiles(deltas: IFileDelta[]) {
+            this.languageServiceHost.updateFiles(deltas);
         }
     }
 
@@ -207,27 +206,27 @@ module Bridge {
     }
 
     export interface Diagnostic {
-        start: number;
         length: number;
         line: number;
+        start: number;
         text: string;
     }
 
     export interface Reference {
         fileName: string;
-        minChar: number;
         limChar: number;
         line: string;
         lineNumber: number;
         lineStart: number;
+        minChar: number;
     }
 
     export interface TypeInfo {
-        memberName: string;
         docComment: string;
         fullSymbolName: string;
         kind: string;
-        minChar: number;
         limChar: number;
+        memberName: string;
+        minChar: number;
     }
 }

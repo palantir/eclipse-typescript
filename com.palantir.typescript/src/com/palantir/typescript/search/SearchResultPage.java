@@ -16,6 +16,8 @@
 
 package com.palantir.typescript.search;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
@@ -43,6 +45,8 @@ public final class SearchResultPage extends AbstractTextSearchViewPage {
 
     @Override
     protected void configureTableViewer(TableViewer viewer) {
+        checkNotNull(viewer);
+
         viewer.setContentProvider(new SearchResultTableContentProvider());
         viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new SearchResultLabelProvider(this, false)));
         viewer.setUseHashlookup(true);
@@ -50,6 +54,8 @@ public final class SearchResultPage extends AbstractTextSearchViewPage {
 
     @Override
     protected void configureTreeViewer(TreeViewer viewer) {
+        checkNotNull(viewer);
+
         viewer.setContentProvider(new SearchResultTreeContentProvider());
         viewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new SearchResultLabelProvider(this, true)));
         viewer.setUseHashlookup(true);
@@ -57,6 +63,8 @@ public final class SearchResultPage extends AbstractTextSearchViewPage {
 
     @Override
     protected void elementsChanged(Object[] objects) {
+        checkNotNull(objects);
+
         AbstractTextSearchResult input = this.getInput();
 
         this.getViewer().setInput(input);
@@ -85,7 +93,7 @@ public final class SearchResultPage extends AbstractTextSearchViewPage {
 
     @Override
     protected void showMatch(Match match, int offset, int length, boolean activate) throws PartInitException {
-        IWorkbenchPage page = getSite().getPage();
+        IWorkbenchPage page = this.getSite().getPage();
         IFile file = (IFile) match.getElement();
 
         this.openAndSelect(page, file, offset, length, activate);

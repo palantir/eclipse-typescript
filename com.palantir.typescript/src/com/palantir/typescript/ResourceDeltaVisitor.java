@@ -61,7 +61,7 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
         // add the delta if its a TypeScript file
         if (BuildPathUtils.isResourceAccepted(resource, this.buildPath)) {
             String fileName = resource.getRawLocation().toOSString();
-            Delta deltaEnum = getDeltaEnum(delta);
+            Delta deltaEnum = this.getDeltaEnum(delta);
 
             // check that the delta is a change that impacts the contents (or encoding) of the file
             if (deltaEnum != Delta.CHANGED || (delta.getFlags() & FLAGS) != 0) {

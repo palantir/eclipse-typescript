@@ -41,4 +41,7 @@ public abstract class TypeScriptEditorAction extends TextEditorAction {
     protected final ITextOperationTarget getTextOperationTarget() {
         return (ITextOperationTarget) this.getTextEditor().getAdapter(ITextOperationTarget.class);
     }
+    protected final void doOperation(int operation) {
+        this.getTextOperationTarget().doOperation(operation);
+    }
 }

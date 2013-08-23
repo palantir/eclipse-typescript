@@ -30,7 +30,6 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -39,6 +38,7 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
+import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
@@ -247,7 +247,7 @@ public final class TypeScriptEditor extends TextEditor {
         this.setAction(ITypeScriptActionDefinitionIds.OPEN_DEFINITION, openDefinitionAction);
 
         // quick outline
-        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this, (TypeScriptSourceViewer) this.getSourceViewer());
+        QuickOutlineAction quickOutlineAction = new QuickOutlineAction(this);
         quickOutlineAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.QUICK_OUTLINE);
         this.setAction(ITypeScriptActionDefinitionIds.QUICK_OUTLINE, quickOutlineAction);
 
@@ -264,39 +264,34 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     protected ISourceViewer createSourceViewer(Composite parent, IVerticalRuler ruler, int styles) {
-
         this.fAnnotationAccess = this.getAnnotationAccess();
-        this.fOverviewRuler = createOverviewRuler(this.getSharedColors());
+        this.fOverviewRuler = this.createOverviewRuler(this.getSharedColors());
 
-        ISourceViewer sourceViewer = new TypeScriptSourceViewer(parent, ruler, this.getOverviewRuler(), this.isOverviewRulerVisible(),
-            styles);
+        IOverviewRuler overviewRuler = this.getOverviewRuler();
+        boolean overviewRulerVisible = this.isOverviewRulerVisible();
+        ISourceViewer sourceViewer = new TypeScriptSourceViewer(parent, ruler, overviewRuler, overviewRulerVisible, styles);
+
         // ensure decoration support has been created and configured
         this.getSourceViewerDecorationSupport(sourceViewer);
 
+        // listen for text input events to keep the language services in sync
         sourceViewer.addTextInputListener(new MyListener());
 
         return sourceViewer;
     }
 
     @Override
-    protected void doSetInput(IEditorInput input) throws CoreException {
-        super.doSetInput(input);
+    protected void initializeEditor() {
+        super.initializeEditor();
 
+        // set the preference store
         List<IPreferenceStore> preferenceStores = Lists.newArrayList();
         preferenceStores.add(TypeScriptPlugin.getDefault().getPreferenceStore());
         preferenceStores.add(EditorsUI.getPreferenceStore());
         preferenceStores.add(PlatformUI.getPreferenceStore());
         IPreferenceStore[] array = preferenceStores.toArray(new IPreferenceStore[preferenceStores.size()]);
         ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(array);
-
         this.setPreferenceStore(chainedPreferenceStore);
-    }
-
-    @Override
-    protected void initializeEditor() {
-        super.initializeEditor();
-
-        this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
     }
 
     @Override
@@ -305,6 +300,14 @@ public final class TypeScriptEditor extends TextEditor {
                 "com.palantir.typescript.text.typeScriptEditorScope",
                 "org.eclipse.ui.textEditorScope"
         });
+    }
+
+    @Override
+    protected void setPreferenceStore(IPreferenceStore store) {
+        super.setPreferenceStore(store);
+
+        // set a new source viewer configuration when the preference store is changed
+        this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
     }
 
     private String getFileName(IEditorInput input) {

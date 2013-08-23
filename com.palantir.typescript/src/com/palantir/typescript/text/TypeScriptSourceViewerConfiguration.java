@@ -41,6 +41,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
+import com.palantir.typescript.text.reconciler.PresentationReconciler;
+import com.palantir.typescript.text.reconciler.Reconciler;
+
 /**
  * Configures the features of the editor. This is the entry point for features like intelligent
  * double click, auto completion, and syntax highlighting.

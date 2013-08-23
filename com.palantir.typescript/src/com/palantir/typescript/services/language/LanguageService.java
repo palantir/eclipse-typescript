@@ -76,6 +76,38 @@ public final class LanguageService {
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
     }
 
+    public void dispose() {
+        TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
+        this.bridge.dispose();
+    }
+
+    public void editFile(String fileName, int offset, int length, String replacementText) {
+        checkNotNull(fileName);
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
+        checkNotNull(replacementText);
+
+        Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
+        this.bridge.call(request, Void.class);
+    }
+
+    public List<Reference> findReferences(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "findReferences", fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Reference.class);
+        return this.bridge.call(request, returnType);
+    }
+
+    public Map<String, List<Diagnostic>> getAllDiagnostics() {
+        Request request = new Request(SERVICE, "getAllDiagnostics");
+        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
+        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
+        return LanguageService.this.bridge.call(request, returnType);
+    }
+
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
@@ -91,14 +123,6 @@ public final class LanguageService {
         Request request = new Request(SERVICE, "getDefinitionAtPosition", fileName, position);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DefinitionInfo.class);
         return this.bridge.call(request, resultType);
-    }
-
-    public Map<String, List<Diagnostic>> getAllDiagnostics() {
-        Request request = new Request(SERVICE, "getAllDiagnostics");
-        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
-        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
-        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
-        return LanguageService.this.bridge.call(request, returnType);
     }
 
     public List<Diagnostic> getDiagnostics(String fileName) {
@@ -188,25 +212,6 @@ public final class LanguageService {
         return this.bridge.call(request, TypeInfo.class);
     }
 
-    public List<Reference> findReferences(String fileName, int position) {
-        checkNotNull(fileName);
-        checkArgument(position >= 0);
-
-        Request request = new Request(SERVICE, "findReferences", fileName, position);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Reference.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public void editFile(String fileName, int offset, int length, String replacementText) {
-        checkNotNull(fileName);
-        checkArgument(offset >= 0);
-        checkArgument(length >= 0);
-        checkNotNull(replacementText);
-
-        Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
-        this.bridge.call(request, Void.class);
-    }
-
     public void setFileOpen(String fileName, boolean open) {
         checkNotNull(fileName);
 
@@ -222,11 +227,6 @@ public final class LanguageService {
 
             LanguageService.this.bridge.call(request, Void.class);
         }
-    }
-
-    public void dispose() {
-        TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
-        this.bridge.dispose();
     }
 
     private void addDefaultLibrary() {
@@ -249,12 +249,16 @@ public final class LanguageService {
 
     private void updateCompilationSettings() {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        CompilationSettings compilationSettings = new CompilationSettings(
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
-            LanguageVersion.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),
-            ModuleGenTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)),
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES),
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        // create the compilation settings from the preferences
+        CompilationSettings compilationSettings = new CompilationSettings();
+        compilationSettings.setCodeGenTarget(LanguageVersion.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)));
+        compilationSettings.setMapSourceFiles(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES));
+        compilationSettings.setModuleGenTarget(ModuleGenTarget.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));
+        compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
+        compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
 
         Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
         this.bridge.call(request, Void.class);

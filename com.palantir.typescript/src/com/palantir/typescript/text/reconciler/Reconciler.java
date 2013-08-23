@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript.text.reconciler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -59,6 +59,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.palantir.typescript.ResourceDeltaVisitor;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
  * A reconciler which also reconciles for selection changes.
