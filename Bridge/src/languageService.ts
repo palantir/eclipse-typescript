@@ -135,7 +135,7 @@ module Bridge {
 
         public getEmitOutput(fileName: string): string[] {
             return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFileName) {
-                IO.writeFile(outputFileName.name, outputFileName.text, outputFileName.writeByteOrderMark);
+                IOUtils.writeFileAndFolderStructure(IO, outputFileName.name, outputFileName.text, outputFileName.writeByteOrderMark);
                 return outputFileName.name;
             });
         }
