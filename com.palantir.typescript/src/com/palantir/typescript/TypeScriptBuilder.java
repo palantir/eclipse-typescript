@@ -122,9 +122,13 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                     Path path = new Path(builtFile);
                     IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
 
-                    file.refreshLocal(IResource.DEPTH_ZERO, monitor);
-                    if (file.exists()) {
-                        file.delete(false, monitor);
+                    // refresh the resource for the file if it is within the workspace
+                    if (file != null) {
+                        file.refreshLocal(IResource.DEPTH_ZERO, monitor);
+
+                        if (file.exists()) {
+                            file.delete(false, monitor);
+                        }
                     }
                 }
             }
