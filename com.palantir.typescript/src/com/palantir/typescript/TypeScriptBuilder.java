@@ -59,6 +59,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
 
+    private LanguageService cachedLanguageService;
+
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
@@ -80,24 +82,24 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
+        // dispose the language service in case it is out-of-sync
+        if (this.cachedLanguageService != null) {
+            this.cachedLanguageService.dispose();
+            this.cachedLanguageService = null;
+        }
+
         this.clean(this.getAllSourceFiles(), monitor);
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        // HACKHACK: create a new language service for each build since it seems to have some incorrect caching behavior
-        // fix is: https://typescript.codeplex.com/SourceControl/changeset/8b1915815ce48b5c17772de750a02a38bb309044
-        LanguageService languageService = new LanguageService(this.getProject());
-        try {
-            this.createMarkers(languageService, monitor);
-
-            // compile the source files if compile-on-save is enabled
-            IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-            if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-                compile(languageService, fileDeltas, monitor);
-            }
-        } finally {
-            languageService.dispose();
+        // compile the source files if compile-on-save is enabled
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            compile(fileDeltas, monitor);
         }
+
+        // create the markers second to ensure the files are compiled as quickly as possible
+        this.createMarkers(monitor);
     }
 
     private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -141,6 +143,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
+            this.getLanguageService().updateFiles(fileDeltas);
+
             this.clean(fileDeltas, monitor);
             this.build(fileDeltas, monitor);
         }
@@ -165,7 +169,15 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return files.build();
     }
 
-    private static void compile(LanguageService languageService, List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+    private LanguageService getLanguageService() {
+        if (this.cachedLanguageService == null) {
+            this.cachedLanguageService = new LanguageService(this.getProject());
+        }
+
+        return this.cachedLanguageService;
+    }
+
+    private void compile(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         for (FileDelta fileDelta : fileDeltas) {
             Delta delta = fileDelta.getDelta();
 
@@ -179,7 +191,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
                 // compile the file
                 try {
-                    compile(fileName, languageService, monitor);
+                    compile(fileName, monitor);
                 } catch (RuntimeException e) {
                     String errorMessage = "Compilation of '" + fileName + "' failed.";
                     Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
@@ -190,7 +202,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private static void compile(String fileName, LanguageService languageService, IProgressMonitor monitor) throws CoreException {
+    private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
+        LanguageService languageService = this.getLanguageService();
         for (String outputFileName : languageService.getEmitOutput(fileName)) {
             Path path = new Path(outputFileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
@@ -202,17 +215,24 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void createMarkers(LanguageService languageService, IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
+    private void createMarkers(IProgressMonitor monitor) throws CoreException {
+        // HACKHACK: create a new language service for each build since it seems to have some incorrect caching behavior
+        // fix is: https://typescript.codeplex.com/SourceControl/changeset/8b1915815ce48b5c17772de750a02a38bb309044
+        LanguageService languageService = new LanguageService(this.getProject());
+        try {
+            final Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
 
-        // create the markers within a workspace runnable for greater efficiency
-        IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-            @Override
-            public void run(IProgressMonitor runnableMonitor) throws CoreException {
-                createMarkers(diagnostics);
-            }
-        };
-        ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
+            // create the markers within a workspace runnable for greater efficiency
+            IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+                @Override
+                public void run(IProgressMonitor runnableMonitor) throws CoreException {
+                    createMarkers(diagnostics);
+                }
+            };
+            ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
+        } finally {
+            languageService.dispose();
+        }
     }
 
     private static void createMarkers(final Map<String, List<Diagnostic>> diagnostics) throws CoreException {
