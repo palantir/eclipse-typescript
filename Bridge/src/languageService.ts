@@ -134,32 +134,7 @@ module Bridge {
         }
 
         public getEmitOutput(fileName: string): string[] {
-            var outputFiles = this.languageService.getEmitOutput(fileName).outputFiles;
-
-            // add the source file if an output directory has been specified
-            var compilationSettings = this.languageServiceHost.getCompilationSettings();
-            var mapSourceFiles = compilationSettings.mapSourceFiles;
-            var outDirOption = compilationSettings.outDirOption;
-            if (mapSourceFiles && outDirOption.length !== 0) {
-                outputFiles.forEach((outputFile) => {
-                    var outputFileName = outputFile.name;
-                    var extensionIndex = outputFileName.lastIndexOf(".js");
-
-                    if (extensionIndex === outputFileName.length - 3) {
-                        var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
-                        var copiedSourceFileName = outputFileName.substring(0, extensionIndex) + ".ts";
-
-                        outputFiles.push({
-                            name: copiedSourceFileName,
-                            text: snapshot.getText(0, snapshot.getLength()),
-                            writeByteOrderMark: false
-                        });
-                    }
-                });
-            }
-
-            // write the files
-            return outputFiles.map(function(outputFile) {
+            return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFile) {
                 IOUtils.writeFileAndFolderStructure(IO, outputFile.name, outputFile.text, outputFile.writeByteOrderMark);
                 return outputFile.name;
             });
