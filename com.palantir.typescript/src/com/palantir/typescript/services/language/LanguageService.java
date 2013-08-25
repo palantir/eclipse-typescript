@@ -163,15 +163,6 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public int getIndentationAtPosition(String fileName, int offset, EditorOptions options) {
-        checkNotNull(fileName);
-        checkArgument(offset >= 0);
-        checkNotNull(options);
-
-        Request request = new Request(SERVICE, "getIndentationAtPosition", fileName, offset, options);
-        return this.bridge.call(request, Integer.class);
-    }
-
     public SpanInfo getNameOrDottedNameSpan(String fileName, int startPos, int endPos) {
         checkNotNull(fileName);
         checkArgument(startPos >= 0);
