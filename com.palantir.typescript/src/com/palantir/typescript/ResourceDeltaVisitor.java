@@ -67,15 +67,11 @@ public final class ResourceDeltaVisitor implements IResourceDeltaVisitor {
     @Override
     public boolean visit(IResourceDelta delta) throws CoreException {
         IResource resource = delta.getResource();
-
-        // check that the resource is in the source root
         IPath resourcePath = resource.getRawLocation();
-        if (!this.sourceFolderPath.isPrefixOf(resourcePath)) {
-            return resourcePath.isPrefixOf(this.sourceFolderPath);
-        }
 
         // add the delta if its a TypeScript file
-        if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
+        if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")
+                && resourcePath != null && this.sourceFolderPath.isPrefixOf(resourcePath)) {
             Delta deltaEnum = this.getDeltaEnum(delta);
 
             // check that the delta is a change that impacts the contents (or encoding) of the file
