@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.regex.Pattern;
 
-import com.google.common.base.Ascii;
+import com.google.common.base.CharMatcher;
 
 /**
  * This creates a string matcher which matches prefixes to strings using * and camel case.
@@ -29,33 +29,43 @@ import com.google.common.base.Ascii;
  */
 public final class PrefixMatcher {
 
-    private final Pattern camelCasePattern;
-    private final Pattern lowerCasePattern;
+    private static final CharMatcher UPPER_CASE = CharMatcher.JAVA_UPPER_CASE;
+
+    private final Pattern pattern;
 
     public PrefixMatcher(String prefix) {
         checkNotNull(prefix);
 
-        // turn the * wildcard into the regex .*
-        String dotStarPrefix = prefix.replaceAll("\\*", ".\\*");
+        this.pattern = createPattern(prefix);
+    }
 
-        String lowerCasePrefix = "^" + Ascii.toLowerCase(prefix) + ".*";
+    public boolean matches(String text) {
+        return this.pattern.matcher(text).matches();
+    }
 
-        if (!dotStarPrefix.isEmpty()) {
+    private static Pattern createPattern(String prefix) {
+        String regex = prefix;
+
+        // escape non-alphanumeric characters
+        regex = regex.replaceAll("([^\\p{Alnum}])", "\\\\$1");
+
+        // convert the wildcard '*' to the regex equivalent
+        regex = regex.replace("\\*", ".*");
+
+        // use either camel case or case-insensitive matching
+        if (UPPER_CASE.matchesAnyOf(regex)) {
             // the first character is treated special because we don't want to match lower
             // case characters before the first character if it is upper case
             // for example: ADL matches AddDefaultLibrary and NOT setAddDefaultLibrary
             // but aDL matches addDefaultLibrary
-            dotStarPrefix = prefix.substring(0, 1) + prefix.substring(1).replaceAll("([A-Z])", "[a-z0-9]*$1");
+            regex = regex.substring(0, 1) + regex.substring(1).replaceAll("(\\p{javaUpperCase})", "[\\\\p{javaLowerCase}0-9_\\$]*$1");
+        } else { // lower case means case-insensitive match
+            regex = "(?i)" + regex;
         }
 
-        // this match starts at the beginning of the string but doesn't need to go to the end
-        String camelCasePrefix = "^" + dotStarPrefix + ".*";
+        // the match starts at the beginning of the string but doesn't need to go to the end
+        regex = "^" + regex + ".*";
 
-        this.camelCasePattern = Pattern.compile(camelCasePrefix);
-        this.lowerCasePattern = Pattern.compile(lowerCasePrefix);
-    }
-
-    public boolean matches(String text) {
-        return this.camelCasePattern.matcher(text).matches() || this.lowerCasePattern.matcher(Ascii.toLowerCase(text)).matches();
+        return Pattern.compile(regex);
     }
 }
