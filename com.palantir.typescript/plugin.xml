@@ -100,8 +100,7 @@
             sequence="M1+M3+R"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.rename"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </key>
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+C"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
