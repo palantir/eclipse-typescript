@@ -106,7 +106,7 @@ public final class TypeScriptEditor extends TextEditor {
                 @Override
                 public void resourceChanged(IResourceChangeEvent event) {
                     IResourceDelta delta = event.getDelta();
-                    final ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getFileDeltas(delta, this.project);
+                    final ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getTypeScriptFileDeltas(delta, this.project);
 
                     this.languageService.updateFiles(fileDeltas);
                 }

@@ -259,7 +259,7 @@ public final class Reconciler implements IReconciler {
                 IResource resource = ResourceUtil.getResource(input);
                 IProject project = resource.getProject();
 
-                final ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getFileDeltas(delta, project);
+                final ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getTypeScriptFileDeltas(delta, project);
 
                 // update the files on the reconciler thread
                 Reconciler.this.executor.execute(new Runnable() {

@@ -16,6 +16,8 @@
 
 package com.palantir.typescript;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -30,7 +32,6 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 
@@ -41,7 +42,10 @@ import com.palantir.typescript.services.language.FileDelta.Delta;
  */
 public final class ResourceVisitors {
 
-    public static ImmutableList<FileDelta> getFileDeltas(IResourceDelta delta, IProject project) {
+    public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
+        checkNotNull(delta);
+        checkNotNull(project);
+
         IResource sourceFolder = getSourceFolder(project);
         MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
 
@@ -54,17 +58,19 @@ public final class ResourceVisitors {
         return visitor.fileDeltas.build();
     }
 
-    public static ImmutableList<FileDelta> getFileDeltas(IProject project) {
-        IResource sourceFolderPath = getSourceFolder(project);
+    public static ImmutableList<String> getTypeScriptFileNames(IProject project) {
+        checkNotNull(project);
+
+        IResource sourceFolder = getSourceFolder(project);
         MyResourceVisitor visitor = new MyResourceVisitor();
 
         try {
-            sourceFolderPath.accept(visitor);
+            sourceFolder.accept(visitor);
         } catch (CoreException e) {
             throw new RuntimeException(e);
         }
 
-        return visitor.fileDeltas.build();
+        return visitor.fileNames.build();
     }
 
     private static IResource getSourceFolder(IProject project) {
@@ -137,10 +143,10 @@ public final class ResourceVisitors {
 
     private static final class MyResourceVisitor implements IResourceVisitor {
 
-        private final Builder<FileDelta> fileDeltas;
+        private final ImmutableList.Builder<String> fileNames;
 
         private MyResourceVisitor() {
-            this.fileDeltas = ImmutableList.builder();
+            this.fileNames = ImmutableList.builder();
         }
 
         @Override
@@ -148,7 +154,7 @@ public final class ResourceVisitors {
             if (isTypeScriptFile(resource)) {
                 String fileName = resource.getRawLocation().toOSString();
 
-                this.fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
+                this.fileNames.add(fileName);
             }
 
             return true;

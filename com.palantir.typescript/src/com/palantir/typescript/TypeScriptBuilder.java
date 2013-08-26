@@ -143,7 +143,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getFileDeltas(delta, project);
+        ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getTypeScriptFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
             this.getLanguageService().updateFiles(fileDeltas);
@@ -154,7 +154,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private ImmutableList<FileDelta> getAllSourceFiles() {
-        return ResourceVisitors.getFileDeltas(this.getProject());
+        ImmutableList<String> fileNames = ResourceVisitors.getTypeScriptFileNames(this.getProject());
+        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
+
+        for (String fileName : fileNames) {
+            fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
+        }
+
+        return fileDeltas.build();
     }
 
     private LanguageService getLanguageService() {
