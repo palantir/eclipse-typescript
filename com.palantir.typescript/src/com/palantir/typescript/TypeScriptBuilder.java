@@ -26,7 +26,6 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -144,7 +143,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
+        ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
             this.getLanguageService().updateFiles(fileDeltas);
@@ -154,23 +153,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private ImmutableList<FileDelta> getAllSourceFiles() throws CoreException {
-        final ImmutableList.Builder<FileDelta> files = ImmutableList.builder();
-
-        this.getProject().accept(new IResourceVisitor() {
-            @Override
-            public boolean visit(IResource resource) throws CoreException {
-                if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
-                    String fileName = resource.getRawLocation().toOSString();
-
-                    files.add(new FileDelta(Delta.ADDED, fileName));
-                }
-
-                return true;
-            }
-        });
-
-        return files.build();
+    private ImmutableList<FileDelta> getAllSourceFiles() {
+        return ResourceVisitors.getFileDeltas(this.getProject());
     }
 
     private LanguageService getLanguageService() {
