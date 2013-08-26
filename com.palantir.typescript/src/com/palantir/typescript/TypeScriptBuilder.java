@@ -33,6 +33,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -41,6 +42,7 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.palantir.typescript.services.language.Diagnostic;
@@ -157,7 +159,17 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private ImmutableList<FileDelta> getAllSourceFiles() throws CoreException {
         final ImmutableList.Builder<FileDelta> files = ImmutableList.builder();
 
-        this.getProject().accept(new IResourceVisitor() {
+        final IResource sourceFolder;
+        String sourceFolderName = getProjectPreference(this.getProject(), IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+        if (!Strings.isNullOrEmpty(sourceFolderName)) {
+            IPath sourceFolderPath = Path.fromPortableString(sourceFolderName);
+
+            sourceFolder = this.getProject().getFolder(sourceFolderPath);
+        } else {
+            sourceFolder = this.getProject();
+        }
+
+        sourceFolder.accept(new IResourceVisitor() {
             @Override
             public boolean visit(IResource resource) throws CoreException {
                 if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
@@ -171,6 +183,13 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         });
 
         return files.build();
+    }
+
+    private static String getProjectPreference(IProject project, String key) {
+        IScopeContext projectScope = new ProjectScope(project);
+        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
+
+        return projectPreferences.get(key, "");
     }
 
     private LanguageService getLanguageService() {
