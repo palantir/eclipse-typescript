@@ -87,6 +87,13 @@ public final class ResourceVisitors {
         }
     }
 
+    public static boolean isTypeScriptFileForProject(IResource resource, IProject project){
+        IPath sourceFolderPath = getSourceFolder(project).getRawLocation();
+        IPath resourcePath = resource.getRawLocation();
+
+        return isTypeScriptFile(resource) && resourcePath != null && sourceFolderPath.isPrefixOf(resourcePath);
+    }
+
     private static boolean isTypeScriptFile(IResource resource) {
         return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
     }
