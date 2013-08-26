@@ -62,13 +62,20 @@ public final class BuildPathPropertyPage extends PropertyPage {
     public boolean performOk() {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
 
-        projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, this.outputFolderField.getText());
-        projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, this.sourceFolderField.getText());
+        String oldPathValue = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        String oldOutputValue = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, "");
 
-        try {
-            projectPreferences.flush();
-        } catch (BackingStoreException e) {
-            throw new RuntimeException(e);
+        if (!oldPathValue.equals(this.outputFolderField.getText()) || !oldOutputValue.equals(this.sourceFolderField.getText())){
+            projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, this.outputFolderField.getText());
+            projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, this.sourceFolderField.getText());
+
+            try {
+                projectPreferences.flush();
+            } catch (BackingStoreException e) {
+                throw new RuntimeException(e);
+            }
+
+            BuildUtils.rebuildProject((IProject) this.getElement().getAdapter(IProject.class));
         }
 
         return true;
