@@ -164,13 +164,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return fileDeltas.build();
     }
 
-    private static String getProjectPreference(IProject project, String key) {
-        IScopeContext projectScope = new ProjectScope(project);
-        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
-
-        return projectPreferences.get(key, "");
-    }
-
     private LanguageService getLanguageService() {
         if (this.cachedLanguageService == null) {
             this.cachedLanguageService = new LanguageService(this.getProject());
