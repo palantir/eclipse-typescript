@@ -63,7 +63,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
-import com.palantir.typescript.ResourceDeltaVisitor;
+import com.palantir.typescript.ResourceVisitors;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
@@ -106,7 +106,7 @@ public final class TypeScriptEditor extends TextEditor {
                 @Override
                 public void resourceChanged(IResourceChangeEvent event) {
                     IResourceDelta delta = event.getDelta();
-                    final ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, this.project);
+                    final ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getTypeScriptFileDeltas(delta, this.project);
 
                     this.languageService.updateFiles(fileDeltas);
                 }

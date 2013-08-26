@@ -26,14 +26,12 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
@@ -42,7 +40,6 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.palantir.typescript.services.language.Diagnostic;
@@ -146,7 +143,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
+        ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getTypeScriptFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
             this.getLanguageService().updateFiles(fileDeltas);
@@ -156,33 +153,15 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private ImmutableList<FileDelta> getAllSourceFiles() throws CoreException {
-        final ImmutableList.Builder<FileDelta> files = ImmutableList.builder();
+    private ImmutableList<FileDelta> getAllSourceFiles() {
+        ImmutableList<String> fileNames = ResourceVisitors.getTypeScriptFileNames(this.getProject());
+        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
 
-        final IResource sourceFolder;
-        String sourceFolderName = getProjectPreference(this.getProject(), IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
-        if (!Strings.isNullOrEmpty(sourceFolderName)) {
-            IPath sourceFolderPath = Path.fromPortableString(sourceFolderName);
-
-            sourceFolder = this.getProject().getFolder(sourceFolderPath);
-        } else {
-            sourceFolder = this.getProject();
+        for (String fileName : fileNames) {
+            fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
         }
 
-        sourceFolder.accept(new IResourceVisitor() {
-            @Override
-            public boolean visit(IResource resource) throws CoreException {
-                if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
-                    String fileName = resource.getRawLocation().toOSString();
-
-                    files.add(new FileDelta(Delta.ADDED, fileName));
-                }
-
-                return true;
-            }
-        });
-
-        return files.build();
+        return fileDeltas.build();
     }
 
     private static String getProjectPreference(IProject project, String key) {

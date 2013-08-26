@@ -25,12 +25,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -46,6 +41,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.ResourceVisitors;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
@@ -70,7 +66,7 @@ public final class LanguageService {
     }
 
     public LanguageService(IProject project) {
-        this(project, getProjectFiles(project));
+        this(project, ResourceVisitors.getTypeScriptFileNames(project));
     }
 
     private LanguageService(IProject project, List<String> fileNames) {
@@ -246,39 +242,6 @@ public final class LanguageService {
     private void addFiles(List<String> fileNames) {
         Request request = new Request(SERVICE, "addFiles", fileNames);
         this.bridge.call(request, Void.class);
-    }
-
-    private static List<String> getProjectFiles(final IProject project) {
-        final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
-
-        final IResource sourceFolder;
-        String sourceFolderName = getProjectPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
-        if (!Strings.isNullOrEmpty(sourceFolderName)) {
-            IPath sourceFolderPath = Path.fromPortableString(sourceFolderName);
-
-            sourceFolder = project.getFolder(sourceFolderPath);
-        } else {
-            sourceFolder = project;
-        }
-
-        try {
-            sourceFolder.accept(new IResourceVisitor() {
-                @Override
-                public boolean visit(IResource resource) throws CoreException {
-                    if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
-                        String fileName = resource.getRawLocation().toOSString();
-
-                        fileNames.add(fileName);
-                    }
-
-                    return true;
-                }
-            });
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        return fileNames.build();
     }
 
     private static String getProjectPreference(IProject project, String key) {
