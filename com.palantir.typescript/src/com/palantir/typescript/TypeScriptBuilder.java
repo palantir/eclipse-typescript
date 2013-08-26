@@ -157,6 +157,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableList<String> fileNames = ResourceVisitors.getTypeScriptFileNames(this.getProject());
         ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
 
+
         for (String fileName : fileNames) {
             fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
         }
