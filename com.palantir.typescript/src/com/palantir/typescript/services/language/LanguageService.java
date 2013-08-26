@@ -269,8 +269,8 @@ public final class LanguageService {
             String relativePath = getProjectPreference(this.project, IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
 
             if (!Strings.isNullOrEmpty(relativePath)) {
-                IFolder sourceFolder = this.project.getFolder(relativePath);
-                String outDir = sourceFolder.getRawLocation().toOSString() + "/";
+                IFolder outputFolder = this.project.getFolder(relativePath);
+                String outDir = outputFolder.getRawLocation().toOSString() + "/";
 
                 compilationSettings.setOutDirOption(outDir);
             }
