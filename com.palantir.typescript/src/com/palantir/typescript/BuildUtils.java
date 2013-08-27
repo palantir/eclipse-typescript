@@ -46,7 +46,9 @@ public final class BuildUtils {
                 try {
                     final IProject[] projects = workspace.getRoot().getProjects();
                     for (final IProject proj : projects) {
-                        BuildUtils.rebuildProject(proj, monitor);
+                        if (proj.isOpen()){
+                            BuildUtils.rebuildProject(proj, monitor);
+                        }
                     }
                 } catch (final CoreException e) {
                     return e.getStatus();
