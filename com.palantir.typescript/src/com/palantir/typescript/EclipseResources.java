@@ -36,11 +36,11 @@ import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
- * Resource visitors for finding TypeScript files in the source directory.
+ * Utilities for dealing with Eclipse resources.
  *
  * @author dcicerone
  */
-public final class ResourceVisitors {
+public final class EclipseResources {
 
     public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
         checkNotNull(delta);
@@ -73,6 +73,16 @@ public final class ResourceVisitors {
         return visitor.fileNames.build();
     }
 
+    public static boolean isContainedInSourceFolder(IResource resource, IProject project) {
+        checkNotNull(resource);
+        checkNotNull(project);
+
+        IPath sourceFolderPath = getSourceFolder(project).getRawLocation();
+        IPath resourcePath = resource.getRawLocation();
+
+        return resourcePath != null && sourceFolderPath.isPrefixOf(resourcePath);
+    }
+
     private static IResource getSourceFolder(IProject project) {
         IScopeContext projectScope = new ProjectScope(project);
         IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
@@ -85,13 +95,6 @@ public final class ResourceVisitors {
         } else {
             return project;
         }
-    }
-
-    public static boolean isTypeScriptFileForProject(IResource resource, IProject project){
-        IPath sourceFolderPath = getSourceFolder(project).getRawLocation();
-        IPath resourcePath = resource.getRawLocation();
-
-        return isTypeScriptFile(resource) && resourcePath != null && sourceFolderPath.isPrefixOf(resourcePath);
     }
 
     private static boolean isTypeScriptFile(IResource resource) {
@@ -168,7 +171,7 @@ public final class ResourceVisitors {
         }
     }
 
-    private ResourceVisitors() {
+    private EclipseResources() {
         // prevent instantiation
     }
 }

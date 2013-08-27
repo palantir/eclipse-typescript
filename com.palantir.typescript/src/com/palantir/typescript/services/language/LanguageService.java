@@ -41,7 +41,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
 import com.palantir.typescript.IPreferenceConstants;
-import com.palantir.typescript.ResourceVisitors;
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
@@ -66,7 +66,7 @@ public final class LanguageService {
     }
 
     public LanguageService(IProject project) {
-        this(project, ResourceVisitors.getTypeScriptFileNames(project));
+        this(project, EclipseResources.getTypeScriptFileNames(project));
     }
 
     private LanguageService(IProject project, List<String> fileNames) {

@@ -63,7 +63,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
-import com.palantir.typescript.ResourceVisitors;
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
@@ -106,7 +106,7 @@ public final class TypeScriptEditor extends TextEditor {
                 @Override
                 public void resourceChanged(IResourceChangeEvent event) {
                     IResourceDelta delta = event.getDelta();
-                    final ImmutableList<FileDelta> fileDeltas = ResourceVisitors.getTypeScriptFileDeltas(delta, this.project);
+                    final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, this.project);
 
                     this.languageService.updateFiles(fileDeltas);
                 }
@@ -161,7 +161,7 @@ public final class TypeScriptEditor extends TextEditor {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
 
-            if (ResourceVisitors.isTypeScriptFileForProject(resource, project)){
+            if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                 this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
             } else {
                 this.languageService = new LanguageService(fileName);
