@@ -18,6 +18,7 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -46,7 +47,7 @@ public final class EclipseResources {
         checkNotNull(delta);
         checkNotNull(project);
 
-        IResource sourceFolder = getSourceFolder(project);
+        IContainer sourceFolder = getSourceFolder(project);
         MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
 
         try {
@@ -61,7 +62,7 @@ public final class EclipseResources {
     public static ImmutableList<String> getTypeScriptFileNames(IProject project) {
         checkNotNull(project);
 
-        IResource sourceFolder = getSourceFolder(project);
+        IContainer sourceFolder = getSourceFolder(project);
         MyResourceVisitor visitor = new MyResourceVisitor();
 
         try {
@@ -77,13 +78,12 @@ public final class EclipseResources {
         checkNotNull(resource);
         checkNotNull(project);
 
-        IPath sourceFolderPath = getSourceFolder(project).getRawLocation();
-        IPath resourcePath = resource.getRawLocation();
+        IContainer sourceFolder = getSourceFolder(project);
 
-        return resourcePath != null && sourceFolderPath.isPrefixOf(resourcePath);
+        return isContainedIn(resource, sourceFolder);
     }
 
-    private static IResource getSourceFolder(IProject project) {
+    private static IContainer getSourceFolder(IProject project) {
         IScopeContext projectScope = new ProjectScope(project);
         IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
         String sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
@@ -95,6 +95,16 @@ public final class EclipseResources {
         } else {
             return project;
         }
+    }
+
+    private static boolean isContainedIn(IResource resource, IContainer container) {
+        for (IContainer parent = resource.getParent(); parent != null; parent = parent.getParent()) {
+            if (parent.equals(container)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static boolean isTypeScriptFile(IResource resource) {
@@ -109,11 +119,11 @@ public final class EclipseResources {
         private static final int FLAGS = IResourceDelta.CONTENT | IResourceDelta.ENCODING;
 
         private final ImmutableList.Builder<FileDelta> fileDeltas;
-        private final IPath sourceFolderPath;
+        private final IContainer sourceFolder;
 
-        public MyResourceDeltaVisitor(IResource sourceFolder) {
+        public MyResourceDeltaVisitor(IContainer sourceFolder) {
             this.fileDeltas = ImmutableList.builder();
-            this.sourceFolderPath = sourceFolder.getRawLocation();
+            this.sourceFolder = sourceFolder;
         }
 
         @Override
@@ -122,7 +132,7 @@ public final class EclipseResources {
             IPath resourcePath = resource.getRawLocation();
 
             // check that the resource is a TypeScript file in the source folder
-            if (isTypeScriptFile(resource) && resourcePath != null && this.sourceFolderPath.isPrefixOf(resourcePath)) {
+            if (isTypeScriptFile(resource) && isContainedIn(resource, this.sourceFolder)) {
                 Delta deltaEnum = this.getDeltaEnum(delta);
 
                 // check that the delta is a change that impacts the contents (or encoding) of the file
