@@ -31,26 +31,27 @@ import org.eclipse.core.runtime.jobs.Job;
  *
  * @author rserafin
  */
-public final class BuildUtils {
+public final class Builders {
 
     /**
      * Forces a full clean/rebuild of all the workspace project that have the TypeScript nature.
      */
     public static void rebuildWorkspace() {
-        final String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
-        final Job job = new Job(name) {
+        String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
+        Job job = new Job(name) {
             @Override
-            protected IStatus run(final IProgressMonitor monitor) {
-                final IWorkspace workspace = ResourcesPlugin.getWorkspace();
+            protected IStatus run(IProgressMonitor monitor) {
+                IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
                 try {
-                    final IProject[] projects = workspace.getRoot().getProjects();
-                    for (final IProject proj : projects) {
-                        if (proj.isOpen()){
-                            BuildUtils.rebuildProject(proj, monitor);
+                    IProject[] projects = workspace.getRoot().getProjects();
+
+                    for (IProject project : projects) {
+                        if (project.isOpen()) {
+                            Builders.rebuildProject(project, monitor);
                         }
                     }
-                } catch (final CoreException e) {
+                } catch (CoreException e) {
                     return e.getStatus();
                 }
 
@@ -69,13 +70,13 @@ public final class BuildUtils {
      *            the project
      */
     public static void rebuildProject(final IProject project) {
-        final String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
-        final Job job = new Job(name) {
+        String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
+        Job job = new Job(name) {
             @Override
-            protected IStatus run(final IProgressMonitor monitor) {
+            protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    BuildUtils.rebuildProject(project, monitor);
-                } catch (final CoreException e) {
+                    Builders.rebuildProject(project, monitor);
+                } catch (CoreException e) {
                     return e.getStatus();
                 }
 
@@ -87,14 +88,14 @@ public final class BuildUtils {
         job.schedule();
     }
 
-    private static void rebuildProject(final IProject project, final IProgressMonitor monitor) throws CoreException {
+    private static void rebuildProject(IProject project, IProgressMonitor monitor) throws CoreException {
         if (project.hasNature(ProjectNature.ID)) {
             project.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
             project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
         }
     }
 
-    private BuildUtils() {
-        // hiding constructor.
+    private Builders() {
+        // prevent instantiation
     }
 }
