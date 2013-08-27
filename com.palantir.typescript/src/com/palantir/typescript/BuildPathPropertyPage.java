@@ -61,21 +61,25 @@ public final class BuildPathPropertyPage extends PropertyPage {
     @Override
     public boolean performOk() {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
-
         String oldSourceFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
         String oldOutputFolder = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, "");
+        String newSourceFolder = this.sourceFolderField.getText();
+        String newOutputFolder = this.outputFolderField.getText();
 
-        if (!oldSourceFolder.equals(this.outputFolderField.getText()) || !oldOutputFolder.equals(this.sourceFolderField.getText())){
-            projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, this.outputFolderField.getText());
-            projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, this.sourceFolderField.getText());
+        if (!oldSourceFolder.equals(newSourceFolder) || !oldOutputFolder.equals(newOutputFolder)) {
+            projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, newSourceFolder);
+            projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, newOutputFolder);
 
+            // save the preferences
             try {
                 projectPreferences.flush();
             } catch (BackingStoreException e) {
                 throw new RuntimeException(e);
             }
 
-            BuildUtils.rebuildProject((IProject) this.getElement().getAdapter(IProject.class));
+            // rebuild the project
+            IProject project = (IProject) this.getElement().getAdapter(IProject.class);
+            Builders.rebuildProject(project);
         }
 
         return true;
