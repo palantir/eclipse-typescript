@@ -161,7 +161,11 @@ public final class TypeScriptEditor extends TextEditor {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
 
-            this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+            if (ResourceVisitors.isTypeScriptFileForProject(resource, project)){
+                this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+            } else {
+                this.languageService = new LanguageService(fileName);
+            }
         } else if (input instanceof FileStoreEditorInput) {
             this.languageService = new LanguageService(fileName);
         }

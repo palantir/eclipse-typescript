@@ -148,7 +148,11 @@ public final class Reconciler implements IReconciler {
                 IResource resource = ResourceUtil.getResource(input);
                 IProject project = resource.getProject();
 
-                this.cachedLanguageService = new LanguageService(project);
+                if (ResourceVisitors.isTypeScriptFileForProject(resource, project)){
+                    this.cachedLanguageService = new LanguageService(project);
+                } else {
+                    this.cachedLanguageService = new LanguageService(fileName);
+                }
             } else if (input instanceof FileStoreEditorInput) {
                 this.cachedLanguageService = new LanguageService(fileName);
             }
