@@ -29,15 +29,12 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.collect.ImmutableList;
@@ -87,7 +84,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             this.cachedLanguageService = null;
         }
 
-        this.clean(this.getAllSourceFiles(), monitor);
+        // clear the problem markers
+        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -97,41 +95,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             compile(fileDeltas, monitor);
         }
 
-        // create the markers second to ensure the files are compiled as quickly as possible
         this.createMarkers(monitor);
-    }
-
-    private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        IProject project = this.getProject();
-        IScopeContext projectScope = new ProjectScope(project);
-        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
-
-        // clear the problem markers
-        project.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-
-        // remove the built files if compile-on-save is enabled and an output directory is not specified
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)
-                && projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, null) != null) {
-            for (FileDelta fileDelta : fileDeltas) {
-                String fileName = fileDelta.getFileName();
-                ImmutableList<String> builtFiles = getBuiltFiles(fileName);
-
-                for (String builtFile : builtFiles) {
-                    Path path = new Path(builtFile);
-                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-
-                    // refresh the resource for the file if it is within the workspace
-                    if (file != null) {
-                        file.refreshLocal(IResource.DEPTH_ZERO, monitor);
-
-                        if (file.exists()) {
-                            file.delete(false, monitor);
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
@@ -148,7 +112,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         if (!fileDeltas.isEmpty()) {
             this.getLanguageService().updateFiles(fileDeltas);
 
-            this.clean(fileDeltas, monitor);
+            // clear the problem markers
+            this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
             this.build(fileDeltas, monitor);
         }
     }
@@ -263,14 +229,5 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 
         return attributes.build();
-    }
-
-    private static ImmutableList<String> getBuiltFiles(String fileName) {
-        ImmutableList.Builder<String> builtFiles = ImmutableList.builder();
-
-        builtFiles.add(fileName.replaceFirst(".ts$", ".js"));
-        builtFiles.add(fileName.replaceFirst(".ts$", ".js.map"));
-
-        return builtFiles.build();
     }
 }
