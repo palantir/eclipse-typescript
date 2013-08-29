@@ -101,6 +101,8 @@ public final class Bridge {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        this.nodeProcess = null;
     }
 
     private String processRequest(String requestJson) throws IOException {
@@ -161,6 +163,9 @@ public final class Bridge {
         }
         this.nodeStdout = new BufferedReader(new InputStreamReader(this.nodeProcess.getInputStream(), Charsets.UTF_8));
         this.nodeStdin = new PrintWriter(new OutputStreamWriter(this.nodeProcess.getOutputStream(), Charsets.UTF_8), true);
+
+        // add a shutdown hook to destroy the node process in case its not properly disposed
+        Runtime.getRuntime().addShutdownHook(new ShutdownHookThread());
     }
 
     private static File findNode() {
@@ -191,5 +196,16 @@ public final class Bridge {
         }
 
         return "node";
+    }
+
+    private class ShutdownHookThread extends Thread {
+        @Override
+        public void run() {
+            Process process = Bridge.this.nodeProcess;
+
+            if (process != null) {
+                process.destroy();
+            }
+        }
     }
 }
