@@ -69,7 +69,11 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.setContentProvider(new ContentProvider());
         treeViewer.setLabelProvider(new LabelProvider());
         treeViewer.setInput(lexicalStructure);
-        treeViewer.expandAll();
+
+        // expand all the nodes if there aren't too many of them
+        if (lexicalStructure.size() < 500) {
+            treeViewer.expandAll();
+        }
 
         this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this.selectionListener);
     }
