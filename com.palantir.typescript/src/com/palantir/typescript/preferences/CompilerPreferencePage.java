@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript;
+package com.palantir.typescript.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,6 +30,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.google.common.base.Ascii;
+import com.palantir.typescript.Builders;
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.Resources;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 

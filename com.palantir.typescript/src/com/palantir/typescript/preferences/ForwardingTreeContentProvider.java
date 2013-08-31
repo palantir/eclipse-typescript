@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript;
+package com.palantir.typescript.preferences;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -24,7 +24,7 @@ import org.eclipse.jface.viewers.Viewer;
  *
  * @author dcicerone
  */
-public abstract class ForwardingTreeContentProvider implements ITreeContentProvider {
+abstract class ForwardingTreeContentProvider implements ITreeContentProvider {
 
     private final ITreeContentProvider delegate;
 

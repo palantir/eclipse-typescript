@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript;
+package com.palantir.typescript.preferences;
 
 import java.util.List;
 
@@ -47,6 +47,9 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.osgi.service.prefs.BackingStoreException;
 
 import com.google.common.collect.Lists;
+import com.palantir.typescript.Builders;
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.TypeScriptPlugin;
 
 /**
  * The build path property page.
