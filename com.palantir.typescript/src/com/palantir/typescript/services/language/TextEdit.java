@@ -38,6 +38,7 @@ public final class TextEdit {
     public TextEdit(@JsonProperty("minChar") int minChar, @JsonProperty("limChar") int limChar, @JsonProperty("text") String text) {
         checkArgument(minChar >= 0);
         checkArgument(limChar >= 0);
+        checkArgument(minChar <= limChar);
         checkNotNull(text);
 
         this.minChar = minChar;

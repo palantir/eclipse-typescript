@@ -27,9 +27,9 @@ import com.palantir.typescript.text.TypeScriptEditor;
  *
  * @author dcicerone
  */
-public abstract class TypeScriptEditorAction extends TextEditorAction {
+abstract class TypeScriptEditorAction extends TextEditorAction {
 
-    protected TypeScriptEditorAction(TypeScriptEditor editor) {
+    public TypeScriptEditorAction(TypeScriptEditor editor) {
         super(Resources.BUNDLE, null, editor);
     }
 

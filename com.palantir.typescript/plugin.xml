@@ -154,6 +154,10 @@
             id="com.palantir.typescript.text.toggleComment"
             name="%command.toggleComment.name">
       </command>
+      <command
+            id="com.palantir.typescript.text.unhoistVariables"
+            name="%command.unhoistVariables.name">
+      </command>
    </extension>
 
    <extension
@@ -238,6 +242,9 @@
           </command>
           <command
                 commandId="com.palantir.typescript.text.toggleComment">
+          </command>
+          <command
+                commandId="com.palantir.typescript.text.unhoistVariables">
           </command>
       </menuContribution>
       <menuContribution

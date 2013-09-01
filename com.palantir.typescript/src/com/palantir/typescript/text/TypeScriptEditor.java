@@ -62,8 +62,8 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
@@ -74,6 +74,7 @@ import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.QuickOutlineAction;
 import com.palantir.typescript.text.actions.RenameAction;
 import com.palantir.typescript.text.actions.ToggleCommentAction;
+import com.palantir.typescript.text.actions.UnhoistVariablesAction;
 
 /**
  * The editor for TypeScript files.
@@ -259,6 +260,11 @@ public final class TypeScriptEditor extends TextEditor {
         ToggleCommentAction toggleCommentAction = new ToggleCommentAction(this);
         toggleCommentAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.TOGGLE_COMMENT);
         this.setAction(ITypeScriptActionDefinitionIds.TOGGLE_COMMENT, toggleCommentAction);
+
+        // unhoist variables
+        UnhoistVariablesAction unhoistVariablesAction = new UnhoistVariablesAction(this);
+        unhoistVariablesAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.UNHOIST_VARIABLES);
+        this.setAction(ITypeScriptActionDefinitionIds.UNHOIST_VARIABLES, unhoistVariablesAction);
     }
 
     @Override
