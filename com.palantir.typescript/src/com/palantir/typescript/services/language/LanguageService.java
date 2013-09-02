@@ -40,8 +40,8 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
-import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
@@ -157,6 +157,15 @@ public final class LanguageService {
         Request request = new Request(SERVICE, "getFormattingEditsForRange", fileName, minChar, limChar, options);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
         return this.bridge.call(request, resultType);
+    }
+
+    public int getIndentationAtPosition(String fileName, int position, EditorOptions options) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+        checkNotNull(options);
+
+        Request request = new Request(SERVICE, "getIndentationAtPosition", fileName, position, options);
+        return this.bridge.call(request, Integer.class);
     }
 
     public SpanInfo getNameOrDottedNameSpan(String fileName, int startPos, int endPos) {

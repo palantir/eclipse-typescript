@@ -16,48 +16,64 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
 import org.eclipse.jface.text.IAutoEditStrategy;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.services.language.EditorOptions;
 
 /**
- * The auto-edit strategy.
+ * The auto-edit strategy maintains the proper indentation when inserting line delimiters.
  *
  * @author dcicerone
  */
 public final class AutoEditStrategy implements IAutoEditStrategy {
 
+    private static final CharMatcher NON_INDENTATION = CharMatcher.anyOf(" \t").negate();
+
+    private final TypeScriptEditor editor;
+
+    public AutoEditStrategy(TypeScriptEditor editor) {
+        checkNotNull(editor);
+
+        this.editor = editor;
+    }
+
     @Override
     public void customizeDocumentCommand(IDocument document, DocumentCommand command) {
         try {
-            // customize the command if the user hit enter
+            // customize the command if the user hits enter
             if (isLineDelimiter(document, command)) {
                 int offset = command.offset;
-                IRegion lineInfo = document.getLineInformationOfOffset(offset);
-                int lineStart = lineInfo.getOffset();
-                int lineEnd = lineStart + lineInfo.getLength();
-                int indentationEnd = findEndOfIndentation(document, lineStart, lineEnd);
-                int indentationEndUpToCursor = Math.min(indentationEnd, offset);
+                int line = document.getLineOfOffset(offset);
+                int lineOffset = document.getLineOffset(line);
+                int lineLength = document.getLineLength(line);
+                String lineDelimiter = document.getLineDelimiter(line);
+                int endOfLineOffset = lineOffset + lineLength - lineDelimiter.length();
 
-                // append indentation from the previous line and extra if necessary
-                StringBuilder builder = new StringBuilder(command.text);
-                builder.append(document.get(lineStart, indentationEndUpToCursor - lineStart));
-                builder.append(getExtraIndentation(document, offset));
-                command.text = builder.toString();
+                // add additional whitespace to maintain the proper indentation
+                String fileName = this.editor.getFileName();
+                EditorOptions options = createEditorOptions();
+                int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, endOfLineOffset, options);
+                IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+                boolean spacesForTabs = preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
+                command.text += Strings.repeat(spacesForTabs ? " " : "\t", indentation);
 
-                // adjust the caret offset if it would be moved into the middle of the indentation
-                if (indentationEnd != indentationEndUpToCursor) {
-                    command.caretOffset = offset + command.text.length() + indentationEnd - indentationEndUpToCursor;
-                    command.shiftsCaret = false;
+                // remove existing whitespace characters at the beginning of the line to put the caret at the beginning of the line
+                String remainingLineText = document.get(offset, endOfLineOffset - offset);
+                int nonIndentationWhitespace = NON_INDENTATION.indexIn(remainingLineText);
+                if (nonIndentationWhitespace > 0) {
+                    command.length = nonIndentationWhitespace;
                 }
             }
         } catch (BadLocationException e) {
@@ -65,35 +81,13 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         }
     }
 
-    private static int findEndOfIndentation(IDocument document, int start, int end) throws BadLocationException {
-        for (int offset = start; offset < end; offset++) {
-            char character = document.getChar(offset);
+    private static EditorOptions createEditorOptions() {
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
-            if (character != ' ' && character != '\t') {
-                return offset;
-            }
-        }
-
-        return end;
-    }
-
-    private static String getExtraIndentation(IDocument document, int offset) throws BadLocationException {
-        String indentation = "";
-
-        if (offset > 0 && document.getChar(offset - 1) == '{') {
-            IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-            boolean spacesForTabs = preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
-
-            if (spacesForTabs) {
-                int tabWidth = preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
-
-                indentation = Strings.repeat(" ", tabWidth);
-            } else {
-                indentation = "\t";
-            }
-        }
-
-        return indentation;
+        return new EditorOptions(
+            preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
+            preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH),
+            preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS));
     }
 
     private static boolean isLineDelimiter(IDocument document, DocumentCommand command) {
