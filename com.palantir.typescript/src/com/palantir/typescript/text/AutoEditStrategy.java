@@ -64,7 +64,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
                 // add additional whitespace to maintain the proper indentation
                 String fileName = this.editor.getFileName();
                 EditorOptions options = createEditorOptions();
-                int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, endOfLineOffset, options);
+                int indentation = this.editor.getLanguageService().getIndentationAtPosition(fileName, offset, options);
                 IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
                 boolean spacesForTabs = preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
                 command.text += Strings.repeat(spacesForTabs ? " " : "\t", indentation);
