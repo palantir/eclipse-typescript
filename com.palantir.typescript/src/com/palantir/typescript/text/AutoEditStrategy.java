@@ -59,7 +59,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
                 int lineOffset = document.getLineOffset(line);
                 int lineLength = document.getLineLength(line);
                 String lineDelimiter = document.getLineDelimiter(line);
-                int endOfLineOffset = lineOffset + lineLength - lineDelimiter.length();
+                int endOfLineOffset = lineOffset + lineLength - (lineDelimiter != null ? lineDelimiter.length() : 0);
 
                 // add additional whitespace to maintain the proper indentation
                 String fileName = this.editor.getFileName();
