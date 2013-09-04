@@ -63,18 +63,20 @@ public final class AnnotationReconcilingStrategy {
     public void reconcile(LanguageService languageService) {
         checkNotNull(languageService);
 
-        String fileName = this.editor.getFileName();
-        int offset = this.getOffset();
-
         // update the annotations
-        final List<Diagnostic> diagnostics = languageService.getDiagnostics(fileName);
-        final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(fileName, offset);
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                updateAnnotations(diagnostics, occurrences);
-            }
-        });
+        int offset = this.getOffset();
+        if (offset >= 0) {
+            String fileName = this.editor.getFileName();
+            final List<Diagnostic> diagnostics = languageService.getDiagnostics(fileName);
+            final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(fileName, offset);
+
+            Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    updateAnnotations(diagnostics, occurrences);
+                }
+            });
+        }
     }
 
     private int getOffset() {
