@@ -16,40 +16,22 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
 
 /**
- * Corresponds to the class with the same name in compiler/core/diagnostic.ts.
+ * Corresponds to the class with the same name in compiler/text/textSpan.ts.
  *
  * @author dcicerone
  */
-public final class Diagnostic {
+public final class TextSpan {
 
     private final int start;
     private final int length;
-    private final String diagnosticCode;
-    private final List<String> arguments;
 
-    public Diagnostic(
-            @JsonProperty("start") int start,
-            @JsonProperty("length") int length,
-            @JsonProperty("diagnosticCode") String diagnosticCode,
-            @JsonProperty("arguments") List<String> arguments) {
-        checkArgument(start >= 0);
-        checkArgument(length > 0);
-        checkNotNull(diagnosticCode);
-
+    public TextSpan(@JsonProperty("_start") int start, @JsonProperty("_length") int length) {
         this.start = start;
         this.length = length;
-        this.diagnosticCode = diagnosticCode;
-        this.arguments = arguments != null ? ImmutableList.copyOf(arguments) : ImmutableList.<String> of();
     }
 
     public int getStart() {
@@ -60,21 +42,11 @@ public final class Diagnostic {
         return this.length;
     }
 
-    public String getDiagnosticCode() {
-        return this.diagnosticCode;
-    }
-
-    public List<String> getArguments() {
-        return this.arguments;
-    }
-
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("start", this.start)
             .add("length", this.length)
-            .add("diagnosticCode", this.diagnosticCode)
-            .add("arguments", this.arguments)
             .toString();
     }
 }

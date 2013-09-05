@@ -107,12 +107,21 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
-    public Map<String, List<Diagnostic>> getAllDiagnostics() {
+    public Map<String, List<CompleteDiagnostic>> getAllDiagnostics() {
         Request request = new Request(SERVICE, "getAllDiagnostics");
         JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
-        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, CompleteDiagnostic.class);
         MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
         return LanguageService.this.bridge.call(request, returnType);
+    }
+
+    public List<TextSpan> getBraceMatchingAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getBraceMatchingAtPosition", fileName, position);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextSpan.class);
+        return this.bridge.call(request, resultType);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -132,11 +141,11 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public List<Diagnostic> getDiagnostics(String fileName) {
+    public List<CompleteDiagnostic> getDiagnostics(String fileName) {
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getDiagnostics", fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, CompleteDiagnostic.class);
         return this.bridge.call(request, resultType);
     }
 
@@ -209,6 +218,14 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "getSignatureAtPosition", fileName, position);
         return this.bridge.call(request, SignatureInfo.class);
+    }
+
+    public List<Diagnostic> getSyntacticDiagnostics(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getSyntacticDiagnostics", fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        return this.bridge.call(request, returnType);
     }
 
     public TypeInfo getTypeAtPosition(String fileName, int position) {

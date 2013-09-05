@@ -321,6 +321,12 @@
              class="com.palantir.typescript.preferences.FormatterPreferencePage"
              name="Formatter">
        </page>
+       <page
+             id="com.palantir.typescript.typingPreferencePage"
+             category="com.palantir.typescript.compilerPreferencePage"
+             class="com.palantir.typescript.preferences.TypingPreferencePage"
+             name="Typing">
+       </page>
    </extension>
 
    <extension

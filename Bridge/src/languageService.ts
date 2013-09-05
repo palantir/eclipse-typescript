@@ -76,6 +76,10 @@ module Bridge {
             return diagnostics;
         }
 
+        public getBraceMatchingAtPosition(fileName: string, position: number): TypeScript.TextSpan[] {
+            return this.languageService.getBraceMatchingAtPosition(fileName, position);
+        }
+
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
@@ -108,7 +112,7 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getDiagnostics(fileName: string): Diagnostic[] {
+        public getDiagnostics(fileName: string): CompleteDiagnostic[] {
             var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
 
             if (diagnostics.length === 0) {
@@ -170,6 +174,10 @@ module Bridge {
             return this.languageService.getSignatureAtPosition(fileName, position);
         }
 
+        public getSyntacticDiagnostics(fileName: string): TypeScript.Diagnostic[] {
+            return this.languageService.getSyntacticDiagnostics(fileName);
+        }
+
         public getTypeAtPosition(fileName: string, position: number): TypeInfo {
             var type = this.languageService.getTypeAtPosition(fileName, position);
 
@@ -205,7 +213,7 @@ module Bridge {
         memberCompletion: boolean;
     }
 
-    export interface Diagnostic {
+    export interface CompleteDiagnostic {
         length: number;
         line: number;
         start: number;
