@@ -83,6 +83,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS, true);
         store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
         store.setDefault(IPreferenceConstants.EDITOR_CLOSE_BRACES, true);
+        store.setDefault(IPreferenceConstants.EDITOR_CLOSE_JSDOCS, true);
         store.setDefault(IPreferenceConstants.EDITOR_INDENT_SIZE, 4);
         store.setDefault(IPreferenceConstants.EDITOR_MATCHING_BRACKETS, true);
         store.setDefault(IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR, "128,128,128");

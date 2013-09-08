@@ -48,6 +48,11 @@ public final class TypingPreferencePage extends FieldEditorPreferencePage implem
             IPreferenceConstants.EDITOR_CLOSE_BRACES,
             getResource("preferences.editor.close.braces"),
             this.getFieldEditorParent()));
+
+        this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.EDITOR_CLOSE_JSDOCS,
+            getResource("preferences.editor.close.jsdocs"),
+            this.getFieldEditorParent()));
     }
 
     private static String getResource(String key) {

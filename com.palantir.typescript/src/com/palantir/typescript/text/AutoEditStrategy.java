@@ -19,6 +19,8 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
@@ -43,11 +45,15 @@ import com.palantir.typescript.services.language.TextSpan;
  */
 public final class AutoEditStrategy implements IAutoEditStrategy {
 
+    private static final Pattern INDENTATION = Pattern.compile("^\\s*");
+    private static final Pattern JSDOC_MIDDLE = Pattern.compile("\\s*\\*.*");
+    private static final Pattern JSDOC_START = Pattern.compile("\\s*/\\*\\*");
     private static final CharMatcher NON_INDENTATION = CharMatcher.anyOf(" \t").negate();
 
     private final TypeScriptEditor editor;
 
     private boolean closeBraces;
+    private boolean closeJSDocs;
     private int indentSize;
     private boolean spacesForTabs;
     private int tabWidth;
@@ -66,6 +72,8 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
                 this.readPreferences();
 
                 if (this.closeBrace(document, command)) {
+                    return;
+                } else if (this.closeJavadoc(document, command)) {
                     return;
                 }
 
@@ -125,6 +133,37 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         return false;
     }
 
+    private boolean closeJavadoc(IDocument document, DocumentCommand command) throws BadLocationException {
+        int offset = command.offset;
+        int line = document.getLineOfOffset(offset);
+        String lineText = getLineText(document, line);
+        String indentationText = getIndentationText(lineText);
+
+        if (JSDOC_START.matcher(lineText).matches()) {
+            command.text += indentationText + " * ";
+
+            if (this.closeJSDocs && line + 1 < document.getNumberOfLines()) {
+                String nextLineText = getLineText(document, line + 1);
+
+                if (!JSDOC_MIDDLE.matcher(nextLineText).matches()) {
+                    String defaultLineDelimiter = TextUtilities.getDefaultLineDelimiter(document);
+
+                    command.caretOffset = offset + command.text.length();
+                    command.shiftsCaret = false;
+                    command.text += defaultLineDelimiter + indentationText + " */";
+                }
+            }
+
+            return true;
+        } else if (JSDOC_MIDDLE.matcher(lineText).matches()) {
+            command.text += indentationText + "* ";
+
+            return true;
+        }
+
+        return false;
+    }
+
     private String createIndentationText(int indentation) {
         return Strings.repeat(this.spacesForTabs ? " " : "\t", indentation);
     }
@@ -140,9 +179,28 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
         this.closeBraces = preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_BRACES);
+        this.closeJSDocs = preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_JSDOCS);
         this.indentSize = preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
         this.spacesForTabs = preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
         this.tabWidth = preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH);
+    }
+
+    private static String getIndentationText(String lineText) {
+        Matcher matcher = INDENTATION.matcher(lineText);
+
+        if (matcher.find()) {
+            return matcher.group();
+        }
+
+        return "";
+    }
+
+    private static String getLineText(IDocument document, int line) throws BadLocationException {
+        int lineOffset = document.getLineOffset(line);
+        String lineDelimiter = document.getLineDelimiter(line);
+        int lineLengthWithoutDelimiter = document.getLineLength(line) - (lineDelimiter != null ? lineDelimiter.length() : 0);
+
+        return document.get(lineOffset, lineLengthWithoutDelimiter);
     }
 
     private static boolean isLineDelimiter(IDocument document, DocumentCommand command) {
