@@ -43,7 +43,7 @@ public final class Diagnostic {
             @JsonProperty("diagnosticCode") String diagnosticCode,
             @JsonProperty("arguments") List<String> arguments) {
         checkArgument(start >= 0);
-        checkArgument(length > 0);
+        checkArgument(length >= 0);
         checkNotNull(diagnosticCode);
 
         this.start = start;
