@@ -30,7 +30,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
@@ -48,7 +47,6 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private static final Pattern INDENTATION = Pattern.compile("^\\s*");
     private static final Pattern JSDOC_MIDDLE = Pattern.compile("\\s*\\* .*");
     private static final Pattern JSDOC_START = Pattern.compile("\\s*/\\*\\*");
-    private static final CharMatcher NON_INDENTATION = CharMatcher.anyOf(" \t").negate();
 
     private final TypeScriptEditor editor;
 
@@ -93,13 +91,10 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         // remove existing whitespace characters at the beginning of the line to put the caret at the beginning of the line
         int line = document.getLineOfOffset(offset);
-        String lineDelimiter = document.getLineDelimiter(line);
-        int lineLengthWithoutDelimiter = document.getLineLength(line) - (lineDelimiter != null ? lineDelimiter.length() : 0);
-        String remainingLineText = document.get(offset, lineLengthWithoutDelimiter);
-        int nonIndentationWhitespace = NON_INDENTATION.indexIn(remainingLineText);
-        if (nonIndentationWhitespace > 0) {
-            command.length = nonIndentationWhitespace;
-        }
+        String lineText = getLineText(document, line);
+        String indentationText = getIndentationText(lineText);
+        int lineOffset = document.getLineOffset(line);
+        command.length = Math.max(0, indentationText.length() - (offset - lineOffset));
     }
 
     private boolean closeBrace(IDocument document, DocumentCommand command) throws BadLocationException {
