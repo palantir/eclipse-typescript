@@ -46,7 +46,7 @@ import com.palantir.typescript.services.language.TextSpan;
 public final class AutoEditStrategy implements IAutoEditStrategy {
 
     private static final Pattern INDENTATION = Pattern.compile("^\\s*");
-    private static final Pattern JSDOC_MIDDLE = Pattern.compile("\\s*\\*.*");
+    private static final Pattern JSDOC_MIDDLE = Pattern.compile("\\s*\\* .*");
     private static final Pattern JSDOC_START = Pattern.compile("\\s*/\\*\\*");
     private static final CharMatcher NON_INDENTATION = CharMatcher.anyOf(" \t").negate();
 
