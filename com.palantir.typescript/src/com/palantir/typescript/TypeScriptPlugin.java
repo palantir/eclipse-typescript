@@ -16,12 +16,17 @@
 
 package com.palantir.typescript;
 
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.osgi.framework.BundleContext;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 
@@ -33,6 +38,9 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
 public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public static final String ID = "com.palantir.typescript";
+
+    private static final String OS_NAME = System.getProperty("os.name");
+    private static final Splitter PATH_SPLITTER = Splitter.on(File.pathSeparatorChar);
 
     private static TypeScriptPlugin PLUGIN;
 
@@ -96,5 +104,37 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS, true);
         store.setDefault(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS, false);
         store.setDefault(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS, false);
+
+        store.setDefault(IPreferenceConstants.GENERAL_NODE_PATH, findNodejs());
+    }
+
+    private static String findNodejs() {
+        String nodeFileName = getNodeFileName();
+        String path = System.getenv("PATH");
+        List<String> directories = Lists.newArrayList(PATH_SPLITTER.split(path));
+
+        // ensure /usr/local/bin is included for OS X
+        if (OS_NAME.startsWith("Mac OS X")) {
+            directories.add("/usr/local/bin");
+        }
+
+        // search for Node.js in the PATH directories
+        for (String directory : directories) {
+            File nodeFile = new File(directory, nodeFileName);
+
+            if (nodeFile.exists()) {
+                return nodeFile.getAbsolutePath();
+            }
+        }
+
+        return "";
+    }
+
+    private static String getNodeFileName() {
+        if (OS_NAME.startsWith("Windows")) {
+            return "node.exe";
+        }
+
+        return "node";
     }
 }
