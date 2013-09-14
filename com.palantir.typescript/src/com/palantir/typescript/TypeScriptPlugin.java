@@ -26,6 +26,7 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
@@ -39,7 +40,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public static final String ID = "com.palantir.typescript";
 
-    private static final String OS_NAME = System.getProperty("os.name");
+    private static final String OS_NAME = StandardSystemProperty.OS_NAME.value();
     private static final Splitter PATH_SPLITTER = Splitter.on(File.pathSeparatorChar);
 
     private static TypeScriptPlugin PLUGIN;

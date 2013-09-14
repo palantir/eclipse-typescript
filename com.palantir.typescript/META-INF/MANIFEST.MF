@@ -21,7 +21,7 @@ Require-Bundle: org.eclipse.compare,
  org.eclipse.ui.workbench.texteditor
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: lib/guava-14.0.1.jar,
+Bundle-ClassPath: lib/guava-15.0.jar,
  .,
  lib/jackson-annotations-2.2.0.jar,
  lib/jackson-core-2.2.0.jar,
