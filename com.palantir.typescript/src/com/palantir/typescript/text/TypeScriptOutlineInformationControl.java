@@ -258,10 +258,15 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
 
         TreeItem item = tree.getItem(0);
 
-        segments.add(item.getData());
-        while (item.getItemCount() > 0 && !this.matchesSearchString(((NavigateToItem) item.getData()))) {
+        Object itemData = item.getData();
+        segments.add(itemData);
+        while (item.getItemCount() > 0 && !this.matchesSearchString((NavigateToItem) itemData)) {
             item = item.getItem(0);
-            segments.add(item.getData());
+            itemData = item.getData();
+
+            if (itemData != null) {
+                segments.add(itemData);
+            }
         }
 
         TreePath treePath = new TreePath(segments.toArray());
