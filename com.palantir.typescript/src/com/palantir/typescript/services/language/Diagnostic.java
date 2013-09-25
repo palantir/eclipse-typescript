@@ -16,9 +16,6 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -42,10 +39,6 @@ public final class Diagnostic {
             @JsonProperty("length") int length,
             @JsonProperty("diagnosticCode") String diagnosticCode,
             @JsonProperty("arguments") List<String> arguments) {
-        checkArgument(start >= 0);
-        checkArgument(length >= 0);
-        checkNotNull(diagnosticCode);
-
         this.start = start;
         this.length = length;
         this.diagnosticCode = diagnosticCode;
