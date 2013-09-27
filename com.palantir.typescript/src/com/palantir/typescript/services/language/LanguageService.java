@@ -287,6 +287,7 @@ public final class LanguageService {
         compilationSettings.setMapSourceFiles(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES));
         compilationSettings.setModuleGenTarget(ModuleGenTarget.valueOf(preferenceStore
             .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));
+        compilationSettings.setNoImplicitAny(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY));
         compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
         compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
 

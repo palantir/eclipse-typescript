@@ -48,6 +48,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
     private BooleanFieldEditor compileOnSaveField;
     private ComboFieldEditor moduleGenTargetField;
+    private BooleanFieldEditor noImplicitAnyField;
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
 
@@ -105,6 +106,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.moduleGenTargetField)
+                || source.equals(this.noImplicitAnyField)
                 || source.equals(this.removeCommentsField)
                 || source.equals(this.sourceMapField)) {
             this.compilerPreferencesModified = true;
@@ -125,6 +127,12 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             this.createComboFieldValues(ModuleGenTarget.values()),
             this.getFieldEditorParent());
         this.addField(this.moduleGenTargetField);
+
+        this.noImplicitAnyField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY,
+            getResource("no.implicit.any"),
+            this.getFieldEditorParent());
+        this.addField(this.noImplicitAnyField);
 
         this.addField(new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,

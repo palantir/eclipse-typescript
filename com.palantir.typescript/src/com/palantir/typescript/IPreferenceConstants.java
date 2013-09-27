@@ -31,6 +31,7 @@ public interface IPreferenceConstants {
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
     String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
+    String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
     String COMPILER_NO_LIB = "compiler.noLib";
     String COMPILER_OUTPUT_DIR_OPTION = "compiler.optionDirOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
