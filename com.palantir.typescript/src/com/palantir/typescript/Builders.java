@@ -16,6 +16,8 @@
 
 package com.palantir.typescript;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -25,6 +27,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+
+import com.google.common.collect.ImmutableList;
 
 /**
  * Utility class to invoke common build activities.
@@ -37,30 +41,9 @@ public final class Builders {
      * Forces a full clean/rebuild of all the workspace project that have the TypeScript nature.
      */
     public static void rebuildWorkspace() {
-        String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
-        Job job = new Job(name) {
-            @Override
-            protected IStatus run(IProgressMonitor monitor) {
-                IWorkspace workspace = ResourcesPlugin.getWorkspace();
+        IWorkspace workspace = ResourcesPlugin.getWorkspace();
 
-                try {
-                    IProject[] projects = workspace.getRoot().getProjects();
-
-                    for (IProject project : projects) {
-                        if (project.isOpen()) {
-                            Builders.rebuildProject(project, monitor);
-                        }
-                    }
-                } catch (CoreException e) {
-                    return e.getStatus();
-                }
-
-                return Status.OK_STATUS;
-            }
-
-        };
-        job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
-        job.schedule();
+        rebuildProjects(ImmutableList.copyOf(workspace.getRoot().getProjects()));
     }
 
     /**
@@ -69,30 +52,31 @@ public final class Builders {
      * @param project
      *            the project
      */
-    public static void rebuildProject(final IProject project) {
+    public static void rebuildProject(IProject project) {
+        rebuildProjects(ImmutableList.of(project));
+    }
+
+    private static void rebuildProjects(final List<IProject> projects) {
         String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
         Job job = new Job(name) {
             @Override
             protected IStatus run(IProgressMonitor monitor) {
                 try {
-                    Builders.rebuildProject(project, monitor);
+                    for (IProject project : projects) {
+                        if (project.isOpen() && project.hasNature(ProjectNature.ID)) {
+                            project.build(IncrementalProjectBuilder.CLEAN_BUILD, TypeScriptBuilder.ID, null, monitor);
+                            project.build(IncrementalProjectBuilder.FULL_BUILD, TypeScriptBuilder.ID, null, monitor);
+                        }
+                    }
+
+                    return Status.OK_STATUS;
                 } catch (CoreException e) {
                     return e.getStatus();
                 }
-
-                return Status.OK_STATUS;
             }
-
         };
         job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
         job.schedule();
-    }
-
-    private static void rebuildProject(IProject project, IProgressMonitor monitor) throws CoreException {
-        if (project.hasNature(ProjectNature.ID)) {
-            project.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-            project.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-        }
     }
 
     private Builders() {
