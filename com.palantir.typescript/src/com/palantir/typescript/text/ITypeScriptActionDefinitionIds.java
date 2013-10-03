@@ -29,5 +29,4 @@ public interface ITypeScriptActionDefinitionIds {
     String QUICK_OUTLINE = "com.palantir.typescript.text.quickOutline";
     String RENAME = "com.palantir.typescript.text.rename";
     String TOGGLE_COMMENT = "com.palantir.typescript.text.toggleComment";
-    String UNHOIST_VARIABLES = "com.palantir.typescript.text.unhoistVariables";
 }

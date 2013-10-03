@@ -150,16 +150,6 @@ module Bridge {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
-        public getHoistedVariableDeclarators(fileName: string): Services.SpanInfo[] {
-            var syntaxTree = this.languageService.getSyntaxTree(fileName);
-            var sourceUnit = syntaxTree.sourceUnit();
-            var walker = new VariableDeclaratorWalker();
-
-            sourceUnit.accept(walker);
-
-            return walker.spans;
-        }
-
         public getIndentationAtPosition(fileName: string, position: number, options: Services.EditorOptions): number {
             return this.languageService.getIndentationAtPosition(fileName, position, options);
         }
@@ -246,21 +236,5 @@ module Bridge {
         limChar: number;
         memberName: string;
         minChar: number;
-    }
-
-    class VariableDeclaratorWalker extends TypeScript.PositionTrackingWalker {
-
-        public spans: Services.SpanInfo[] = [];
-
-        public visitVariableDeclarator(node: TypeScript.VariableDeclaratorSyntax): void {
-            if (node.equalsValueClause === null) {
-                var position = this.position();
-                var width = node.identifier.width();
-
-                this.spans.push(new Services.SpanInfo(position, position + width, node.identifier.text()));
-            }
-
-            super.visitVariableDeclarator(node);
-        }
     }
 }

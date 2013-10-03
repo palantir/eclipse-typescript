@@ -176,14 +176,6 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public List<SpanInfo> getHoistedVariableDeclarators(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getHoistedVariableDeclarators", fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, SpanInfo.class);
-        return this.bridge.call(request, resultType);
-    }
-
     public int getIndentationAtPosition(String fileName, int position, EditorOptions options) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
