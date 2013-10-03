@@ -45,6 +45,7 @@ import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
+import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The language service.
@@ -54,6 +55,8 @@ import com.palantir.typescript.services.Request;
  * @author tyleradams
  */
 public final class LanguageService {
+
+    private static final String STANDARD_LIBRARY_FILE_NAME = "lib.d.ts";
 
     private static final String SERVICE = "language";
 
@@ -76,7 +79,12 @@ public final class LanguageService {
         this.preferencesListener = new MyPropertyChangeListener();
         this.project = project;
 
-        this.addDefaultLibrary();
+        // add the default library unless it has been suppressed
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        if (!preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB)) {
+            this.addDefaultLibrary();
+        }
+
         this.addFiles(fileNames);
         this.updateCompilationSettings();
 
@@ -264,7 +272,7 @@ public final class LanguageService {
     private void addDefaultLibrary() {
         String libraryContents;
         try {
-            libraryContents = Resources.toString(LanguageService.class.getResource("lib.d.ts"), Charsets.UTF_8);
+            libraryContents = Resources.toString(LanguageService.class.getResource(STANDARD_LIBRARY_FILE_NAME), Charsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -319,6 +327,16 @@ public final class LanguageService {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
             String property = event.getProperty();
+
+            if (property.equals(IPreferenceConstants.COMPILER_NO_LIB)) {
+                boolean noLib = (Boolean) event.getNewValue();
+
+                if (noLib) {
+                    updateFiles(ImmutableList.of(new FileDelta(Delta.REMOVED, STANDARD_LIBRARY_FILE_NAME)));
+                } else {
+                    addDefaultLibrary();
+                }
+            }
 
             if (IPreferenceConstants.COMPILER_PREFERENCES.contains(property)) {
                 updateCompilationSettings();
