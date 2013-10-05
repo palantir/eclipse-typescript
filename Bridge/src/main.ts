@@ -69,7 +69,17 @@ module Bridge {
                 var resultJson = JSON.stringify(result);
                 console.log("RESULT: " + resultJson);
             } catch (e) {
-                console.log("ERROR: " + e.stack.replace(/\n/g, "\\n"));
+                var error: string;
+
+                if (e.stack != null) {
+                    error = e.stack;
+                } else if (e.message != null) {
+                    error = e.message;
+                } else {
+                    error = "Error: No stack trace or error message was provided.";
+                }
+
+                console.log("ERROR: " + error.replace(/\n/g, "\\n"));
             }
         }
     }

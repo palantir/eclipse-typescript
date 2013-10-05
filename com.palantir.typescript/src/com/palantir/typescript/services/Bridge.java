@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 
@@ -32,8 +31,8 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 
 /**
@@ -44,8 +43,6 @@ import com.palantir.typescript.TypeScriptPlugin;
 public final class Bridge {
 
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private static final String OS_NAME = System.getProperty("os.name");
-    private static final Splitter PATH_SPLITTER = Splitter.on(File.pathSeparatorChar);
     private static final String ERROR_PREFIX = "ERROR: ";
     private static final String RESULT_PREFIX = "RESULT: ";
 
@@ -101,6 +98,8 @@ public final class Bridge {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        this.nodeProcess = null;
     }
 
     private String processRequest(String requestJson) throws IOException {
@@ -139,8 +138,11 @@ public final class Bridge {
     }
 
     private void start() {
-        File nodeFile = findNode();
-        String nodePath = nodeFile.getAbsolutePath();
+        String nodePath = TypeScriptPlugin.getDefault().getPreferenceStore().getString(IPreferenceConstants.GENERAL_NODE_PATH);
+        if (Strings.isNullOrEmpty(nodePath)) {
+            throw new IllegalStateException(
+                "Node.js could not be found.  If it is installed to a location not on the PATH, please specify the location in the TypeScript preferences.");
+        }
 
         // get the path to the bridge.js file
         File bundleFile;
@@ -161,35 +163,19 @@ public final class Bridge {
         }
         this.nodeStdout = new BufferedReader(new InputStreamReader(this.nodeProcess.getInputStream(), Charsets.UTF_8));
         this.nodeStdin = new PrintWriter(new OutputStreamWriter(this.nodeProcess.getOutputStream(), Charsets.UTF_8), true);
+
+        // add a shutdown hook to destroy the node process in case its not properly disposed
+        Runtime.getRuntime().addShutdownHook(new ShutdownHookThread());
     }
 
-    private static File findNode() {
-        String nodeFileName = getNodeFileName();
-        String path = System.getenv("PATH");
-        List<String> directories = Lists.newArrayList(PATH_SPLITTER.split(path));
+    private class ShutdownHookThread extends Thread {
+        @Override
+        public void run() {
+            Process process = Bridge.this.nodeProcess;
 
-        // ensure /usr/local/bin is included for OS X
-        if (OS_NAME.startsWith("Mac OS X")) {
-            directories.add("/usr/local/bin");
-        }
-
-        // search for Node.js in the PATH directories
-        for (String directory : directories) {
-            File nodeFile = new File(directory, nodeFileName);
-
-            if (nodeFile.exists()) {
-                return nodeFile;
+            if (process != null) {
+                process.destroy();
             }
         }
-
-        throw new IllegalStateException("Could not find Node.js.");
-    }
-
-    private static String getNodeFileName() {
-        if (OS_NAME.startsWith("Windows")) {
-            return "node.exe";
-        }
-
-        return "node";
     }
 }

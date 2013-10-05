@@ -1,29 +1,29 @@
 /* *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
+Copyright (c) Microsoft Corporation. All rights reserved. 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
+License at http://www.apache.org/licenses/LICENSE-2.0  
+ 
 THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, 
+MERCHANTABLITY OR NON-INFRINGEMENT. 
+ 
 See the Apache Version 2.0 License for specific language governing permissions
 and limitations under the License.
 ***************************************************************************** */
 
 /// <reference no-default-lib="true"/>
 
-////////////////
+/////////////////////////////
 /// ECMAScript APIs
-////////////////
+/////////////////////////////
 
 declare var NaN: number;
 declare var Infinity: number;
 
 /**
-  * Evaluates JavaScript code and executes it.
+  * Evaluates JavaScript code and executes it. 
   * @param x A String value that contains valid JavaScript code.
   */
 declare function eval(x: string): any;
@@ -31,25 +31,25 @@ declare function eval(x: string): any;
 /**
   * Converts A string to an integer.
   * @param s A string to convert into a number.
-  * @param radix A value between 2 and 36 that specifies the base of the number in numString.
+  * @param radix A value between 2 and 36 that specifies the base of the number in numString. 
   * If this argument is not supplied, strings with a prefix of '0x' are considered hexadecimal.
   * All other strings are considered decimal.
   */
 declare function parseInt(s: string, radix?: number): number;
 
 /**
-  * Converts a string to a floating-point number.
-  * @param string A string that contains a floating-point number.
+  * Converts a string to a floating-point number. 
+  * @param string A string that contains a floating-point number. 
   */
 declare function parseFloat(string: string): number;
 
 /**
-  * Returns a Boolean value that indicates whether a value is the reserved value NaN (not a number).
+  * Returns a Boolean value that indicates whether a value is the reserved value NaN (not a number). 
   * @param number A numeric value.
   */
 declare function isNaN(number: number): boolean;
 
-/**
+/** 
   * Determines whether a supplied number is finite.
   * @param number Any numeric value.
   */
@@ -67,10 +67,10 @@ declare function decodeURI(encodedURI: string): string;
   */
 declare function decodeURIComponent(encodedURIComponent: string): string;
 
-/**
+/** 
   * Encodes a text string as a valid Uniform Resource Identifier (URI)
   * @param uri A value representing an encoded URI.
-  */
+  */ 
 declare function encodeURI(uri: string): string;
 
 /**
@@ -84,8 +84,8 @@ interface PropertyDescriptor {
     enumerable?: boolean;
     value?: any;
     writable?: boolean;
-    get?(): any;
-    set?(v: any): void;
+    get? (): any;
+    set? (v: any): void;
 }
 
 interface PropertyDescriptorMap {
@@ -95,7 +95,7 @@ interface PropertyDescriptorMap {
 interface Object {
     /** Returns a string representation of an object. */
     toString(): string;
-
+    
     /** Returns a date converted to a string using the current locale. */
     toLocaleString(): string;
 
@@ -103,18 +103,18 @@ interface Object {
     valueOf(): Object;
 
     /**
-      * Determines whether an object has a property with the specified name.
+      * Determines whether an object has a property with the specified name. 
       * @param v A property name.
       */
     hasOwnProperty(v: string): boolean;
 
     /**
-      * Determines whether an object exists in another object's prototype chain.
+      * Determines whether an object exists in another object's prototype chain. 
       * @param v Another object whose prototype chain is to be checked.
       */
     isPrototypeOf(v: Object): boolean;
 
-    /**
+    /** 
       * Determines whether a specified property is enumerable.
       * @param v A property name.
       */
@@ -134,36 +134,36 @@ declare var Object: {
     /** A reference to the prototype for a class of objects. */
     prototype: Object;
 
-    /**
-      * Returns the prototype of an object.
+    /** 
+      * Returns the prototype of an object. 
       * @param o The object that references the prototype.
       */
     getPrototypeOf(o: any): any;
 
     /**
-      * Gets the own property descriptor of the specified object.
-      * An own property descriptor is one that is defined directly on the object and is not inherited from the object's prototype.
+      * Gets the own property descriptor of the specified object. 
+      * An own property descriptor is one that is defined directly on the object and is not inherited from the object's prototype. 
       * @param o Object that contains the property.
       * @param p Name of the property.
     */
     getOwnPropertyDescriptor(o: any, p: string): PropertyDescriptor;
 
-    /**
-      * Returns the names of the own properties of an object. The own properties of an object are those that are defined directly
+    /** 
+      * Returns the names of the own properties of an object. The own properties of an object are those that are defined directly 
       * on that object, and are not inherited from the object's prototype. The properties of an object include both fields (objects) and functions.
       * @param o Object that contains the own properties.
       */
     getOwnPropertyNames(o: any): string[];
 
-    /**
+    /** 
       * Creates an object that has the specified prototype, and that optionally contains specified properties.
       * @param o Object to use as a prototype. May be null
-      * @param properties JavaScript object that contains one or more property descriptors.
+      * @param properties JavaScript object that contains one or more property descriptors. 
       */
     create(o: any, properties?: PropertyDescriptorMap): any;
 
     /**
-      * Adds a property to an object, or modifies attributes of an existing property.
+      * Adds a property to an object, or modifies attributes of an existing property. 
       * @param o Object on which to add or modify the property. This can be a native JavaScript object (that is, a user-defined object or a built in object) or a DOM object.
       * @param p The property name.
       * @param attributes Descriptor for the property. It can be for a data property or an accessor property.
@@ -171,7 +171,7 @@ declare var Object: {
     defineProperty(o: any, p: string, attributes: PropertyDescriptor): any;
 
     /**
-      * Adds one or more properties to an object, and/or modifies attributes of existing properties.
+      * Adds one or more properties to an object, and/or modifies attributes of existing properties. 
       * @param o Object on which to add or modify the properties. This can be a native JavaScript object or a DOM object.
       * @param properties JavaScript object that contains one or more descriptor objects. Each descriptor object describes a data property or an accessor property.
       */
@@ -179,7 +179,7 @@ declare var Object: {
 
     /**
       * Prevents the modification of attributes of existing properties, and prevents the addition of new properties.
-      * @param o Object on which to lock the attributes.
+      * @param o Object on which to lock the attributes. 
       */
     seal(o: any): any;
 
@@ -191,25 +191,25 @@ declare var Object: {
 
     /**
       * Prevents the addition of new properties to an object.
-      * @param o Object to make non-extensible.
+      * @param o Object to make non-extensible. 
       */
     preventExtensions(o: any): any;
 
     /**
       * Returns true if existing property attributes cannot be modified in an object and new properties cannot be added to the object.
-      * @param o Object to test.
+      * @param o Object to test. 
       */
     isSealed(o: any): boolean;
 
     /**
       * Returns true if existing property attributes and values cannot be modified in an object, and new properties cannot be added to the object.
-      * @param o Object to test.
+      * @param o Object to test.  
       */
     isFrozen(o: any): boolean;
 
     /**
       * Returns a value that indicates whether new properties can be added to an object.
-      * @param o Object to test.
+      * @param o Object to test. 
       */
     isExtensible(o: any): boolean;
 
@@ -239,7 +239,7 @@ interface Function {
     call(thisArg: any, ...argArray: any[]): any;
 
     /**
-      * For a given function, creates a bound function that has the same body as the original function.
+      * For a given function, creates a bound function that has the same body as the original function. 
       * The this object of the bound function is associated with the specified object, and has the specified initial parameters.
       * @param thisArg An object to which the this keyword can refer inside the new function.
       * @param argArray A list of arguments to be passed to the new function.
@@ -255,7 +255,7 @@ interface Function {
 }
 
 declare var Function: {
-    /**
+    /** 
       * Creates a new function.
       * @param args A list of arguments the function accepts.
       */
@@ -280,7 +280,7 @@ interface String {
       */
     charAt(pos: number): string;
 
-    /**
+    /** 
       * Returns the Unicode value of the character at the specified location.
       * @param index The zero-based index of the desired character. If there is no character at the specified index, NaN is returned.
       */
@@ -288,12 +288,12 @@ interface String {
 
     /**
       * Returns a string that contains the concatenation of two or more strings.
-      * @param strings The strings to append to the end of the string.
+      * @param strings The strings to append to the end of the string.  
       */
     concat(...strings: string[]): string;
 
     /**
-      * Returns the position of the first occurrence of a substring.
+      * Returns the position of the first occurrence of a substring. 
       * @param searchString The substring to search for in the string
       * @param position The index at which to begin searching the String object. If omitted, search starts at the beginning of the string.
       */
@@ -312,14 +312,15 @@ interface String {
       */
     localeCompare(that: string): number;
 
-    /**
+    /** 
       * Matches a string with a regular expression, and returns an array containing the results of that search.
       * @param regexp A variable name or string literal containing the regular expression pattern and flags.
       */
     match(regexp: string): string[];
-    /**
+
+    /** 
       * Matches a string with a regular expression, and returns an array containing the results of that search.
-      * @param regexp A regular expression object that contains the regular expression pattern and applicable flags.
+      * @param regexp A regular expression object that contains the regular expression pattern and applicable flags. 
       */
     match(regexp: RegExp): string[];
 
@@ -329,18 +330,21 @@ interface String {
       * @param replaceValue A String object or string literal containing the text to replace for every successful match of rgExp in stringObj.
       */
     replace(searchValue: string, replaceValue: string): string;
+
     /**
       * Replaces text in a string, using a regular expression or search string.
       * @param searchValue A String object or string literal that represents the regular expression
       * @param replaceValue A function that returns the replacement text.
       */
     replace(searchValue: string, replaceValue: (substring: string, ...args: any[]) => string): string;
+
     /**
       * Replaces text in a string, using a regular expression or search string.
       * @param searchValue A Regular Expression object containing the regular expression pattern and applicable flags
       * @param replaceValue A String object or string literal containing the text to replace for every successful match of rgExp in stringObj.
       */
     replace(searchValue: RegExp, replaceValue: string): string;
+
     /**
       * Replaces text in a string, using a regular expression or search string.
       * @param searchValue A Regular Expression object containing the regular expression pattern and applicable flags
@@ -350,40 +354,42 @@ interface String {
 
     /**
       * Finds the first substring match in a regular expression search.
-      * @param regexp The regular expression pattern and applicable flags.
+      * @param regexp The regular expression pattern and applicable flags. 
       */
     search(regexp: string): number;
+
     /**
       * Finds the first substring match in a regular expression search.
-      * @param regexp The regular expression pattern and applicable flags.
+      * @param regexp The regular expression pattern and applicable flags. 
       */
     search(regexp: RegExp): number;
 
     /**
       * Returns a section of a string.
-      * @param start The index to the beginning of the specified portion of stringObj.
-      * @param end The index to the end of the specified portion of stringObj. The substring includes the characters up to, but not including, the character indicated by end.
+      * @param start The index to the beginning of the specified portion of stringObj. 
+      * @param end The index to the end of the specified portion of stringObj. The substring includes the characters up to, but not including, the character indicated by end. 
       * If this value is not specified, the substring continues to the end of stringObj.
       */
     slice(start: number, end?: number): string;
 
     /**
       * Split a string into substrings using the specified separator and return them as an array.
-      * @param separator A string that identifies character or characters to use in separating the string. If omitted, a single-element array containing the entire string is returned.
+      * @param separator A string that identifies character or characters to use in separating the string. If omitted, a single-element array containing the entire string is returned. 
       * @param limit A value used to limit the number of elements returned in the array.
       */
     split(separator: string, limit?: number): string[];
+
     /**
       * Split a string into substrings using the specified separator and return them as an array.
-      * @param separator A Regular Express that identifies character or characters to use in separating the string. If omitted, a single-element array containing the entire string is returned.
+      * @param separator A Regular Express that identifies character or characters to use in separating the string. If omitted, a single-element array containing the entire string is returned. 
       * @param limit A value used to limit the number of elements returned in the array.
       */
     split(separator: RegExp, limit?: number): string[];
 
     /**
-      * Returns the substring at the specified location within a String object.
-      * @param start The zero-based index integer indicating the beginning of the substring.
-      * @param end Zero-based index integer indicating the end of the substring. The substring includes the characters up to, but not including, the character indicated by end.
+      * Returns the substring at the specified location within a String object. 
+      * @param start The zero-based index number indicating the beginning of the substring.
+      * @param end Zero-based index number indicating the end of the substring. The substring includes the characters up to, but not including, the character indicated by end.
       * If end is omitted, the characters from start through the end of the original string are returned.
       */
     substring(start: number, end?: number): string;
@@ -415,8 +421,8 @@ interface String {
     substr(from: number, length?: number): string;
 }
 
-/**
-  * Allows manipulation and formatting of text strings and determination and location of substrings within strings.
+/** 
+  * Allows manipulation and formatting of text strings and determination and location of substrings within strings. 
   */
 declare var String: {
     new (value?: any): String;
@@ -434,33 +440,58 @@ declare var Boolean: {
 }
 
 interface Number {
+    /**
+      * Returns a string representation of an object.
+      * @param radix Specifies a radix for converting numeric values to strings. This value is only used for numbers.
+      */
     toString(radix?: number): string;
+
+    /** 
+      * Returns a string representing a number in fixed-point notation.
+      * @param fractionDigits Number of digits after the decimal point. Must be in the range 0 – 20, inclusive.
+      */
     toFixed(fractionDigits?: number): string;
+
+    /**
+      * Returns a string containing a number represented in exponential notation.
+      * @param fractionDigits Number of digits after the decimal point. Must be in the range 0 – 20, inclusive.
+      */
     toExponential(fractionDigits?: number): string;
-    toPrecision(precision: number): string;
+
+    /**
+      * Returns a string containing a number represented either in exponential or fixed-point notation with a specified number of digits.
+      * @param precision Number of significant digits. Must be in the range 1 – 21, inclusive.
+      */ 
+    toPrecision(precision?: number): string;
 }
+
 /** An object that represents a number of any kind. All JavaScript numbers are 64-bit floating-point numbers. */
 declare var Number: {
     new (value?: any): Number;
     (value?: any): number;
     prototype: Number;
+
     /** The largest number that can be represented in JavaScript. Equal to approximately 1.79E+308. */
     MAX_VALUE: number;
+
     /** The closest number to zero that can be represented in JavaScript. Equal to approximately 5.00E-324. */
     MIN_VALUE: number;
-    /**
+
+    /** 
       * A value that is not a number.
       * In equality comparisons, NaN does not equal any value, including itself. To test whether a value is equivalent to NaN, use the isNaN function.
       */
     NaN: number;
-    /**
+
+    /** 
       * A value that is less than the largest negative number that can be represented in JavaScript.
-      * JavaScript displays NEGATIVE_INFINITY values as -infinity.
+      * JavaScript displays NEGATIVE_INFINITY values as -infinity. 
       */
     NEGATIVE_INFINITY: number;
+
     /**
-      * A value greater than the largest number that can be represented in JavaScript.
-      * JavaScript displays POSITIVE_INFINITY values as infinity.
+      * A value greater than the largest number that can be represented in JavaScript. 
+      * JavaScript displays POSITIVE_INFINITY values as infinity. 
       */
     POSITIVE_INFINITY: number;
 }
@@ -483,23 +514,23 @@ interface Math {
     /** The square root of 2. */
     SQRT2: number;
     /**
-      * Returns the absolute value of a number (the value without regard to whether it is positive or negative).
+      * Returns the absolute value of a number (the value without regard to whether it is positive or negative). 
       * For example, the absolute value of -5 is the same as the absolute value of 5.
       * @param x A numeric expression for which the absolute value is needed.
       */
     abs(x: number): number;
     /**
-      * Returns the arc cosine (or inverse cosine) of a number.
+      * Returns the arc cosine (or inverse cosine) of a number. 
       * @param x A numeric expression.
-      */
+      */ 
     acos(x: number): number;
-    /**
-      * Returns the arcsine of a number.
+    /** 
+      * Returns the arcsine of a number. 
       * @param x A numeric expression.
       */
     asin(x: number): number;
     /**
-      * Returns the arctangent of a number.
+      * Returns the arctangent of a number. 
       * @param x A numeric expression for which the arctangent is needed.
       */
     atan(x: number): number;
@@ -510,51 +541,51 @@ interface Math {
       */
     atan2(y: number, x: number): number;
     /**
-      * Returns the smallest integer greater than or equal to its numeric argument.
+      * Returns the smallest number greater than or equal to its numeric argument. 
       * @param x A numeric expression.
       */
     ceil(x: number): number;
     /**
-      * Returns the cosine of a number.
+      * Returns the cosine of a number. 
       * @param x A numeric expression that contains an angle measured in radians.
-      */
+      */ 
     cos(x: number): number;
     /**
-      * Returns e (the base of natural logarithms) raised to a power.
+      * Returns e (the base of natural logarithms) raised to a power. 
       * @param x A numeric expression representing the power of e.
       */
     exp(x: number): number;
     /**
-      * Returns the greatest integer less than or equal to its numeric argument.
+      * Returns the greatest number less than or equal to its numeric argument. 
       * @param x A numeric expression.
       */
     floor(x: number): number;
     /**
-      * Returns the natural logarithm (base e) of a number.
+      * Returns the natural logarithm (base e) of a number. 
       * @param x A numeric expression.
       */
     log(x: number): number;
     /**
-      * Returns the larger of a set of supplied numeric expressions.
+      * Returns the larger of a set of supplied numeric expressions. 
       * @param values Numeric expressions to be evaluated.
       */
     max(...values: number[]): number;
     /**
-      * Returns the smaller of a set of supplied numeric expressions.
+      * Returns the smaller of a set of supplied numeric expressions. 
       * @param values Numeric expressions to be evaluated.
       */
     min(...values: number[]): number;
     /**
-      * Returns the value of a base expression taken to a specified power.
+      * Returns the value of a base expression taken to a specified power. 
       * @param x The base value of the expression.
       * @param y The exponent value of the expression.
       */
     pow(x: number, y: number): number;
-    /** Returns a pseudorandom number between 0 and 1. */
+    /** Returns a pseudorandom number between 0 and 1. */ 
     random(): number;
-    /**
-      * Returns a supplied numeric expression rounded to the nearest integer.
-      * @param x The value to be rounded to the nearest integer.
+    /** 
+      * Returns a supplied numeric expression rounded to the nearest number.
+      * @param x The value to be rounded to the nearest number.
       */
     round(x: number): number;
     /**
@@ -584,6 +615,7 @@ interface Date {
     toDateString(): string;
     /** Returns a time as a string value. */
     toTimeString(): string;
+    /** Returns a value as a string value appropriate to the host environment's current locale. */
     toLocaleString(): string;
     /** Returns a date as a string value appropriate to the host environment's current locale. */
     toLocaleDateString(): string;
@@ -627,24 +659,24 @@ interface Date {
     getUTCMilliseconds(): number;
     /** Gets the difference in minutes between the time on the local computer and Universal Coordinated Time (UTC). */
     getTimezoneOffset(): number;
-    /**
+    /** 
       * Sets the date and time value in the Date object.
-      * @param time A numeric value representing the number of elapsed milliseconds since midnight, January 1, 1970 GMT.
+      * @param time A numeric value representing the number of elapsed milliseconds since midnight, January 1, 1970 GMT. 
       */
     setTime(time: number): void;
     /**
-      * Sets the milliseconds value in the Date object using local time.
+      * Sets the milliseconds value in the Date object using local time. 
       * @param ms A numeric value equal to the millisecond value.
       */
     setMilliseconds(ms: number): void;
-    /**
+    /** 
       * Sets the milliseconds value in the Date object using Universal Coordinated Time (UTC).
-      * @param ms A numeric value equal to the millisecond value.
+      * @param ms A numeric value equal to the millisecond value. 
       */
     setUTCMilliseconds(ms: number): void;
 
     /**
-      * Sets the seconds value in the Date object using local time.
+      * Sets the seconds value in the Date object using local time. 
       * @param sec A numeric value equal to the seconds value.
       * @param ms A numeric value equal to the milliseconds value.
       */
@@ -656,16 +688,16 @@ interface Date {
       */
     setUTCSeconds(sec: number, ms?: number): void;
     /**
-      * Sets the minutes value in the Date object using local time.
-      * @param min A numeric value equal to the minutes value.
-      * @param sec A numeric value equal to the seconds value.
+      * Sets the minutes value in the Date object using local time. 
+      * @param min A numeric value equal to the minutes value. 
+      * @param sec A numeric value equal to the seconds value. 
       * @param ms A numeric value equal to the milliseconds value.
       */
     setMinutes(min: number, sec?: number, ms?: number): void;
     /**
       * Sets the minutes value in the Date object using Universal Coordinated Time (UTC).
-      * @param min A numeric value equal to the minutes value.
-      * @param sec A numeric value equal to the seconds value.
+      * @param min A numeric value equal to the minutes value. 
+      * @param sec A numeric value equal to the seconds value. 
       * @param ms A numeric value equal to the milliseconds value.
       */
     setUTCMinutes(min: number, sec?: number, ms?: number): void;
@@ -673,7 +705,7 @@ interface Date {
       * Sets the hour value in the Date object using local time.
       * @param hours A numeric value equal to the hours value.
       * @param min A numeric value equal to the minutes value.
-      * @param sec A numeric value equal to the seconds value.
+      * @param sec A numeric value equal to the seconds value. 
       * @param ms A numeric value equal to the milliseconds value.
       */
     setHours(hours: number, min?: number, sec?: number, ms?: number): void;
@@ -681,23 +713,23 @@ interface Date {
       * Sets the hours value in the Date object using Universal Coordinated Time (UTC).
       * @param hours A numeric value equal to the hours value.
       * @param min A numeric value equal to the minutes value.
-      * @param sec A numeric value equal to the seconds value.
+      * @param sec A numeric value equal to the seconds value. 
       * @param ms A numeric value equal to the milliseconds value.
       */
     setUTCHours(hours: number, min?: number, sec?: number, ms?: number): void;
     /**
-      * Sets the numeric day-of-the-month value of the Date object using local time.
+      * Sets the numeric day-of-the-month value of the Date object using local time. 
       * @param date A numeric value equal to the day of the month.
       */
     setDate(date: number): void;
-    /**
+    /** 
       * Sets the numeric day of the month in the Date object using Universal Coordinated Time (UTC).
-      * @param date A numeric value equal to the day of the month.
+      * @param date A numeric value equal to the day of the month. 
       */
     setUTCDate(date: number): void;
-    /**
-      * Sets the month value in the Date object using local time.
-      * @param month A numeric value equal to the month. The value for January is 0, and other month values follow consecutively.
+    /** 
+      * Sets the month value in the Date object using local time. 
+      * @param month A numeric value equal to the month. The value for January is 0, and other month values follow consecutively. 
       * @param date A numeric value representing the day of the month. If this value is not supplied, the value from a call to the getDate method is used.
       */
     setMonth(month: number, date?: number): void;
@@ -728,9 +760,7 @@ interface Date {
     /** Used by the JSON.stringify method to enable the transformation of an object's data for JavaScript Object Notation (JSON) serialization. */
     toJSON(key?: any): string;
 }
-/**
-  * Enables basic storage and retrieval of dates and times.
-  */
+
 declare var Date: {
     new (): Date;
     new (value: number): Date;
@@ -744,14 +774,14 @@ declare var Date: {
       */
     parse(s: string): number;
     /**
-      * Returns the number of milliseconds between midnight, January 1, 1970 Universal Coordinated Time (UTC) (or GMT) and the specified date.
+      * Returns the number of milliseconds between midnight, January 1, 1970 Universal Coordinated Time (UTC) (or GMT) and the specified date. 
       * @param year The full year designation is required for cross-century date accuracy. If year is between 0 and 99 is used, then year is assumed to be 1900 + year.
-      * @param month The month as an integer between 0 and 11 (January to December).
-      * @param date The date as an integer between 1 and 31.
-      * @param hours Must be supplied if minutes is supplied. An integer from 0 to 23 (midnight to 11pm) that specifies the hour.
-      * @param minutes Must be supplied if seconds is supplied. An integer from 0 to 59 that specifies the minutes.
-      * @param seconds Must be supplied if milliseconds is supplied. An integer from 0 to 59 that specifies the seconds.
-      * @param ms An integer from 0 to 999 that specifies the milliseconds.
+      * @param month The month as an number between 0 and 11 (January to December).
+      * @param date The date as an number between 1 and 31.
+      * @param hours Must be supplied if minutes is supplied. An number from 0 to 23 (midnight to 11pm) that specifies the hour.
+      * @param minutes Must be supplied if seconds is supplied. An number from 0 to 59 that specifies the minutes.
+      * @param seconds Must be supplied if milliseconds is supplied. An number from 0 to 59 that specifies the seconds.
+      * @param ms An number from 0 to 999 that specifies the milliseconds.
       */
     UTC(year: number, month: number, date?: number, hours?: number, minutes?: number, seconds?: number, ms?: number): number;
     now(): number;
@@ -782,7 +812,7 @@ interface RegExpExecArray {
     lastIndexOf(searchElement: string, fromIndex?: number): number;
     every(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
     some(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): boolean;
-    forEach(callbackfn: (value: string, index: number, array: string[]) => void , thisArg?: any): void;
+    forEach(callbackfn: (value: string, index: number, array: string[]) => void, thisArg?: any): void;
     map(callbackfn: (value: string, index: number, array: string[]) => any, thisArg?: any): any[];
     filter(callbackfn: (value: string, index: number, array: string[]) => boolean, thisArg?: any): string[];
     reduce(callbackfn: (previousValue: any, currentValue: any, currentIndex: number, array: string[]) => any, initialValue?: any): any;
@@ -791,22 +821,27 @@ interface RegExpExecArray {
 
 
 interface RegExp {
-    /**
+    /** 
       * Executes a search on a string using a regular expression pattern, and returns an array containing the results of that search.
       * @param string The String object or string literal on which to perform the search.
       */
     exec(string: string): RegExpExecArray;
-    /**
+    
+    /** 
       * Returns a Boolean value that indicates whether or not a pattern exists in a searched string.
       * @param string String on which to perform the search.
       */
     test(string: string): boolean;
+
     /** Returns a copy of the text of the regular expression pattern. Read-only. The rgExp argument is a Regular expression object. It can be a variable name or a literal. */
     source: string;
+    
     /** Returns a Boolean value indicating the state of the global flag (g) used with a regular expression. Default is false. Read-only. */
     global: boolean;
+
     /** Returns a Boolean value indicating the state of the ignoreCase flag (i) used with a regular expression. Default is false. Read-only. */
     ignoreCase: boolean;
+
     /** Returns a Boolean value indicating the state of the multiline flag (m) used with a regular expression. Default is false. Read-only. */
     multiline: boolean;
 
@@ -894,8 +929,8 @@ interface JSON {
     /**
       * Converts a JavaScript Object Notation (JSON) string into an object.
       * @param text A valid JSON string.
-      * @param reviver A function that transforms the results. This function is called for each member of the object.
-      * If a member contains nested objects, the nested objects are transformed before the parent object is.
+      * @param reviver A function that transforms the results. This function is called for each member of the object. 
+      * If a member contains nested objects, the nested objects are transformed before the parent object is. 
       */
     parse(text: string, reviver?: (key: any, value: any) => any): any;
     /**
@@ -935,40 +970,163 @@ interface JSON {
   */
 declare var JSON: JSON;
 
-////////////////
+
+/////////////////////////////
 /// ECMAScript Array API (specially handled by compiler)
-////////////////
+/////////////////////////////
 
 interface Array<T> {
+    /**
+      * Returns a string representation of an array.
+      */
     toString(): string;
     toLocaleString(): string;
+    /**
+      * Combines two or more arrays.
+      * @param items Additional items to add to the end of array1.
+      */
     concat<U extends T[]>(...items: U[]): T[];
+    /**
+      * Combines two or more arrays.
+      * @param items Additional items to add to the end of array1.
+      */
     concat(...items: T[]): T[];
+    /**
+      * Adds all the elements of an array separated by the specified separator string.
+      * @param separator A string used to separate one element of an array from the next in the resulting String. If omitted, the array elements are separated with a comma.
+      */
     join(separator?: string): string;
+    /**
+      * Removes the last element from an array and returns it.
+      */
     pop(): T;
+    /**
+      * Appends new elements to an array, and returns the new length of the array.
+      * @param items New elements of the Array.
+      */
     push(...items: T[]): number;
+    /**
+      * Reverses the elements in an Array. 
+      */
     reverse(): T[];
+    /**
+      * Removes the first element from an array and returns it.
+      */
     shift(): T;
+    /** 
+      * Returns a section of an array.
+      * @param start The beginning of the specified portion of the array.
+      * @param end The end of the specified portion of the array.
+      */
     slice(start: number, end?: number): T[];
+
+    /**
+      * Sorts an array.
+      * @param compareFn The name of the function used to determine the order of the elements. If omitted, the elements are sorted in ascending, ASCII character order.
+      */
     sort(compareFn?: (a: T, b: T) => number): T[];
+
+    /**
+      * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
+      * @param start The zero-based location in the array from which to start removing elements.
+      */
     splice(start: number): T[];
+
+    /**
+      * Removes elements from an array and, if necessary, inserts new elements in their place, returning the deleted elements.
+      * @param start The zero-based location in the array from which to start removing elements.
+      * @param deleteCount The number of elements to remove.
+      * @param items Elements to insert into the array in place of the deleted elements.
+      */
     splice(start: number, deleteCount: number, ...items: T[]): T[];
+
+    /**
+      * Inserts new elements at the start of an array.
+      * @param items  Elements to insert at the start of the Array.
+      */
     unshift(...items: T[]): number;
 
+    /**
+      * Returns the index of the first occurrence of a value in an array.
+      * @param searchElement The value to locate in the array.
+      * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at index 0.
+      */
     indexOf(searchElement: T, fromIndex?: number): number;
+
+    /**
+      * Returns the index of the last occurrence of a specified value in an array.
+      * @param searchElement The value to locate in the array.
+      * @param fromIndex The array index at which to begin the search. If fromIndex is omitted, the search starts at the last index in the array.
+      */
     lastIndexOf(searchElement: T, fromIndex?: number): number;
+
+    /**
+      * Determines whether all the members of an array satisfy the specified test.
+      * @param callbackfn A function that accepts up to three arguments. The every method calls the callbackfn function for each element in array1 until the callbackfn returns false, or until the end of the array.
+      * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+      */
     every(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;
+
+    /**
+      * Determines whether the specified callback function returns true for any element of an array.
+      * @param callbackfn A function that accepts up to three arguments. The some method calls the callbackfn function for each element in array1 until the callbackfn returns true, or until the end of the array.
+      * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+      */
     some(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): boolean;
-    forEach(callbackfn: (value: T, index: number, array: T[]) => void , thisArg?: any): void;
+
+    /**
+      * Performs the specified action for each element in an array.
+      * @param callbackfn  A function that accepts up to three arguments. forEach calls the callbackfn function one time for each element in the array. 
+      * @param thisArg  An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+      */
+    forEach(callbackfn: (value: T, index: number, array: T[]) => void, thisArg?: any): void;
+
+    /**
+      * Calls a defined callback function on each element of an array, and returns an array that contains the results.
+      * @param callbackfn A function that accepts up to three arguments. The map method calls the callbackfn function one time for each element in the array. 
+      * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+      */
     map<U>(callbackfn: (value: T, index: number, array: T[]) => U, thisArg?: any): U[];
+
+    /**
+      * Returns the elements of an array that meet the condition specified in a callback function. 
+      * @param callbackfn A function that accepts up to three arguments. The filter method calls the callbackfn function one time for each element in the array. 
+      * @param thisArg An object to which the this keyword can refer in the callbackfn function. If thisArg is omitted, undefined is used as the this value.
+      */
     filter(callbackfn: (value: T, index: number, array: T[]) => boolean, thisArg?: any): T[];
+
+    /**
+      * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+      * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
+      * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+      */
     reduce(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;
+    /**
+      * Calls the specified callback function for all the elements in an array. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+      * @param callbackfn A function that accepts up to four arguments. The reduce method calls the callbackfn function one time for each element in the array.
+      * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+      */
     reduce<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
+
+    /** 
+      * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+      * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array. 
+      * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+      */
     reduceRight(callbackfn: (previousValue: T, currentValue: T, currentIndex: number, array: T[]) => T, initialValue?: T): T;
+    /** 
+      * Calls the specified callback function for all the elements in an array, in descending order. The return value of the callback function is the accumulated result, and is provided as an argument in the next call to the callback function.
+      * @param callbackfn A function that accepts up to four arguments. The reduceRight method calls the callbackfn function one time for each element in the array. 
+      * @param initialValue If initialValue is specified, it is used as the initial value to start the accumulation. The first call to the callbackfn function provides this value as an argument instead of an array value.
+      */
     reduceRight<U>(callbackfn: (previousValue: U, currentValue: T, currentIndex: number, array: T[]) => U, initialValue: U): U;
 
+    /**
+      * Gets or sets the length of the array. This is a number one higher than the highest element defined in an array.
+      */
     length: number;
 
+    [n: number]: T;
 }
 declare var Array: {
     new <T>(arrayLength: number): T[];
@@ -980,16 +1138,26 @@ declare var Array: {
 }
 
 
-////////////////
+/////////////////////////////
 /// IE10 ECMAScript Extensions
-////////////////
+/////////////////////////////
 
+/**
+  * Represents a raw buffer of binary data, which is used to store data for the 
+  * different typed arrays. ArrayBuffers cannot be read from or written to directly, 
+  * but can be passed to a typed array or DataView Object to interpret the raw 
+  * buffer as needed. 
+  */
 interface ArrayBuffer {
+    /**
+      * Read-only. The length of the ArrayBuffer (in bytes).
+      */
     byteLength: number;
 }
+
 declare var ArrayBuffer: {
     prototype: ArrayBuffer;
-    new (byteLength: number);
+    new (byteLength: number): ArrayBuffer;
 }
 
 interface ArrayBufferView {
@@ -998,14 +1166,54 @@ interface ArrayBufferView {
     byteLength: number;
 }
 
+/**
+  * A typed array of 8-bit integer values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Int8Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
+
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Int8Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Int8Array view of the ArrayBuffer store for this array, referencing the elements at begin, inclusive, up to end, exclusive. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Int8Array;
 }
 declare var Int8Array: {
@@ -1017,14 +1225,53 @@ declare var Int8Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 8-bit unsigned integer values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Uint8Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Uint8Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Uint8Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Uint8Array;
 }
 declare var Uint8Array: {
@@ -1036,14 +1283,53 @@ declare var Uint8Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 16-bit integer values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Int16Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Int16Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Int16Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Int16Array;
 }
 declare var Int16Array: {
@@ -1055,14 +1341,53 @@ declare var Int16Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 16-bit unsigned integer values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Uint16Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Uint16Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Uint16Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray.
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Uint16Array;
 }
 declare var Uint16Array: {
@@ -1074,14 +1399,53 @@ declare var Uint16Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 32-bit integer values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Int32Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Int32Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Int32Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Int32Array;
 }
 declare var Int32Array: {
@@ -1093,14 +1457,53 @@ declare var Int32Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 32-bit unsigned integer values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Uint32Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Uint32Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Int8Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Uint32Array;
 }
 declare var Uint32Array: {
@@ -1112,14 +1515,53 @@ declare var Uint32Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 32-bit float values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Float32Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Float32Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Float32Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Float32Array;
 }
 declare var Float32Array: {
@@ -1131,14 +1573,53 @@ declare var Float32Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * A typed array of 64-bit float values. The contents are initialized to 0. If the requested number of bytes could not be allocated an exception is raised.
+  */
 interface Float64Array extends ArrayBufferView {
+    /**
+      * The size in bytes of each element in the array. 
+      */
     BYTES_PER_ELEMENT: number;
+
+    /**
+      * The length of the array.
+      */
     length: number;
     [index: number]: number;
+
+    /**
+      * Gets the element at the specified index.
+      * @param index The index at which to get the element of the array.
+      */
     get(index: number): number;
+
+    /**
+      * Sets a value or an array of values.
+      * @param index The index of the location to set.
+      * @param value The value to set.
+      */
     set(index: number, value: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: Float64Array, offset?: number): void;
+
+    /**
+      * Sets a value or an array of values.
+      * @param A typed or untyped array of values to set.
+      * @param offset The index in the current array at which the values are to be written.
+      */
     set(array: number[], offset?: number): void;
+
+    /**
+      * Gets a new Float64Array view of the ArrayBuffer Object store for this array, specifying the first and last members of the subarray. 
+      * @param begin The index of the beginning of the array.
+      * @param end The index of the end of the array.
+      */
     subarray(begin: number, end?: number): Float64Array;
 }
 declare var Float64Array: {
@@ -1150,23 +1631,118 @@ declare var Float64Array: {
     BYTES_PER_ELEMENT: number;
 }
 
+/**
+  * You can use a DataView object to read and write the different kinds of binary data to any location in the ArrayBuffer. 
+  */
 interface DataView extends ArrayBufferView {
+    /**
+      * Gets the Int8 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getInt8(byteOffset: number): number;
+
+    /**
+      * Gets the Uint8 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getUint8(byteOffset: number): number;
+
+    /**
+      * Gets the Int16 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getInt16(byteOffset: number, littleEndian?: boolean): number;
+
+    /**
+      * Gets the Uint16 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getUint16(byteOffset: number, littleEndian?: boolean): number;
+
+    /**
+      * Gets the Int32 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getInt32(byteOffset: number, littleEndian?: boolean): number;
+
+    /**
+      * Gets the Uint32 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getUint32(byteOffset: number, littleEndian?: boolean): number;
+
+    /**
+      * Gets the Float32 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getFloat32(byteOffset: number, littleEndian?: boolean): number;
+
+    /**
+      * Gets the Float64 value at the specified byte offset from the start of the view. There is no alignment constraint; multi-byte values may be fetched from any offset. 
+      * @param byteOffset The place in the buffer at which the value should be retrieved.
+      */
     getFloat64(byteOffset: number, littleEndian?: boolean): number;
 
+    /**
+      * Stores an Int8 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      */
     setInt8(byteOffset: number, value: number): void;
+
+    /**
+      * Stores an Uint8 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      */
     setUint8(byteOffset: number, value: number): void;
+
+    /**
+      * Stores an Int16 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      * @param littleEndian If false or undefined, a big-endian value should be written, otherwise a little-endian value should be written.
+      */
     setInt16(byteOffset: number, value: number, littleEndian?: boolean): void;
+
+    /**
+      * Stores an Uint16 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      * @param littleEndian If false or undefined, a big-endian value should be written, otherwise a little-endian value should be written.
+      */
     setUint16(byteOffset: number, value: number, littleEndian?: boolean): void;
+
+    /**
+      * Stores an Int32 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      * @param littleEndian If false or undefined, a big-endian value should be written, otherwise a little-endian value should be written.
+      */
     setInt32(byteOffset: number, value: number, littleEndian?: boolean): void;
+
+    /**
+      * Stores an Uint32 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      * @param littleEndian If false or undefined, a big-endian value should be written, otherwise a little-endian value should be written.
+      */
     setUint32(byteOffset: number, value: number, littleEndian?: boolean): void;
+
+    /**
+      * Stores an Float32 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      * @param littleEndian If false or undefined, a big-endian value should be written, otherwise a little-endian value should be written.
+      */
     setFloat32(byteOffset: number, value: number, littleEndian?: boolean): void;
+
+    /**
+      * Stores an Float64 value at the specified byte offset from the start of the view. 
+      * @param byteOffset The place in the buffer at which the value should be set.
+      * @param value The value to set.
+      * @param littleEndian If false or undefined, a big-endian value should be written, otherwise a little-endian value should be written.
+      */
     setFloat64(byteOffset: number, value: number, littleEndian?: boolean): void;
 }
 declare var DataView: {
@@ -1174,9 +1750,186 @@ declare var DataView: {
     new (buffer: ArrayBuffer, byteOffset?: number, length?: number): DataView;
 }
 
-////////////////
-/// IE9 DOM APIs (note that
-////////////////
+/////////////////////////////
+/// IE11 ECMAScript Extensions
+/////////////////////////////
+
+interface Map<K, V> {
+    clear(): void;
+    delete(key: K): boolean;
+    forEach(callbackfn: (value: V, index: K, map: Map<K, V>) => void, thisArg?: any): void;
+    get(key: K): V;
+    has(key: K): boolean;
+    set(key: K, value: V): Map<K, V>;
+    size: number;
+}
+declare var Map: {
+    new <K, V>(): Map<K, V>;
+}
+
+interface WeakMap<K, V> {
+    clear(): void;
+    delete(key: K): boolean;
+    get(key: K): V;
+    has(key: K): boolean;
+    set(key: K, value: V): WeakMap<K, V>;
+}
+declare var WeakMap: {
+    new <K, V>(): WeakMap<K, V>;
+}
+
+interface Set<T> {
+    add(value: T): Set<T>;
+    clear(): void;
+    delete(value: T): boolean;
+    forEach(callbackfn: (value: T, index: T, set: Set<T>) => void, thisArg?: any): void;
+    has(value: T): boolean;
+    size: number;
+}
+declare var Set: {
+    new <T>(): Set<T>;
+}
+
+declare module Intl {
+
+    interface CollatorOptions {
+        usage?: string;
+        localeMatcher?: string;
+        numeric?: boolean;
+        caseFirst?: string;
+        sensitivity?: string;
+        ignorePunctuation?: boolean;
+    }
+
+    interface ResolvedCollatorOptions {
+        locale: string;
+        usage: string;
+        sensitivity: string;
+        ignorePunctuation: boolean;
+        collation: string;
+        caseFirst: string;
+        numeric: boolean;
+    }
+
+    interface Collator {
+        compare(x: string, y: string): number;
+        resolvedOptions(): ResolvedCollatorOptions;
+    }
+    var Collator: {
+        new (locales?: string[], options?: CollatorOptions): Collator;
+        new (locale?: string, options?: CollatorOptions): Collator;
+        (locales?: string[], options?: CollatorOptions): Collator;
+        (locale?: string, options?: CollatorOptions): Collator;
+        supportedLocalesOf(locales: string[], options?: CollatorOptions): string[];
+        supportedLocalesOf(locale: string, options?: CollatorOptions): string[];
+    }
+
+    interface NumberFormatOptions {
+        localeMatcher?: string;
+        style?: string;
+        currency?: string;
+        currencyDisplay?: string;
+        useGrouping?: boolean;
+    }
+
+    interface ResolvedNumberFormatOptions {
+        locale: string;
+        numberingSystem: string;
+        style: string;
+        currency?: string;
+        currencyDisplay?: string;
+        minimumintegerDigits: number;
+        minimumFractionDigits: number;
+        maximumFractionDigits: number;
+        minimumSignificantDigits?: number;
+        maximumSignificantDigits?: number;
+        useGrouping: boolean;
+    }
+
+    interface NumberFormat {
+        format(value: number): string;
+        resolvedOptions(): ResolvedNumberFormatOptions;
+    }
+    var NumberFormat: {
+        new (locales?: string[], options?: NumberFormatOptions): Collator;
+        new (locale?: string, options?: NumberFormatOptions): Collator;
+        (locales?: string[], options?: NumberFormatOptions): Collator;
+        (locale?: string, options?: NumberFormatOptions): Collator;
+        supportedLocalesOf(locales: string[], options?: NumberFormatOptions): string[];
+        supportedLocalesOf(locale: string, options?: NumberFormatOptions): string[];
+    }
+
+    interface DateTimeFormatOptions {
+        localeMatcher?: string;
+        weekday?: string;
+        era?: string;
+        year?: string;
+        month?: string;
+        day?: string;
+        hour?: string;
+        minute?: string;
+        second?: string;
+        timeZoneName?: string;
+        formatMatcher?: string;
+        hour12: boolean;
+    }
+
+    interface ResolvedDateTimeFormatOptions {
+        locale: string;
+        calendar: string;
+        numberingSystem: string;
+        timeZone: string;
+        hour12?: boolean;
+        weekday?: string;
+        era?: string;
+        year?: string;
+        month?: string;
+        day?: string;
+        hour?: string;
+        minute?: string;
+        second?: string;
+        timeZoneName?: string;
+    }
+
+    interface DateTimeFormat {
+        format(date: number): string;
+        resolvedOptions(): ResolvedDateTimeFormatOptions;
+    }
+    var DateTimeFormat: {
+        new (locales?: string[], options?: DateTimeFormatOptions): Collator;
+        new (locale?: string, options?: DateTimeFormatOptions): Collator;
+        (locales?: string[], options?: DateTimeFormatOptions): Collator;
+        (locale?: string, options?: DateTimeFormatOptions): Collator;
+        supportedLocalesOf(locales: string[], options?: DateTimeFormatOptions): string[];
+        supportedLocalesOf(locale: string, options?: DateTimeFormatOptions): string[];
+    }
+}
+
+interface String {
+    localeCompare(that: string, locales: string[], options?: Intl.CollatorOptions): number;
+    localeCompare(that: string, locale: string, options?: Intl.CollatorOptions): number;
+}
+
+interface Number {
+    toLocaleString(locales: string[], options?: Intl.NumberFormatOptions): string;
+    toLocaleString(locale: string, options?: Intl.NumberFormatOptions): string;
+}
+
+interface Date {
+    toLocaleString(locales: string[], options?: Intl.DateTimeFormatOptions): string;
+    toLocaleString(locale: string, options?: Intl.DateTimeFormatOptions): string;
+}
+
+
+/////////////////////////////
+/// IE9 DOM APIs 
+/////////////////////////////
+
+interface PositionOptions {
+    enableHighAccuracy?: boolean;
+    timeout?: number;
+    maximumAge?: number;
+}
 
 interface NavigatorID {
     appVersion: string;
@@ -1185,36 +1938,136 @@ interface NavigatorID {
     platform: string;
 }
 
-interface HTMLTableElement extends HTMLElement, DOML2DeprecatedBorderStyle_HTMLTableElement, DOML2DeprecatedAlignmentStyle_HTMLTableElement, MSBorderColorStyle, MSDataBindingExtensions, MSHTMLTableElementExtensions, DOML2DeprecatedBackgroundStyle, MSBorderColorHighlightStyle, MSDataBindingTableExtensions, DOML2DeprecatedBackgroundColorStyle {
-    tBodies: HTMLCollection;
+interface HTMLTableElement extends HTMLElement, MSDataBindingTableExtensions, MSDataBindingExtensions, DOML2DeprecatedBackgroundStyle, DOML2DeprecatedBackgroundColorStyle {
+    /**
+      * Sets or retrieves the width of the object.
+      */
     width: string;
-    tHead: HTMLTableSectionElement;
+    /**
+      * Sets or retrieves the color for one of the two colors used to draw the 3-D border of the object.
+      */
+    borderColorLight: any;
+    /**
+      * Sets or retrieves the amount of space between cells in a table.
+      */
     cellSpacing: string;
+    /**
+      * Retrieves the tFoot object of the table.
+      */
     tFoot: HTMLTableSectionElement;
+    /**
+      * Sets or retrieves the way the border frame around the table is displayed.
+      */
     frame: string;
+    /**
+      * Sets or retrieves the border color of the object. 
+      */
+    borderColor: any;
+    /**
+      * Sets or retrieves the number of horizontal rows contained in the object.
+      */
     rows: HTMLCollection;
+    /**
+      * Sets or retrieves which dividing lines (inner borders) are displayed.
+      */
     rules: string;
-    cellPadding: string;
+    /**
+      * Sets or retrieves the number of columns in the table.
+      */
+    cols: number;
+    /**
+      * Sets or retrieves a description and/or structure of the object.
+      */
     summary: string;
+    /**
+      * Retrieves the caption object of a table.
+      */
     caption: HTMLTableCaptionElement;
+    /**
+      * Retrieves a collection of all tBody objects in the table. Objects in this collection are in source order.
+      */
+    tBodies: HTMLCollection;
+    /**
+      * Retrieves the tHead object of the table.
+      */
+    tHead: HTMLTableSectionElement;
+    /**
+      * Sets or retrieves a value that indicates the table alignment.
+      */
+    align: string;
+    /**
+      * Retrieves a collection of all cells in the table row or in the entire table.
+      */
+    cells: HTMLCollection;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: any;
+    /**
+      * Sets or retrieves the amount of space between the border of the cell and the content of the cell.
+      */
+    cellPadding: string;
+    /**
+      * Sets or retrieves the width of the border to draw around the object.
+      */
+    border: string;
+    /**
+      * Sets or retrieves the color for one of the two colors used to draw the 3-D border of the object.
+      */
+    borderColorDark: any;
+    /**
+      * Removes the specified row (tr) from the element and from the rows collection.
+      * @param index Number that specifies the zero-based position in the rows collection of the row to remove.
+      */
     deleteRow(index?: number): void;
+    /**
+      * Creates an empty tBody element in the table.
+      */
     createTBody(): HTMLElement;
+    /**
+      * Deletes the caption element and its contents from the table.
+      */
     deleteCaption(): void;
+    /**
+      * Creates a new row (tr) in the table, and adds the row to the rows collection.
+      * @param index Number that specifies where to insert the row in the rows collection. The default value is -1, which appends the new row to the end of the rows collection.
+      */
     insertRow(index?: number): HTMLElement;
+    /**
+      * Deletes the tFoot element and its contents from the table.
+      */
     deleteTFoot(): void;
+    /**
+      * Returns the tHead element object if successful, or null otherwise.
+      */
     createTHead(): HTMLElement;
+    /**
+      * Deletes the tHead element and its contents from the table.
+      */
     deleteTHead(): void;
+    /**
+      * Creates an empty caption element in the table.
+      */
     createCaption(): HTMLElement;
+    /**
+      * Moves a table row to a new position.
+      * @param indexFrom Number that specifies the index in the rows collection of the table row that is moved.
+      * @param indexTo Number that specifies where the row is moved within the rows collection.
+      */
+    moveRow(indexFrom?: number, indexTo?: number): Object;
+    /**
+      * Creates an empty tFoot element in the table.
+      */
     createTFoot(): HTMLElement;
 }
 declare var HTMLTableElement: {
     prototype: HTMLTableElement;
-    new(): HTMLTableElement;
+    new (): HTMLTableElement;
 }
 
 interface TreeWalker {
     whatToShow: number;
-    filter: NodeFilterCallback;
+    filter: NodeFilter;
     root: Node;
     currentNode: Node;
     expandEntityReferences: boolean;
@@ -1228,15 +2081,11 @@ interface TreeWalker {
 }
 declare var TreeWalker: {
     prototype: TreeWalker;
-    new(): TreeWalker;
+    new (): TreeWalker;
 }
 
 interface GetSVGDocument {
-    getSVGDocument(): SVGDocument;
-}
-
-interface HTMLHtmlElementDOML2Deprecated {
-    version: string;
+    getSVGDocument(): Document;
 }
 
 interface SVGPathSegCurvetoQuadraticRel extends SVGPathSeg {
@@ -1247,33 +2096,28 @@ interface SVGPathSegCurvetoQuadraticRel extends SVGPathSeg {
 }
 declare var SVGPathSegCurvetoQuadraticRel: {
     prototype: SVGPathSegCurvetoQuadraticRel;
-    new(): SVGPathSegCurvetoQuadraticRel;
+    new (): SVGPathSegCurvetoQuadraticRel;
 }
 
 interface Performance {
     navigation: PerformanceNavigation;
     timing: PerformanceTiming;
+    getEntriesByType(entryType: string): any;
     toJSON(): any;
+    getMeasures(measureName?: string): any;
+    clearMarks(markName?: string): void;
+    getMarks(markName?: string): any;
+    clearResourceTimings(): void;
+    mark(markName: string): void;
+    measure(measureName: string, startMarkName?: string, endMarkName?: string): void;
+    getEntriesByName(name: string, entryType?: string): any;
+    getEntries(): any;
+    clearMeasures(measureName?: string): void;
+    setResourceTimingBufferSize(maxSize: number): void;
 }
 declare var Performance: {
     prototype: Performance;
-    new(): Performance;
-}
-
-interface SVGSVGElementEventHandlers {
-    onresize: (ev: UIEvent) => any;
-    addEventListener(type: "resize", listener: (ev: UIEvent) => void, useCapture?: boolean): void;
-    onunload: (ev: Event) => any;
-    addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onscroll: (ev: UIEvent) => any;
-    addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    onerror: (ev: Event) => any;
-    addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onzoom: (ev: any) => any;
-    addEventListener(type: "zoom", listener: (ev: any) => any, useCapture?: boolean): void;
-    onabort: (ev: UIEvent) => any;
-    addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    new (): Performance;
 }
 
 interface MSDataBindingTableExtensions {
@@ -1285,21 +2129,24 @@ interface MSDataBindingTableExtensions {
     lastPage(): void;
 }
 
-interface DOML2DeprecatedAlignmentStyle_HTMLParagraphElement {
-    align: string;
-}
-
 interface CompositionEvent extends UIEvent {
     data: string;
     locale: string;
-    initCompositionEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, dataArg: string, locale: string): void;
+    initCompositionEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, dataArg: string, locale: string): void;
 }
 declare var CompositionEvent: {
     prototype: CompositionEvent;
-    new(): CompositionEvent;
+    new (): CompositionEvent;
 }
 
-interface SVGMarkerElement extends SVGElement, SVGStylable, SVGLangSpace, SVGFitToViewBox {
+interface WindowTimers {
+    clearTimeout(handle: number): void;
+    setTimeout(handler: any, timeout?: any, ...args: any[]): number;
+    clearInterval(handle: number): void;
+    setInterval(handler: any, timeout?: any, ...args: any[]): number;
+}
+
+interface SVGMarkerElement extends SVGElement, SVGStylable, SVGLangSpace, SVGFitToViewBox, SVGExternalResourcesRequired {
     orientType: SVGAnimatedEnumeration;
     markerUnits: SVGAnimatedEnumeration;
     markerWidth: SVGAnimatedLength;
@@ -1318,7 +2165,7 @@ interface SVGMarkerElement extends SVGElement, SVGStylable, SVGLangSpace, SVGFit
 }
 declare var SVGMarkerElement: {
     prototype: SVGMarkerElement;
-    new(): SVGMarkerElement;
+    new (): SVGMarkerElement;
     SVG_MARKER_ORIENT_UNKNOWN: number;
     SVG_MARKER_ORIENT_ANGLE: number;
     SVG_MARKERUNITS_UNKNOWN: number;
@@ -1327,17 +2174,159 @@ declare var SVGMarkerElement: {
     SVG_MARKERUNITS_USERSPACEONUSE: number;
 }
 
-interface WindowTimers {
-    clearTimeout(handle: number): void;
-    setTimeout(expression: any, msec?: number, language?: any): number;
-    clearInterval(handle: number): void;
-    setInterval(expression: any, msec?: number, language?: any): number;
-}
-
-interface CSSStyleDeclaration extends CSS3Properties, SVG1_1Properties, CSS2Properties {
+interface CSSStyleDeclaration {
+    backgroundAttachment: string;
+    visibility: string;
+    textAlignLast: string;
+    borderRightStyle: string;
+    counterIncrement: string;
+    orphans: string;
     cssText: string;
-    length: number;
+    borderStyle: string;
+    pointerEvents: string;
+    borderTopColor: string;
+    markerEnd: string;
+    textIndent: string;
+    listStyleImage: string;
+    cursor: string;
+    listStylePosition: string;
+    wordWrap: string;
+    borderTopStyle: string;
+    alignmentBaseline: string;
+    opacity: string;
+    direction: string;
+    strokeMiterlimit: string;
+    maxWidth: string;
+    color: string;
+    clip: string;
+    borderRightWidth: string;
+    verticalAlign: string;
+    overflow: string;
+    mask: string;
+    borderLeftStyle: string;
+    emptyCells: string;
+    stopOpacity: string;
+    paddingRight: string;
     parentRule: CSSRule;
+    background: string;
+    boxSizing: string;
+    textJustify: string;
+    height: string;
+    paddingTop: string;
+    length: number;
+    right: string;
+    baselineShift: string;
+    borderLeft: string;
+    widows: string;
+    lineHeight: string;
+    left: string;
+    textUnderlinePosition: string;
+    glyphOrientationHorizontal: string;
+    display: string;
+    textAnchor: string;
+    cssFloat: string;
+    strokeDasharray: string;
+    rubyAlign: string;
+    fontSizeAdjust: string;
+    borderLeftColor: string;
+    backgroundImage: string;
+    listStyleType: string;
+    strokeWidth: string;
+    textOverflow: string;
+    fillRule: string;
+    borderBottomColor: string;
+    zIndex: string;
+    position: string;
+    listStyle: string;
+    msTransformOrigin: string;
+    dominantBaseline: string;
+    overflowY: string;
+    fill: string;
+    captionSide: string;
+    borderCollapse: string;
+    boxShadow: string;
+    quotes: string;
+    tableLayout: string;
+    unicodeBidi: string;
+    borderBottomWidth: string;
+    backgroundSize: string;
+    textDecoration: string;
+    strokeDashoffset: string;
+    fontSize: string;
+    border: string;
+    pageBreakBefore: string;
+    borderTopRightRadius: string;
+    msTransform: string;
+    borderBottomLeftRadius: string;
+    textTransform: string;
+    rubyPosition: string;
+    strokeLinejoin: string;
+    clipPath: string;
+    borderRightColor: string;
+    fontFamily: string;
+    clear: string;
+    content: string;
+    backgroundClip: string;
+    marginBottom: string;
+    counterReset: string;
+    outlineWidth: string;
+    marginRight: string;
+    paddingLeft: string;
+    borderBottom: string;
+    wordBreak: string;
+    marginTop: string;
+    top: string;
+    fontWeight: string;
+    borderRight: string;
+    width: string;
+    kerning: string;
+    pageBreakAfter: string;
+    borderBottomStyle: string;
+    fontStretch: string;
+    padding: string;
+    strokeOpacity: string;
+    markerStart: string;
+    bottom: string;
+    borderLeftWidth: string;
+    clipRule: string;
+    backgroundPosition: string;
+    backgroundColor: string;
+    pageBreakInside: string;
+    backgroundOrigin: string;
+    strokeLinecap: string;
+    borderTopWidth: string;
+    outlineStyle: string;
+    borderTop: string;
+    outlineColor: string;
+    paddingBottom: string;
+    marginLeft: string;
+    font: string;
+    outline: string;
+    wordSpacing: string;
+    maxHeight: string;
+    fillOpacity: string;
+    letterSpacing: string;
+    borderSpacing: string;
+    backgroundRepeat: string;
+    borderRadius: string;
+    borderWidth: string;
+    borderBottomRightRadius: string;
+    whiteSpace: string;
+    fontStyle: string;
+    minWidth: string;
+    stopColor: string;
+    borderTopLeftRadius: string;
+    borderColor: string;
+    marker: string;
+    glyphOrientationVertical: string;
+    markerMid: string;
+    fontVariant: string;
+    minHeight: string;
+    stroke: string;
+    rubyOverhang: string;
+    overflowX: string;
+    textAlign: string;
+    margin: string;
     getPropertyPriority(propertyName: string): string;
     getPropertyValue(propertyName: string): string;
     removeProperty(propertyName: string): string;
@@ -1347,14 +2336,14 @@ interface CSSStyleDeclaration extends CSS3Properties, SVG1_1Properties, CSS2Prop
 }
 declare var CSSStyleDeclaration: {
     prototype: CSSStyleDeclaration;
-    new(): CSSStyleDeclaration;
+    new (): CSSStyleDeclaration;
 }
 
-interface SVGGElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGGElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
 }
 declare var SVGGElement: {
     prototype: SVGGElement;
-    new(): SVGGElement;
+    new (): SVGGElement;
 }
 
 interface MSStyleCSSProperties extends MSCSSProperties {
@@ -1378,32 +2367,14 @@ interface MSStyleCSSProperties extends MSCSSProperties {
 }
 declare var MSStyleCSSProperties: {
     prototype: MSStyleCSSProperties;
-    new(): MSStyleCSSProperties;
+    new (): MSStyleCSSProperties;
 }
 
-interface MSCSSStyleSheetExtensions {
-    owningElement: Element;
-    imports: StyleSheetList;
-    isAlternate: boolean;
-    rules: MSCSSRuleList;
-    isPrefAlternate: boolean;
-    readOnly: boolean;
-    cssText: string;
-    href: string;
-    id: string;
-    pages: StyleSheetPageList;
-    addImport(bstrURL: string, lIndex?: number): number;
-    addPageRule(bstrSelector: string, bstrStyle: string, lIndex?: number): number;
-    removeRule(lIndex: number): void;
-    addRule(bstrSelector: string, bstrStyle?: string, lIndex?: number): number;
-    removeImport(lIndex: number): void;
-}
-
-interface Navigator extends NavigatorID, NavigatorOnLine, NavigatorDoNotTrack, NavigatorAbilities, NavigatorGeolocation, MSNavigatorAbilities {
+interface Navigator extends NavigatorID, NavigatorOnLine, NavigatorContentUtils, MSNavigatorExtensions, NavigatorGeolocation, MSNavigatorDoNotTrack, NavigatorStorageUtils {
 }
 declare var Navigator: {
     prototype: Navigator;
-    new(): Navigator;
+    new (): Navigator;
 }
 
 interface SVGPathSegCurvetoCubicSmoothAbs extends SVGPathSeg {
@@ -1414,11 +2385,7 @@ interface SVGPathSegCurvetoCubicSmoothAbs extends SVGPathSeg {
 }
 declare var SVGPathSegCurvetoCubicSmoothAbs: {
     prototype: SVGPathSegCurvetoCubicSmoothAbs;
-    new(): SVGPathSegCurvetoCubicSmoothAbs;
-}
-
-interface MSBorderColorStyle_HTMLFrameSetElement {
-    borderColor: any;
+    new (): SVGPathSegCurvetoCubicSmoothAbs;
 }
 
 interface SVGZoomEvent extends UIEvent {
@@ -1430,7 +2397,7 @@ interface SVGZoomEvent extends UIEvent {
 }
 declare var SVGZoomEvent: {
     prototype: SVGZoomEvent;
-    new(): SVGZoomEvent;
+    new (): SVGZoomEvent;
 }
 
 interface NodeSelector {
@@ -1438,23 +2405,26 @@ interface NodeSelector {
     querySelector(selectors: string): Element;
 }
 
-interface HTMLTableDataCellElement extends HTMLTableCellElement, MSHTMLTableDataCellElementExtensions {
+interface HTMLTableDataCellElement extends HTMLTableCellElement {
 }
 declare var HTMLTableDataCellElement: {
     prototype: HTMLTableDataCellElement;
-    new(): HTMLTableDataCellElement;
-}
-
-interface MSHTMLDirectoryElementExtensions extends DOML2DeprecatedListNumberingAndBulletStyle {
+    new (): HTMLTableDataCellElement;
 }
 
 interface HTMLBaseElement extends HTMLElement {
+    /**
+      * Sets or retrieves the window or frame at which to target content.
+      */
     target: string;
+    /**
+      * Gets or sets the baseline URL on which relative links are based.
+      */
     href: string;
 }
 declare var HTMLBaseElement: {
     prototype: HTMLBaseElement;
-    new(): HTMLBaseElement;
+    new (): HTMLBaseElement;
 }
 
 interface ClientRect {
@@ -1467,25 +2437,22 @@ interface ClientRect {
 }
 declare var ClientRect: {
     prototype: ClientRect;
-    new(): ClientRect;
+    new (): ClientRect;
 }
 
 interface PositionErrorCallback {
     (error: PositionError): void;
 }
 
-interface DOMImplementation extends DOMHTMLImplementation {
+interface DOMImplementation {
     createDocumentType(qualifiedName: string, publicId: string, systemId: string): DocumentType;
     createDocument(namespaceURI: string, qualifiedName: string, doctype: DocumentType): Document;
     hasFeature(feature: string, version?: string): boolean;
+    createHTMLDocument(title: string): Document;
 }
 declare var DOMImplementation: {
     prototype: DOMImplementation;
-    new(): DOMImplementation;
-}
-
-interface DOML2DeprecatedWidthStyle_HTMLBlockElement {
-    width: number;
+    new (): DOMImplementation;
 }
 
 interface SVGUnitTypes {
@@ -1495,207 +2462,13 @@ interface SVGUnitTypes {
 }
 declare var SVGUnitTypes: {
     prototype: SVGUnitTypes;
-    new(): SVGUnitTypes;
+    new (): SVGUnitTypes;
     SVG_UNIT_TYPE_UNKNOWN: number;
     SVG_UNIT_TYPE_OBJECTBOUNDINGBOX: number;
     SVG_UNIT_TYPE_USERSPACEONUSE: number;
 }
 
-interface DocumentRange {
-    createRange(): Range;
-}
-
-interface MSHTMLDocumentExtensions {
-    onrowexit: (ev: MSEventObj) => any;
-    addEventListener(type: "rowexit", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    compatible: MSCompatibleInfoCollection;
-    oncontrolselect: (ev: MSEventObj) => any;
-    addEventListener(type: "controlselect", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onrowsinserted: (ev: MSEventObj) => any;
-    addEventListener(type: "rowsinserted", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onpropertychange: (ev: MSEventObj) => any;
-    addEventListener(type: "propertychange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    media: string;
-    onafterupdate: (ev: MSEventObj) => any;
-    addEventListener(type: "afterupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onhelp: (ev: Event) => any;
-    addEventListener(type: "help", listener: (ev: Event) => any, useCapture?: boolean): void;
-    uniqueID: string;
-    onbeforeactivate: (ev: UIEvent) => any;
-    addEventListener(type: "beforeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    onstoragecommit: (ev: StorageEvent) => any;
-    addEventListener(type: "storagecommit", listener: (ev: StorageEvent) => any, useCapture?: boolean): void;
-    onselectionchange: (ev: Event) => any;
-    addEventListener(type: "selectionchange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    documentMode: number;
-    onfocusout: (ev: FocusEvent) => any;
-    addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    ondataavailable: (ev: MSEventObj) => any;
-    addEventListener(type: "dataavailable", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onbeforeupdate: (ev: MSEventObj) => any;
-    addEventListener(type: "beforeupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onfocusin: (ev: FocusEvent) => any;
-    addEventListener(type: "focusin", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    security: string;
-    namespaces: MSNamespaceInfoCollection;
-    ondatasetcomplete: (ev: MSEventObj) => any;
-    addEventListener(type: "datasetcomplete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onbeforedeactivate: (ev: UIEvent) => any;
-    addEventListener(type: "beforedeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    onstop: (ev: Event) => any;
-    addEventListener(type: "stop", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onactivate: (ev: UIEvent) => any;
-    addEventListener(type: "activate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    onmssitemodejumplistitemremoved: (ev: MSSiteModeEvent) => any;
-    addEventListener(type: "mssitemodejumplistitemremoved", listener: (ev: MSSiteModeEvent) => any, useCapture?: boolean): void;
-    frames: Window;
-    onselectstart: (ev: Event) => any;
-    addEventListener(type: "selectstart", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onerrorupdate: (ev: MSEventObj) => any;
-    addEventListener(type: "errorupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    parentWindow: Window;
-    ondeactivate: (ev: UIEvent) => any;
-    addEventListener(type: "deactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    ondatasetchanged: (ev: MSEventObj) => any;
-    addEventListener(type: "datasetchanged", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onrowsdelete: (ev: MSEventObj) => any;
-    addEventListener(type: "rowsdelete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onmsthumbnailclick: (ev: MSSiteModeEvent) => any;
-    addEventListener(type: "msthumbnailclick", listener: (ev: MSSiteModeEvent) => any, useCapture?: boolean): void;
-    onrowenter: (ev: MSEventObj) => any;
-    addEventListener(type: "rowenter", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onbeforeeditfocus: (ev: MSEventObj) => any;
-    addEventListener(type: "beforeeditfocus", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    Script: MSScriptHost;
-    oncellchange: (ev: MSEventObj) => any;
-    addEventListener(type: "cellchange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    URLUnencoded: string;
-    updateSettings(): void;
-    execCommandShowHelp(commandId: string): boolean;
-    releaseCapture(): void;
-    focus(): void;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
-}
-
-interface CSS2Properties {
-    backgroundAttachment: string;
-    visibility: string;
-    fontFamily: string;
-    borderRightStyle: string;
-    clear: string;
-    content: string;
-    counterIncrement: string;
-    orphans: string;
-    marginBottom: string;
-    borderStyle: string;
-    counterReset: string;
-    outlineWidth: string;
-    marginRight: string;
-    paddingLeft: string;
-    borderBottom: string;
-    marginTop: string;
-    borderTopColor: string;
-    top: string;
-    fontWeight: string;
-    textIndent: string;
-    borderRight: string;
-    width: string;
-    listStyleImage: string;
-    cursor: string;
-    listStylePosition: string;
-    borderTopStyle: string;
-    direction: string;
-    maxWidth: string;
-    color: string;
-    clip: string;
-    borderRightWidth: string;
-    verticalAlign: string;
-    pageBreakAfter: string;
-    overflow: string;
-    borderBottomStyle: string;
-    borderLeftStyle: string;
-    fontStretch: string;
-    emptyCells: string;
-    padding: string;
-    paddingRight: string;
-    background: string;
-    bottom: string;
-    height: string;
-    paddingTop: string;
-    right: string;
-    borderLeftWidth: string;
-    borderLeft: string;
-    backgroundPosition: string;
-    backgroundColor: string;
-    widows: string;
-    lineHeight: string;
-    pageBreakInside: string;
-    borderTopWidth: string;
-    left: string;
-    outlineStyle: string;
-    borderTop: string;
-    paddingBottom: string;
-    outlineColor: string;
-    wordSpacing: string;
-    outline: string;
-    font: string;
-    marginLeft: string;
-    display: string;
-    maxHeight: string;
-    cssFloat: string;
-    letterSpacing: string;
-    borderSpacing: string;
-    backgroundRepeat: string;
-    fontSizeAdjust: string;
-    borderLeftColor: string;
-    borderWidth: string;
-    backgroundImage: string;
-    listStyleType: string;
-    whiteSpace: string;
-    fontStyle: string;
-    borderBottomColor: string;
-    minWidth: string;
-    position: string;
-    zIndex: string;
-    borderColor: string;
-    listStyle: string;
-    captionSide: string;
-    borderCollapse: string;
-    fontVariant: string;
-    quotes: string;
-    tableLayout: string;
-    unicodeBidi: string;
-    borderBottomWidth: string;
-    minHeight: string;
-    textDecoration: string;
-    fontSize: string;
-    border: string;
-    pageBreakBefore: string;
-    textAlign: string;
-    textTransform: string;
-    margin: string;
-    borderRightColor: string;
-}
-
-interface MSImageResourceExtensions_HTMLInputElement {
-    dynsrc: string;
-    vrml: string;
-    lowsrc: string;
-    start: string;
-    loop: number;
-}
-
-interface MSHTMLEmbedElementExtensions {
-    palette: string;
-    hidden: string;
-    pluginspage: string;
-    units: string;
-}
-
-interface MSHTMLModElementExtensions {
-}
-
-interface Element extends Node, NodeSelector, ElementTraversal, MSElementExtensions {
+interface Element extends Node, NodeSelector, ElementTraversal {
     scrollTop: number;
     clientLeft: number;
     scrollLeft: number;
@@ -1712,10 +2485,12 @@ interface Element extends Node, NodeSelector, ElementTraversal, MSElementExtensi
     getAttributeNS(namespaceURI: string, localName: string): string;
     getAttributeNodeNS(namespaceURI: string, localName: string): Attr;
     setAttributeNodeNS(newAttr: Attr): Attr;
+    msMatchesSelector(selectors: string): boolean;
     hasAttribute(name: string): boolean;
     removeAttribute(name?: string): void;
     setAttributeNS(namespaceURI: string, qualifiedName: string, value: string): void;
     getAttributeNode(name: string): Attr;
+    fireEvent(eventName: string, eventObj?: any): boolean;
     getElementsByTagName(name: string): NodeList;
     getElementsByTagName(name: "a"): NodeListOf<HTMLAnchorElement>;
     getElementsByTagName(name: "abbr"): NodeListOf<HTMLElement>;
@@ -1820,19 +2595,15 @@ interface Element extends Node, NodeSelector, ElementTraversal, MSElementExtensi
     getElementsByTagName(name: "var"): NodeListOf<HTMLElement>;
     getElementsByTagName(name: "video"): NodeListOf<HTMLVideoElement>;
     getElementsByTagName(name: "wbr"): NodeListOf<HTMLElement>;
-    setAttributeNode(newAttr: Attr): Attr;
     getClientRects(): ClientRectList;
+    setAttributeNode(newAttr: Attr): Attr;
     removeAttributeNode(oldAttr: Attr): Attr;
     setAttribute(name?: string, value?: string): void;
     removeAttributeNS(namespaceURI: string, localName: string): void;
 }
 declare var Element: {
     prototype: Element;
-    new(): Element;
-}
-
-interface SVGDocument {
-    rootElement: SVGSVGElement;
+    new (): Element;
 }
 
 interface HTMLNextIdElement extends HTMLElement {
@@ -1840,7 +2611,7 @@ interface HTMLNextIdElement extends HTMLElement {
 }
 declare var HTMLNextIdElement: {
     prototype: HTMLNextIdElement;
-    new(): HTMLNextIdElement;
+    new (): HTMLNextIdElement;
 }
 
 interface SVGPathSegMovetoRel extends SVGPathSeg {
@@ -1849,10 +2620,10 @@ interface SVGPathSegMovetoRel extends SVGPathSeg {
 }
 declare var SVGPathSegMovetoRel: {
     prototype: SVGPathSegMovetoRel;
-    new(): SVGPathSegMovetoRel;
+    new (): SVGPathSegMovetoRel;
 }
 
-interface SVGLineElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGLineElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     y1: SVGAnimatedLength;
     x2: SVGAnimatedLength;
     x1: SVGAnimatedLength;
@@ -1860,39 +2631,40 @@ interface SVGLineElement extends SVGElement, SVGStylable, SVGTransformable, SVGL
 }
 declare var SVGLineElement: {
     prototype: SVGLineElement;
-    new(): SVGLineElement;
+    new (): SVGLineElement;
 }
 
-interface HTMLParagraphElement extends HTMLElement, DOML2DeprecatedAlignmentStyle_HTMLParagraphElement, MSHTMLParagraphElementExtensions {
+interface HTMLParagraphElement extends HTMLElement, DOML2DeprecatedTextFlowControl {
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text. 
+      */
+    align: string;
 }
 declare var HTMLParagraphElement: {
     prototype: HTMLParagraphElement;
-    new(): HTMLParagraphElement;
-}
-
-interface MSHTMLTextAreaElementExtensions {
-    status: any;
-    createTextRange(): TextRange;
-}
-
-interface ErrorFunction {
-    (eventOrMessage: any, source: string, fileno: number): any;
+    new (): HTMLParagraphElement;
 }
 
 interface HTMLAreasCollection extends HTMLCollection {
+    /**
+      * Removes an element from the collection.
+      */
     remove(index?: number): void;
+    /**
+      * Adds an element to the areas, controlRange, or options collection.
+      */
     add(element: HTMLElement, before?: any): void;
 }
 declare var HTMLAreasCollection: {
     prototype: HTMLAreasCollection;
-    new(): HTMLAreasCollection;
+    new (): HTMLAreasCollection;
 }
 
 interface SVGDescElement extends SVGElement, SVGStylable, SVGLangSpace {
 }
 declare var SVGDescElement: {
     prototype: SVGDescElement;
-    new(): SVGDescElement;
+    new (): SVGDescElement;
 }
 
 interface Node extends EventTarget {
@@ -1908,7 +2680,7 @@ interface Node extends EventTarget {
     childNodes: NodeList;
     nodeName: string;
     ownerDocument: Document;
-    attributes: Attr[];
+    attributes: NamedNodeMap;
     firstChild: Node;
     prefix: string;
     removeChild(oldChild: Node): Node;
@@ -1947,7 +2719,7 @@ interface Node extends EventTarget {
 }
 declare var Node: {
     prototype: Node;
-    new(): Node;
+    new (): Node;
     ENTITY_REFERENCE_NODE: number;
     ATTRIBUTE_NODE: number;
     DOCUMENT_FRAGMENT_NODE: number;
@@ -1968,117 +2740,63 @@ declare var Node: {
     DOCUMENT_POSITION_PRECEDING: number;
 }
 
-interface MSHTMLLegendElementExtensions {
-}
-
-interface MSCSSStyleDeclarationExtensions {
-    getAttribute(attributeName: string, flags?: number): any;
-    setAttribute(attributeName: string, AttributeValue: any, flags?: number): void;
-    removeAttribute(attributeName: string, flags?: number): boolean;
-}
-
 interface SVGPathSegCurvetoQuadraticSmoothRel extends SVGPathSeg {
     y: number;
     x: number;
 }
 declare var SVGPathSegCurvetoQuadraticSmoothRel: {
     prototype: SVGPathSegCurvetoQuadraticSmoothRel;
-    new(): SVGPathSegCurvetoQuadraticSmoothRel;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLTableRowElement {
-    align: string;
-}
-
-interface DOML2DeprecatedBorderStyle_HTMLObjectElement {
-    border: string;
-}
-
-interface MSHTMLSpanElementExtensions {
-}
-
-interface MSHTMLObjectElementExtensions {
-    object: Object;
-    alt: string;
-    classid: string;
-    altHtml: string;
-    BaseHref: string;
+    new (): SVGPathSegCurvetoQuadraticSmoothRel;
 }
 
 interface DOML2DeprecatedListSpaceReduction {
     compact: boolean;
 }
 
-interface CSS3Properties {
-    textAlignLast: string;
-    textUnderlinePosition: string;
-    wordWrap: string;
-    borderTopLeftRadius: string;
-    backgroundClip: string;
-    msTransformOrigin: string;
-    opacity: string;
-    overflowY: string;
-    boxShadow: string;
-    backgroundSize: string;
-    wordBreak: string;
-    boxSizing: string;
-    rubyOverhang: string;
-    rubyAlign: string;
-    textJustify: string;
-    borderRadius: string;
-    overflowX: string;
-    borderTopRightRadius: string;
-    msTransform: string;
-    borderBottomLeftRadius: string;
-    rubyPosition: string;
-    borderBottomRightRadius: string;
-    backgroundOrigin: string;
-    textOverflow: string;
-}
-
 interface MSScriptHost {
 }
 declare var MSScriptHost: {
     prototype: MSScriptHost;
-    new(): MSScriptHost;
+    new (): MSScriptHost;
 }
 
-interface SVGClipPathElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGClipPathElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     clipPathUnits: SVGAnimatedEnumeration;
 }
 declare var SVGClipPathElement: {
     prototype: SVGClipPathElement;
-    new(): SVGClipPathElement;
+    new (): SVGClipPathElement;
 }
 
-interface MouseEvent extends UIEvent, MSMouseEventExtensions {
+interface MouseEvent extends UIEvent {
+    toElement: Element;
+    layerY: number;
+    fromElement: Element;
+    which: number;
     pageX: number;
     offsetY: number;
     x: number;
     y: number;
-    altKey: boolean;
     metaKey: boolean;
+    altKey: boolean;
     ctrlKey: boolean;
     offsetX: number;
     screenX: number;
     clientY: number;
     shiftKey: boolean;
+    layerX: number;
     screenY: number;
     relatedTarget: EventTarget;
     button: number;
     pageY: number;
     buttons: number;
     clientX: number;
-    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget): void;
+    initMouseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget): void;
     getModifierState(keyArg: string): boolean;
 }
 declare var MouseEvent: {
     prototype: MouseEvent;
-    new(): MouseEvent;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLTableElement {
-    align: string;
+    new (): MouseEvent;
 }
 
 interface RangeException {
@@ -2090,13 +2808,9 @@ interface RangeException {
 }
 declare var RangeException: {
     prototype: RangeException;
-    new(): RangeException;
+    new (): RangeException;
     INVALID_NODE_TYPE_ERR: number;
     BAD_BOUNDARYPOINTS_ERR: number;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLHRElement {
-    align: string;
 }
 
 interface SVGTextPositioningElement extends SVGTextContentElement {
@@ -2108,31 +2822,78 @@ interface SVGTextPositioningElement extends SVGTextContentElement {
 }
 declare var SVGTextPositioningElement: {
     prototype: SVGTextPositioningElement;
-    new(): SVGTextPositioningElement;
+    new (): SVGTextPositioningElement;
 }
 
-interface HTMLAppletElement extends HTMLElement, DOML2DeprecatedWidthStyle_HTMLAppletElement, DOML2DeprecatedMarginStyle_HTMLObjectElement, MSHTMLAppletElementExtensions, MSDataBindingExtensions, MSDataBindingRecordSetExtensions, DOML2DeprecatedAlignmentStyle_HTMLObjectElement {
+interface HTMLAppletElement extends HTMLElement, DOML2DeprecatedMarginStyle, DOML2DeprecatedBorderStyle, DOML2DeprecatedAlignmentStyle, MSDataBindingExtensions, MSDataBindingRecordSetExtensions {
+    width: number;
+    /**
+      * Sets or retrieves the Internet media type for the code associated with the object.
+      */
+    codeType: string;
     object: string;
-    archive: string;
-    codeBase: string;
-    alt: string;
-    name: string;
-    height: string;
+    form: HTMLFormElement;
     code: string;
+    /**
+      * Sets or retrieves a character string that can be used to implement your own archive functionality for the object.
+      */
+    archive: string;
+    /**
+      * Sets or retrieves a text alternative to the graphic.
+      */
+    alt: string;
+    /**
+      * Sets or retrieves a message to be displayed while an object is loading.
+      */
+    standby: string;
+    /**
+      * Sets or retrieves the class identifier for the object.
+      */
+    classid: string;
+    /**
+      * Sets or retrieves the shape of the object.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the URL, often with a bookmark extension (#name), to use as a client-side image map.
+      */
+    useMap: string;
+    /**
+      * Sets or retrieves the URL that references the data of the object.
+      */
+    data: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: string;
+    /**
+      * Gets or sets the optional alternative HTML script to execute if the object fails to load.
+      */
+    altHtml: string;
+    /**
+      * Address of a pointer to the document this page or frame contains. If there is no document, then null will be returned.
+      */
+    contentDocument: Document;
+    /**
+      * Sets or retrieves the URL of the component.
+      */
+    codeBase: string;
+    /**
+      * Sets or retrieves a character string that can be used to implement your own declare functionality for the object.
+      */
+    declare: boolean;
+    /**
+      * Returns the content type of the object.
+      */
+    type: string;
+    /**
+      * Retrieves a string of the URL where the object tag can be found. This is often the href of the document that the object is in, or the value set by a base element.
+      */
+    BaseHref: string;
 }
 declare var HTMLAppletElement: {
     prototype: HTMLAppletElement;
-    new(): HTMLAppletElement;
-}
-
-interface MSHTMLFieldSetElementExtensions extends DOML2DeprecatedAlignmentStyle_HTMLFieldSetElement {
-}
-
-interface DocumentEvent {
-    createEvent(eventInterface: string): Event;
-}
-
-interface MSHTMLUnknownElementExtensions {
+    new (): HTMLAppletElement;
 }
 
 interface TextMetrics {
@@ -2140,23 +2901,30 @@ interface TextMetrics {
 }
 declare var TextMetrics: {
     prototype: TextMetrics;
-    new(): TextMetrics;
+    new (): TextMetrics;
 }
 
-interface DOML2DeprecatedWordWrapSuppression_HTMLBodyElement {
-    noWrap: boolean;
+interface DocumentEvent {
+    createEvent(eventInterface: string): Event;
 }
 
-interface HTMLOListElement extends HTMLElement, DOML2DeprecatedListNumberingAndBulletStyle, DOML2DeprecatedListSpaceReduction, MSHTMLOListElementExtensions {
+interface HTMLOListElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, DOML2DeprecatedListNumberingAndBulletStyle {
+    /**
+      * The starting number.
+      */
     start: number;
 }
 declare var HTMLOListElement: {
     prototype: HTMLOListElement;
-    new(): HTMLOListElement;
+    new (): HTMLOListElement;
 }
 
-interface MSHTMLTableCaptionElementExtensions {
-    vAlign: string;
+interface SVGPathSegLinetoVerticalRel extends SVGPathSeg {
+    y: number;
+}
+declare var SVGPathSegLinetoVerticalRel: {
+    prototype: SVGPathSegLinetoVerticalRel;
+    new (): SVGPathSegLinetoVerticalRel;
 }
 
 interface SVGAnimatedString {
@@ -2165,22 +2933,14 @@ interface SVGAnimatedString {
 }
 declare var SVGAnimatedString: {
     prototype: SVGAnimatedString;
-    new(): SVGAnimatedString;
-}
-
-interface SVGPathSegLinetoVerticalRel extends SVGPathSeg {
-    y: number;
-}
-declare var SVGPathSegLinetoVerticalRel: {
-    prototype: SVGPathSegLinetoVerticalRel;
-    new(): SVGPathSegLinetoVerticalRel;
+    new (): SVGAnimatedString;
 }
 
 interface CDATASection extends Text {
 }
 declare var CDATASection: {
     prototype: CDATASection;
-    new(): CDATASection;
+    new (): CDATASection;
 }
 
 interface StyleMedia {
@@ -2189,7 +2949,70 @@ interface StyleMedia {
 }
 declare var StyleMedia: {
     prototype: StyleMedia;
-    new(): StyleMedia;
+    new (): StyleMedia;
+}
+
+interface HTMLSelectElement extends HTMLElement, MSHTMLCollectionExtensions, MSDataBindingExtensions {
+    options: HTMLSelectElement;
+    /**
+      * Sets or retrieves the value which is returned to the server when the form control is submitted.
+      */
+    value: string;
+    /**
+      * Retrieves a reference to the form that the object is embedded in. 
+      */
+    form: HTMLFormElement;
+    /**
+      * Sets or retrieves the name of the object.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the number of rows in the list box. 
+      */
+    size: number;
+    /**
+      * Sets or retrieves the number of objects in a collection.
+      */
+    length: number;
+    /**
+      * Sets or retrieves the index of the selected option in a select object.
+      */
+    selectedIndex: number;
+    /**
+      * Sets or retrieves the Boolean value indicating whether multiple items can be selected from a list.
+      */
+    multiple: boolean;
+    /**
+      * Retrieves the type of select control based on the value of the MULTIPLE attribute.
+      */
+    type: string;
+    /**
+      * Removes an element from the collection.
+      * @param index Number that specifies the zero-based index of the element to remove from the collection.
+      */
+    remove(index?: number): void;
+    /**
+      * Adds an element to the areas, controlRange, or options collection.
+      * @param element Variant of type Number that specifies the index position in the collection where the element is placed. If no value is given, the method places the element at the end of the collection.
+      * @param before Variant of type Object that specifies an element to insert before, or null to append the object to the collection. 
+      */
+    add(element: HTMLElement, before?: any): void;
+    /**
+      * Retrieves a select object or an object from an options collection.
+      * @param name Variant of type Number or String that specifies the object or collection to retrieve. If this parameter is an integer, it is the zero-based index of the object. If this parameter is a string, all objects with matching name or id properties are retrieved, and a collection is returned if more than one match is made.
+      * @param index Variant of type Number that specifies the zero-based index of the object to retrieve when a collection is returned.
+      */
+    item(name?: any, index?: any): any;
+    /**
+      * Retrieves a select object or an object from an options collection.
+      * @param namedItem A String that specifies the name or id property of the object to retrieve. A collection is returned if more than one match is made.
+      */
+    namedItem(name: string): any;
+    [name: string]: any;
+}
+declare var HTMLSelectElement: {
+    prototype: HTMLSelectElement;
+    new (): HTMLSelectElement;
 }
 
 interface TextRange {
@@ -2204,23 +3027,23 @@ interface TextRange {
     moveToPoint(x: number, y: number): void;
     queryCommandValue(cmdID: string): any;
     getBookmark(): string;
-    move(Unit: string, Count?: number): number;
+    move(unit: string, count?: number): number;
     queryCommandIndeterm(cmdID: string): boolean;
     scrollIntoView(fStart?: boolean): void;
     findText(string: string, count?: number, flags?: number): boolean;
     execCommand(cmdID: string, showUI?: boolean, value?: any): boolean;
     getBoundingClientRect(): ClientRect;
-    moveToBookmark(Bookmark: string): boolean;
+    moveToBookmark(bookmark: string): boolean;
     isEqual(range: TextRange): boolean;
     duplicate(): TextRange;
-    collapse(Start?: boolean): void;
+    collapse(start?: boolean): void;
     queryCommandText(cmdID: string): string;
     select(): void;
     pasteHTML(html: string): void;
     inRange(range: TextRange): boolean;
-    moveEnd(Unit: string, Count?: number): number;
+    moveEnd(unit: string, count?: number): number;
     getClientRects(): ClientRectList;
-    moveStart(Unit: string, Count?: number): number;
+    moveStart(unit: string, count?: number): number;
     parentElement(): Element;
     queryCommandState(cmdID: string): boolean;
     compareEndPoints(how: string, sourceRange: TextRange): number;
@@ -2233,49 +3056,7 @@ interface TextRange {
 }
 declare var TextRange: {
     prototype: TextRange;
-    new(): TextRange;
-}
-
-interface HTMLSelectElement extends HTMLElement, MSHTMLCollectionExtensions, MSDataBindingExtensions, MSHTMLSelectElementExtensions {
-    options: HTMLSelectElement;
-    value: string;
-    form: HTMLFormElement;
-    name: string;
-    size: number;
-    length: number;
-    selectedIndex: number;
-    multiple: boolean;
-    type: string;
-    remove(index?: number): void;
-    add(element: HTMLElement, before?: any): void;
-    item(name?: any, index?: any): any;
-    (name: any, index: any): any;
-    namedItem(name: string): any;
-    [name: string]: any;
-    (name: string): any;
-}
-declare var HTMLSelectElement: {
-    prototype: HTMLSelectElement;
-    new(): HTMLSelectElement;
-}
-
-interface CSSStyleSheet extends StyleSheet, MSCSSStyleSheetExtensions {
-    ownerRule: CSSRule;
-    cssRules: CSSRuleList;
-    insertRule(rule: string, index?: number): number;
-    deleteRule(index?: number): void;
-}
-declare var CSSStyleSheet: {
-    prototype: CSSStyleSheet;
-    new(): CSSStyleSheet;
-}
-
-interface HTMLBlockElement extends HTMLElement, DOML2DeprecatedTextFlowControl_HTMLBlockElement, DOML2DeprecatedWidthStyle_HTMLBlockElement {
-    cite: string;
-}
-declare var HTMLBlockElement: {
-    prototype: HTMLBlockElement;
-    new(): HTMLBlockElement;
+    new (): TextRange;
 }
 
 interface SVGTests {
@@ -2283,6 +3064,47 @@ interface SVGTests {
     requiredExtensions: SVGStringList;
     systemLanguage: SVGStringList;
     hasExtension(extension: string): boolean;
+}
+
+interface HTMLBlockElement extends HTMLElement, DOML2DeprecatedTextFlowControl {
+    /**
+      * Sets or retrieves the width of the object.
+      */
+    width: number;
+    /**
+      * Sets or retrieves reference information about the object.
+      */
+    cite: string;
+}
+declare var HTMLBlockElement: {
+    prototype: HTMLBlockElement;
+    new (): HTMLBlockElement;
+}
+
+interface CSSStyleSheet extends StyleSheet {
+    owningElement: Element;
+    imports: StyleSheetList;
+    isAlternate: boolean;
+    rules: MSCSSRuleList;
+    isPrefAlternate: boolean;
+    readOnly: boolean;
+    cssText: string;
+    ownerRule: CSSRule;
+    href: string;
+    cssRules: CSSRuleList;
+    id: string;
+    pages: StyleSheetPageList;
+    addImport(bstrURL: string, lIndex?: number): number;
+    addPageRule(bstrSelector: string, bstrStyle: string, lIndex?: number): number;
+    insertRule(rule: string, index?: number): number;
+    removeRule(lIndex: number): void;
+    deleteRule(index?: number): void;
+    addRule(bstrSelector: string, bstrStyle?: string, lIndex?: number): number;
+    removeImport(lIndex: number): void;
+}
+declare var CSSStyleSheet: {
+    prototype: CSSStyleSheet;
+    new (): CSSStyleSheet;
 }
 
 interface MSSelection {
@@ -2295,21 +3117,61 @@ interface MSSelection {
 }
 declare var MSSelection: {
     prototype: MSSelection;
-    new(): MSSelection;
+    new (): MSSelection;
 }
 
-interface MSHTMLDListElementExtensions {
-}
-
-interface HTMLMetaElement extends HTMLElement, MSHTMLMetaElementExtensions {
+interface HTMLMetaElement extends HTMLElement {
+    /**
+      * Gets or sets information used to bind the value of a content attribute of a meta element to an HTTP response header.
+      */
     httpEquiv: string;
+    /**
+      * Sets or retrieves the value specified in the content attribute of the meta object.
+      */
     name: string;
+    /**
+      * Gets or sets meta-information to associate with httpEquiv or name.
+      */
     content: string;
+    /**
+      * Sets or retrieves the URL property that will be loaded after the specified time has elapsed. 
+      */
+    url: string;
+    /**
+      * Sets or retrieves a scheme to be used in interpreting the value of a property specified for the object.
+      */
     scheme: string;
+    /**
+      * Sets or retrieves the character set used to encode the object.
+      */
+    charset: string;
 }
 declare var HTMLMetaElement: {
     prototype: HTMLMetaElement;
-    new(): HTMLMetaElement;
+    new (): HTMLMetaElement;
+}
+
+interface SVGPatternElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangSpace, SVGTests, SVGFitToViewBox, SVGExternalResourcesRequired, SVGURIReference {
+    patternUnits: SVGAnimatedEnumeration;
+    y: SVGAnimatedLength;
+    width: SVGAnimatedLength;
+    x: SVGAnimatedLength;
+    patternContentUnits: SVGAnimatedEnumeration;
+    patternTransform: SVGAnimatedTransformList;
+    height: SVGAnimatedLength;
+}
+declare var SVGPatternElement: {
+    prototype: SVGPatternElement;
+    new (): SVGPatternElement;
+}
+
+interface SVGAnimatedAngle {
+    animVal: SVGAngle;
+    baseVal: SVGAngle;
+}
+declare var SVGAnimatedAngle: {
+    prototype: SVGAnimatedAngle;
+    new (): SVGAnimatedAngle;
 }
 
 interface Selection {
@@ -2332,50 +3194,46 @@ interface Selection {
 }
 declare var Selection: {
     prototype: Selection;
-    new(): Selection;
+    new (): Selection;
 }
 
-interface SVGAnimatedAngle {
-    animVal: SVGAngle;
-    baseVal: SVGAngle;
-}
-declare var SVGAnimatedAngle: {
-    prototype: SVGAnimatedAngle;
-    new(): SVGAnimatedAngle;
-}
-
-interface SVGPatternElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangSpace, SVGTests, SVGFitToViewBox, SVGURIReference {
-    patternUnits: SVGAnimatedEnumeration;
-    y: SVGAnimatedLength;
-    width: SVGAnimatedLength;
-    x: SVGAnimatedLength;
-    patternContentUnits: SVGAnimatedEnumeration;
-    patternTransform: SVGAnimatedTransformList;
-    height: SVGAnimatedLength;
-}
-declare var SVGPatternElement: {
-    prototype: SVGPatternElement;
-    new(): SVGPatternElement;
-}
-
-interface SVGScriptElement extends SVGElement, SVGURIReference {
+interface SVGScriptElement extends SVGElement, SVGExternalResourcesRequired, SVGURIReference {
     type: string;
 }
 declare var SVGScriptElement: {
     prototype: SVGScriptElement;
-    new(): SVGScriptElement;
+    new (): SVGScriptElement;
 }
 
-interface HTMLDDElement extends HTMLElement, DOML2DeprecatedWordWrapSuppression_HTMLDDElement {
+interface HTMLDDElement extends HTMLElement {
+    /**
+      * Sets or retrieves whether the browser automatically performs wordwrap.
+      */
+    noWrap: boolean;
 }
 declare var HTMLDDElement: {
     prototype: HTMLDDElement;
-    new(): HTMLDDElement;
+    new (): HTMLDDElement;
+}
+
+interface MSDataBindingRecordSetReadonlyExtensions {
+    recordset: Object;
+    namedRecordset(dataMember: string, hierarchy?: any): Object;
+}
+
+interface CSSStyleRule extends CSSRule {
+    selectorText: string;
+    style: MSStyleCSSProperties;
+    readOnly: boolean;
+}
+declare var CSSStyleRule: {
+    prototype: CSSStyleRule;
+    new (): CSSStyleRule;
 }
 
 interface NodeIterator {
     whatToShow: number;
-    filter: NodeFilterCallback;
+    filter: NodeFilter;
     root: Node;
     expandEntityReferences: boolean;
     nextNode(): Node;
@@ -2384,58 +3242,54 @@ interface NodeIterator {
 }
 declare var NodeIterator: {
     prototype: NodeIterator;
-    new(): NodeIterator;
+    new (): NodeIterator;
 }
 
-interface CSSStyleRule extends CSSRule, MSCSSStyleRuleExtensions {
-    selectorText: string;
-    style: MSStyleCSSProperties;
-}
-declare var CSSStyleRule: {
-    prototype: CSSStyleRule;
-    new(): CSSStyleRule;
-}
-
-interface MSDataBindingRecordSetReadonlyExtensions {
-    recordset: Object;
-    namedRecordset(dataMember: string, hierarchy?: any): Object;
-}
-
-interface HTMLLinkElement extends HTMLElement, MSLinkStyleExtensions, LinkStyle {
-    rel: string;
-    target: string;
-    href: string;
-    media: string;
-    rev: string;
-    type: string;
-    charset: string;
-    hreflang: string;
-}
-declare var HTMLLinkElement: {
-    prototype: HTMLLinkElement;
-    new(): HTMLLinkElement;
-}
-
-interface SVGViewElement extends SVGElement, SVGZoomAndPan, SVGFitToViewBox {
+interface SVGViewElement extends SVGElement, SVGZoomAndPan, SVGFitToViewBox, SVGExternalResourcesRequired {
     viewTarget: SVGStringList;
 }
 declare var SVGViewElement: {
     prototype: SVGViewElement;
-    new(): SVGViewElement;
+    new (): SVGViewElement;
 }
 
-interface MSHTMLAppletElementExtensions extends DOML2DeprecatedBorderStyle_HTMLObjectElement {
-    codeType: string;
-    standby: string;
-    classid: string;
-    useMap: string;
-    form: HTMLFormElement;
-    data: string;
-    contentDocument: Document;
-    altHtml: string;
-    declare: boolean;
+interface HTMLLinkElement extends HTMLElement, LinkStyle {
+    /**
+      * Sets or retrieves the relationship between the object and the destination of the link.
+      */
+    rel: string;
+    /**
+      * Sets or retrieves the window or frame at which to target content.
+      */
+    target: string;
+    /**
+      * Sets or retrieves a destination URL or an anchor point.
+      */
+    href: string;
+    /**
+      * Sets or retrieves the media type.
+      */
+    media: string;
+    /**
+      * Sets or retrieves the relationship between the object and the destination of the link.
+      */
+    rev: string;
+    /**
+      * Sets or retrieves the MIME type of the object.
+      */
     type: string;
-    BaseHref: string;
+    /**
+      * Sets or retrieves the character set used to encode the object.
+      */
+    charset: string;
+    /**
+      * Sets or retrieves the language code of the object.
+      */
+    hreflang: string;
+}
+declare var HTMLLinkElement: {
+    prototype: HTMLLinkElement;
+    new (): HTMLLinkElement;
 }
 
 interface SVGLocatable {
@@ -2447,26 +3301,22 @@ interface SVGLocatable {
     getScreenCTM(): SVGMatrix;
 }
 
-interface HTMLFontElement extends HTMLElement, DOML2DeprecatedColorProperty, MSHTMLFontElementExtensions, DOML2DeprecatedSizeProperty {
+interface HTMLFontElement extends HTMLElement, DOML2DeprecatedColorProperty, DOML2DeprecatedSizeProperty {
+    /**
+      * Sets or retrieves the current typeface family.
+      */
     face: string;
 }
 declare var HTMLFontElement: {
     prototype: HTMLFontElement;
-    new(): HTMLFontElement;
-}
-
-interface MSHTMLTableElementExtensions {
-    cells: HTMLCollection;
-    height: any;
-    cols: number;
-    moveRow(indexFrom?: number, indexTo?: number): Object;
+    new (): HTMLFontElement;
 }
 
 interface SVGTitleElement extends SVGElement, SVGStylable, SVGLangSpace {
 }
 declare var SVGTitleElement: {
     prototype: SVGTitleElement;
-    new(): SVGTitleElement;
+    new (): SVGTitleElement;
 }
 
 interface ControlRangeCollection {
@@ -2488,23 +3338,7 @@ interface ControlRangeCollection {
 }
 declare var ControlRangeCollection: {
     prototype: ControlRangeCollection;
-    new(): ControlRangeCollection;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLImageElement {
-    align: string;
-}
-
-interface MSHTMLFrameElementExtensions {
-    width: any;
-    contentWindow: Window;
-    onload: (ev: Event) => any;
-    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
-    frameBorder: string;
-    height: any;
-    border: string;
-    frameSpacing: any;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    new (): ControlRangeCollection;
 }
 
 interface MSNamespaceInfo extends MSEventAttachmentTarget {
@@ -2518,7 +3352,7 @@ interface MSNamespaceInfo extends MSEventAttachmentTarget {
 }
 declare var MSNamespaceInfo: {
     prototype: MSNamespaceInfo;
-    new(): MSNamespaceInfo;
+    new (): MSNamespaceInfo;
 }
 
 interface WindowSessionStorage {
@@ -2531,67 +3365,95 @@ interface SVGAnimatedTransformList {
 }
 declare var SVGAnimatedTransformList: {
     prototype: SVGAnimatedTransformList;
-    new(): SVGAnimatedTransformList;
+    new (): SVGAnimatedTransformList;
 }
 
-interface HTMLTableCaptionElement extends HTMLElement, MSHTMLTableCaptionElementExtensions, DOML2DeprecatedAlignmentStyle_HTMLTableCaptionElement {
+interface HTMLTableCaptionElement extends HTMLElement {
+    /**
+      * Sets or retrieves the alignment of the caption or legend.
+      */
+    align: string;
+    /**
+      * Sets or retrieves whether the caption appears at the top or bottom of the table.
+      */
+    vAlign: string;
 }
 declare var HTMLTableCaptionElement: {
     prototype: HTMLTableCaptionElement;
-    new(): HTMLTableCaptionElement;
+    new (): HTMLTableCaptionElement;
 }
 
 interface HTMLOptionElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the ordinal position of an option in a list box.
+      */
     index: number;
+    /**
+      * Sets or retrieves the status of an option.
+      */
     defaultSelected: boolean;
+    /**
+      * Sets or retrieves the value which is returned to the server when the form control is submitted.
+      */
     value: string;
+    /**
+      * Sets or retrieves the text string specified by the option tag.
+      */
     text: string;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
+    /**
+      * Sets or retrieves a value that you can use to implement your own label functionality for the object.
+      */
     label: string;
+    /**
+      * Sets or retrieves whether the option in the list box is the default item.
+      */
     selected: boolean;
+    create(): HTMLOptionElement;
 }
 declare var HTMLOptionElement: {
     prototype: HTMLOptionElement;
-    new(): HTMLOptionElement;
+    new (): HTMLOptionElement;
 }
 
 interface HTMLMapElement extends HTMLElement {
+    /**
+      * Sets or retrieves the name of the object.
+      */
     name: string;
+    /**
+      * Retrieves a collection of the area objects defined for the given map object.
+      */
     areas: HTMLAreasCollection;
 }
 declare var HTMLMapElement: {
     prototype: HTMLMapElement;
-    new(): HTMLMapElement;
+    new (): HTMLMapElement;
 }
 
-interface HTMLMenuElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, MSHTMLMenuElementExtensions {
+interface HTMLMenuElement extends HTMLElement, DOML2DeprecatedListSpaceReduction {
     type: string;
 }
 declare var HTMLMenuElement: {
     prototype: HTMLMenuElement;
-    new(): HTMLMenuElement;
+    new (): HTMLMenuElement;
 }
 
 interface MouseWheelEvent extends MouseEvent {
     wheelDelta: number;
-    initMouseWheelEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, buttonArg: number, relatedTargetArg: EventTarget, modifiersListArg: string, wheelDeltaArg: number): void;
+    initMouseWheelEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, buttonArg: number, relatedTargetArg: EventTarget, modifiersListArg: string, wheelDeltaArg: number): void;
 }
 declare var MouseWheelEvent: {
     prototype: MouseWheelEvent;
-    new(): MouseWheelEvent;
+    new (): MouseWheelEvent;
 }
 
 interface SVGFitToViewBox {
     viewBox: SVGAnimatedRect;
     preserveAspectRatio: SVGAnimatedPreserveAspectRatio;
-}
-
-interface MSHTMLAnchorElementExtensions {
-    nameProp: string;
-    protocolLong: string;
-    urn: string;
-    mimeType: string;
-    Methods: string;
 }
 
 interface SVGPointList {
@@ -2606,12 +3468,7 @@ interface SVGPointList {
 }
 declare var SVGPointList: {
     prototype: SVGPointList;
-    new(): SVGPointList;
-}
-
-interface MSElementCSSInlineStyleExtensions {
-    doScroll(component?: any): void;
-    componentFromPoint(x: number, y: number): string;
+    new (): SVGPointList;
 }
 
 interface SVGAnimatedLengthList {
@@ -2620,13 +3477,10 @@ interface SVGAnimatedLengthList {
 }
 declare var SVGAnimatedLengthList: {
     prototype: SVGAnimatedLengthList;
-    new(): SVGAnimatedLengthList;
+    new (): SVGAnimatedLengthList;
 }
 
-interface MSHTMLTableDataCellElementExtensions {
-}
-
-interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, WindowPerformance, ScreenView, EventTarget, WindowLocalStorage, WindowSessionStorage, WindowTimers {
+interface Window extends EventTarget, MSEventAttachmentTarget, WindowLocalStorage, MSWindowExtensions, WindowSessionStorage, WindowTimers {
     ondragend: (ev: DragEvent) => any;
     addEventListener(type: "dragend", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     onkeydown: (ev: KeyboardEvent) => any;
@@ -2643,11 +3497,13 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "dragstart", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     ondrag: (ev: DragEvent) => any;
     addEventListener(type: "drag", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    screenX: number;
     onmouseover: (ev: MouseEvent) => any;
     addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
     ondragleave: (ev: DragEvent) => any;
     addEventListener(type: "dragleave", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     history: History;
+    pageXOffset: number;
     name: string;
     onafterprint: (ev: Event) => any;
     addEventListener(type: "afterprint", listener: (ev: Event) => any, useCapture?: boolean): void;
@@ -2663,6 +3519,7 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     opener: Window;
     onclick: (ev: MouseEvent) => any;
     addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    innerHeight: number;
     onwaiting: (ev: Event) => any;
     addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
     ononline: (ev: Event) => any;
@@ -2678,13 +3535,16 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "seeking", listener: (ev: Event) => any, useCapture?: boolean): void;
     oncanplay: (ev: Event) => any;
     addEventListener(type: "canplay", listener: (ev: Event) => any, useCapture?: boolean): void;
+    outerWidth: number;
     onstalled: (ev: Event) => any;
     addEventListener(type: "stalled", listener: (ev: Event) => any, useCapture?: boolean): void;
     onmousemove: (ev: MouseEvent) => any;
     addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    innerWidth: number;
     onoffline: (ev: Event) => any;
     addEventListener(type: "offline", listener: (ev: Event) => any, useCapture?: boolean): void;
     length: number;
+    screen: Screen;
     onbeforeunload: (ev: BeforeUnloadEvent) => any;
     addEventListener(type: "beforeunload", listener: (ev: BeforeUnloadEvent) => any, useCapture?: boolean): void;
     onratechange: (ev: Event) => any;
@@ -2698,10 +3558,12 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     onsubmit: (ev: Event) => any;
     addEventListener(type: "submit", listener: (ev: Event) => any, useCapture?: boolean): void;
     self: Window;
+    document: Document;
     onprogress: (ev: any) => any;
     addEventListener(type: "progress", listener: (ev: any) => any, useCapture?: boolean): void;
     ondblclick: (ev: MouseEvent) => any;
     addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    pageYOffset: number;
     oncontextmenu: (ev: MouseEvent) => any;
     addEventListener(type: "contextmenu", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
     onchange: (ev: Event) => any;
@@ -2710,7 +3572,7 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "loadedmetadata", listener: (ev: Event) => any, useCapture?: boolean): void;
     onplay: (ev: Event) => any;
     addEventListener(type: "play", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onerror: ErrorFunction;
+    onerror: ErrorEventHandler;
     onplaying: (ev: Event) => any;
     addEventListener(type: "playing", listener: (ev: Event) => any, useCapture?: boolean): void;
     parent: Window;
@@ -2721,6 +3583,7 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
     onreadystatechange: (ev: Event) => any;
     addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+    outerHeight: number;
     onkeypress: (ev: KeyboardEvent) => any;
     addEventListener(type: "keypress", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
     frameElement: Element;
@@ -2737,9 +3600,10 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "timeupdate", listener: (ev: Event) => any, useCapture?: boolean): void;
     onresize: (ev: UIEvent) => any;
     addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    navigator: Navigator;
     onselect: (ev: UIEvent) => any;
     addEventListener(type: "select", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    navigator: Navigator;
+    styleMedia: StyleMedia;
     ondrop: (ev: DragEvent) => any;
     addEventListener(type: "drop", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     onmouseout: (ev: MouseEvent) => any;
@@ -2752,6 +3616,7 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
     onscroll: (ev: UIEvent) => any;
     addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    screenY: number;
     onmousewheel: (ev: MouseWheelEvent) => any;
     addEventListener(type: "mousewheel", listener: (ev: MouseWheelEvent) => any, useCapture?: boolean): void;
     onload: (ev: Event) => any;
@@ -2760,23 +3625,28 @@ interface Window extends ViewCSS, MSEventAttachmentTarget, MSWindowExtensions, W
     addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
     oninput: (ev: Event) => any;
     addEventListener(type: "input", listener: (ev: Event) => any, useCapture?: boolean): void;
-    alert(message?: string): void;
+    performance: Performance;
+    alert(message?: any): void;
+    scroll(x?: number, y?: number): void;
     focus(): void;
+    scrollTo(x?: number, y?: number): void;
     print(): void;
     prompt(message?: string, defaul?: string): string;
     toString(): string;
     open(url?: string, target?: string, features?: string, replace?: boolean): Window;
-    close(): void;
+    scrollBy(x?: number, y?: number): void;
     confirm(message?: string): boolean;
+    close(): void;
     postMessage(message: any, targetOrigin: string, ports?: any): void;
     showModalDialog(url?: string, argument?: any, options?: any): any;
     blur(): void;
     getSelection(): Selection;
+    getComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var Window: {
     prototype: Window;
-    new(): Window;
+    new (): Window;
 }
 
 interface SVGAnimatedPreserveAspectRatio {
@@ -2785,7 +3655,7 @@ interface SVGAnimatedPreserveAspectRatio {
 }
 declare var SVGAnimatedPreserveAspectRatio: {
     prototype: SVGAnimatedPreserveAspectRatio;
-    new(): SVGAnimatedPreserveAspectRatio;
+    new (): SVGAnimatedPreserveAspectRatio;
 }
 
 interface MSSiteModeEvent extends Event {
@@ -2794,37 +3664,24 @@ interface MSSiteModeEvent extends Event {
 }
 declare var MSSiteModeEvent: {
     prototype: MSSiteModeEvent;
-    new(): MSSiteModeEvent;
+    new (): MSSiteModeEvent;
 }
 
-interface MSCSSStyleRuleExtensions {
-    readOnly: boolean;
+interface DOML2DeprecatedTextFlowControl {
+    clear: string;
 }
 
 interface StyleSheetPageList {
     length: number;
-    item(index: number): StyleSheetPage;
-    [index: number]: StyleSheetPage;
+    item(index: number): CSSPageRule;
+    [index: number]: CSSPageRule;
 }
 declare var StyleSheetPageList: {
     prototype: StyleSheetPageList;
-    new(): StyleSheetPageList;
+    new (): StyleSheetPageList;
 }
 
-interface HTMLCollection extends MSHTMLCollectionExtensions {
-    length: number;
-    item(nameOrIndex?: any, optionalIndex?: any): Element;
-    (nameOrIndex: any, optionalIndex: any): Element;
-    namedItem(name: string): Element;
-    [index: number]: Element;
-    (name: string): Element;
-}
-declare var HTMLCollection: {
-    prototype: HTMLCollection;
-    new(): HTMLCollection;
-}
-
-interface MSCSSProperties extends CSSStyleDeclaration, MSCSSStyleDeclarationExtensions {
+interface MSCSSProperties extends CSSStyleDeclaration {
     scrollbarShadowColor: string;
     scrollbarHighlightColor: string;
     layoutGridChar: string;
@@ -2855,49 +3712,172 @@ interface MSCSSProperties extends CSSStyleDeclaration, MSCSSStyleDeclarationExte
     scrollbarTrackColor: string;
     scrollbarDarkShadowColor: string;
     styleFloat: string;
+    getAttribute(attributeName: string, flags?: number): any;
+    setAttribute(attributeName: string, AttributeValue: any, flags?: number): void;
+    removeAttribute(attributeName: string, flags?: number): boolean;
 }
 declare var MSCSSProperties: {
     prototype: MSCSSProperties;
-    new(): MSCSSProperties;
+    new (): MSCSSProperties;
 }
 
-interface HTMLImageElement extends HTMLElement, DOML2DeprecatedMarginStyle, DOML2DeprecatedBorderStyle, DOML2DeprecatedAlignmentStyle_HTMLImageElement, MSImageResourceExtensions, MSHTMLImageElementExtensions, MSDataBindingExtensions, MSResourceMetadata {
-   width: number;
+interface HTMLCollection extends MSHTMLCollectionExtensions {
+    /**
+      * Sets or retrieves the number of objects in a collection.
+      */
+    length: number;
+    /**
+      * Retrieves an object from various collections.
+      */
+    item(nameOrIndex?: any, optionalIndex?: any): Element;
+    /**
+      * Retrieves a select object or an object from an options collection.
+      */
+    namedItem(name: string): Element;
+    [name: number]: Element;
+}
+declare var HTMLCollection: {
+    prototype: HTMLCollection;
+    new (): HTMLCollection;
+}
+
+interface SVGExternalResourcesRequired {
+    externalResourcesRequired: SVGAnimatedBoolean;
+}
+
+interface HTMLImageElement extends HTMLElement, MSImageResourceExtensions, MSDataBindingExtensions, MSResourceMetadata {
+    /**
+      * Sets or retrieves the width of the object.
+      */
+    width: number;
+    /**
+      * Sets or retrieves the vertical margin for the object.
+      */
+    vspace: number;
+    /**
+      * The original height of the image resource before sizing.
+      */
     naturalHeight: number;
+    /**
+      * Sets or retrieves a text alternative to the graphic.
+      */
     alt: string;
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * The address or URL of the a media resource that is to be considered.
+      */
     src: string;
+    /**
+      * Sets or retrieves the URL, often with a bookmark extension (#name), to use as a client-side image map.
+      */
     useMap: string;
+    /**
+      * The original width of the image resource before sizing.
+      */
     naturalWidth: number;
+    /**
+      * Sets or retrieves the name of the object.
+      */
     name: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
     height: number;
+    /**
+      * Specifies the properties of a border drawn around an object.
+      */
+    border: string;
+    /**
+      * Sets or retrieves the width of the border to draw around the object.
+      */
+    hspace: number;
+    /**
+      * Sets or retrieves a Uniform Resource Identifier (URI) to a long description of the object.
+      */
     longDesc: string;
+    /**
+      * Contains the hypertext reference (HREF) of the URL.
+      */
+    href: string;
+    /**
+      * Sets or retrieves whether the image is a server-side image map.
+      */
     isMap: boolean;
+    /**
+      * Retrieves whether the object is fully loaded.
+      */
     complete: boolean;
+    create(): HTMLImageElement;
 }
 declare var HTMLImageElement: {
     prototype: HTMLImageElement;
-    new(): HTMLImageElement;
+    new (): HTMLImageElement;
 }
 
-interface HTMLAreaElement extends HTMLElement, MSHTMLAreaElementExtensions {
+interface HTMLAreaElement extends HTMLElement {
+    /**
+      * Sets or retrieves the protocol portion of a URL.
+      */
     protocol: string;
+    /**
+      * Sets or retrieves the substring of the href property that follows the question mark.
+      */
     search: string;
+    /**
+      * Sets or retrieves a text alternative to the graphic.
+      */
     alt: string;
+    /**
+      * Sets or retrieves the coordinates of the object.
+      */
     coords: string;
+    /**
+      * Sets or retrieves the host name part of the location or URL. 
+      */
     hostname: string;
+    /**
+      * Sets or retrieves the port number associated with a URL.
+      */
     port: string;
+    /**
+      * Sets or retrieves the file name or path specified by the object.
+      */
     pathname: string;
+    /**
+      * Sets or retrieves the hostname and port number of the location or URL.
+      */
     host: string;
+    /**
+      * Sets or retrieves the subsection of the href property that follows the number sign (#).
+      */
     hash: string;
+    /**
+      * Sets or retrieves the window or frame at which to target content.
+      */
     target: string;
+    /**
+      * Sets or retrieves a destination URL or an anchor point.
+      */
     href: string;
+    /**
+      * Sets or gets whether clicks in this region cause action.
+      */
     noHref: boolean;
+    /**
+      * Sets or retrieves the shape of the object.
+      */
     shape: string;
+    /** 
+      * Returns a string representation of an object.
+      */
     toString(): string;
 }
 declare var HTMLAreaElement: {
     prototype: HTMLAreaElement;
-    new(): HTMLAreaElement;
+    new (): HTMLAreaElement;
 }
 
 interface EventTarget {
@@ -2921,7 +3901,7 @@ interface SVGAngle {
 }
 declare var SVGAngle: {
     prototype: SVGAngle;
-    new(): SVGAngle;
+    new (): SVGAngle;
     SVG_ANGLETYPE_RAD: number;
     SVG_ANGLETYPE_UNKNOWN: number;
     SVG_ANGLETYPE_UNSPECIFIED: number;
@@ -2929,28 +3909,51 @@ declare var SVGAngle: {
     SVG_ANGLETYPE_GRAD: number;
 }
 
-interface HTMLButtonElement extends HTMLElement, MSHTMLButtonElementExtensions, MSDataBindingExtensions {
+interface HTMLButtonElement extends HTMLElement, MSDataBindingExtensions {
+    /** 
+      * Sets or retrieves the default or selected value of the control.
+      */
     value: string;
+    status: any;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
+    /** 
+      * Sets or retrieves the name of the object.
+      */
     name: string;
+    /**
+      * Gets the classification and default behavior of the button.
+      */
     type: string;
+    /**
+      * Creates a TextRange object for the element.
+      */
+    createTextRange(): TextRange;
 }
 declare var HTMLButtonElement: {
     prototype: HTMLButtonElement;
-    new(): HTMLButtonElement;
-}
-
-interface MSHTMLLabelElementExtensions {
+    new (): HTMLButtonElement;
 }
 
 interface HTMLSourceElement extends HTMLElement {
+    /**
+      * The address or URL of the a media resource that is to be considered.
+      */
     src: string;
+    /**
+      * Gets or sets the intended media type of the media source.
+     */
     media: string;
+    /**
+     * Gets or sets the MIME type of a media resource.
+     */
     type: string;
 }
 declare var HTMLSourceElement: {
     prototype: HTMLSourceElement;
-    new(): HTMLSourceElement;
+    new (): HTMLSourceElement;
 }
 
 interface CanvasGradient {
@@ -2958,12 +3961,14 @@ interface CanvasGradient {
 }
 declare var CanvasGradient: {
     prototype: CanvasGradient;
-    new(): CanvasGradient;
+    new (): CanvasGradient;
 }
 
-interface KeyboardEvent extends UIEvent, KeyboardEventExtensions {
+interface KeyboardEvent extends UIEvent {
     location: number;
+    keyCode: number;
     shiftKey: boolean;
+    which: number;
     locale: string;
     key: string;
     altKey: boolean;
@@ -2971,8 +3976,9 @@ interface KeyboardEvent extends UIEvent, KeyboardEventExtensions {
     char: string;
     ctrlKey: boolean;
     repeat: boolean;
+    charCode: number;
     getModifierState(keyArg: string): boolean;
-    initKeyboardEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, keyArg: string, locationArg: number, modifiersListArg: string, repeat: boolean, locale: string): void;
+    initKeyboardEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, keyArg: string, locationArg: number, modifiersListArg: string, repeat: boolean, locale: string): void;
     DOM_KEY_LOCATION_RIGHT: number;
     DOM_KEY_LOCATION_STANDARD: number;
     DOM_KEY_LOCATION_LEFT: number;
@@ -2982,7 +3988,7 @@ interface KeyboardEvent extends UIEvent, KeyboardEventExtensions {
 }
 declare var KeyboardEvent: {
     prototype: KeyboardEvent;
-    new(): KeyboardEvent;
+    new (): KeyboardEvent;
     DOM_KEY_LOCATION_RIGHT: number;
     DOM_KEY_LOCATION_STANDARD: number;
     DOM_KEY_LOCATION_LEFT: number;
@@ -2991,238 +3997,2858 @@ declare var KeyboardEvent: {
     DOM_KEY_LOCATION_MOBILE: number;
 }
 
-interface Document extends Node, DocumentStyle, DocumentRange, HTMLDocument, NodeSelector, DocumentEvent, DocumentTraversal, DocumentView, SVGDocument {
-    doctype: DocumentType;
-    xmlVersion: string;
+interface Document extends Node, NodeSelector, MSEventAttachmentTarget, DocumentEvent, MSResourceMetadata, MSNodeExtensions {
+    /**
+      * Retrieves the collection of user agents and versions declared in the X-UA-Compatible
+      */
+    compatible: MSCompatibleInfoCollection;
+    /**
+      * Fires when the user presses a key.
+      * @param ev The keyboard event
+      */
+    onkeydown: (ev: KeyboardEvent) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "keydown", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
+    /**
+      * Fires when the user releases a key.
+      * @param ev The keyboard event
+      */
+    onkeyup: (ev: KeyboardEvent) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "keyup", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets the implementation object of the current document. 
+      */
     implementation: DOMImplementation;
-    xmlEncoding: string;
-    xmlStandalone: boolean;
-    documentElement: HTMLElement;
+    /**
+      * Fires when the user resets a form. 
+      * @param ev The event.
+      */
+    onreset: (ev: Event) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "reset", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Retrieves a collection of all script objects in the document.
+      */
+    scripts: HTMLCollection;
+
+    /**
+      * Fires when the user presses the F1 key while the browser is the active window. 
+      * @param ev The event.
+      */
+    onhelp: (ev: Event) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "help", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /** 
+      * Fires on the target object when the user moves the mouse out of a valid drop target during a drag operation.
+      * @param ev The drag event.
+      */
+    ondragleave: (ev: DragEvent) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dragleave", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets or sets the character set used to encode the object.
+      */
+    charset: string;
+
+    /**
+      * Fires for an element just prior to setting focus on that element.
+      * @param ev The focus event
+      */
+    onfocusin: (ev: FocusEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "focusin", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+
+    /** 
+      * Sets or gets the color of the links that the user has visited.
+      */
+    vlinkColor: string;
+
+    /**
+      * Occurs when the seek operation ends. 
+      * @param ev The event.
+      */
+    onseeked: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "seeked", listener: (ev: Event) => any, useCapture?: boolean): void;
+    security: string;
+
+    /**
+      * Contains the title of the document.
+      */
+    title: string;
+
+    /**
+      * Retrieves a collection of namespace objects.
+      */
+    namespaces: MSNamespaceInfoCollection;
+
+    /**
+      * Gets the default character set from the current regional language settings.
+      */
+    defaultCharset: string;
+
+    /**
+      * Retrieves a collection of all embed objects in the document.
+      */
+    embeds: HTMLCollection;
+
+    /**
+      * Retrieves a collection of styleSheet objects representing the style sheets that correspond to each instance of a link or style object in the document.
+      */
+    styleSheets: StyleSheetList;
+
+    /**
+      * Retrieves a collection of all window objects defined by the given document or defined by the document associated with the given window.
+      */
+    frames: Window;
+
+    /**
+      * Occurs when the duration attribute is updated. 
+      * @param ev The event.
+      */
+    ondurationchange: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "durationchange", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Returns a reference to the collection of elements contained by the object.
+      */
+    all: HTMLCollection;
+
+    /**
+      * Retrieves a collection, in source order, of all form objects in the document.
+      */
+    forms: HTMLCollection;
+
+    /** 
+      * Fires when the object loses the input focus. 
+      * @param ev The focus event.
+      */
+    onblur: (ev: FocusEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "blur", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Sets or retrieves a value that indicates the reading order of the object. 
+      */
+    dir: string;
+
+    /**
+      * Occurs when the media element is reset to its initial state. 
+      * @param ev The event.
+      */
+    onemptied: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "emptied", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Sets or gets a value that indicates whether the document can be edited.
+      */
+    designMode: string;
+
+    /**
+      * Occurs when the current playback position is moved. 
+      * @param ev The event.
+      */
+    onseeking: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "seeking", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the activeElement is changed from the current object to another object in the parent document.
+      * @param ev The UI Event
+      */
+    ondeactivate: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "deactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when playback is possible, but would require further buffering. 
+      * @param ev The event.
+      */
+    oncanplay: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "canplay", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the data set exposed by a data source object changes. 
+      * @param ev The event.
+      */
+    ondatasetchanged: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "datasetchanged", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when rows are about to be deleted from the recordset.
+      * @param ev The event 
+      */
+    onrowsdelete: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "rowsdelete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    Script: MSScriptHost;
+
+    /**
+      * Occurs when Internet Explorer begins looking for media data. 
+      * @param ev The event.
+      */
+    onloadstart: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "loadstart", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets the URL for the document, stripped of any character encoding.
+      */
+    URLUnencoded: string;
+
+    defaultView: Window;
+
+    /**
+      * Fires when the user is about to make a control selection of the object.
+      * @param ev The event.
+      */
+    oncontrolselect: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "controlselect", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /** 
+      * Fires on the target element when the user drags the object to a valid drop target.
+      * @param ev The drag event.
+      */
+    ondragenter: (ev: DragEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dragenter", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    onsubmit: (ev: Event) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "submit", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Returns the character encoding used to create the webpage that is loaded into the document object.
+      */
     inputEncoding: string;
-    createElement(tagName: string): HTMLElement;
-    createElement(tagName: "a"): HTMLAnchorElement;
-    createElement(tagName: "abbr"): HTMLElement;
-    createElement(tagName: "address"): HTMLElement;
-    createElement(tagName: "area"): HTMLAreaElement;
-    createElement(tagName: "article"): HTMLElement;
-    createElement(tagName: "aside"): HTMLElement;
-    createElement(tagName: "audio"): HTMLAudioElement;
-    createElement(tagName: "b"): HTMLElement;
-    createElement(tagName: "base"): HTMLBaseElement;
-    createElement(tagName: "bdi"): HTMLElement;
-    createElement(tagName: "bdo"): HTMLElement;
-    createElement(tagName: "blockquote"): HTMLQuoteElement;
-    createElement(tagName: "body"): HTMLBodyElement;
-    createElement(tagName: "br"): HTMLBRElement;
-    createElement(tagName: "button"): HTMLButtonElement;
-    createElement(tagName: "canvas"): HTMLCanvasElement;
-    createElement(tagName: "caption"): HTMLTableCaptionElement;
-    createElement(tagName: "cite"): HTMLElement;
-    createElement(tagName: "code"): HTMLElement;
-    createElement(tagName: "col"): HTMLTableColElement;
-    createElement(tagName: "colgroup"): HTMLTableColElement;
-    createElement(tagName: "datalist"): HTMLDataListElement;
-    createElement(tagName: "dd"): HTMLElement;
-    createElement(tagName: "del"): HTMLModElement;
-    createElement(tagName: "dfn"): HTMLElement;
-    createElement(tagName: "div"): HTMLDivElement;
-    createElement(tagName: "dl"): HTMLDListElement;
-    createElement(tagName: "dt"): HTMLElement;
-    createElement(tagName: "em"): HTMLElement;
-    createElement(tagName: "embed"): HTMLEmbedElement;
-    createElement(tagName: "fieldset"): HTMLFieldSetElement;
-    createElement(tagName: "figcaption"): HTMLElement;
-    createElement(tagName: "figure"): HTMLElement;
-    createElement(tagName: "footer"): HTMLElement;
-    createElement(tagName: "form"): HTMLFormElement;
-    createElement(tagName: "h1"): HTMLHeadingElement;
-    createElement(tagName: "h2"): HTMLHeadingElement;
-    createElement(tagName: "h3"): HTMLHeadingElement;
-    createElement(tagName: "h4"): HTMLHeadingElement;
-    createElement(tagName: "h5"): HTMLHeadingElement;
-    createElement(tagName: "h6"): HTMLHeadingElement;
-    createElement(tagName: "head"): HTMLHeadElement;
-    createElement(tagName: "header"): HTMLElement;
-    createElement(tagName: "hgroup"): HTMLElement;
-    createElement(tagName: "hr"): HTMLHRElement;
-    createElement(tagName: "html"): HTMLHtmlElement;
-    createElement(tagName: "i"): HTMLElement;
-    createElement(tagName: "iframe"): HTMLIFrameElement;
-    createElement(tagName: "img"): HTMLImageElement;
-    createElement(tagName: "input"): HTMLInputElement;
-    createElement(tagName: "ins"): HTMLModElement;
-    createElement(tagName: "kbd"): HTMLElement;
-    createElement(tagName: "label"): HTMLLabelElement;
-    createElement(tagName: "legend"): HTMLLegendElement;
-    createElement(tagName: "li"): HTMLLIElement;
-    createElement(tagName: "link"): HTMLLinkElement;
-    createElement(tagName: "main"): HTMLElement;
-    createElement(tagName: "map"): HTMLMapElement;
-    createElement(tagName: "mark"): HTMLElement;
-    createElement(tagName: "menu"): HTMLMenuElement;
-    createElement(tagName: "meta"): HTMLMetaElement;
-    createElement(tagName: "nav"): HTMLElement;
-    createElement(tagName: "noscript"): HTMLElement;
-    createElement(tagName: "object"): HTMLObjectElement;
-    createElement(tagName: "ol"): HTMLOListElement;
-    createElement(tagName: "optgroup"): HTMLOptGroupElement;
-    createElement(tagName: "option"): HTMLOptionElement;
-    createElement(tagName: "p"): HTMLParagraphElement;
-    createElement(tagName: "param"): HTMLParamElement;
-    createElement(tagName: "pre"): HTMLPreElement;
-    createElement(tagName: "progress"): HTMLProgressElement;
-    createElement(tagName: "q"): HTMLQuoteElement;
-    createElement(tagName: "rp"): HTMLElement;
-    createElement(tagName: "rt"): HTMLElement;
-    createElement(tagName: "ruby"): HTMLElement;
-    createElement(tagName: "s"): HTMLElement;
-    createElement(tagName: "samp"): HTMLElement;
-    createElement(tagName: "script"): HTMLScriptElement;
-    createElement(tagName: "section"): HTMLElement;
-    createElement(tagName: "select"): HTMLSelectElement;
-    createElement(tagName: "small"): HTMLElement;
-    createElement(tagName: "source"): HTMLSourceElement;
-    createElement(tagName: "span"): HTMLSpanElement;
-    createElement(tagName: "strong"): HTMLElement;
-    createElement(tagName: "style"): HTMLStyleElement;
-    createElement(tagName: "sub"): HTMLElement;
-    createElement(tagName: "summary"): HTMLElement;
-    createElement(tagName: "sup"): HTMLElement;
-    createElement(tagName: "table"): HTMLTableElement;
-    createElement(tagName: "tbody"): HTMLTableSectionElement;
-    createElement(tagName: "td"): HTMLTableDataCellElement;
-    createElement(tagName: "textarea"): HTMLTextAreaElement;
-    createElement(tagName: "tfoot"): HTMLTableSectionElement;
-    createElement(tagName: "th"): HTMLTableHeaderCellElement;
-    createElement(tagName: "thead"): HTMLTableSectionElement;
-    createElement(tagName: "title"): HTMLTitleElement;
-    createElement(tagName: "tr"): HTMLTableRowElement;
-    createElement(tagName: "track"): HTMLTrackElement;
-    createElement(tagName: "u"): HTMLElement;
-    createElement(tagName: "ul"): HTMLUListElement;
-    createElement(tagName: "var"): HTMLElement;
-    createElement(tagName: "video"): HTMLVideoElement;
-    createElement(tagName: "wbr"): HTMLElement;
+
+    /**
+      * Gets the object that has the focus when the parent document has focus.
+      */
+    activeElement: Element;
+
+    /**
+      * Fires when the contents of the object or selection have changed. 
+      * @param ev The event.
+      */
+    onchange: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "change", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Retrieves a collection of all a objects that specify the href property and all area objects in the document.
+      */
+    links: HTMLCollection;
+
+    /**
+      * Retrieves an autogenerated, unique identifier for the object. 
+      */
+    uniqueID: string;
+
+    /**
+      * Sets or gets the URL for the current document. 
+      */
+    URL: string;
+
+    /**
+      * Fires immediately before the object is set as the active element.
+      * @param ev The event.
+      */
+    onbeforeactivate: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "beforeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    head: HTMLHeadElement;
+    cookie: string;
+    xmlEncoding: string;
+    oncanplaythrough: (ev: Event) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "canplaythrough", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /** 
+      * Retrieves the document compatibility mode of the document.
+      */
+    documentMode: number;
+
+    characterSet: string;
+
+    /**
+      * Retrieves a collection of all a objects that have a name and/or id property. Objects in this collection are in HTML source order.
+      */
+    anchors: HTMLCollection;
+
+    onbeforeupdate: (ev: MSEventObj) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "beforeupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /** 
+      * Fires to indicate that all data is available from the data source object. 
+      * @param ev The event.
+      */
+    ondatasetcomplete: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "datasetcomplete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    plugins: HTMLCollection;
+
+    /**
+      * Occurs if the load operation has been intentionally halted. 
+      * @param ev The event.
+      */
+    onsuspend: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "suspend", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets the root svg element in the document hierarchy.
+      */
+    rootElement: SVGSVGElement;
+
+    /**
+      * Retrieves a value that indicates the current state of the object.
+      */
+    readyState: string;
+
+    /**
+      * Gets the URL of the location that referred the user to the current page.
+      */
+    referrer: string;
+
+    /**
+      * Sets or gets the color of all active links in the document.
+      */
+    alinkColor: string;
+
+    /**
+      * Fires on a databound object when an error occurs while updating the associated data in the data source object. 
+      * @param ev The event.
+      */
+    onerrorupdate: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "errorupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets a reference to the container object of the window.
+      */
+    parentWindow: Window;
+
+    /**
+      * Fires when the user moves the mouse pointer outside the boundaries of the object. 
+      * @param ev The mouse event.
+      */
+    onmouseout: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mouseout", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when a user clicks a button in a Thumbnail Toolbar of a webpage running in Site Mode.
+      * @param ev The event.
+      */
+    onmsthumbnailclick: (ev: MSSiteModeEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "msthumbnailclick", listener: (ev: MSSiteModeEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the wheel button is rotated. 
+      * @param ev The mouse event
+      */
+    onmousewheel: (ev: MouseWheelEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mousewheel", listener: (ev: MouseWheelEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when the volume is changed, or playback is muted or unmuted.
+      * @param ev The event.
+      */
+    onvolumechange: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /** 
+      * Fires when data changes in the data provider.
+      * @param ev The event.
+      */
+    oncellchange: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "cellchange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires just before the data source control changes the current row in the object. 
+      * @param ev The event.
+      */
+    onrowexit: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "rowexit", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires just after new rows are inserted in the current recordset.
+      * @param ev The event.
+      */
+    onrowsinserted: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "rowsinserted", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets or sets the version attribute specified in the declaration of an XML document.
+      */
+    xmlVersion: string;
+
+    msCapsLockWarningOff: boolean;
+
+    /**
+      * Fires when a property changes on the object.
+      * @param ev The event.
+      */
+    onpropertychange: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "propertychange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires on the source object when the user releases the mouse at the close of a drag operation.
+      * @param ev The event.
+      */
+    ondragend: (ev: DragEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dragend", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets an object representing the document type declaration associated with the current document. 
+      */
+    doctype: DocumentType;
+
+    /**
+      * Fires on the target element continuously while the user drags the object over a valid drop target.
+      * @param ev The event.
+      */
+    ondragover: (ev: DragEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dragover", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Deprecated. Sets or retrieves a value that indicates the background color behind the object. 
+      */
+    bgColor: string;
+
+    /**
+      * Fires on the source object when the user starts to drag a text selection or selected object. 
+      * @param ev The event.
+      */
+    ondragstart: (ev: DragEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dragstart", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user releases a mouse button while the mouse is over the object. 
+      * @param ev The mouse event.
+      */
+    onmouseup: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mouseup", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires on the source object continuously during a drag operation.
+      * @param ev The event.
+      */
+    ondrag: (ev: DragEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "drag", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user moves the mouse pointer into the object.
+      * @param ev The mouse event.
+      */
+    onmouseover: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Sets or gets the color of the document links. 
+      */
+    linkColor: string;
+
+    /**
+      * Occurs when playback is paused.
+      * @param ev The event.
+      */
+    onpause: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "pause", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user clicks the object with either mouse button. 
+      * @param ev The mouse event.
+      */
+    onmousedown: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mousedown", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user clicks the left mouse button on the object
+      * @param ev The mouse event.
+      */
+    onclick: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when playback stops because the next frame of a video resource is not available. 
+      * @param ev The event.
+      */
+    onwaiting: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user clicks the Stop button or leaves the Web page.
+      * @param ev The event.
+      */
+    onstop: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)[rolls
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "stop", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when an item is removed from a Jump List of a webpage running in Site Mode. 
+      * @param ev The event.
+      */
+    onmssitemodejumplistitemremoved: (ev: MSSiteModeEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mssitemodejumplistitemremoved", listener: (ev: MSSiteModeEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Retrieves a collection of all applet objects in the document.
+      */
+    applets: HTMLCollection;
+
+    /**
+      * Specifies the beginning and end of the document body.
+      */
+    body: HTMLElement;
+
+    /**
+      * Sets or gets the security domain of the document. 
+      */
+    domain: string;
+
+    xmlStandalone: boolean;
+
+    /**
+      * Represents the active selection, which is a highlighted block of text or other elements in the document that a user or a script can carry out some action on.
+      */
+    selection: MSSelection;
+
+    /**
+      * Occurs when the download has stopped. 
+      * @param ev The event.
+      */
+    onstalled: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "stalled", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user moves the mouse over the object. 
+      * @param ev The mouse event.
+      */
+    onmousemove: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets a reference to the root node of the document. 
+      */
+    documentElement: HTMLElement;
+
+    /**
+      * Fires before an object contained in an editable element enters a UI-activated state or when an editable container object is control selected.
+      * @param ev The event.
+      */
+    onbeforeeditfocus: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "beforeeditfocus", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when the playback rate is increased or decreased. 
+      * @param ev The event.
+      */
+    onratechange: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "ratechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs to indicate progress while downloading media data. 
+      * @param ev The event.
+      */
+    onprogress: (ev: any) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "progress", listener: (ev: any) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user double-clicks the object.
+      * @param ev The mouse event.
+      */
+    ondblclick: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the user clicks the right mouse button in the client area, opening the context menu. 
+      * @param ev The mouse event.
+      */
+    oncontextmenu: (ev: MouseEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "contextmenu", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when the duration and dimensions of the media have been determined.
+      * @param ev The event.
+      */
+    onloadedmetadata: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "loadedmetadata", listener: (ev: Event) => any, useCapture?: boolean): void;
+    media: string;
+
+    /**
+      * Fires when an error occurs during object loading.
+      * @param ev The event.
+      */
+    onerror: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when the play method is requested. 
+      * @param ev The event.
+      */
+    onplay: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "play", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onafterupdate: (ev: MSEventObj) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "afterupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when the audio or video has started playing. 
+      * @param ev The event.
+      */
+    onplaying: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "playing", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Retrieves a collection, in source order, of img objects in the document.
+      */
+    images: HTMLCollection;
+
+    /**
+      * Contains information about the current URL. 
+      */
+    location: Location;
+
+    /**
+      * Fires when the user aborts the download.
+      * @param ev The event.
+      */
+    onabort: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires for the current element with focus immediately after moving focus to another element. 
+      * @param ev The event.
+      */
+    onfocusout: (ev: FocusEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the selection state of a document changes.
+      * @param ev The event.
+      */
+    onselectionchange: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "selectionchange", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when a local DOM Storage area is written to disk.
+      * @param ev The event.
+      */
+    onstoragecommit: (ev: StorageEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "storagecommit", listener: (ev: StorageEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires periodically as data arrives from data source objects that asynchronously transmit their data. 
+      * @param ev The event.
+      */
+    ondataavailable: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "dataavailable", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the state of the object has changed.
+      * @param ev The event
+      */
+    onreadystatechange: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets the date that the page was last modified, if the page supplies one. 
+      */
+    lastModified: string;
+
+    /**
+      * Fires when the user presses an alphanumeric key.
+      * @param ev The event.
+      */
+    onkeypress: (ev: KeyboardEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "keypress", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when media data is loaded at the current playback position. 
+      * @param ev The event.
+      */
+    onloadeddata: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "loadeddata", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires immediately before the activeElement is changed from the current object to another object in the parent document.
+      * @param ev The event.
+      */
+    onbeforedeactivate: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "beforedeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the object is set as the active element.
+      * @param ev The event.
+      */
+    onactivate: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "activate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+
+    onselectstart: (ev: Event) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "selectstart", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the object receives focus. 
+      * @param ev The event.
+      */
+    onfocus: (ev: FocusEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "focus", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Sets or gets the foreground (text) color of the document.
+      */
+    fgColor: string;
+
+    /**
+      * Occurs to indicate the current playback position.
+      * @param ev The event.
+      */
+    ontimeupdate: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "timeupdate", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires when the current selection changes.
+      * @param ev The event.
+      */
+    onselect: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "select", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    ondrop: (ev: DragEvent) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "drop", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Occurs when the end of playback is reached. 
+      * @param ev The event
+      */
+    onended: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "ended", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Gets a value that indicates whether standards-compliant mode is switched on for the object.
+      */
+    compatMode: string;
+
+    /**
+      * Fires when the user repositions the scroll box in the scroll bar on the object. 
+      * @param ev The event.
+      */
+    onscroll: (ev: UIEvent) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires to indicate that the current row has changed in the data source and new data values are available on the object. 
+      * @param ev The event.
+      */
+    onrowenter: (ev: MSEventObj) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "rowenter", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+
+    /**
+      * Fires immediately after the browser loads the object. 
+      * @param ev The event.
+      */
+    onload: (ev: Event) => any;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    oninput: (ev: Event) => any;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event to register
+      * @param listener The event handler function to associate with the event. 
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for: 
+      * true (true)
+      *   Register the event handler for the capturing phase. 
+      * false (false)
+      *   Register the event handler for the bubbling phase.
+      */
+    addEventListener(type: "input", listener: (ev: Event) => any, useCapture?: boolean): void;
+
+    /**
+      * Returns the current value of the document, range, or current selection for the given command.
+      * @param commandId String that specifies a command identifier.
+      */
+    queryCommandValue(commandId: string): string;
+
     adoptNode(source: Node): Node;
-    createComment(data: string): Comment;
-    createDocumentFragment(): DocumentFragment;
-    getElementsByTagName(tagname: string): NodeList;
-    getElementsByTagName(name: "a"): NodeListOf<HTMLAnchorElement>;
-    getElementsByTagName(name: "abbr"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "address"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "area"): NodeListOf<HTMLAreaElement>;
-    getElementsByTagName(name: "article"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "aside"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "audio"): NodeListOf<HTMLAudioElement>;
-    getElementsByTagName(name: "b"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "base"): NodeListOf<HTMLBaseElement>;
-    getElementsByTagName(name: "bdi"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "bdo"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "blockquote"): NodeListOf<HTMLQuoteElement>;
-    getElementsByTagName(name: "body"): NodeListOf<HTMLBodyElement>;
-    getElementsByTagName(name: "br"): NodeListOf<HTMLBRElement>;
-    getElementsByTagName(name: "button"): NodeListOf<HTMLButtonElement>;
-    getElementsByTagName(name: "canvas"): NodeListOf<HTMLCanvasElement>;
-    getElementsByTagName(name: "caption"): NodeListOf<HTMLTableCaptionElement>;
-    getElementsByTagName(name: "cite"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "code"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "col"): NodeListOf<HTMLTableColElement>;
-    getElementsByTagName(name: "colgroup"): NodeListOf<HTMLTableColElement>;
-    getElementsByTagName(name: "datalist"): NodeListOf<HTMLDataListElement>;
-    getElementsByTagName(name: "dd"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "del"): NodeListOf<HTMLModElement>;
-    getElementsByTagName(name: "dfn"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "div"): NodeListOf<HTMLDivElement>;
-    getElementsByTagName(name: "dl"): NodeListOf<HTMLDListElement>;
-    getElementsByTagName(name: "dt"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "em"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "embed"): NodeListOf<HTMLEmbedElement>;
-    getElementsByTagName(name: "fieldset"): NodeListOf<HTMLFieldSetElement>;
-    getElementsByTagName(name: "figcaption"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "figure"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "footer"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "form"): NodeListOf<HTMLFormElement>;
-    getElementsByTagName(name: "h1"): NodeListOf<HTMLHeadingElement>;
-    getElementsByTagName(name: "h2"): NodeListOf<HTMLHeadingElement>;
-    getElementsByTagName(name: "h3"): NodeListOf<HTMLHeadingElement>;
-    getElementsByTagName(name: "h4"): NodeListOf<HTMLHeadingElement>;
-    getElementsByTagName(name: "h5"): NodeListOf<HTMLHeadingElement>;
-    getElementsByTagName(name: "h6"): NodeListOf<HTMLHeadingElement>;
-    getElementsByTagName(name: "head"): NodeListOf<HTMLHeadElement>;
-    getElementsByTagName(name: "header"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "hgroup"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "hr"): NodeListOf<HTMLHRElement>;
-    getElementsByTagName(name: "html"): NodeListOf<HTMLHtmlElement>;
-    getElementsByTagName(name: "i"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "iframe"): NodeListOf<HTMLIFrameElement>;
-    getElementsByTagName(name: "img"): NodeListOf<HTMLImageElement>;
-    getElementsByTagName(name: "input"): NodeListOf<HTMLInputElement>;
-    getElementsByTagName(name: "ins"): NodeListOf<HTMLModElement>;
-    getElementsByTagName(name: "kbd"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "label"): NodeListOf<HTMLLabelElement>;
-    getElementsByTagName(name: "legend"): NodeListOf<HTMLLegendElement>;
-    getElementsByTagName(name: "li"): NodeListOf<HTMLLIElement>;
-    getElementsByTagName(name: "link"): NodeListOf<HTMLLinkElement>;
-    getElementsByTagName(name: "main"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "map"): NodeListOf<HTMLMapElement>;
-    getElementsByTagName(name: "mark"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "menu"): NodeListOf<HTMLMenuElement>;
-    getElementsByTagName(name: "meta"): NodeListOf<HTMLMetaElement>;
-    getElementsByTagName(name: "nav"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "noscript"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "object"): NodeListOf<HTMLObjectElement>;
-    getElementsByTagName(name: "ol"): NodeListOf<HTMLOListElement>;
-    getElementsByTagName(name: "optgroup"): NodeListOf<HTMLOptGroupElement>;
-    getElementsByTagName(name: "option"): NodeListOf<HTMLOptionElement>;
-    getElementsByTagName(name: "p"): NodeListOf<HTMLParagraphElement>;
-    getElementsByTagName(name: "param"): NodeListOf<HTMLParamElement>;
-    getElementsByTagName(name: "pre"): NodeListOf<HTMLPreElement>;
-    getElementsByTagName(name: "progress"): NodeListOf<HTMLProgressElement>;
-    getElementsByTagName(name: "q"): NodeListOf<HTMLQuoteElement>;
-    getElementsByTagName(name: "rp"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "rt"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "ruby"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "s"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "samp"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "script"): NodeListOf<HTMLScriptElement>;
-    getElementsByTagName(name: "section"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "select"): NodeListOf<HTMLSelectElement>;
-    getElementsByTagName(name: "small"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "source"): NodeListOf<HTMLSourceElement>;
-    getElementsByTagName(name: "span"): NodeListOf<HTMLSpanElement>;
-    getElementsByTagName(name: "strong"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "style"): NodeListOf<HTMLStyleElement>;
-    getElementsByTagName(name: "sub"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "summary"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "sup"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "table"): NodeListOf<HTMLTableElement>;
-    getElementsByTagName(name: "tbody"): NodeListOf<HTMLTableSectionElement>;
-    getElementsByTagName(name: "td"): NodeListOf<HTMLTableDataCellElement>;
-    getElementsByTagName(name: "textarea"): NodeListOf<HTMLTextAreaElement>;
-    getElementsByTagName(name: "tfoot"): NodeListOf<HTMLTableSectionElement>;
-    getElementsByTagName(name: "th"): NodeListOf<HTMLTableHeaderCellElement>;
-    getElementsByTagName(name: "thead"): NodeListOf<HTMLTableSectionElement>;
-    getElementsByTagName(name: "title"): NodeListOf<HTMLTitleElement>;
-    getElementsByTagName(name: "tr"): NodeListOf<HTMLTableRowElement>;
-    getElementsByTagName(name: "track"): NodeListOf<HTMLTrackElement>;
-    getElementsByTagName(name: "u"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "ul"): NodeListOf<HTMLUListElement>;
-    getElementsByTagName(name: "var"): NodeListOf<HTMLElement>;
-    getElementsByTagName(name: "video"): NodeListOf<HTMLVideoElement>;
-    getElementsByTagName(name: "wbr"): NodeListOf<HTMLElement>;
+
+    /**
+      * Returns a Boolean value that indicates whether the specified command is in the indeterminate state.
+      * @param commandId String that specifies a command identifier.
+      */
+    queryCommandIndeterm(commandId: string): boolean;
+
     getElementsByTagNameNS(namespaceURI: string, localName: string): NodeList;
     createProcessingInstruction(target: string, data: string): ProcessingInstruction;
-    createElementNS(namespaceURI: string, qualifiedName: string): Element;
-    createAttribute(name: string): Attr;
-    createTextNode(data: string): Text;
-    importNode(importedNode: Node, deep: boolean): Node;
+
+    /**
+      * Executes a command on the current document, current selection, or the given range.
+      * @param commandId String that specifies the command to execute. This command can be any of the command identifiers that can be executed in script.
+      * @param showUI Display the user interface, defaults to false.
+      * @param value Value to assign.
+      */
+    execCommand(commandId: string, showUI?: boolean, value?: any): boolean;
+
+    /**
+      * Returns the element for the specified x coordinate and the specified y coordinate. 
+      * @param x The x-offset
+      * @param y The y-offset
+      */
+    elementFromPoint(x: number, y: number): Element;
     createCDATASection(data: string): CDATASection;
+
+    /**
+      * Retrieves the string associated with a command.
+      * @param commandId String that contains the identifier of a command. This can be any command identifier given in the list of Command Identifiers. 
+      */
+    queryCommandText(commandId: string): string;
+
+    /**
+      * Writes one or more HTML expressions to a document in the specified window. 
+      * @param content Specifies the text and HTML tags to write.
+      */
+    write(...content: string[]): void;
+
+    /**
+      * Allows updating the print settings for the page.
+      */
+    updateSettings(): void;
+
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: string): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "a"): HTMLAnchorElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "abbr"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "address"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "area"): HTMLAreaElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "article"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "aside"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "audio"): HTMLAudioElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "b"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "base"): HTMLBaseElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "bdi"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "bdo"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "blockquote"): HTMLQuoteElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "body"): HTMLBodyElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "br"): HTMLBRElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "button"): HTMLButtonElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "canvas"): HTMLCanvasElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "caption"): HTMLTableCaptionElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "cite"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "code"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "col"): HTMLTableColElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "colgroup"): HTMLTableColElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "datalist"): HTMLDataListElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "dd"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "del"): HTMLModElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "dfn"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "div"): HTMLDivElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "dl"): HTMLDListElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "dt"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "em"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "embed"): HTMLEmbedElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "fieldset"): HTMLFieldSetElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "figcaption"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "figure"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "footer"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "form"): HTMLFormElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "h1"): HTMLHeadingElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "h2"): HTMLHeadingElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "h3"): HTMLHeadingElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "h4"): HTMLHeadingElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "h5"): HTMLHeadingElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "h6"): HTMLHeadingElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "head"): HTMLHeadElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "header"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "hgroup"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "hr"): HTMLHRElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "html"): HTMLHtmlElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "i"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "iframe"): HTMLIFrameElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "img"): HTMLImageElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "input"): HTMLInputElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "ins"): HTMLModElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "kbd"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "label"): HTMLLabelElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "legend"): HTMLLegendElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "li"): HTMLLIElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "link"): HTMLLinkElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "main"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "map"): HTMLMapElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "mark"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "menu"): HTMLMenuElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "meta"): HTMLMetaElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "nav"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "noscript"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "object"): HTMLObjectElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "ol"): HTMLOListElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "optgroup"): HTMLOptGroupElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "option"): HTMLOptionElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "p"): HTMLParagraphElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "param"): HTMLParamElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "pre"): HTMLPreElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "progress"): HTMLProgressElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "q"): HTMLQuoteElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "rp"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "rt"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "ruby"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "s"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "samp"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "script"): HTMLScriptElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "section"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "select"): HTMLSelectElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "small"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "source"): HTMLSourceElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "span"): HTMLSpanElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "strong"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "style"): HTMLStyleElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "sub"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "summary"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "sup"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "table"): HTMLTableElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "tbody"): HTMLTableSectionElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "td"): HTMLTableDataCellElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "textarea"): HTMLTextAreaElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "tfoot"): HTMLTableSectionElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "th"): HTMLTableHeaderCellElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "thead"): HTMLTableSectionElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "title"): HTMLTitleElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "tr"): HTMLTableRowElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "track"): HTMLTrackElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "u"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "ul"): HTMLUListElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "var"): HTMLElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "video"): HTMLVideoElement;
+    /**
+      * Creates an instance of the element for the specified tag.
+      * @param tagName The name of an element.
+      */
+    createElement(tagName: "wbr"): HTMLElement;
+
+    /**
+      * Removes mouse capture from the object in the current document.
+      */
+    releaseCapture(): void;
+
+    /**
+      * Writes one or more HTML expressions, followed by a carriage return, to a document in the specified window. 
+      * @param content The text and HTML tags to write.
+      */
+    writeln(...content: string[]): void;
+    createElementNS(namespaceURI: string, qualifiedName: string): Element;
+
+    /**
+      * Opens a new window and loads a document specified by a given URL. Also, opens a new window that uses the url parameter and the name parameter to collect the output of the write method and the writeln method.
+      * @param url Specifies a MIME type for the document.
+      * @param name Specifies the name of the window. This name is used as the value for the TARGET attribute on a form or an anchor element.
+      * @param features Contains a list of items separated by commas. Each item consists of an option and a value, separated by an equals sign (for example, "fullscreen=yes, toolbar=yes"). The following values are supported.
+      * @param replace Specifies whether the existing entry for the document is replaced in the history list.
+      */
+    open(url?: string, name?: string, features?: string, replace?: boolean): any;
+
+    /**
+      * Returns a Boolean value that indicates whether the current command is supported on the current range.
+      * @param commandId Specifies a command identifier.
+      */
+    queryCommandSupported(commandId: string): boolean;
+
+    /**
+      * Creates a TreeWalker object that you can use to traverse filtered lists of nodes or elements in a document.
+      * @param root The root element or node to start traversing on.
+      * @param whatToShow The type of nodes or elements to appear in the node list. For more information, see whatToShow.
+      * @param filter A custom NodeFilter function to use.
+      * @param entityReferenceExpansion A flag that specifies whether entity reference nodes are expanded.
+      */
+    createTreeWalker(root: Node, whatToShow: number, filter: NodeFilter, entityReferenceExpansion: boolean): TreeWalker;
     createAttributeNS(namespaceURI: string, qualifiedName: string): Attr;
+
+    /** 
+      * Returns a Boolean value that indicates whether a specified command can be successfully executed using execCommand, given the current state of the document.
+      * @param commandId Specifies a command identifier.
+      */
+    queryCommandEnabled(commandId: string): boolean;
+
+    /**
+      * Causes the element to receive the focus and executes the code specified by the onfocus event.
+      */
+    focus(): void;
+
+    /**
+      * Closes an output stream and forces the sent data to display.
+      */
+    close(): void;
+
+    getElementsByClassName(classNames: string): NodeList;
+    importNode(importedNode: Node, deep: boolean): Node;
+
+    /**
+      *  Returns an empty range object that has both of its boundary points positioned at the beginning of the document. 
+      */
+    createRange(): Range;
+
+    /**
+      * Fires a specified event on the object.
+      * @param eventName Specifies the name of the event to fire.
+      * @param eventObj Object that specifies the event object from which to obtain event object properties.
+      */
+    fireEvent(eventName: string, eventObj?: any): boolean;
+
+    /**
+      * Creates a comment object with the specified data.
+      * @param data Sets the comment object's data.
+      */
+    createComment(data: string): Comment;
+
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: string): NodeList;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "a"): NodeListOf<HTMLAnchorElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "abbr"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "address"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "area"): NodeListOf<HTMLAreaElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "article"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "aside"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "audio"): NodeListOf<HTMLAudioElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "b"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "base"): NodeListOf<HTMLBaseElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "bdi"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "bdo"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "blockquote"): NodeListOf<HTMLQuoteElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "body"): NodeListOf<HTMLBodyElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "br"): NodeListOf<HTMLBRElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "button"): NodeListOf<HTMLButtonElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "canvas"): NodeListOf<HTMLCanvasElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "caption"): NodeListOf<HTMLTableCaptionElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "cite"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "code"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "col"): NodeListOf<HTMLTableColElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "colgroup"): NodeListOf<HTMLTableColElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "datalist"): NodeListOf<HTMLDataListElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "dd"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "del"): NodeListOf<HTMLModElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "dfn"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "div"): NodeListOf<HTMLDivElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "dl"): NodeListOf<HTMLDListElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "dt"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "em"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "embed"): NodeListOf<HTMLEmbedElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "fieldset"): NodeListOf<HTMLFieldSetElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "figcaption"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "figure"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "footer"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "form"): NodeListOf<HTMLFormElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "h1"): NodeListOf<HTMLHeadingElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "h2"): NodeListOf<HTMLHeadingElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "h3"): NodeListOf<HTMLHeadingElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "h4"): NodeListOf<HTMLHeadingElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "h5"): NodeListOf<HTMLHeadingElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "h6"): NodeListOf<HTMLHeadingElement>;
+    /**
+     * Retrieves a collection of objects based on the specified element name.
+     * @param name Specifies the name of an element.
+     */
+    getElementsByTagName(name: "head"): NodeListOf<HTMLHeadElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "header"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "hgroup"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "hr"): NodeListOf<HTMLHRElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "html"): NodeListOf<HTMLHtmlElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "i"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "iframe"): NodeListOf<HTMLIFrameElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "img"): NodeListOf<HTMLImageElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "input"): NodeListOf<HTMLInputElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "ins"): NodeListOf<HTMLModElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "kbd"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "label"): NodeListOf<HTMLLabelElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "legend"): NodeListOf<HTMLLegendElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "li"): NodeListOf<HTMLLIElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "link"): NodeListOf<HTMLLinkElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "main"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "map"): NodeListOf<HTMLMapElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "mark"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "menu"): NodeListOf<HTMLMenuElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "meta"): NodeListOf<HTMLMetaElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "nav"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "noscript"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "object"): NodeListOf<HTMLObjectElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "ol"): NodeListOf<HTMLOListElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "optgroup"): NodeListOf<HTMLOptGroupElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "option"): NodeListOf<HTMLOptionElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "p"): NodeListOf<HTMLParagraphElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "param"): NodeListOf<HTMLParamElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "pre"): NodeListOf<HTMLPreElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "progress"): NodeListOf<HTMLProgressElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "q"): NodeListOf<HTMLQuoteElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "rp"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "rt"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "ruby"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "s"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "samp"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "script"): NodeListOf<HTMLScriptElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "section"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "select"): NodeListOf<HTMLSelectElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "small"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "source"): NodeListOf<HTMLSourceElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "span"): NodeListOf<HTMLSpanElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "strong"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "style"): NodeListOf<HTMLStyleElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "sub"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "summary"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "sup"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "table"): NodeListOf<HTMLTableElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "tbody"): NodeListOf<HTMLTableSectionElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "td"): NodeListOf<HTMLTableDataCellElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "textarea"): NodeListOf<HTMLTextAreaElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "tfoot"): NodeListOf<HTMLTableSectionElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "th"): NodeListOf<HTMLTableHeaderCellElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "thead"): NodeListOf<HTMLTableSectionElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "title"): NodeListOf<HTMLTitleElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "tr"): NodeListOf<HTMLTableRowElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "track"): NodeListOf<HTMLTrackElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "u"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "ul"): NodeListOf<HTMLUListElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "var"): NodeListOf<HTMLElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "video"): NodeListOf<HTMLVideoElement>;
+    /**
+      * Retrieves a collection of objects based on the specified element name.
+      * @param name Specifies the name of an element.
+      */
+    getElementsByTagName(name: "wbr"): NodeListOf<HTMLElement>;
+
+    /**
+      * Creates a new document.
+      */
+    createDocumentFragment(): DocumentFragment;
+
+    /**
+      * Creates a style sheet for the document. 
+      * @param href Specifies how to add the style sheet to the document. If a file name is specified for the URL, the style information is added as a link object. If the URL contains style information, it is added to the style object.
+      * @param index Specifies the index that indicates where the new style sheet is inserted in the styleSheets collection. The default is to insert the new style sheet at the end of the collection.
+      */
+    createStyleSheet(href?: string, index?: number): CSSStyleSheet;
+
+    /**
+      * Gets a collection of objects based on the value of the NAME or ID attribute.
+      * @param elementName Gets a collection of objects based on the value of the NAME or ID attribute.
+      */
+    getElementsByName(elementName: string): NodeList;
+
+    /**
+      * Returns a Boolean value that indicates the current state of the command.
+      * @param commandId String that specifies a command identifier.
+      */
+    queryCommandState(commandId: string): boolean;
+
+    /**
+      * Gets a value indicating whether the object currently has focus.
+      */
+    hasFocus(): boolean;
+
+    /**
+      * Displays help information for the given command identifier.
+      * @param commandId Displays help information for the given command identifier.
+      */
+    execCommandShowHelp(commandId: string): boolean;
+
+    /**
+      * Creates an attribute object with a specified name.
+      * @param name String that sets the attribute object's name.
+      */
+    createAttribute(name: string): Attr;
+
+    /**
+      * Creates a text string from the specified value. 
+      * @param data String that specifies the nodeValue property of the text node.
+      */
+    createTextNode(data: string): Text;
+
+    /**
+      * Creates a NodeIterator object that you can use to traverse filtered lists of nodes or elements in a document. 
+      * @param root The root element or node to start traversing on.
+      * @param whatToShow The type of nodes or elements to appear in the node list
+      * @param filter A custom NodeFilter function to use. For more information, see filter. Use null for no filter.
+      * @param entityReferenceExpansion A flag that specifies whether entity reference nodes are expanded.
+      */
+    createNodeIterator(root: Node, whatToShow: number, filter: NodeFilter, entityReferenceExpansion: boolean): NodeIterator;
+
+    /**
+      * Generates an event object to pass event context information when you use the fireEvent method.
+      * @param eventObj An object that specifies an existing event object on which to base the new object.
+      */
+    createEventObject(eventObj?: any): MSEventObj;
+
+    /**
+      * Returns an object representing the current selection of the document that is loaded into the object displaying a webpage.
+      */
+    getSelection(): Selection;
+
+    /**
+      * Returns a reference to the first object with the specified value of the ID or NAME attribute.
+      * @param elementId String that specifies the ID value. Case-insensitive.
+      */
     getElementById(elementId: string): HTMLElement;
+
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event type to register. 
+      * @param listener The event handler function to associate with the event.
+      * @param useCapture Boolean value that specifies the event phase to add the event handler for: 
+      *        true (true)
+      *           Register the event handler for the capturing phase. 
+      *        false (false)
+      *           Register the event handler for the bubbling phase. 
+      */
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    /**
+      * Registers an event handler for the specified event type. 
+      * @param type The type of event type to register. 
+      * @param listener The event handler function to associate with the event.
+      * @param useCapture Boolean value that specifies the event phase to add the event handler for: 
+      *        true (true)
+      *           Register the event handler for the capturing phase. 
+      *        false (false)
+      *           Register the event handler for the bubbling phase. 
+      */
+    addEventListener(type: "DOMContentLoaded", listener: (ev: Event) => any, useCapture?: boolean): void;
 }
+
 declare var Document: {
     prototype: Document;
-    new(): Document;
+    new (): Document;
 }
 
 interface MessageEvent extends Event {
@@ -3233,98 +6859,151 @@ interface MessageEvent extends Event {
 }
 declare var MessageEvent: {
     prototype: MessageEvent;
-    new(): MessageEvent;
+    new (): MessageEvent;
 }
 
-interface SVGElement extends Element, SVGElementEventHandlers {
-    xmlbase: string;
+interface SVGElement extends Element {
+    onmouseover: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
     viewportElement: SVGElement;
-    id: string;
+    onmousemove: (ev: MouseEvent) => any;
+    addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onmouseout: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseout", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    ondblclick: (ev: MouseEvent) => any;
+    addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onfocusout: (ev: FocusEvent) => any;
+    addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+    onfocusin: (ev: FocusEvent) => any;
+    addEventListener(type: "focusin", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+    xmlbase: string;
+    onmousedown: (ev: MouseEvent) => any;
+    addEventListener(type: "mousedown", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onload: (ev: Event) => any;
+    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onmouseup: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseup", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onclick: (ev: MouseEvent) => any;
+    addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
     ownerSVGElement: SVGSVGElement;
+    id: string;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var SVGElement: {
     prototype: SVGElement;
-    new(): SVGElement;
+    new (): SVGElement;
 }
 
 interface HTMLScriptElement extends HTMLElement {
+    /**
+      * Sets or retrieves the status of the script.
+      */
     defer: boolean;
+    /**
+      * Retrieves or sets the text of the object as a string. 
+      */
     text: string;
+    /**
+      * Retrieves the URL to an external file that contains the source code or data.
+      */
     src: string;
+    /** 
+      * Sets or retrieves the object that is bound to the event script.
+      */
     htmlFor: string;
+    /**
+      * Sets or retrieves the character set used to encode the object.
+      */
     charset: string;
+    /**
+      * Sets or retrieves the MIME type for the associated scripting engine.
+      */
     type: string;
+    /**
+      * Sets or retrieves the event for which the script is written. 
+      */
     event: string;
 }
 declare var HTMLScriptElement: {
     prototype: HTMLScriptElement;
-    new(): HTMLScriptElement;
+    new (): HTMLScriptElement;
 }
 
-interface MSHTMLBodyElementExtensions extends DOML2DeprecatedWordWrapSuppression_HTMLBodyElement {
-    scroll: string;
-    bottomMargin: any;
-    topMargin: any;
-    rightMargin: any;
-    bgProperties: string;
-    leftMargin: any;
-    createTextRange(): TextRange;
-}
-
-interface HTMLTableRowElement extends HTMLElement, MSBorderColorHighlightStyle_HTMLTableRowElement, HTMLTableAlignment, MSBorderColorStyle_HTMLTableRowElement, DOML2DeprecatedAlignmentStyle_HTMLTableRowElement, DOML2DeprecatedBackgroundColorStyle, MSHTMLTableRowElementExtensions {
+interface HTMLTableRowElement extends HTMLElement, HTMLTableAlignment, DOML2DeprecatedBackgroundColorStyle {
+    /**
+      * Retrieves the position of the object in the rows collection for the table.
+      */
     rowIndex: number;
+    /**
+      * Retrieves a collection of all cells in the table row.
+      */
     cells: HTMLCollection;
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * Sets or retrieves the color for one of the two colors used to draw the 3-D border of the object.
+      */
+    borderColorLight: any;
+    /**
+      * Retrieves the position of the object in the collection.
+      */
     sectionRowIndex: number;
+    /**
+      * Sets or retrieves the border color of the object.
+      */
+    borderColor: any;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: any;
+    /**
+      * Sets or retrieves the color for one of the two colors used to draw the 3-D border of the object.
+      */
+    borderColorDark: any;
+    /**
+      * Removes the specified cell from the table row, as well as from the cells collection.
+      * @param index Number that specifies the zero-based position of the cell to remove from the table row. If no value is provided, the last cell in the cells collection is deleted.
+      */
     deleteCell(index?: number): void;
+    /**
+      * Creates a new cell in the table row, and adds the cell to the cells collection.
+      * @param index Number that specifies where to insert the cell in the tr. The default value is -1, which appends the new cell to the end of the cells collection.
+      */
     insertCell(index?: number): HTMLElement;
 }
 declare var HTMLTableRowElement: {
     prototype: HTMLTableRowElement;
-    new(): HTMLTableRowElement;
-}
-
-interface MSCommentExtensions {
-    text: string;
-}
-
-interface DOML2DeprecatedMarginStyle_HTMLMarqueeElement {
-    vspace: number;
-    hspace: number;
-}
-
-interface MSCSSRuleList {
-    length: number;
-    item(index?: number): CSSStyleRule;
-    [index: number]: CSSStyleRule;
-}
-declare var MSCSSRuleList: {
-    prototype: MSCSSRuleList;
-    new(): MSCSSRuleList;
+    new (): HTMLTableRowElement;
 }
 
 interface CanvasRenderingContext2D {
+    miterLimit: number;
+    font: string;
+    globalCompositeOperation: string;
+    msFillRule: string;
+    lineCap: string;
+    msImageSmoothingEnabled: boolean;
+    lineDashOffset: number;
+    shadowColor: string;
+    lineJoin: string;
     shadowOffsetX: number;
     lineWidth: number;
-    miterLimit: number;
     canvas: HTMLCanvasElement;
     strokeStyle: any;
-    font: string;
     globalAlpha: number;
-    globalCompositeOperation: string;
     shadowOffsetY: number;
     fillStyle: any;
-    lineCap: string;
     shadowBlur: number;
     textAlign: string;
     textBaseline: string;
-    shadowColor: string;
-    lineJoin: string;
     restore(): void;
     setTransform(m11: number, m12: number, m21: number, m22: number, dx: number, dy: number): void;
     save(): void;
     arc(x: number, y: number, radius: number, startAngle: number, endAngle: number, anticlockwise?: boolean): void;
     measureText(text: string): TextMetrics;
-    isPointInPath(x: number, y: number): boolean;
+    isPointInPath(x: number, y: number, fillRule?: string): boolean;
     quadraticCurveTo(cpx: number, cpy: number, x: number, y: number): void;
     putImageData(imagedata: ImageData, dx: number, dy: number, dirtyX?: number, dirtyY?: number, dirtyWidth?: number, dirtyHeight?: number): void;
     rotate(angle: number): void;
@@ -3333,12 +7012,13 @@ interface CanvasRenderingContext2D {
     scale(x: number, y: number): void;
     createRadialGradient(x0: number, y0: number, r0: number, x1: number, y1: number, r1: number): CanvasGradient;
     lineTo(x: number, y: number): void;
-    fill(): void;
+    getLineDash(): Array<number>;
+    fill(fillRule?: string): void;
+    createImageData(imageDataOrSw: any, sh?: number): ImageData;
     createPattern(image: HTMLElement, repetition: string): CanvasPattern;
     closePath(): void;
     rect(x: number, y: number, w: number, h: number): void;
-    clip(): void;
-    createImageData(imageDataOrSw: any, sh?: number): ImageData;
+    clip(fillRule?: string): void;
     clearRect(x: number, y: number, w: number, h: number): void;
     moveTo(x: number, y: number): void;
     getImageData(sx: number, sy: number, sw: number, sh: number): ImageData;
@@ -3348,6 +7028,7 @@ interface CanvasRenderingContext2D {
     transform(m11: number, m12: number, m21: number, m22: number, dx: number, dy: number): void;
     stroke(): void;
     strokeRect(x: number, y: number, w: number, h: number): void;
+    setLineDash(segments: Array<number>): void;
     strokeText(text: string, x: number, y: number, maxWidth?: number): void;
     beginPath(): void;
     arcTo(x1: number, y1: number, x2: number, y2: number, radius: number): void;
@@ -3355,7 +7036,17 @@ interface CanvasRenderingContext2D {
 }
 declare var CanvasRenderingContext2D: {
     prototype: CanvasRenderingContext2D;
-    new(): CanvasRenderingContext2D;
+    new (): CanvasRenderingContext2D;
+}
+
+interface MSCSSRuleList {
+    length: number;
+    item(index?: number): CSSStyleRule;
+    [index: number]: CSSStyleRule;
+}
+declare var MSCSSRuleList: {
+    prototype: MSCSSRuleList;
+    new (): MSCSSRuleList;
 }
 
 interface SVGPathSegLinetoHorizontalAbs extends SVGPathSeg {
@@ -3363,19 +7054,7 @@ interface SVGPathSegLinetoHorizontalAbs extends SVGPathSeg {
 }
 declare var SVGPathSegLinetoHorizontalAbs: {
     prototype: SVGPathSegLinetoHorizontalAbs;
-    new(): SVGPathSegLinetoHorizontalAbs;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLObjectElement {
-    align: string;
-}
-
-interface DOML2DeprecatedBorderStyle_MSHTMLIFrameElementExtensions {
-    border: string;
-}
-
-interface MSHTMLElementRangeExtensions {
-    createControlRange(): ControlRangeCollection;
+    new (): SVGPathSegLinetoHorizontalAbs;
 }
 
 interface SVGPathSegArcAbs extends SVGPathSeg {
@@ -3389,30 +7068,7 @@ interface SVGPathSegArcAbs extends SVGPathSeg {
 }
 declare var SVGPathSegArcAbs: {
     prototype: SVGPathSegArcAbs;
-    new(): SVGPathSegArcAbs;
-}
-
-interface MSScreenExtensions {
-    deviceXDPI: number;
-    fontSmoothingEnabled: boolean;
-    bufferDepth: number;
-    logicalXDPI: number;
-    systemXDPI: number;
-    logicalYDPI: number;
-    systemYDPI: number;
-    updateInterval: number;
-    deviceYDPI: number;
-}
-
-interface HTMLHtmlElement extends HTMLElement, HTMLHtmlElementDOML2Deprecated {
-}
-declare var HTMLHtmlElement: {
-    prototype: HTMLHtmlElement;
-    new(): HTMLHtmlElement;
-}
-
-interface MSBorderColorStyle {
-    borderColor: any;
+    new (): SVGPathSegArcAbs;
 }
 
 interface SVGTransformList {
@@ -3429,34 +7085,108 @@ interface SVGTransformList {
 }
 declare var SVGTransformList: {
     prototype: SVGTransformList;
-    new(): SVGTransformList;
+    new (): SVGTransformList;
+}
+
+interface HTMLHtmlElement extends HTMLElement {
+    /**
+      * Sets or retrieves the DTD version that governs the current document.
+      */
+    version: string;
+}
+declare var HTMLHtmlElement: {
+    prototype: HTMLHtmlElement;
+    new (): HTMLHtmlElement;
 }
 
 interface SVGPathSegClosePath extends SVGPathSeg {
 }
 declare var SVGPathSegClosePath: {
     prototype: SVGPathSegClosePath;
-    new(): SVGPathSegClosePath;
+    new (): SVGPathSegClosePath;
 }
 
-interface DOML2DeprecatedMarginStyle_MSHTMLIFrameElementExtensions {
-    vspace: number;
-    hspace: number;
-}
-
-interface HTMLFrameElement extends HTMLElement, GetSVGDocument, MSHTMLFrameElementExtensions, MSDataBindingExtensions, MSBorderColorStyle_HTMLFrameElement {
+interface HTMLFrameElement extends HTMLElement, GetSVGDocument, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the width of the object.
+      */
+    width: any;
+    /**
+      * Sets or retrieves whether the frame can be scrolled.
+      */
     scrolling: string;
+    /**
+      * Sets or retrieves the top and bottom margin heights before displaying the text in a frame.
+      */
     marginHeight: string;
-    src: string;
-    name: string;
+    /**
+      * Sets or retrieves the left and right margin widths before displaying the text in a frame.
+      */
     marginWidth: string;
-    contentDocument: Document;
-    longDesc: string;
+    /**
+      * Sets or retrieves the border color of the object.
+      */
+    borderColor: any;
+    /**
+      * Sets or retrieves the amount of additional space between the frames.
+      */
+    frameSpacing: any;
+    /**
+      * Sets or retrieves whether to display a border for the frame.
+      */
+    frameBorder: string;
+    /**
+      * Sets or retrieves whether the user can resize the frame.
+      */
     noResize: boolean;
+    /**
+      * Retrieves the object of the specified.
+      */
+    contentWindow: Window;
+    /**
+      * Sets or retrieves a URL to be loaded by the object.
+      */
+    src: string;
+    /**
+      * Sets or retrieves the frame name.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: any;
+    /**
+      * Retrieves the document object of the page or frame.
+      */
+    contentDocument: Document;
+    /**
+      * Specifies the properties of a border drawn around an object.
+      */
+    border: string;
+    /**
+      * Sets or retrieves a URI to a long description of the object.
+      */
+    longDesc: string;
+    /**
+      * Raised when the object has been completely received from the server.
+      */
+    onload: (ev: Event) => any;
+    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    /**
+      * Sets the value indicating whether the source file of a frame or iframe has specific security restrictions applied.
+      */
+    security: any;
+    /**
+      * Registers an event handler for the specified event type.
+      * @param type The type of event type to register.
+      * @param listener The event handler function to associate with the event.
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for. If true, register the event handler for the capturing phase. If false, Register the event handler for the bubbling phase. 
+      */
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var HTMLFrameElement: {
     prototype: HTMLFrameElement;
-    new(): HTMLFrameElement;
+    new (): HTMLFrameElement;
 }
 
 interface SVGAnimatedLength {
@@ -3465,7 +7195,34 @@ interface SVGAnimatedLength {
 }
 declare var SVGAnimatedLength: {
     prototype: SVGAnimatedLength;
-    new(): SVGAnimatedLength;
+    new (): SVGAnimatedLength;
+}
+
+interface SVGAnimatedPoints {
+    points: SVGPointList;
+    animatedPoints: SVGPointList;
+}
+
+interface SVGDefsElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
+}
+declare var SVGDefsElement: {
+    prototype: SVGDefsElement;
+    new (): SVGDefsElement;
+}
+
+interface HTMLQuoteElement extends HTMLElement {
+    /**
+      * Sets or retrieves the date and time of a modification to the object.
+      */
+    dateTime: string;
+    /**
+      * Sets or retrieves reference information about the object.
+      */
+    cite: string;
+}
+declare var HTMLQuoteElement: {
+    prototype: HTMLQuoteElement;
+    new (): HTMLQuoteElement;
 }
 
 interface CSSMediaRule extends CSSRule {
@@ -3476,27 +7233,7 @@ interface CSSMediaRule extends CSSRule {
 }
 declare var CSSMediaRule: {
     prototype: CSSMediaRule;
-    new(): CSSMediaRule;
-}
-
-interface HTMLQuoteElement extends HTMLElement, MSHTMLQuoteElementExtensions {
-    cite: string;
-}
-declare var HTMLQuoteElement: {
-    prototype: HTMLQuoteElement;
-    new(): HTMLQuoteElement;
-}
-
-interface SVGDefsElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
-}
-declare var SVGDefsElement: {
-    prototype: SVGDefsElement;
-    new(): SVGDefsElement;
-}
-
-interface SVGAnimatedPoints {
-    points: SVGPointList;
-    animatedPoints: SVGPointList;
+    new (): CSSMediaRule;
 }
 
 interface WindowModal {
@@ -3504,33 +7241,33 @@ interface WindowModal {
     returnValue: any;
 }
 
-interface MSHTMLButtonElementExtensions {
-    status: any;
-    createTextRange(): TextRange;
-}
-
-interface XMLHttpRequest extends EventTarget, MSXMLHttpRequestExtensions {
-    onreadystatechange: (ev: Event) => any;
-    addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+interface XMLHttpRequest extends EventTarget {
+    responseBody: any;
     status: number;
-    onload: (ev: Event) => any;
-    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
     readyState: number;
     responseText: string;
     responseXML: Document;
+    ontimeout: (ev: Event) => any;
+    addEventListener(type: "timeout", listener: (ev: Event) => any, useCapture?: boolean): void;
     statusText: string;
+    onreadystatechange: (ev: Event) => any;
+    addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+    timeout: number;
+    onload: (ev: Event) => any;
+    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
     open(method: string, url: string, async?: boolean, user?: string, password?: string): void;
+    create(): XMLHttpRequest;
     send(data?: any): void;
     abort(): void;
     getAllResponseHeaders(): string;
     setRequestHeader(header: string, value: string): void;
     getResponseHeader(header: string): string;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
     LOADING: number;
     DONE: number;
     UNSENT: number;
     OPENED: number;
     HEADERS_RECEIVED: number;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var XMLHttpRequest: {
     prototype: XMLHttpRequest;
@@ -3542,18 +7279,22 @@ declare var XMLHttpRequest: {
     HEADERS_RECEIVED: number;
 }
 
-interface HTMLTableHeaderCellElement extends HTMLTableCellElement, HTMLTableHeaderCellScope {
+interface HTMLTableHeaderCellElement extends HTMLTableCellElement {
+    /**
+      * Sets or retrieves the group of cells in a table to which the object's information applies.
+      */
+    scope: string;
 }
 declare var HTMLTableHeaderCellElement: {
     prototype: HTMLTableHeaderCellElement;
-    new(): HTMLTableHeaderCellElement;
+    new (): HTMLTableHeaderCellElement;
 }
 
-interface HTMLDListElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, MSHTMLDListElementExtensions {
+interface HTMLDListElement extends HTMLElement, DOML2DeprecatedListSpaceReduction {
 }
 declare var HTMLDListElement: {
     prototype: HTMLDListElement;
-    new(): HTMLDListElement;
+    new (): HTMLDListElement;
 }
 
 interface MSDataBindingExtensions {
@@ -3562,7 +7303,15 @@ interface MSDataBindingExtensions {
     dataFld: string;
 }
 
-interface SVGEllipseElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGPathSegLinetoHorizontalRel extends SVGPathSeg {
+    x: number;
+}
+declare var SVGPathSegLinetoHorizontalRel: {
+    prototype: SVGPathSegLinetoHorizontalRel;
+    new (): SVGPathSegLinetoHorizontalRel;
+}
+
+interface SVGEllipseElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     ry: SVGAnimatedLength;
     cx: SVGAnimatedLength;
     rx: SVGAnimatedLength;
@@ -3570,28 +7319,15 @@ interface SVGEllipseElement extends SVGElement, SVGStylable, SVGTransformable, S
 }
 declare var SVGEllipseElement: {
     prototype: SVGEllipseElement;
-    new(): SVGEllipseElement;
+    new (): SVGEllipseElement;
 }
 
-interface SVGPathSegLinetoHorizontalRel extends SVGPathSeg {
-    x: number;
-}
-declare var SVGPathSegLinetoHorizontalRel: {
-    prototype: SVGPathSegLinetoHorizontalRel;
-    new(): SVGPathSegLinetoHorizontalRel;
-}
-
-interface SVGAElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGURIReference {
+interface SVGAElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired, SVGURIReference {
     target: SVGAnimatedString;
 }
 declare var SVGAElement: {
     prototype: SVGAElement;
-    new(): SVGAElement;
-}
-
-interface MSHTMLMetaElementExtensions {
-    url: string;
-    charset: string;
+    new (): SVGAElement;
 }
 
 interface SVGStylable {
@@ -3599,36 +7335,63 @@ interface SVGStylable {
     style: CSSStyleDeclaration;
 }
 
-interface MSHTMLTableCellElementExtensions {
+interface SVGTransformable extends SVGLocatable {
+    transform: SVGAnimatedTransformList;
 }
 
-interface HTMLFrameSetElement extends HTMLElement, MSHTMLFrameSetElementExtensions, MSBorderColorStyle_HTMLFrameSetElement {
-    onresize: (ev: UIEvent) => any;
-    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+interface HTMLFrameSetElement extends HTMLElement {
     ononline: (ev: Event) => any;
     addEventListener(type: "online", listener: (ev: Event) => any, useCapture?: boolean): void;
+    /**
+      * Sets or retrieves the border color of the object.
+      */
+    borderColor: any;
+    /**
+      * Sets or retrieves the frame heights of the object.
+      */
+    rows: string;
+    /**
+      * Sets or retrieves the frame widths of the object.
+      */
+    cols: string;
+    /**
+      * Fires when the object loses the input focus.
+      */
+    onblur: (ev: FocusEvent) => any;
+    addEventListener(type: "blur", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+    /**
+      * Sets or retrieves the amount of additional space between the frames.
+      */
+    frameSpacing: any;
+    /**
+      * Fires when the object receives focus.
+      */
+    onfocus: (ev: FocusEvent) => any;
+    addEventListener(type: "focus", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+    onmessage: (ev: MessageEvent) => any;
+    addEventListener(type: "message", listener: (ev: MessageEvent) => any, useCapture?: boolean): void;
+    onerror: (ev: Event) => any;
+    addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
+    /**
+      * Sets or retrieves whether to display a border for the frame.
+      */
+    frameBorder: string;
+    onresize: (ev: UIEvent) => any;
+    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    name: string;
     onafterprint: (ev: Event) => any;
     addEventListener(type: "afterprint", listener: (ev: Event) => any, useCapture?: boolean): void;
     onbeforeprint: (ev: Event) => any;
     addEventListener(type: "beforeprint", listener: (ev: Event) => any, useCapture?: boolean): void;
     onoffline: (ev: Event) => any;
     addEventListener(type: "offline", listener: (ev: Event) => any, useCapture?: boolean): void;
-    rows: string;
-    cols: string;
-    onblur: (ev: FocusEvent) => any;
-    addEventListener(type: "blur", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+    border: string;
     onunload: (ev: Event) => any;
     addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
     onhashchange: (ev: Event) => any;
     addEventListener(type: "hashchange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onfocus: (ev: FocusEvent) => any;
-    addEventListener(type: "focus", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    onmessage: (ev: MessageEvent) => any;
-    addEventListener(type: "message", listener: (ev: MessageEvent) => any, useCapture?: boolean): void;
     onload: (ev: Event) => any;
     addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onerror: (ev: Event) => any;
-    addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
     onbeforeunload: (ev: BeforeUnloadEvent) => any;
     addEventListener(type: "beforeunload", listener: (ev: BeforeUnloadEvent) => any, useCapture?: boolean): void;
     onstorage: (ev: StorageEvent) => any;
@@ -3637,28 +7400,29 @@ interface HTMLFrameSetElement extends HTMLElement, MSHTMLFrameSetElementExtensio
 }
 declare var HTMLFrameSetElement: {
     prototype: HTMLFrameSetElement;
-    new(): HTMLFrameSetElement;
+    new (): HTMLFrameSetElement;
 }
 
-interface SVGTransformable extends SVGLocatable {
-    transform: SVGAnimatedTransformList;
-}
-
-interface Screen extends MSScreenExtensions {
+interface Screen {
     width: number;
-    colorDepth: number;
-    availWidth: number;
-    pixelDepth: number;
+    deviceXDPI: number;
+    fontSmoothingEnabled: boolean;
+    bufferDepth: number;
+    logicalXDPI: number;
+    systemXDPI: number;
     availHeight: number;
     height: number;
+    logicalYDPI: number;
+    systemYDPI: number;
+    updateInterval: number;
+    colorDepth: number;
+    availWidth: number;
+    deviceYDPI: number;
+    pixelDepth: number;
 }
 declare var Screen: {
     prototype: Screen;
-    new(): Screen;
-}
-
-interface NavigatorGeolocation {
-    geolocation: Geolocation;
+    new (): Screen;
 }
 
 interface Coordinates {
@@ -3672,11 +7436,14 @@ interface Coordinates {
 }
 declare var Coordinates: {
     prototype: Coordinates;
-    new(): Coordinates;
+    new (): Coordinates;
 }
 
-interface DOML2DeprecatedAlignmentStyle_HTMLTableColElement {
-    align: string;
+interface NavigatorGeolocation {
+    geolocation: Geolocation;
+}
+
+interface NavigatorContentUtils {
 }
 
 interface EventListener {
@@ -3697,16 +7464,16 @@ interface DataTransfer {
 }
 declare var DataTransfer: {
     prototype: DataTransfer;
-    new(): DataTransfer;
+    new (): DataTransfer;
 }
 
 interface FocusEvent extends UIEvent {
     relatedTarget: EventTarget;
-    initFocusEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, relatedTargetArg: EventTarget): void;
+    initFocusEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, relatedTargetArg: EventTarget): void;
 }
 declare var FocusEvent: {
     prototype: FocusEvent;
-    new(): FocusEvent;
+    new (): FocusEvent;
 }
 
 interface Range {
@@ -3743,15 +7510,11 @@ interface Range {
 }
 declare var Range: {
     prototype: Range;
-    new(): Range;
+    new (): Range;
     END_TO_END: number;
     START_TO_START: number;
     START_TO_END: number;
     END_TO_START: number;
-}
-
-interface MSHTMLPreElementExtensions extends DOML2DeprecatedTextFlowControl_HTMLBlockElement {
-    cite: string;
 }
 
 interface SVGPoint {
@@ -3761,7 +7524,7 @@ interface SVGPoint {
 }
 declare var SVGPoint: {
     prototype: SVGPoint;
-    new(): SVGPoint;
+    new (): SVGPoint;
 }
 
 interface MSPluginsCollection {
@@ -3770,10 +7533,7 @@ interface MSPluginsCollection {
 }
 declare var MSPluginsCollection: {
     prototype: MSPluginsCollection;
-    new(): MSPluginsCollection;
-}
-
-interface MSHTMLFontElementExtensions {
+    new (): MSPluginsCollection;
 }
 
 interface SVGAnimatedNumberList {
@@ -3782,23 +7542,35 @@ interface SVGAnimatedNumberList {
 }
 declare var SVGAnimatedNumberList: {
     prototype: SVGAnimatedNumberList;
-    new(): SVGAnimatedNumberList;
+    new (): SVGAnimatedNumberList;
 }
 
-interface SVGSVGElement extends SVGElement, SVGZoomAndPan, SVGLangSpace, SVGLocatable, SVGTests, SVGFitToViewBox, SVGSVGElementEventHandlers, SVGStylable, DocumentEvent, ViewCSS_SVGSVGElement {
+interface SVGSVGElement extends SVGElement, SVGStylable, SVGZoomAndPan, DocumentEvent, SVGLangSpace, SVGLocatable, SVGTests, SVGFitToViewBox, SVGExternalResourcesRequired {
     width: SVGAnimatedLength;
     x: SVGAnimatedLength;
     contentStyleType: string;
+    onzoom: (ev: any) => any;
+    addEventListener(type: "zoom", listener: (ev: any) => any, useCapture?: boolean): void;
+    y: SVGAnimatedLength;
+    viewport: SVGRect;
+    onerror: (ev: Event) => any;
+    addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
+    pixelUnitToMillimeterY: number;
+    onresize: (ev: UIEvent) => any;
+    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
     screenPixelToMillimeterY: number;
     height: SVGAnimatedLength;
+    onabort: (ev: UIEvent) => any;
+    addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
     contentScriptType: string;
     pixelUnitToMillimeterX: number;
     currentTranslate: SVGPoint;
-    y: SVGAnimatedLength;
-    viewport: SVGRect;
+    onunload: (ev: Event) => any;
+    addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
     currentScale: number;
+    onscroll: (ev: UIEvent) => any;
+    addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
     screenPixelToMillimeterX: number;
-    pixelUnitToMillimeterY: number;
     setCurrentTime(seconds: number): void;
     createSVGLength(): SVGLength;
     getIntersectionList(rect: SVGRect, referenceElement: SVGElement): NodeList;
@@ -3820,20 +7592,28 @@ interface SVGSVGElement extends SVGElement, SVGZoomAndPan, SVGLangSpace, SVGLoca
     createSVGPoint(): SVGPoint;
     createSVGNumber(): SVGNumber;
     createSVGTransformFromMatrix(matrix: SVGMatrix): SVGTransform;
+    getComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
     getElementById(elementId: string): Element;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var SVGSVGElement: {
     prototype: SVGSVGElement;
-    new(): SVGSVGElement;
+    new (): SVGSVGElement;
 }
 
-interface HTMLLabelElement extends HTMLElement, MSDataBindingExtensions, MSHTMLLabelElementExtensions {
+interface HTMLLabelElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the object to which the given label object is assigned.
+      */
     htmlFor: string;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
 }
 declare var HTMLLabelElement: {
     prototype: HTMLLabelElement;
-    new(): HTMLLabelElement;
+    new (): HTMLLabelElement;
 }
 
 interface MSResourceMetadata {
@@ -3846,34 +7626,26 @@ interface MSResourceMetadata {
     mimeType: string;
 }
 
-interface MSHTMLQuoteElementExtensions {
-    dateTime: string;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLIFrameElement {
+interface HTMLLegendElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     align: string;
-}
-
-interface HTMLLegendElement extends HTMLElement, DOML2DeprecatedAlignmentStyle_HTMLLegendElement, MSDataBindingExtensions, MSHTMLLegendElementExtensions {
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
 }
 declare var HTMLLegendElement: {
     prototype: HTMLLegendElement;
-    new(): HTMLLegendElement;
+    new (): HTMLLegendElement;
 }
 
-interface HTMLDirectoryElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, MSHTMLDirectoryElementExtensions {
+interface HTMLDirectoryElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, DOML2DeprecatedListNumberingAndBulletStyle {
 }
 declare var HTMLDirectoryElement: {
     prototype: HTMLDirectoryElement;
-    new(): HTMLDirectoryElement;
-}
-
-interface NavigatorAbilities {
-}
-
-interface MSHTMLImageElementExtensions {
-    href: string;
+    new (): HTMLDirectoryElement;
 }
 
 interface SVGAnimatedInteger {
@@ -3882,29 +7654,32 @@ interface SVGAnimatedInteger {
 }
 declare var SVGAnimatedInteger: {
     prototype: SVGAnimatedInteger;
-    new(): SVGAnimatedInteger;
+    new (): SVGAnimatedInteger;
 }
 
 interface SVGTextElement extends SVGTextPositioningElement, SVGTransformable {
 }
 declare var SVGTextElement: {
     prototype: SVGTextElement;
-    new(): SVGTextElement;
+    new (): SVGTextElement;
 }
 
 interface SVGTSpanElement extends SVGTextPositioningElement {
 }
 declare var SVGTSpanElement: {
     prototype: SVGTSpanElement;
-    new(): SVGTSpanElement;
+    new (): SVGTSpanElement;
 }
 
-interface HTMLLIElement extends HTMLElement, DOML2DeprecatedListNumberingAndBulletStyle, MSHTMLLIElementExtensions {
+interface HTMLLIElement extends HTMLElement, DOML2DeprecatedListNumberingAndBulletStyle {
+    /**
+      * Sets or retrieves the value of a list item.
+      */
     value: number;
 }
 declare var HTMLLIElement: {
     prototype: HTMLLIElement;
-    new(): HTMLLIElement;
+    new (): HTMLLIElement;
 }
 
 interface SVGPathSegLinetoVerticalAbs extends SVGPathSeg {
@@ -3912,15 +7687,7 @@ interface SVGPathSegLinetoVerticalAbs extends SVGPathSeg {
 }
 declare var SVGPathSegLinetoVerticalAbs: {
     prototype: SVGPathSegLinetoVerticalAbs;
-    new(): SVGPathSegLinetoVerticalAbs;
-}
-
-interface ViewCSS {
-    getComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
-}
-
-interface MSAttrExtensions {
-    expando: boolean;
+    new (): SVGPathSegLinetoVerticalAbs;
 }
 
 interface MSStorageExtensions {
@@ -3934,7 +7701,7 @@ interface SVGStyleElement extends SVGElement, SVGLangSpace {
 }
 declare var SVGStyleElement: {
     prototype: SVGStyleElement;
-    new(): SVGStyleElement;
+    new (): SVGStyleElement;
 }
 
 interface MSCurrentStyleCSSProperties extends MSCSSProperties {
@@ -3947,25 +7714,12 @@ interface MSCurrentStyleCSSProperties extends MSCSSProperties {
 }
 declare var MSCurrentStyleCSSProperties: {
     prototype: MSCurrentStyleCSSProperties;
-    new(): MSCurrentStyleCSSProperties;
-}
-
-interface MSLinkStyleExtensions {
-    styleSheet: StyleSheet;
+    new (): MSCurrentStyleCSSProperties;
 }
 
 interface MSHTMLCollectionExtensions {
     urns(urn: any): Object;
     tags(tagName: any): Object;
-}
-
-interface DOML2DeprecatedWordWrapSuppression_HTMLDivElement {
-    noWrap: boolean;
-}
-
-interface DocumentTraversal {
-    createNodeIterator(root: Node, whatToShow: number, filter: NodeFilterCallback, entityReferenceExpansion: boolean): NodeIterator;
-    createTreeWalker(root: Node, whatToShow: number, filter: NodeFilterCallback, entityReferenceExpansion: boolean): TreeWalker;
 }
 
 interface Storage extends MSStorageExtensions {
@@ -3980,45 +7734,98 @@ interface Storage extends MSStorageExtensions {
 }
 declare var Storage: {
     prototype: Storage;
-    new(): Storage;
+    new (): Storage;
 }
 
-interface HTMLTableHeaderCellScope {
-    scope: string;
-}
-
-interface HTMLIFrameElement extends HTMLElement, GetSVGDocument, MSHTMLIFrameElementExtensions, MSDataBindingExtensions, DOML2DeprecatedAlignmentStyle_HTMLIFrameElement {
+interface HTMLIFrameElement extends HTMLElement, GetSVGDocument, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the width of the object.
+      */
     width: string;
-    contentWindow: Window;
+    /**
+      * Sets or retrieves whether the frame can be scrolled.
+      */
     scrolling: string;
-    src: string;
+    /**
+      * Sets or retrieves the top and bottom margin heights before displaying the text in a frame.
+      */
     marginHeight: string;
-    name: string;
+    /**
+      * Sets or retrieves the left and right margin widths before displaying the text in a frame.
+      */
     marginWidth: string;
-    height: string;
-    contentDocument: Document;
-    longDesc: string;
+    /**
+      * Sets or retrieves the amount of additional space between the frames.
+      */
+    frameSpacing: any;
+    /**
+      * Sets or retrieves whether to display a border for the frame.
+      */
     frameBorder: string;
+    /**
+      * Sets or retrieves whether the user can resize the frame.
+      */
+    noResize: boolean;
+    /**
+      * Sets or retrieves the vertical margin for the object.
+      */
+    vspace: number;
+    /**
+      * Retrieves the object of the specified.
+      */
+    contentWindow: Window;
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * Sets or retrieves a URL to be loaded by the object.
+      */
+    src: string;
+    /**
+      * Sets or retrieves the frame name.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: string;
+    /**
+      * Specifies the properties of a border drawn around an object.
+      */
+    border: string;
+    /**
+      * Retrieves the document object of the page or frame.
+      */
+    contentDocument: Document;
+    /**
+      * Sets or retrieves the horizontal margin for the object.
+      */
+    hspace: number;
+    /**
+      * Sets or retrieves a URI to a long description of the object.
+      */
+    longDesc: string;
+    /**
+      * Sets the value indicating whether the source file of a frame or iframe has specific security restrictions applied.
+      */
+    security: any;
+    /**
+      * Raised when the object has been completely received from the server.
+      */
+    onload: (ev: Event) => any;
+    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    /**
+      * Registers an event handler for the specified event type.
+      * @param type The type of event type to register.
+      * @param listener The event handler function to associate with the event.
+      * @param useCapture A Boolean value that specifies the event phase to add the event handler for. If true, register the event handler for the capturing phase. If false, Register the event handler for the bubbling phase. 
+      */
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var HTMLIFrameElement: {
     prototype: HTMLIFrameElement;
-    new(): HTMLIFrameElement;
-}
-
-interface MSNavigatorAbilities {
-    userLanguage: string;
-    plugins: MSPluginsCollection;
-    cookieEnabled: boolean;
-    appCodeName: string;
-    cpuClass: string;
-    appMinorVersion: string;
-    connectionSpeed: number;
-    browserLanguage: string;
-    mimeTypes: MSMimeTypesCollection;
-    product: string;
-    systemLanguage: string;
-    javaEnabled(): boolean;
-    taintEnabled(): boolean;
+    new (): HTMLIFrameElement;
 }
 
 interface TextRangeCollection {
@@ -4028,43 +7835,55 @@ interface TextRangeCollection {
 }
 declare var TextRangeCollection: {
     prototype: TextRangeCollection;
-    new(): TextRangeCollection;
+    new (): TextRangeCollection;
 }
 
-interface HTMLBodyElement extends HTMLElement, HTMLBodyElementDOML2Deprecated, MSHTMLBodyElementExtensions, DOML2DeprecatedBackgroundStyle, DOML2DeprecatedBackgroundColorStyle {
-    onresize: (ev: UIEvent) => any;
-    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+interface HTMLBodyElement extends HTMLElement, DOML2DeprecatedBackgroundStyle, DOML2DeprecatedBackgroundColorStyle {
+    scroll: string;
     ononline: (ev: Event) => any;
     addEventListener(type: "online", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onafterprint: (ev: Event) => any;
-    addEventListener(type: "afterprint", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onbeforeprint: (ev: Event) => any;
-    addEventListener(type: "beforeprint", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onoffline: (ev: Event) => any;
-    addEventListener(type: "offline", listener: (ev: Event) => any, useCapture?: boolean): void;
     onblur: (ev: FocusEvent) => any;
     addEventListener(type: "blur", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    onhashchange: (ev: Event) => any;
-    addEventListener(type: "hashchange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onunload: (ev: Event) => any;
-    addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
+    noWrap: boolean;
     onfocus: (ev: FocusEvent) => any;
     addEventListener(type: "focus", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
     onmessage: (ev: MessageEvent) => any;
     addEventListener(type: "message", listener: (ev: MessageEvent) => any, useCapture?: boolean): void;
-    onload: (ev: Event) => any;
-    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    text: any;
     onerror: (ev: Event) => any;
     addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
+    bgProperties: string;
+    onresize: (ev: UIEvent) => any;
+    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    link: any;
+    aLink: any;
+    bottomMargin: any;
+    topMargin: any;
+    onafterprint: (ev: Event) => any;
+    addEventListener(type: "afterprint", listener: (ev: Event) => any, useCapture?: boolean): void;
+    vLink: any;
+    onbeforeprint: (ev: Event) => any;
+    addEventListener(type: "beforeprint", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onoffline: (ev: Event) => any;
+    addEventListener(type: "offline", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onunload: (ev: Event) => any;
+    addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onhashchange: (ev: Event) => any;
+    addEventListener(type: "hashchange", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onload: (ev: Event) => any;
+    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    rightMargin: any;
     onbeforeunload: (ev: BeforeUnloadEvent) => any;
     addEventListener(type: "beforeunload", listener: (ev: BeforeUnloadEvent) => any, useCapture?: boolean): void;
+    leftMargin: any;
     onstorage: (ev: StorageEvent) => any;
     addEventListener(type: "storage", listener: (ev: StorageEvent) => any, useCapture?: boolean): void;
+    createTextRange(): TextRange;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var HTMLBodyElement: {
     prototype: HTMLBodyElement;
-    new(): HTMLBodyElement;
+    new (): HTMLBodyElement;
 }
 
 interface DocumentType extends Node {
@@ -4077,17 +7896,7 @@ interface DocumentType extends Node {
 }
 declare var DocumentType: {
     prototype: DocumentType;
-    new(): DocumentType;
-}
-
-interface MSHTMLInputElementExtensions extends DOML2DeprecatedMarginStyle_HTMLInputElement, DOML2DeprecatedBorderStyle_HTMLInputElement {
-    status: boolean;
-    complete: boolean;
-    createTextRange(): TextRange;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLLegendElement {
-    align: string;
+    new (): DocumentType;
 }
 
 interface SVGRadialGradientElement extends SVGGradientElement {
@@ -4099,7 +7908,7 @@ interface SVGRadialGradientElement extends SVGGradientElement {
 }
 declare var SVGRadialGradientElement: {
     prototype: SVGRadialGradientElement;
-    new(): SVGRadialGradientElement;
+    new (): SVGRadialGradientElement;
 }
 
 interface MutationEvent extends Event {
@@ -4115,7 +7924,7 @@ interface MutationEvent extends Event {
 }
 declare var MutationEvent: {
     prototype: MutationEvent;
-    new(): MutationEvent;
+    new (): MutationEvent;
     MODIFICATION: number;
     REMOVAL: number;
     ADDITION: number;
@@ -4123,85 +7932,273 @@ declare var MutationEvent: {
 
 interface DragEvent extends MouseEvent {
     dataTransfer: DataTransfer;
-    initDragEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget, dataTransferArg: DataTransfer): void;
+    initDragEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget, dataTransferArg: DataTransfer): void;
 }
 declare var DragEvent: {
     prototype: DragEvent;
-    new(): DragEvent;
+    new (): DragEvent;
 }
 
-interface DOML2DeprecatedWidthStyle_HTMLTableCellElement {
-    width: number;
-}
-
-interface HTMLTableSectionElement extends HTMLElement, MSHTMLTableSectionElementExtensions, DOML2DeprecatedAlignmentStyle_HTMLTableSectionElement, HTMLTableAlignment {
+interface HTMLTableSectionElement extends HTMLElement, HTMLTableAlignment, DOML2DeprecatedBackgroundColorStyle {
+    /**
+      * Sets or retrieves a value that indicates the table alignment.
+      */
+    align: string;
+    /**
+      * Sets or retrieves the number of horizontal rows contained in the object.
+      */
     rows: HTMLCollection;
+    /**
+      * Removes the specified row (tr) from the element and from the rows collection.
+      * @param index Number that specifies the zero-based position in the rows collection of the row to remove.
+      */
     deleteRow(index?: number): void;
+    /**
+      * Moves a table row to a new position.
+      * @param indexFrom Number that specifies the index in the rows collection of the table row that is moved.
+      * @param indexTo Number that specifies where the row is moved within the rows collection.
+      */
+    moveRow(indexFrom?: number, indexTo?: number): Object;
+    /**
+      * Creates a new row (tr) in the table, and adds the row to the rows collection.
+      * @param index Number that specifies where to insert the row in the rows collection. The default value is -1, which appends the new row to the end of the rows collection.
+      */
     insertRow(index?: number): HTMLElement;
 }
 declare var HTMLTableSectionElement: {
     prototype: HTMLTableSectionElement;
-    new(): HTMLTableSectionElement;
+    new (): HTMLTableSectionElement;
 }
 
 interface DOML2DeprecatedListNumberingAndBulletStyle {
     type: string;
 }
 
-interface HTMLInputElement extends HTMLElement, DOML2DeprecatedAlignmentStyle_HTMLInputElement, MSImageResourceExtensions_HTMLInputElement, MSHTMLInputElementExtensions, MSDataBindingExtensions {
+interface HTMLInputElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the width of the object.
+      */
     width: string;
-    defaultChecked: boolean;
-    alt: string;
-    accept: string;
-    value: string;
-    src: string;
-    useMap: string;
-    name: string;
+    status: boolean;
+    /**
+      * Retrieves a reference to the form that the object is embedded in. 
+      */
     form: HTMLFormElement;
+    /**
+      * Gets or sets the starting position or offset of a text selection.
+      */
     selectionStart: number;
-    height: string;
     indeterminate: boolean;
     readOnly: boolean;
     size: number;
-    checked: boolean;
-    maxLength: number;
+    loop: number;
+    /**
+      * Gets or sets the end position or offset of a text selection.
+      */
     selectionEnd: number;
+    /**
+      * Sets or retrieves the URL of the virtual reality modeling language (VRML) world to be displayed in the window.
+      */
+    vrml: string;
+    /**
+      * Sets or retrieves a lower resolution image to display.
+      */
+    lowsrc: string;
+    /**
+      * Sets or retrieves the vertical margin for the object.
+      */
+    vspace: number;
+    /**
+      * Sets or retrieves a comma-separated list of content types.
+      */
+    accept: string;
+    /**
+      * Sets or retrieves a text alternative to the graphic.
+      */
+    alt: string;
+    /**
+      * Sets or retrieves the state of the check box or radio button.
+      */
+    defaultChecked: boolean;
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * Returns the value of the data at the cursor's current position.
+      */
+    value: string;
+    /**
+      * The address or URL of the a media resource that is to be considered.
+      */
+    src: string;
+    /**
+      * Sets or retrieves the name of the object.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the URL, often with a bookmark extension (#name), to use as a client-side image map.
+      */
+    useMap: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: string;
+    /**
+      * Sets or retrieves the width of the border to draw around the object.
+      */
+    border: string;
+    dynsrc: string;
+    /**
+      * Sets or retrieves the state of the check box or radio button.
+      */
+    checked: boolean;
+    /**
+      * Sets or retrieves the width of the border to draw around the object.
+      */
+    hspace: number;
+    /**
+      * Sets or retrieves the maximum number of characters that the user can enter in a text control.
+      */
+    maxLength: number;
+    /**
+      * Returns the content type of the object.
+      */
     type: string;
+    /**
+      * Sets or retrieves the initial contents of the object.
+      */
     defaultValue: string;
+    /**
+      * Retrieves whether the object is fully loaded.
+      */
+    complete: boolean;
+    start: string;
+    /**
+      * Creates a TextRange object for the element.
+      */
+    createTextRange(): TextRange;
+    /**
+      * Sets the start and end positions of a selection in a text field.
+      * @param start The offset into the text field for the start of the selection.
+      * @param end The offset into the text field for the end of the selection.
+      */
     setSelectionRange(start: number, end: number): void;
+    /**
+      * Makes the selection equal to the current object.
+      */
     select(): void;
 }
 declare var HTMLInputElement: {
     prototype: HTMLInputElement;
-    new(): HTMLInputElement;
+    new (): HTMLInputElement;
 }
 
-interface HTMLAnchorElement extends HTMLElement, MSHTMLAnchorElementExtensions, MSDataBindingExtensions {
+interface HTMLAnchorElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the relationship between the object and the destination of the link.
+      */
     rel: string;
+    /**
+      * Contains the protocol of the URL.
+      */
     protocol: string;
+    /**
+      * Sets or retrieves the substring of the href property that follows the question mark.
+      */
     search: string;
+    /**
+      * Sets or retrieves the coordinates of the object.
+      */
     coords: string;
+    /**
+      * Contains the hostname of a URL.
+      */
     hostname: string;
+    /**
+      * Contains the pathname of the URL.
+      */
     pathname: string;
+    Methods: string;
+    /**
+      * Sets or retrieves the window or frame at which to target content.
+      */
     target: string;
+    protocolLong: string;
+    /**
+      * Sets or retrieves a destination URL or an anchor point.
+      */
     href: string;
+    /**
+      * Sets or retrieves the shape of the object.
+      */
     name: string;
+    /**
+      * Sets or retrieves the character set used to encode the object.
+      */
     charset: string;
+    /**
+      * Sets or retrieves the language code of the object.
+      */
     hreflang: string;
+    /**
+      * Sets or retrieves the port number associated with a URL.
+      */
     port: string;
+    /**
+      * Contains the hostname and port values of the URL.
+      */
     host: string;
+    /**
+      * Contains the anchor portion of the URL including the hash sign (#).
+      */
     hash: string;
+    nameProp: string;
+    urn: string;
+    /**
+      * Sets or retrieves the relationship between the object and the destination of the link.
+      */
     rev: string;
-    type: string;
+    /**
+      * Sets or retrieves the shape of the object.
+      */
     shape: string;
+    type: string;
+    mimeType: string;
+    /** 
+      * Returns a string representation of an object.
+      */
     toString(): string;
 }
 declare var HTMLAnchorElement: {
     prototype: HTMLAnchorElement;
-    new(): HTMLAnchorElement;
+    new (): HTMLAnchorElement;
 }
 
-interface SVGImageElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGURIReference {
+interface HTMLParamElement extends HTMLElement {
+    /**
+      * Sets or retrieves the value of an input parameter for an element.
+      */
+    value: string;
+    /**
+      * Sets or retrieves the name of an input parameter for an element.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the content type of the resource designated by the value attribute.
+      */
+    type: string;
+    /**
+      * Sets or retrieves the data type of the value attribute.
+      */
+    valueType: string;
+}
+declare var HTMLParamElement: {
+    prototype: HTMLParamElement;
+    new (): HTMLParamElement;
+}
+
+interface SVGImageElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired, SVGURIReference {
     y: SVGAnimatedLength;
     width: SVGAnimatedLength;
     preserveAspectRatio: SVGAnimatedPreserveAspectRatio;
@@ -4210,27 +8207,7 @@ interface SVGImageElement extends SVGElement, SVGStylable, SVGTransformable, SVG
 }
 declare var SVGImageElement: {
     prototype: SVGImageElement;
-    new(): SVGImageElement;
-}
-
-interface MSElementExtensions {
-    msMatchesSelector(selectors: string): boolean;
-    fireEvent(eventName: string, eventObj?: any): boolean;
-}
-
-interface HTMLParamElement extends HTMLElement {
-    value: string;
-    name: string;
-    type: string;
-    valueType: string;
-}
-declare var HTMLParamElement: {
-    prototype: HTMLParamElement;
-    new(): HTMLParamElement;
-}
-
-interface MSHTMLDocumentViewExtensions {
-    createStyleSheet(href?: string, index?: number): CSSStyleSheet;
+    new (): SVGImageElement;
 }
 
 interface SVGAnimatedNumber {
@@ -4239,7 +8216,7 @@ interface SVGAnimatedNumber {
 }
 declare var SVGAnimatedNumber: {
     prototype: SVGAnimatedNumber;
-    new(): SVGAnimatedNumber;
+    new (): SVGAnimatedNumber;
 }
 
 interface PerformanceTiming {
@@ -4268,18 +8245,22 @@ interface PerformanceTiming {
 }
 declare var PerformanceTiming: {
     prototype: PerformanceTiming;
-    new(): PerformanceTiming;
+    new (): PerformanceTiming;
 }
 
-interface DOML2DeprecatedAlignmentStyle_HTMLInputElement {
-    align: string;
-}
-
-interface HTMLPreElement extends HTMLElement, DOML2DeprecatedWidthStyle, MSHTMLPreElementExtensions {
+interface HTMLPreElement extends HTMLElement, DOML2DeprecatedTextFlowControl {
+    /**
+      * Sets or gets a value that you can use to implement your own width functionality for the object.
+      */
+    width: number;
+    /**
+      * Indicates a citation by rendering text in italic type.
+      */
+    cite: string;
 }
 declare var HTMLPreElement: {
     prototype: HTMLPreElement;
-    new(): HTMLPreElement;
+    new (): HTMLPreElement;
 }
 
 interface EventException {
@@ -4291,46 +8272,17 @@ interface EventException {
 }
 declare var EventException: {
     prototype: EventException;
-    new(): EventException;
+    new (): EventException;
     DISPATCH_REQUEST_ERR: number;
     UNSPECIFIED_EVENT_TYPE_ERR: number;
 }
 
-interface MSBorderColorHighlightStyle_HTMLTableCellElement {
-    borderColorLight: any;
-    borderColorDark: any;
-}
-
-interface DOMHTMLImplementation {
-    createHTMLDocument(title: string): Document;
+interface MSNavigatorDoNotTrack {
+    msDoNotTrack: string;
 }
 
 interface NavigatorOnLine {
     onLine: boolean;
-}
-
-interface SVGElementEventHandlers {
-    onmouseover: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onmousemove: (ev: MouseEvent) => any;
-    addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onmouseout: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseout", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    ondblclick: (ev: MouseEvent) => any;
-    addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onfocusout: (ev: FocusEvent) => any;
-    addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    onfocusin: (ev: FocusEvent) => any;
-    addEventListener(type: "focusin", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    onmousedown: (ev: MouseEvent) => any;
-    addEventListener(type: "mousedown", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onmouseup: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseup", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onload: (ev: Event) => any;
-    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onclick: (ev: MouseEvent) => any;
-    addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 
 interface WindowLocalStorage {
@@ -4341,7 +8293,7 @@ interface SVGMetadataElement extends SVGElement {
 }
 declare var SVGMetadataElement: {
     prototype: SVGMetadataElement;
-    new(): SVGMetadataElement;
+    new (): SVGMetadataElement;
 }
 
 interface SVGPathSegArcRel extends SVGPathSeg {
@@ -4355,7 +8307,7 @@ interface SVGPathSegArcRel extends SVGPathSeg {
 }
 declare var SVGPathSegArcRel: {
     prototype: SVGPathSegArcRel;
-    new(): SVGPathSegArcRel;
+    new (): SVGPathSegArcRel;
 }
 
 interface SVGPathSegMovetoAbs extends SVGPathSeg {
@@ -4364,7 +8316,7 @@ interface SVGPathSegMovetoAbs extends SVGPathSeg {
 }
 declare var SVGPathSegMovetoAbs: {
     prototype: SVGPathSegMovetoAbs;
-    new(): SVGPathSegMovetoAbs;
+    new (): SVGPathSegMovetoAbs;
 }
 
 interface SVGStringList {
@@ -4379,7 +8331,7 @@ interface SVGStringList {
 }
 declare var SVGStringList: {
     prototype: SVGStringList;
-    new(): SVGStringList;
+    new (): SVGStringList;
 }
 
 interface XDomainRequest {
@@ -4395,6 +8347,7 @@ interface XDomainRequest {
     responseText: string;
     contentType: string;
     open(method: string, url: string): void;
+    create(): XDomainRequest;
     abort(): void;
     send(data?: any): void;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
@@ -4437,7 +8390,7 @@ interface SVGLength {
 }
 declare var SVGLength: {
     prototype: SVGLength;
-    new(): SVGLength;
+    new (): SVGLength;
     SVG_LENGTHTYPE_NUMBER: number;
     SVG_LENGTHTYPE_CM: number;
     SVG_LENGTHTYPE_PC: number;
@@ -4451,23 +8404,29 @@ declare var SVGLength: {
     SVG_LENGTHTYPE_EXS: number;
 }
 
-interface SVGPolygonElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGAnimatedPoints, SVGTests {
+interface SVGPolygonElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGAnimatedPoints, SVGTests, SVGExternalResourcesRequired {
 }
 declare var SVGPolygonElement: {
     prototype: SVGPolygonElement;
-    new(): SVGPolygonElement;
+    new (): SVGPolygonElement;
 }
 
 interface HTMLPhraseElement extends HTMLElement {
+    /**
+      * Sets or retrieves the date and time of a modification to the object.
+      */
     dateTime: string;
+    /**
+      * Sets or retrieves reference information about the object.
+      */
     cite: string;
 }
 declare var HTMLPhraseElement: {
     prototype: HTMLPhraseElement;
-    new(): HTMLPhraseElement;
+    new (): HTMLPhraseElement;
 }
 
-interface MSHTMLAreaElementExtensions {
+interface NavigatorStorageUtils {
 }
 
 interface SVGPathSegCurvetoCubicRel extends SVGPathSeg {
@@ -4480,7 +8439,7 @@ interface SVGPathSegCurvetoCubicRel extends SVGPathSeg {
 }
 declare var SVGPathSegCurvetoCubicRel: {
     prototype: SVGPathSegCurvetoCubicRel;
-    new(): SVGPathSegCurvetoCubicRel;
+    new (): SVGPathSegCurvetoCubicRel;
 }
 
 interface MSEventObj extends Event {
@@ -4534,10 +8493,10 @@ interface MSEventObj extends Event {
 }
 declare var MSEventObj: {
     prototype: MSEventObj;
-    new(): MSEventObj;
+    new (): MSEventObj;
 }
 
-interface SVGTextContentElement extends SVGElement, SVGStylable, SVGLangSpace, SVGTests {
+interface SVGTextContentElement extends SVGElement, SVGStylable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     textLength: SVGAnimatedLength;
     lengthAdjust: SVGAnimatedEnumeration;
     getCharNumAtPosition(point: SVGPoint): number;
@@ -4555,7 +8514,7 @@ interface SVGTextContentElement extends SVGElement, SVGStylable, SVGLangSpace, S
 }
 declare var SVGTextContentElement: {
     prototype: SVGTextContentElement;
-    new(): SVGTextContentElement;
+    new (): SVGTextContentElement;
     LENGTHADJUST_SPACING: number;
     LENGTHADJUST_SPACINGANDGLYPHS: number;
     LENGTHADJUST_UNKNOWN: number;
@@ -4565,28 +8524,30 @@ interface DOML2DeprecatedColorProperty {
     color: string;
 }
 
-interface MSHTMLLIElementExtensions {
-}
-
 interface HTMLCanvasElement extends HTMLElement {
+    /**
+      * Gets or sets the width of a canvas element on a document.
+      */
     width: number;
+    /**
+      * Gets or sets the height of a canvas element on a document.
+      */
     height: number;
-    toDataURL(): string;
-    toDataURL(type: string, ...args: any[]): string;
-    getContext(contextId: string): any;
+    /**
+      * Returns the content of the current canvas as an image that you can use as a source for another canvas or an HTML element.
+      * @param type The standard MIME type for the image format to return. If you do not specify this parameter, the default value is a PNG format image.
+      */
+    toDataURL(type?: string, ...args: any[]): string;
+    /**
+      * Returns an object that provides methods and properties for drawing and manipulating images and graphics on a canvas element in a document. A context object includes information about colors, line widths, fonts, and other graphic parameters that can be drawn on a canvas.
+      * @param contextId The identifier (ID) of the type of canvas to create. Internet Explorer 9 and Internet Explorer 10 support only a 2-D context using canvas.getContext("2d"); IE11 Preview also supports 3-D or WebGL context using canvas.getContext("experimental-webgl");
+      */
+    getContext(contextId: string, ...args: any[]): any;
     getContext(contextId: "2d"): CanvasRenderingContext2D;
 }
 declare var HTMLCanvasElement: {
     prototype: HTMLCanvasElement;
-    new(): HTMLCanvasElement;
-}
-
-interface HTMLTitleElement extends HTMLElement {
-    text: string;
-}
-declare var HTMLTitleElement: {
-    prototype: HTMLTitleElement;
-    new(): HTMLTitleElement;
+    new (): HTMLCanvasElement;
 }
 
 interface Location {
@@ -4605,34 +8566,44 @@ interface Location {
 }
 declare var Location: {
     prototype: Location;
-    new(): Location;
+    new (): Location;
 }
 
-interface HTMLStyleElement extends HTMLElement, MSLinkStyleExtensions, LinkStyle {
+interface HTMLTitleElement extends HTMLElement {
+    /**
+      * Retrieves or sets the text of the object as a string. 
+      */
+    text: string;
+}
+declare var HTMLTitleElement: {
+    prototype: HTMLTitleElement;
+    new (): HTMLTitleElement;
+}
+
+interface HTMLStyleElement extends HTMLElement, LinkStyle {
+    /**
+      * Sets or retrieves the media type.
+      */
     media: string;
+    /**
+      * Retrieves the CSS language in which the style sheet is written.
+      */
     type: string;
 }
 declare var HTMLStyleElement: {
     prototype: HTMLStyleElement;
-    new(): HTMLStyleElement;
+    new (): HTMLStyleElement;
 }
 
-interface MSHTMLOptGroupElementExtensions {
-    index: number;
-    defaultSelected: boolean;
-    text: string;
-    value: string;
-    form: HTMLFormElement;
-    selected: boolean;
+interface PerformanceEntry {
+    name: string;
+    startTime: number;
+    duration: number;
+    entryType: string;
 }
-
-interface MSBorderColorHighlightStyle {
-    borderColorLight: any;
-    borderColorDark: any;
-}
-
-interface DOML2DeprecatedSizeProperty_HTMLBaseFontElement {
-    size: number;
+declare var PerformanceEntry: {
+    prototype: PerformanceEntry;
+    new (): PerformanceEntry;
 }
 
 interface SVGTransform {
@@ -4655,7 +8626,7 @@ interface SVGTransform {
 }
 declare var SVGTransform: {
     prototype: SVGTransform;
-    new(): SVGTransform;
+    new (): SVGTransform;
     SVG_TRANSFORM_SKEWX: number;
     SVG_TRANSFORM_UNKNOWN: number;
     SVG_TRANSFORM_SCALE: number;
@@ -4665,31 +8636,14 @@ declare var SVGTransform: {
     SVG_TRANSFORM_SKEWY: number;
 }
 
-interface MSCSSFilter {
-    Percent: number;
-    Enabled: boolean;
-    Duration: number;
-    Play(Duration: number): void;
-    Apply(): void;
-    Stop(): void;
-}
-declare var MSCSSFilter: {
-    prototype: MSCSSFilter;
-    new(): MSCSSFilter;
-}
-
 interface UIEvent extends Event {
     detail: number;
-    view: AbstractView;
-    initUIEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number): void;
+    view: Window;
+    initUIEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number): void;
 }
 declare var UIEvent: {
     prototype: UIEvent;
-    new(): UIEvent;
-}
-
-interface ViewCSS_SVGSVGElement {
-    getComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
+    new (): UIEvent;
 }
 
 interface SVGURIReference {
@@ -4721,6 +8675,8 @@ interface SVGPathSeg {
     PATHSEG_CURVETO_QUADRATIC_SMOOTH_REL: number;
 }
 declare var SVGPathSeg: {
+    prototype: SVGPathSeg;
+    new (): SVGPathSeg;
     PATHSEG_MOVETO_REL: number;
     PATHSEG_LINETO_VERTICAL_REL: number;
     PATHSEG_CURVETO_CUBIC_SMOOTH_ABS: number;
@@ -4748,21 +8704,17 @@ interface WheelEvent extends MouseEvent {
     deltaX: number;
     deltaMode: number;
     deltaY: number;
-    initWheelEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, buttonArg: number, relatedTargetArg: EventTarget, modifiersListArg: string, deltaXArg: number, deltaYArg: number, deltaZArg: number, deltaMode: number): void;
+    initWheelEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, buttonArg: number, relatedTargetArg: EventTarget, modifiersListArg: string, deltaXArg: number, deltaYArg: number, deltaZArg: number, deltaMode: number): void;
     DOM_DELTA_PIXEL: number;
     DOM_DELTA_LINE: number;
     DOM_DELTA_PAGE: number;
 }
 declare var WheelEvent: {
     prototype: WheelEvent;
-    new(): WheelEvent;
+    new (): WheelEvent;
     DOM_DELTA_PIXEL: number;
     DOM_DELTA_LINE: number;
     DOM_DELTA_PAGE: number;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLDivElement {
-    align: string;
 }
 
 interface MSEventAttachmentTarget {
@@ -4775,10 +8727,10 @@ interface SVGNumber {
 }
 declare var SVGNumber: {
     prototype: SVGNumber;
-    new(): SVGNumber;
+    new (): SVGNumber;
 }
 
-interface SVGPathElement extends SVGElement, SVGStylable, SVGAnimatedPathData, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGPathElement extends SVGElement, SVGStylable, SVGAnimatedPathData, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     getPathSegAtLength(distance: number): number;
     getPointAtLength(distance: number): SVGPoint;
     createSVGPathSegCurvetoQuadraticAbs(x: number, y: number, x1: number, y1: number): SVGPathSegCurvetoQuadraticAbs;
@@ -4804,7 +8756,7 @@ interface SVGPathElement extends SVGElement, SVGStylable, SVGAnimatedPathData, S
 }
 declare var SVGPathElement: {
     prototype: SVGPathElement;
-    new(): SVGPathElement;
+    new (): SVGPathElement;
 }
 
 interface MSCompatibleInfo {
@@ -4813,12 +8765,7 @@ interface MSCompatibleInfo {
 }
 declare var MSCompatibleInfo: {
     prototype: MSCompatibleInfo;
-    new(): MSCompatibleInfo;
-}
-
-interface MSHTMLDocumentEventExtensions {
-    createEventObject(eventObj?: any): MSEventObj;
-    fireEvent(eventName: string, eventObj?: any): boolean;
+    new (): MSCompatibleInfo;
 }
 
 interface Text extends CharacterData, MSNodeExtensions {
@@ -4828,7 +8775,7 @@ interface Text extends CharacterData, MSNodeExtensions {
 }
 declare var Text: {
     prototype: Text;
-    new(): Text;
+    new (): Text;
 }
 
 interface SVGAnimatedRect {
@@ -4837,7 +8784,7 @@ interface SVGAnimatedRect {
 }
 declare var SVGAnimatedRect: {
     prototype: SVGAnimatedRect;
-    new(): SVGAnimatedRect;
+    new (): SVGAnimatedRect;
 }
 
 interface CSSNamespaceRule extends CSSRule {
@@ -4846,14 +8793,7 @@ interface CSSNamespaceRule extends CSSRule {
 }
 declare var CSSNamespaceRule: {
     prototype: CSSNamespaceRule;
-    new(): CSSNamespaceRule;
-}
-
-interface HTMLUnknownElement extends HTMLElement, MSDataBindingRecordSetReadonlyExtensions, MSHTMLUnknownElementExtensions {
-}
-declare var HTMLUnknownElement: {
-    prototype: HTMLUnknownElement;
-    new(): HTMLUnknownElement;
+    new (): CSSNamespaceRule;
 }
 
 interface SVGPathSegList {
@@ -4868,14 +8808,21 @@ interface SVGPathSegList {
 }
 declare var SVGPathSegList: {
     prototype: SVGPathSegList;
-    new(): SVGPathSegList;
+    new (): SVGPathSegList;
+}
+
+interface HTMLUnknownElement extends HTMLElement, MSDataBindingRecordSetReadonlyExtensions {
+}
+declare var HTMLUnknownElement: {
+    prototype: HTMLUnknownElement;
+    new (): HTMLUnknownElement;
 }
 
 interface HTMLAudioElement extends HTMLMediaElement {
 }
 declare var HTMLAudioElement: {
     prototype: HTMLAudioElement;
-    new(): HTMLAudioElement;
+    new (): HTMLAudioElement;
 }
 
 interface MSImageResourceExtensions {
@@ -4884,11 +8831,6 @@ interface MSImageResourceExtensions {
     lowsrc: string;
     start: string;
     loop: number;
-}
-
-interface MSBorderColorHighlightStyle_HTMLTableRowElement {
-    borderColorLight: any;
-    borderColorDark: any;
 }
 
 interface PositionError {
@@ -4900,41 +8842,74 @@ interface PositionError {
     TIMEOUT: number;
 }
 declare var PositionError: {
+    prototype: PositionError;
+    new (): PositionError;
     POSITION_UNAVAILABLE: number;
     PERMISSION_DENIED: number;
     TIMEOUT: number;
 }
 
-interface BrowserPublic {
-}
-declare var BrowserPublic: {
-    prototype: BrowserPublic;
-    new(): BrowserPublic;
-}
-
-interface HTMLTableCellElement extends HTMLElement, DOML2DeprecatedTableCellHeight, HTMLTableAlignment, MSBorderColorHighlightStyle_HTMLTableCellElement, DOML2DeprecatedWidthStyle_HTMLTableCellElement, DOML2DeprecatedBackgroundStyle, MSBorderColorStyle_HTMLTableCellElement, MSHTMLTableCellElementExtensions, DOML2DeprecatedAlignmentStyle_HTMLTableCellElement, HTMLTableHeaderCellScope, DOML2DeprecatedWordWrapSuppression, DOML2DeprecatedBackgroundColorStyle {
+interface HTMLTableCellElement extends HTMLElement, HTMLTableAlignment, DOML2DeprecatedBackgroundStyle, DOML2DeprecatedBackgroundColorStyle {
+    /**
+      * Sets or retrieves the width of the object.
+      */
+    width: number;
+    /**
+      * Sets or retrieves a list of header cells that provide information for the object.
+      */
     headers: string;
-    abbr: string;
-    rowSpan: number;
+    /**
+      * Retrieves the position of the object in the cells collection of a row.
+      */
     cellIndex: number;
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * Sets or retrieves the color for one of the two colors used to draw the 3-D border of the object.
+      */
+    borderColorLight: any;
+    /**
+      * Sets or retrieves the number columns in the table that the object should span.
+      */
     colSpan: number;
+    /**
+      * Sets or retrieves the border color of the object. 
+      */
+    borderColor: any;
+    /**
+      * Sets or retrieves a comma-delimited list of conceptual categories associated with the object.
+      */
     axis: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: any;
+    /**
+      * Sets or retrieves whether the browser automatically performs wordwrap.
+      */
+    noWrap: boolean;
+    /**
+      * Sets or retrieves abbreviated text for the object.
+      */
+    abbr: string;
+    /**
+      * Sets or retrieves how many rows in a table the cell should span.
+      */
+    rowSpan: number;
+    /**
+      * Sets or retrieves the group of cells in a table to which the object's information applies.
+      */
+    scope: string;
+    /**
+      * Sets or retrieves the color for one of the two colors used to draw the 3-D border of the object.
+      */
+    borderColorDark: any;
 }
 declare var HTMLTableCellElement: {
     prototype: HTMLTableCellElement;
-    new(): HTMLTableCellElement;
-}
-
-interface MSNamespaceInfoCollection {
-    length: number;
-    add(namespace?: string, urn?: string, implementationUrl?: any): Object;
-    item(index: any): Object;
-    [index: string]: Object;
-    (index: any): Object;
-}
-declare var MSNamespaceInfoCollection: {
-    prototype: MSNamespaceInfoCollection;
-    new(): MSNamespaceInfoCollection;
+    new (): HTMLTableCellElement;
 }
 
 interface SVGElementInstance extends EventTarget {
@@ -4949,47 +8924,28 @@ interface SVGElementInstance extends EventTarget {
 }
 declare var SVGElementInstance: {
     prototype: SVGElementInstance;
-    new(): SVGElementInstance;
+    new (): SVGElementInstance;
 }
 
-interface MSHTMLUListElementExtensions {
+interface MSNamespaceInfoCollection {
+    length: number;
+    add(namespace?: string, urn?: string, implementationUrl?: any): Object;
+    item(index: any): Object;
+    [index: string]: Object;
+}
+declare var MSNamespaceInfoCollection: {
+    prototype: MSNamespaceInfoCollection;
+    new (): MSNamespaceInfoCollection;
 }
 
-interface SVGCircleElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGCircleElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     cx: SVGAnimatedLength;
     r: SVGAnimatedLength;
     cy: SVGAnimatedLength;
 }
 declare var SVGCircleElement: {
     prototype: SVGCircleElement;
-    new(): SVGCircleElement;
-}
-
-interface HTMLBaseFontElement extends HTMLElement, DOML2DeprecatedSizeProperty_HTMLBaseFontElement, DOML2DeprecatedColorProperty {
-    face: string;
-}
-declare var HTMLBaseFontElement: {
-    prototype: HTMLBaseFontElement;
-    new(): HTMLBaseFontElement;
-}
-
-interface CustomEvent extends Event {
-    detail: Object;
-    initCustomEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, detailArg: Object): void;
-}
-declare var CustomEvent: {
-    prototype: CustomEvent;
-    new(): CustomEvent;
-}
-
-interface CSSImportRule extends CSSRule {
-    styleSheet: CSSStyleSheet;
-    href: string;
-    media: MediaList;
-}
-declare var CSSImportRule: {
-    prototype: CSSImportRule;
-    new(): CSSImportRule;
+    new (): SVGCircleElement;
 }
 
 interface StyleSheetList {
@@ -4999,36 +8955,110 @@ interface StyleSheetList {
 }
 declare var StyleSheetList: {
     prototype: StyleSheetList;
-    new(): StyleSheetList;
+    new (): StyleSheetList;
 }
 
-interface HTMLTextAreaElement extends HTMLElement, MSDataBindingExtensions, MSHTMLTextAreaElementExtensions {
+interface CSSImportRule extends CSSRule {
+    styleSheet: CSSStyleSheet;
+    href: string;
+    media: MediaList;
+}
+declare var CSSImportRule: {
+    prototype: CSSImportRule;
+    new (): CSSImportRule;
+}
+
+interface CustomEvent extends Event {
+    detail: Object;
+    initCustomEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, detailArg: Object): void;
+}
+declare var CustomEvent: {
+    prototype: CustomEvent;
+    new (): CustomEvent;
+}
+
+interface HTMLBaseFontElement extends HTMLElement, DOML2DeprecatedColorProperty {
+    /**
+      * Sets or retrieves the current typeface family.
+      */
+    face: string;
+    /**
+      * Sets or retrieves the font size of the object.
+      */
+    size: number;
+}
+declare var HTMLBaseFontElement: {
+    prototype: HTMLBaseFontElement;
+    new (): HTMLBaseFontElement;
+}
+
+interface HTMLTextAreaElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Retrieves or sets the text in the entry field of the textArea element.
+      */
     value: string;
+    /**
+      * Sets or retrieves the value indicating whether the control is selected.
+      */
+    status: any;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
+    /**
+      * Sets or retrieves the name of the object.
+      */
     name: string;
+    /**
+      * Gets or sets the starting position or offset of a text selection.
+      */
     selectionStart: number;
+    /**
+      * Sets or retrieves the number of horizontal rows contained in the object.
+      */
     rows: number;
+    /**
+      * Sets or retrieves the width of the object.
+      */
     cols: number;
+    /**
+      * Sets or retrieves the value indicated whether the content of the object is read-only.
+      */
     readOnly: boolean;
+    /**
+      * Sets or retrieves how to handle wordwrapping in the object.
+      */
     wrap: string;
+    /**
+      * Gets or sets the end position or offset of a text selection.
+      */
     selectionEnd: number;
+    /**
+      * Retrieves the type of control.
+      */
     type: string;
+    /**
+      * Sets or retrieves the initial contents of the object.
+      */
     defaultValue: string;
+    /**
+      * Creates a TextRange object for the element.
+      */
+    createTextRange(): TextRange;
+    /**
+      * Sets the start and end positions of a selection in a text field.
+      * @param start The offset into the text field for the start of the selection.
+      * @param end The offset into the text field for the end of the selection.
+      */
     setSelectionRange(start: number, end: number): void;
+    /**
+      * Highlights the input area of a form element.
+      */
     select(): void;
 }
 declare var HTMLTextAreaElement: {
     prototype: HTMLTextAreaElement;
-    new(): HTMLTextAreaElement;
-}
-
-interface MSHTMLFormElementExtensions {
-    encoding: string;
-}
-
-interface DOML2DeprecatedMarginStyle {
-    vspace: number;
-    hspace: number;
+    new (): HTMLTextAreaElement;
 }
 
 interface Geolocation {
@@ -5038,7 +9068,12 @@ interface Geolocation {
 }
 declare var Geolocation: {
     prototype: Geolocation;
-    new(): Geolocation;
+    new (): Geolocation;
+}
+
+interface DOML2DeprecatedMarginStyle {
+    vspace: number;
+    hspace: number;
 }
 
 interface MSWindowModeless {
@@ -5049,10 +9084,15 @@ interface MSWindowModeless {
     menuArguments: any;
 }
 
-interface HTMLMarqueeElement extends HTMLElement, DOML2DeprecatedMarginStyle_HTMLMarqueeElement, MSDataBindingExtensions, MSHTMLMarqueeElementExtensions, DOML2DeprecatedBackgroundColorStyle {
+interface DOML2DeprecatedAlignmentStyle {
+    align: string;
+}
+
+interface HTMLMarqueeElement extends HTMLElement, MSDataBindingExtensions, DOML2DeprecatedBackgroundColorStyle {
     width: string;
     onbounce: (ev: Event) => any;
     addEventListener(type: "bounce", listener: (ev: Event) => any, useCapture?: boolean): void;
+    vspace: number;
     trueSpeed: boolean;
     scrollAmount: number;
     scrollDelay: number;
@@ -5060,6 +9100,7 @@ interface HTMLMarqueeElement extends HTMLElement, DOML2DeprecatedMarginStyle_HTM
     height: string;
     loop: number;
     direction: string;
+    hspace: number;
     onstart: (ev: Event) => any;
     addEventListener(type: "start", listener: (ev: Event) => any, useCapture?: boolean): void;
     onfinish: (ev: Event) => any;
@@ -5070,7 +9111,7 @@ interface HTMLMarqueeElement extends HTMLElement, DOML2DeprecatedMarginStyle_HTM
 }
 declare var HTMLMarqueeElement: {
     prototype: HTMLMarqueeElement;
-    new(): HTMLMarqueeElement;
+    new (): HTMLMarqueeElement;
 }
 
 interface SVGRect {
@@ -5081,19 +9122,13 @@ interface SVGRect {
 }
 declare var SVGRect: {
     prototype: SVGRect;
-    new(): SVGRect;
+    new (): SVGRect;
 }
 
 interface MSNodeExtensions {
     swapNode(otherNode: Node): Node;
     removeNode(deep?: boolean): Node;
     replaceNode(replacement: Node): Node;
-}
-
-interface KeyboardEventExtensions {
-    keyCode: number;
-    which: number;
-    charCode: number;
 }
 
 interface History {
@@ -5104,11 +9139,7 @@ interface History {
 }
 declare var History: {
     prototype: History;
-    new(): History;
-}
-
-interface DocumentStyle {
-    styleSheets: StyleSheetList;
+    new (): History;
 }
 
 interface SVGPathSegCurvetoCubicAbs extends SVGPathSeg {
@@ -5121,17 +9152,7 @@ interface SVGPathSegCurvetoCubicAbs extends SVGPathSeg {
 }
 declare var SVGPathSegCurvetoCubicAbs: {
     prototype: SVGPathSegCurvetoCubicAbs;
-    new(): SVGPathSegCurvetoCubicAbs;
-}
-
-interface TimeRanges {
-    length: number;
-    start(index: number): number;
-    end(index: number): number;
-}
-declare var TimeRanges: {
-    prototype: TimeRanges;
-    new(): TimeRanges;
+    new (): SVGPathSegCurvetoCubicAbs;
 }
 
 interface SVGPathSegCurvetoQuadraticAbs extends SVGPathSeg {
@@ -5142,10 +9163,17 @@ interface SVGPathSegCurvetoQuadraticAbs extends SVGPathSeg {
 }
 declare var SVGPathSegCurvetoQuadraticAbs: {
     prototype: SVGPathSegCurvetoQuadraticAbs;
-    new(): SVGPathSegCurvetoQuadraticAbs;
+    new (): SVGPathSegCurvetoQuadraticAbs;
 }
 
-interface MSHTMLSelectElementExtensions {
+interface TimeRanges {
+    length: number;
+    start(index: number): number;
+    end(index: number): number;
+}
+declare var TimeRanges: {
+    prototype: TimeRanges;
+    new (): TimeRanges;
 }
 
 interface CSSRule {
@@ -5164,7 +9192,7 @@ interface CSSRule {
 }
 declare var CSSRule: {
     prototype: CSSRule;
-    new(): CSSRule;
+    new (): CSSRule;
     IMPORT_RULE: number;
     MEDIA_RULE: number;
     STYLE_RULE: number;
@@ -5181,47 +9209,22 @@ interface SVGPathSegLinetoAbs extends SVGPathSeg {
 }
 declare var SVGPathSegLinetoAbs: {
     prototype: SVGPathSegLinetoAbs;
-    new(): SVGPathSegLinetoAbs;
+    new (): SVGPathSegLinetoAbs;
 }
 
-interface MSMouseEventExtensions {
-    toElement: Element;
-    layerY: number;
-    fromElement: Element;
-    which: number;
-    layerX: number;
-}
-
-interface HTMLModElement extends HTMLElement, MSHTMLModElementExtensions {
+interface HTMLModElement extends HTMLElement {
+    /**
+      * Sets or retrieves the date and time of a modification to the object.
+      */
     dateTime: string;
+    /**
+      * Sets or retrieves reference information about the object.
+      */
     cite: string;
 }
 declare var HTMLModElement: {
     prototype: HTMLModElement;
-    new(): HTMLModElement;
-}
-
-interface DOML2DeprecatedWordWrapSuppression {
-    noWrap: boolean;
-}
-
-interface BeforeUnloadEvent extends Event {
-    returnValue: string;
-}
-declare var BeforeUnloadEvent: {
-    prototype: BeforeUnloadEvent;
-    new(): BeforeUnloadEvent;
-}
-
-interface MSPopupWindow {
-    document: HTMLDocument;
-    isOpen: boolean;
-    show(x: number, y: number, w: number, h: number, element?: any): void;
-    hide(): void;
-}
-declare var MSPopupWindow: {
-    prototype: MSPopupWindow;
-    new(): MSPopupWindow;
+    new (): HTMLModElement;
 }
 
 interface SVGMatrix {
@@ -5245,10 +9248,29 @@ interface SVGMatrix {
 }
 declare var SVGMatrix: {
     prototype: SVGMatrix;
-    new(): SVGMatrix;
+    new (): SVGMatrix;
 }
 
-interface SVGUseElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGURIReference {
+interface MSPopupWindow {
+    document: Document;
+    isOpen: boolean;
+    show(x: number, y: number, w: number, h: number, element?: any): void;
+    hide(): void;
+}
+declare var MSPopupWindow: {
+    prototype: MSPopupWindow;
+    new (): MSPopupWindow;
+}
+
+interface BeforeUnloadEvent extends Event {
+    returnValue: string;
+}
+declare var BeforeUnloadEvent: {
+    prototype: BeforeUnloadEvent;
+    new (): BeforeUnloadEvent;
+}
+
+interface SVGUseElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired, SVGURIReference {
     y: SVGAnimatedLength;
     width: SVGAnimatedLength;
     animatedInstanceRoot: SVGElementInstance;
@@ -5258,18 +9280,20 @@ interface SVGUseElement extends SVGElement, SVGStylable, SVGTransformable, SVGLa
 }
 declare var SVGUseElement: {
     prototype: SVGUseElement;
-    new(): SVGUseElement;
+    new (): SVGUseElement;
 }
 
-interface Event extends MSEventExtensions {
+interface Event {
     timeStamp: number;
     defaultPrevented: boolean;
     isTrusted: boolean;
     currentTarget: EventTarget;
+    cancelBubble: boolean;
     target: EventTarget;
     eventPhase: number;
-    type: string;
     cancelable: boolean;
+    type: string;
+    srcElement: Element;
     bubbles: boolean;
     initEvent(eventTypeArg: string, canBubbleArg: boolean, cancelableArg: boolean): void;
     stopPropagation(): void;
@@ -5281,7 +9305,7 @@ interface Event extends MSEventExtensions {
 }
 declare var Event: {
     prototype: Event;
-    new(): Event;
+    new (): Event;
     CAPTURING_PHASE: number;
     AT_TARGET: number;
     BUBBLING_PHASE: number;
@@ -5289,295 +9313,31 @@ declare var Event: {
 
 interface ImageData {
     width: number;
-    data: number[];
+    data: Uint8Array;
     height: number;
 }
 declare var ImageData: {
     prototype: ImageData;
-    new(): ImageData;
+    new (): ImageData;
 }
 
-interface MSHTMLElementExtensions {
-    onlosecapture: (ev: MSEventObj) => any;
-    addEventListener(type: "losecapture", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onrowexit: (ev: MSEventObj) => any;
-    addEventListener(type: "rowexit", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    oncontrolselect: (ev: MSEventObj) => any;
-    addEventListener(type: "controlselect", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onrowsinserted: (ev: MSEventObj) => any;
-    addEventListener(type: "rowsinserted", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onmouseleave: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseleave", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    document: HTMLDocument;
-    behaviorUrns: MSBehaviorUrnsCollection;
-    onpropertychange: (ev: MSEventObj) => any;
-    addEventListener(type: "propertychange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    children: HTMLCollection;
-    filters: Object;
-    onbeforecut: (ev: DragEvent) => any;
-    addEventListener(type: "beforecut", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    scopeName: string;
-    onbeforepaste: (ev: DragEvent) => any;
-    addEventListener(type: "beforepaste", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onmove: (ev: MSEventObj) => any;
-    addEventListener(type: "move", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onafterupdate: (ev: MSEventObj) => any;
-    addEventListener(type: "afterupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onbeforecopy: (ev: DragEvent) => any;
-    addEventListener(type: "beforecopy", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onlayoutcomplete: (ev: MSEventObj) => any;
-    addEventListener(type: "layoutcomplete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onresizeend: (ev: MSEventObj) => any;
-    addEventListener(type: "resizeend", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    uniqueID: string;
-    onhelp: (ev: Event) => any;
-    addEventListener(type: "help", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onbeforeactivate: (ev: UIEvent) => any;
-    addEventListener(type: "beforeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    isMultiLine: boolean;
-    uniqueNumber: number;
-    tagUrn: string;
-    onfocusout: (ev: FocusEvent) => any;
-    addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    ondataavailable: (ev: MSEventObj) => any;
-    addEventListener(type: "dataavailable", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    hideFocus: boolean;
-    onbeforeupdate: (ev: MSEventObj) => any;
-    addEventListener(type: "beforeupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onfilterchange: (ev: MSEventObj) => any;
-    addEventListener(type: "filterchange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onfocusin: (ev: FocusEvent) => any;
-    addEventListener(type: "focusin", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    recordNumber: any;
-    parentTextEdit: Element;
-    ondatasetcomplete: (ev: MSEventObj) => any;
-    addEventListener(type: "datasetcomplete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onbeforedeactivate: (ev: UIEvent) => any;
-    addEventListener(type: "beforedeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    outerText: string;
-    onresizestart: (ev: MSEventObj) => any;
-    addEventListener(type: "resizestart", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onactivate: (ev: UIEvent) => any;
-    addEventListener(type: "activate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    isTextEdit: boolean;
-    isDisabled: boolean;
-    readyState: string;
-    all: HTMLCollection;
-    onmouseenter: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseenter", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onmovestart: (ev: MSEventObj) => any;
-    addEventListener(type: "movestart", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onselectstart: (ev: Event) => any;
-    addEventListener(type: "selectstart", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onpaste: (ev: DragEvent) => any;
-    addEventListener(type: "paste", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    canHaveHTML: boolean;
-    innerText: string;
-    onerrorupdate: (ev: MSEventObj) => any;
-    addEventListener(type: "errorupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    ondeactivate: (ev: UIEvent) => any;
-    addEventListener(type: "deactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    oncut: (ev: DragEvent) => any;
-    addEventListener(type: "cut", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onmoveend: (ev: MSEventObj) => any;
-    addEventListener(type: "moveend", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onresize: (ev: UIEvent) => any;
-    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    language: string;
-    ondatasetchanged: (ev: MSEventObj) => any;
-    addEventListener(type: "datasetchanged", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    oncopy: (ev: DragEvent) => any;
-    addEventListener(type: "copy", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onrowsdelete: (ev: MSEventObj) => any;
-    addEventListener(type: "rowsdelete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    parentElement: HTMLElement;
-    onrowenter: (ev: MSEventObj) => any;
-    addEventListener(type: "rowenter", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    onbeforeeditfocus: (ev: MSEventObj) => any;
-    addEventListener(type: "beforeeditfocus", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    canHaveChildren: boolean;
-    sourceIndex: number;
-    oncellchange: (ev: MSEventObj) => any;
-    addEventListener(type: "cellchange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
-    dragDrop(): boolean;
-    releaseCapture(): void;
-    addFilter(filter: Object): void;
-    setCapture(containerCapture?: boolean): void;
-    removeBehavior(cookie: number): boolean;
-    contains(child: HTMLElement): boolean;
-    applyElement(apply: Element, where?: string): Element;
-    replaceAdjacentText(where: string, newText: string): string;
-    mergeAttributes(source: HTMLElement, preserveIdentity?: boolean): void;
-    insertAdjacentElement(position: string, insertedElement: Element): Element;
-    insertAdjacentText(where: string, text: string): void;
-    getAdjacentText(where: string): string;
-    removeFilter(filter: Object): void;
-    setActive(): void;
-    addBehavior(bstrUrl: string, factory?: any): number;
-    clearAttributes(): void;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
-}
-
-interface HTMLTableColElement extends HTMLElement, MSHTMLTableColElementExtensions, HTMLTableAlignment, DOML2DeprecatedAlignmentStyle_HTMLTableColElement {
+interface HTMLTableColElement extends HTMLElement, HTMLTableAlignment {
+    /**
+      * Sets or retrieves the width of the object.
+      */
     width: any;
+    /**
+      * Sets or retrieves the alignment of the object relative to the display or table.
+      */
+    align: string;
+    /**
+      * Sets or retrieves the number of columns in the group.
+      */
     span: number;
 }
 declare var HTMLTableColElement: {
     prototype: HTMLTableColElement;
-    new(): HTMLTableColElement;
-}
-
-interface HTMLDocument extends MSEventAttachmentTarget, MSHTMLDocumentSelection, MSHTMLDocumentExtensions, MSNodeExtensions, MSResourceMetadata, MSHTMLDocumentEventExtensions, MSHTMLDocumentViewExtensions {
-    ondragend: (ev: DragEvent) => any;
-    addEventListener(type: "dragend", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    ondragover: (ev: DragEvent) => any;
-    addEventListener(type: "dragover", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onkeydown: (ev: KeyboardEvent) => any;
-    addEventListener(type: "keydown", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
-    bgColor: string;
-    onkeyup: (ev: KeyboardEvent) => any;
-    addEventListener(type: "keyup", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
-    onreset: (ev: Event) => any;
-    addEventListener(type: "reset", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onmouseup: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseup", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    ondragstart: (ev: DragEvent) => any;
-    addEventListener(type: "dragstart", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    scripts: HTMLCollection;
-    ondrag: (ev: DragEvent) => any;
-    addEventListener(type: "drag", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    linkColor: string;
-    ondragleave: (ev: DragEvent) => any;
-    addEventListener(type: "dragleave", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onmouseover: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onpause: (ev: Event) => any;
-    addEventListener(type: "pause", listener: (ev: Event) => any, useCapture?: boolean): void;
-    charset: string;
-    vlinkColor: string;
-    onmousedown: (ev: MouseEvent) => any;
-    addEventListener(type: "mousedown", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onseeked: (ev: Event) => any;
-    addEventListener(type: "seeked", listener: (ev: Event) => any, useCapture?: boolean): void;
-    title: string;
-    onclick: (ev: MouseEvent) => any;
-    addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onwaiting: (ev: Event) => any;
-    addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
-    defaultCharset: string;
-    embeds: HTMLCollection;
-    ondurationchange: (ev: Event) => any;
-    addEventListener(type: "durationchange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    all: HTMLCollection;
-    applets: HTMLCollection;
-    forms: HTMLCollection;
-    onblur: (ev: FocusEvent) => any;
-    addEventListener(type: "blur", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    dir: string;
-    body: HTMLElement;
-    designMode: string;
-    onemptied: (ev: Event) => any;
-    addEventListener(type: "emptied", listener: (ev: Event) => any, useCapture?: boolean): void;
-    domain: string;
-    onseeking: (ev: Event) => any;
-    addEventListener(type: "seeking", listener: (ev: Event) => any, useCapture?: boolean): void;
-    oncanplay: (ev: Event) => any;
-    addEventListener(type: "canplay", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onstalled: (ev: Event) => any;
-    addEventListener(type: "stalled", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onmousemove: (ev: MouseEvent) => any;
-    addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onratechange: (ev: Event) => any;
-    addEventListener(type: "ratechange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onloadstart: (ev: Event) => any;
-    addEventListener(type: "loadstart", listener: (ev: Event) => any, useCapture?: boolean): void;
-    ondragenter: (ev: DragEvent) => any;
-    addEventListener(type: "dragenter", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onsubmit: (ev: Event) => any;
-    addEventListener(type: "submit", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onprogress: (ev: any) => any;
-    addEventListener(type: "progress", listener: (ev: any) => any, useCapture?: boolean): void;
-    ondblclick: (ev: MouseEvent) => any;
-    addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    oncontextmenu: (ev: MouseEvent) => any;
-    addEventListener(type: "contextmenu", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    activeElement: Element;
-    onchange: (ev: Event) => any;
-    addEventListener(type: "change", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onloadedmetadata: (ev: Event) => any;
-    addEventListener(type: "loadedmetadata", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onerror: (ev: Event) => any;
-    addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onplay: (ev: Event) => any;
-    addEventListener(type: "play", listener: (ev: Event) => any, useCapture?: boolean): void;
-    links: HTMLCollection;
-    onplaying: (ev: Event) => any;
-    addEventListener(type: "playing", listener: (ev: Event) => any, useCapture?: boolean): void;
-    URL: string;
-    images: HTMLCollection;
-    head: HTMLHeadElement;
-    location: Location;
-    cookie: string;
-    oncanplaythrough: (ev: Event) => any;
-    addEventListener(type: "canplaythrough", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onabort: (ev: UIEvent) => any;
-    addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    characterSet: string;
-    anchors: HTMLCollection;
-    lastModified: string;
-    onreadystatechange: (ev: Event) => any;
-    addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onkeypress: (ev: KeyboardEvent) => any;
-    addEventListener(type: "keypress", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
-    onloadeddata: (ev: Event) => any;
-    addEventListener(type: "loadeddata", listener: (ev: Event) => any, useCapture?: boolean): void;
-    plugins: HTMLCollection;
-    onsuspend: (ev: Event) => any;
-    addEventListener(type: "suspend", listener: (ev: Event) => any, useCapture?: boolean): void;
-    referrer: string;
-    readyState: string;
-    alinkColor: string;
-    onfocus: (ev: FocusEvent) => any;
-    addEventListener(type: "focus", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
-    fgColor: string;
-    ontimeupdate: (ev: Event) => any;
-    addEventListener(type: "timeupdate", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onselect: (ev: UIEvent) => any;
-    addEventListener(type: "select", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    ondrop: (ev: DragEvent) => any;
-    addEventListener(type: "drop", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    onmouseout: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseout", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onended: (ev: Event) => any;
-    addEventListener(type: "ended", listener: (ev: Event) => any, useCapture?: boolean): void;
-    compatMode: string;
-    onscroll: (ev: UIEvent) => any;
-    addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    onmousewheel: (ev: MouseWheelEvent) => any;
-    addEventListener(type: "mousewheel", listener: (ev: MouseWheelEvent) => any, useCapture?: boolean): void;
-    onload: (ev: Event) => any;
-    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onvolumechange: (ev: Event) => any;
-    addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    oninput: (ev: Event) => any;
-    addEventListener(type: "input", listener: (ev: Event) => any, useCapture?: boolean): void;
-    queryCommandValue(commandId: string): string;
-    queryCommandIndeterm(commandId: string): boolean;
-    execCommand(commandId: string, showUI?: boolean, value?: any): boolean;
-    getElementsByName(elementName: string): NodeList;
-    writeln(...content: string[]): void;
-    open(url?: string, name?: string, features?: string, replace?: boolean): any;
-    queryCommandState(commandId: string): boolean;
-    close(): void;
-    hasFocus(): boolean;
-    getElementsByClassName(classNames: string): NodeList;
-    queryCommandSupported(commandId: string): boolean;
-    getSelection(): Selection;
-    queryCommandEnabled(commandId: string): boolean;
-    write(...content: string[]): void;
-    queryCommandText(commandId: string): string;
-    addEventListener(type: "DOMContentLoaded", listener: (ev: Event) => any, useCapture?: boolean): void;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    new (): HTMLTableColElement;
 }
 
 interface SVGException {
@@ -5590,29 +9350,10 @@ interface SVGException {
 }
 declare var SVGException: {
     prototype: SVGException;
-    new(): SVGException;
+    new (): SVGException;
     SVG_MATRIX_NOT_INVERTABLE: number;
     SVG_WRONG_TYPE_ERR: number;
     SVG_INVALID_VALUE_ERR: number;
-}
-
-interface DOML2DeprecatedTableCellHeight {
-    height: any;
-}
-
-interface HTMLTableAlignment {
-    ch: string;
-    vAlign: string;
-    chOff: string;
-}
-
-interface SVGAnimatedEnumeration {
-    animVal: number;
-    baseVal: number;
-}
-declare var SVGAnimatedEnumeration: {
-    prototype: SVGAnimatedEnumeration;
-    new(): SVGAnimatedEnumeration;
 }
 
 interface SVGLinearGradientElement extends SVGGradientElement {
@@ -5623,32 +9364,45 @@ interface SVGLinearGradientElement extends SVGGradientElement {
 }
 declare var SVGLinearGradientElement: {
     prototype: SVGLinearGradientElement;
-    new(): SVGLinearGradientElement;
+    new (): SVGLinearGradientElement;
+}
+
+interface HTMLTableAlignment {
+    /**
+      * Sets or retrieves a value that you can use to implement your own ch functionality for the object.
+      */
+    ch: string;
+    /**
+      * Sets or retrieves how text and other content are vertically aligned within the object that contains them.
+      */
+    vAlign: string;
+    /**
+      * Sets or retrieves a value that you can use to implement your own chOff functionality for the object.
+      */
+    chOff: string;
+}
+
+interface SVGAnimatedEnumeration {
+    animVal: number;
+    baseVal: number;
+}
+declare var SVGAnimatedEnumeration: {
+    prototype: SVGAnimatedEnumeration;
+    new (): SVGAnimatedEnumeration;
 }
 
 interface DOML2DeprecatedSizeProperty {
     size: number;
 }
 
-interface MSHTMLHeadingElementExtensions extends DOML2DeprecatedTextFlowControl_HTMLBlockElement {
-}
-
-interface MSBorderColorStyle_HTMLTableCellElement {
-    borderColor: any;
-}
-
-interface DOML2DeprecatedWidthStyle_HTMLHRElement {
-    width: number;
-}
-
-interface HTMLUListElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, DOML2DeprecatedListNumberingAndBulletStyle, MSHTMLUListElementExtensions {
+interface HTMLUListElement extends HTMLElement, DOML2DeprecatedListSpaceReduction, DOML2DeprecatedListNumberingAndBulletStyle {
 }
 declare var HTMLUListElement: {
     prototype: HTMLUListElement;
-    new(): HTMLUListElement;
+    new (): HTMLUListElement;
 }
 
-interface SVGRectElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface SVGRectElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     y: SVGAnimatedLength;
     width: SVGAnimatedLength;
     ry: SVGAnimatedLength;
@@ -5658,69 +9412,46 @@ interface SVGRectElement extends SVGElement, SVGStylable, SVGTransformable, SVGL
 }
 declare var SVGRectElement: {
     prototype: SVGRectElement;
-    new(): SVGRectElement;
+    new (): SVGRectElement;
+}
+
+interface ErrorEventHandler {
+    (event: Event, source: string, fileno: number, columnNumber: number): void;
+}
+
+interface HTMLDivElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text. 
+      */
+    align: string;
+    /**
+      * Sets or retrieves whether the browser automatically performs wordwrap.
+      */
+    noWrap: boolean;
+}
+declare var HTMLDivElement: {
+    prototype: HTMLDivElement;
+    new (): HTMLDivElement;
 }
 
 interface DOML2DeprecatedBorderStyle {
     border: string;
 }
 
-interface HTMLDivElement extends HTMLElement, DOML2DeprecatedAlignmentStyle_HTMLDivElement, MSHTMLDivElementExtensions, MSDataBindingExtensions {
-}
-declare var HTMLDivElement: {
-    prototype: HTMLDivElement;
-    new(): HTMLDivElement;
-}
-
-interface NavigatorDoNotTrack {
-    msDoNotTrack: string;
-}
-
-interface SVG1_1Properties {
-    fillRule: string;
-    strokeLinecap: string;
-    stopColor: string;
-    glyphOrientationHorizontal: string;
-    kerning: string;
-    alignmentBaseline: string;
-    dominantBaseline: string;
-    fill: string;
-    strokeMiterlimit: string;
-    marker: string;
-    glyphOrientationVertical: string;
-    markerMid: string;
-    textAnchor: string;
-    fillOpacity: string;
-    strokeDasharray: string;
-    mask: string;
-    stopOpacity: string;
-    stroke: string;
-    strokeDashoffset: string;
-    strokeOpacity: string;
-    markerStart: string;
-    pointerEvents: string;
-    baselineShift: string;
-    markerEnd: string;
-    clipRule: string;
-    strokeLinejoin: string;
-    clipPath: string;
-    strokeWidth: string;
-}
-
 interface NamedNodeMap {
     length: number;
-    removeNamedItemNS(namespaceURI: string, localName: string): Node;
-    item(index: number): Node;
-    [index: number]: Node;
-    removeNamedItem(name: string): Node;
-    getNamedItem(name: string): Node;
-    setNamedItem(arg: Node): Node;
-    getNamedItemNS(namespaceURI: string, localName: string): Node;
-    setNamedItemNS(arg: Node): Node;
+    removeNamedItemNS(namespaceURI: string, localName: string): Attr;
+    item(index: number): Attr;
+    [index: number]: Attr;
+    removeNamedItem(name: string): Attr;
+    getNamedItem(name: string): Attr;
+    setNamedItem(arg: Attr): Attr;
+    getNamedItemNS(namespaceURI: string, localName: string): Attr;
+    setNamedItemNS(arg: Attr): Attr;
 }
 declare var NamedNodeMap: {
     prototype: NamedNodeMap;
-    new(): NamedNodeMap;
+    new (): NamedNodeMap;
 }
 
 interface MediaList {
@@ -5734,7 +9465,7 @@ interface MediaList {
 }
 declare var MediaList: {
     prototype: MediaList;
-    new(): MediaList;
+    new (): MediaList;
 }
 
 interface SVGPathSegCurvetoQuadraticSmoothAbs extends SVGPathSeg {
@@ -5743,7 +9474,18 @@ interface SVGPathSegCurvetoQuadraticSmoothAbs extends SVGPathSeg {
 }
 declare var SVGPathSegCurvetoQuadraticSmoothAbs: {
     prototype: SVGPathSegCurvetoQuadraticSmoothAbs;
-    new(): SVGPathSegCurvetoQuadraticSmoothAbs;
+    new (): SVGPathSegCurvetoQuadraticSmoothAbs;
+}
+
+interface SVGPathSegCurvetoCubicSmoothRel extends SVGPathSeg {
+    y: number;
+    x2: number;
+    x: number;
+    y2: number;
+}
+declare var SVGPathSegCurvetoCubicSmoothRel: {
+    prototype: SVGPathSegCurvetoCubicSmoothRel;
+    new (): SVGPathSegCurvetoCubicSmoothRel;
 }
 
 interface SVGLengthList {
@@ -5758,18 +9500,16 @@ interface SVGLengthList {
 }
 declare var SVGLengthList: {
     prototype: SVGLengthList;
-    new(): SVGLengthList;
+    new (): SVGLengthList;
 }
 
-interface SVGPathSegCurvetoCubicSmoothRel extends SVGPathSeg {
-    y: number;
-    x2: number;
-    x: number;
-    y2: number;
+interface ProcessingInstruction extends Node {
+    target: string;
+    data: string;
 }
-declare var SVGPathSegCurvetoCubicSmoothRel: {
-    prototype: SVGPathSegCurvetoCubicSmoothRel;
-    new(): SVGPathSegCurvetoCubicSmoothRel;
+declare var ProcessingInstruction: {
+    prototype: ProcessingInstruction;
+    new (): ProcessingInstruction;
 }
 
 interface MSWindowExtensions {
@@ -5787,7 +9527,7 @@ interface MSWindowExtensions {
     closed: boolean;
     onhelp: (ev: Event) => any;
     addEventListener(type: "help", listener: (ev: Event) => any, useCapture?: boolean): void;
-    external: BrowserPublic;
+    external: External;
     event: MSEventObj;
     onfocusout: (ev: FocusEvent) => any;
     addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
@@ -5809,22 +9549,13 @@ interface MSWindowExtensions {
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 
-interface ProcessingInstruction extends Node {
-    target: string;
-    data: string;
-}
-declare var ProcessingInstruction: {
-    prototype: ProcessingInstruction;
-    new(): ProcessingInstruction;
-}
-
 interface MSBehaviorUrnsCollection {
     length: number;
     item(index: number): string;
 }
 declare var MSBehaviorUrnsCollection: {
     prototype: MSBehaviorUrnsCollection;
-    new(): MSBehaviorUrnsCollection;
+    new (): MSBehaviorUrnsCollection;
 }
 
 interface CSSFontFaceRule extends CSSRule {
@@ -5832,7 +9563,7 @@ interface CSSFontFaceRule extends CSSRule {
 }
 declare var CSSFontFaceRule: {
     prototype: CSSFontFaceRule;
-    new(): CSSFontFaceRule;
+    new (): CSSFontFaceRule;
 }
 
 interface DOML2DeprecatedBackgroundStyle {
@@ -5843,7 +9574,7 @@ interface TextEvent extends UIEvent {
     inputMethod: number;
     data: string;
     locale: string;
-    initTextEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, dataArg: string, inputMethod: number, locale: string): void;
+    initTextEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, dataArg: string, inputMethod: number, locale: string): void;
     DOM_INPUT_METHOD_KEYBOARD: number;
     DOM_INPUT_METHOD_DROP: number;
     DOM_INPUT_METHOD_IME: number;
@@ -5857,7 +9588,7 @@ interface TextEvent extends UIEvent {
 }
 declare var TextEvent: {
     prototype: TextEvent;
-    new(): TextEvent;
+    new (): TextEvent;
     DOM_INPUT_METHOD_KEYBOARD: number;
     DOM_INPUT_METHOD_DROP: number;
     DOM_INPUT_METHOD_IME: number;
@@ -5870,38 +9601,18 @@ declare var TextEvent: {
     DOM_INPUT_METHOD_MULTIMODAL: number;
 }
 
-interface MSHTMLHRElementExtensions extends DOML2DeprecatedColorProperty {
-}
-
-interface AbstractView {
-    styleMedia: StyleMedia;
-    document: Document;
-}
-
 interface DocumentFragment extends Node, NodeSelector, MSEventAttachmentTarget, MSNodeExtensions {
 }
 declare var DocumentFragment: {
     prototype: DocumentFragment;
-    new(): DocumentFragment;
+    new (): DocumentFragment;
 }
 
-interface DOML2DeprecatedAlignmentStyle_HTMLFieldSetElement {
-    align: string;
-}
-
-interface SVGPolylineElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGAnimatedPoints, SVGTests {
+interface SVGPolylineElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGAnimatedPoints, SVGTests, SVGExternalResourcesRequired {
 }
 declare var SVGPolylineElement: {
     prototype: SVGPolylineElement;
-    new(): SVGPolylineElement;
-}
-
-interface DOML2DeprecatedWidthStyle {
-    width: number;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLHeadingElement {
-    align: string;
+    new (): SVGPolylineElement;
 }
 
 interface SVGAnimatedPathData {
@@ -5914,7 +9625,7 @@ interface Position {
 }
 declare var Position: {
     prototype: Position;
-    new(): Position;
+    new (): Position;
 }
 
 interface BookmarkCollection {
@@ -5924,45 +9635,58 @@ interface BookmarkCollection {
 }
 declare var BookmarkCollection: {
     prototype: BookmarkCollection;
-    new(): BookmarkCollection;
+    new (): BookmarkCollection;
 }
 
-interface CSSPageRule extends CSSRule, StyleSheetPage {
+interface PerformanceMark extends PerformanceEntry {
+}
+declare var PerformanceMark: {
+    prototype: PerformanceMark;
+    new (): PerformanceMark;
+}
+
+interface CSSPageRule extends CSSRule {
+    pseudoClass: string;
     selectorText: string;
+    selector: string;
     style: CSSStyleDeclaration;
 }
 declare var CSSPageRule: {
     prototype: CSSPageRule;
-    new(): CSSPageRule;
+    new (): CSSPageRule;
 }
 
-interface WindowPerformance {
-    performance: any;
-}
-
-interface HTMLBRElement extends HTMLElement, DOML2DeprecatedTextFlowControl_HTMLBRElement {
+interface HTMLBRElement extends HTMLElement {
+    /**
+      * Sets or retrieves the side on which floating objects are not to be positioned when any IHTMLBlockElement is inserted into the document.
+      */
+    clear: string;
 }
 declare var HTMLBRElement: {
     prototype: HTMLBRElement;
-    new(): HTMLBRElement;
+    new (): HTMLBRElement;
 }
 
-interface MSHTMLDivElementExtensions extends DOML2DeprecatedWordWrapSuppression_HTMLDivElement {
+interface MSNavigatorExtensions {
+    userLanguage: string;
+    plugins: MSPluginsCollection;
+    cookieEnabled: boolean;
+    appCodeName: string;
+    cpuClass: string;
+    appMinorVersion: string;
+    connectionSpeed: number;
+    browserLanguage: string;
+    mimeTypes: MSMimeTypesCollection;
+    systemLanguage: string;
+    javaEnabled(): boolean;
+    taintEnabled(): boolean;
 }
 
-interface DOML2DeprecatedBorderStyle_HTMLInputElement {
-    border: string;
-}
-
-interface HTMLSpanElement extends HTMLElement, MSHTMLSpanElementExtensions, MSDataBindingExtensions {
+interface HTMLSpanElement extends HTMLElement, MSDataBindingExtensions {
 }
 declare var HTMLSpanElement: {
     prototype: HTMLSpanElement;
-    new(): HTMLSpanElement;
-}
-
-interface HTMLHRElementDOML2Deprecated {
-    noShade: boolean;
+    new (): HTMLSpanElement;
 }
 
 interface HTMLHeadElement extends HTMLElement {
@@ -5970,40 +9694,80 @@ interface HTMLHeadElement extends HTMLElement {
 }
 declare var HTMLHeadElement: {
     prototype: HTMLHeadElement;
-    new(): HTMLHeadElement;
+    new (): HTMLHeadElement;
 }
 
-interface NodeFilterCallback {
-    (...args: any[]): any;
-}
-
-interface HTMLHeadingElement extends HTMLElement, DOML2DeprecatedAlignmentStyle_HTMLHeadingElement, MSHTMLHeadingElementExtensions {
+interface HTMLHeadingElement extends HTMLElement, DOML2DeprecatedTextFlowControl {
+    /**
+      * Sets or retrieves a value that indicates the table alignment.
+      */
+    align: string;
 }
 declare var HTMLHeadingElement: {
     prototype: HTMLHeadingElement;
-    new(): HTMLHeadingElement;
+    new (): HTMLHeadingElement;
 }
 
-interface HTMLFormElement extends HTMLElement, MSHTMLFormElementExtensions, MSHTMLCollectionExtensions {
+interface HTMLFormElement extends HTMLElement, MSHTMLCollectionExtensions {
+    /**
+      * Sets or retrieves the number of objects in a collection.
+      */
     length: number;
+    /**
+      * Sets or retrieves the window or frame at which to target content.
+      */
     target: string;
+    /**
+      * Sets or retrieves a list of character encodings for input data that must be accepted by the server processing the form.
+      */
     acceptCharset: string;
+    /**
+      * Sets or retrieves the encoding type for the form.
+      */
     enctype: string;
+    /**
+      * Retrieves a collection, in source order, of all controls in a given form.
+      */
     elements: HTMLCollection;
+    /**
+      * Sets or retrieves the URL to which the form content is sent for processing.
+      */
     action: string;
+    /**
+      * Sets or retrieves the name of the object.
+      */
     name: string;
+    /**
+      * Sets or retrieves how to send the form data to the server.
+      */
     method: string;
+    /**
+      * Sets or retrieves the MIME encoding for the form.
+      */
+    encoding: string;
+    /**
+      * Fires when the user resets a form.
+      */
     reset(): void;
+    /**
+      * Retrieves a form object or an object from an elements collection.
+      * @param name Variant of type Number or String that specifies the object or collection to retrieve. If this parameter is a Number, it is the zero-based index of the object. If this parameter is a string, all objects with matching name or id properties are retrieved, and a collection is returned if more than one match is made.
+      * @param index Variant of type Number that specifies the zero-based index of the object to retrieve when a collection is returned.
+      */
     item(name?: any, index?: any): any;
-    (name: any, index: any): any;
+    /**
+      * Fires when a FORM is about to be submitted.
+      */
     submit(): void;
+    /**
+      * Retrieves a form object or an object from an elements collection.
+      */
     namedItem(name: string): any;
     [name: string]: any;
-    (name: string): any;
 }
 declare var HTMLFormElement: {
     prototype: HTMLFormElement;
-    new(): HTMLFormElement;
+    new (): HTMLFormElement;
 }
 
 interface SVGZoomAndPan {
@@ -6014,44 +9778,117 @@ interface SVGZoomAndPan {
 }
 declare var SVGZoomAndPan: {
     prototype: SVGZoomAndPan;
-    new(): SVGZoomAndPan;
+    new (): SVGZoomAndPan;
     SVG_ZOOMANDPAN_MAGNIFY: number;
     SVG_ZOOMANDPAN_UNKNOWN: number;
     SVG_ZOOMANDPAN_DISABLE: number;
 }
 
-interface MSEventExtensions {
-    cancelBubble: boolean;
-    srcElement: Element;
-}
-
 interface HTMLMediaElement extends HTMLElement {
+    /**
+      * Gets the earliest possible position, in seconds, that the playback can begin.
+      */
     initialTime: number;
+    /**
+      * Gets TimeRanges for the current media resource that has been played.
+      */
     played: TimeRanges;
+    /**
+      * Gets the address or URL of the current media resource that is selected by IHTMLMediaElement.
+      */
     currentSrc: string;
-    readyState: string;
+    readyState: any;
+    /**
+      * The autobuffer element is not supported by Internet Explorer 9. Use the preload element instead.
+      */
     autobuffer: boolean;
+    /**
+      * Gets or sets a flag to specify whether playback should restart after it completes.
+      */
     loop: boolean;
+    /**
+      * Gets information about whether the playback has ended or not.
+      */
     ended: boolean;
+    /**
+      * Gets a collection of buffered time ranges.
+      */
     buffered: TimeRanges;
+    /**
+      * Returns an object representing the current error state of the audio or video element.
+      */
     error: MediaError;
+    /**
+      * Returns a TimeRanges object that represents the ranges of the current media resource that can be seeked.
+      */
     seekable: TimeRanges;
+    /**
+      * Gets or sets a value that indicates whether to start playing the media automatically.
+      */
     autoplay: boolean;
+    /**
+      * Gets or sets a flag that indicates whether the client provides a set of controls for the media (in case the developer does not include controls for the player).
+      */
     controls: boolean;
+    /**
+      * Gets or sets the volume level for audio portions of the media element.
+      */
     volume: number;
+    /**
+      * The address or URL of the a media resource that is to be considered.
+      */
     src: string;
+    /**
+      * Gets or sets the current rate of speed for the media resource to play. This speed is expressed as a multiple of the normal speed of the media resource.
+      */
     playbackRate: number;
+    /**
+      * Returns the duration in seconds of the current media resource. A NaN value is returned if duration is not available, or Infinity if the media resource is streaming.
+      */
     duration: number;
+    /**
+      * Gets or sets a flag that indicates whether the audio (either audio or the audio track on video media) is muted.
+      */
     muted: boolean;
+    /**
+      * Gets or sets the default playback rate when the user is not using fast forward or reverse for a video or audio resource.
+      */
     defaultPlaybackRate: number;
+    /**
+      * Gets a flag that specifies whether playback is paused.
+      */
     paused: boolean;
+    /**
+      * Gets a flag that indicates whether the the client is currently moving to a new playback position in the media resource.
+      */
     seeking: boolean;
+    /**
+      * Gets or sets the current playback position, in seconds.
+      */
     currentTime: number;
+    /**
+      * Gets or sets the current playback position, in seconds.
+      */
     preload: string;
+    /**
+      * Gets the current network activity for the element.
+      */
     networkState: number;
+    /**
+      * Pauses the current playback and sets paused to TRUE. This can be used to test whether the media is playing or paused. You can also use the pause or play events to tell whether the media is playing or not.
+      */
     pause(): void;
+    /**
+      * Loads and starts playback of a media resource.
+      */
     play(): void;
+    /**
+      * Fires immediately after the client loads the object.
+      */
     load(): void;
+    /**
+      * Returns a string that specifies whether the client can play a given media resource type.
+      */
     canPlayType(type: string): string;
     HAVE_METADATA: number;
     HAVE_CURRENT_DATA: number;
@@ -6065,7 +9902,7 @@ interface HTMLMediaElement extends HTMLElement {
 }
 declare var HTMLMediaElement: {
     prototype: HTMLMediaElement;
-    new(): HTMLMediaElement;
+    new (): HTMLMediaElement;
     HAVE_METADATA: number;
     HAVE_CURRENT_DATA: number;
     HAVE_NOTHING: number;
@@ -6077,9 +9914,11 @@ declare var HTMLMediaElement: {
     HAVE_FUTURE_DATA: number;
 }
 
-interface ElementCSSInlineStyle extends MSElementCSSInlineStyleExtensions {
+interface ElementCSSInlineStyle {
     runtimeStyle: MSStyleCSSProperties;
     currentStyle: MSCurrentStyleCSSProperties;
+    doScroll(component?: any): void;
+    componentFromPoint(x: number, y: number): string;
 }
 
 interface DOMParser {
@@ -6095,7 +9934,7 @@ interface MSMimeTypesCollection {
 }
 declare var MSMimeTypesCollection: {
     prototype: MSMimeTypesCollection;
-    new(): MSMimeTypesCollection;
+    new (): MSMimeTypesCollection;
 }
 
 interface StyleSheet {
@@ -6109,15 +9948,7 @@ interface StyleSheet {
 }
 declare var StyleSheet: {
     prototype: StyleSheet;
-    new(): StyleSheet;
-}
-
-interface DOML2DeprecatedBorderStyle_HTMLTableElement {
-    border: string;
-}
-
-interface DOML2DeprecatedWidthStyle_HTMLAppletElement {
-    width: number;
+    new (): StyleSheet;
 }
 
 interface SVGTextPathElement extends SVGTextContentElement, SVGURIReference {
@@ -6133,13 +9964,24 @@ interface SVGTextPathElement extends SVGTextContentElement, SVGURIReference {
 }
 declare var SVGTextPathElement: {
     prototype: SVGTextPathElement;
-    new(): SVGTextPathElement;
+    new (): SVGTextPathElement;
     TEXTPATH_SPACINGTYPE_EXACT: number;
     TEXTPATH_METHODTYPE_STRETCH: number;
     TEXTPATH_SPACINGTYPE_AUTO: number;
     TEXTPATH_SPACINGTYPE_UNKNOWN: number;
     TEXTPATH_METHODTYPE_UNKNOWN: number;
     TEXTPATH_METHODTYPE_ALIGN: number;
+}
+
+interface HTMLDTElement extends HTMLElement {
+    /**
+      * Sets or retrieves whether the browser automatically performs wordwrap.
+      */
+    noWrap: boolean;
+}
+declare var HTMLDTElement: {
+    prototype: HTMLDTElement;
+    new (): HTMLDTElement;
 }
 
 interface NodeList {
@@ -6149,20 +9991,13 @@ interface NodeList {
 }
 declare var NodeList: {
     prototype: NodeList;
-    new(): NodeList;
+    new (): NodeList;
 }
 
-interface NodeListOf<TNode extends Node> {
+interface NodeListOf<TNode extends Node> extends NodeList {
     length: number;
     item(index: number): TNode;
     [index: number]: TNode;
-}
-
-interface HTMLDTElement extends HTMLElement, DOML2DeprecatedWordWrapSuppression_HTMLDTElement {
-}
-declare var HTMLDTElement: {
-    prototype: HTMLDTElement;
-    new(): HTMLDTElement;
 }
 
 interface XMLSerializer {
@@ -6173,20 +10008,14 @@ declare var XMLSerializer: {
     new (): XMLSerializer;
 }
 
-interface StyleSheetPage {
-    pseudoClass: string;
-    selector: string;
+interface PerformanceMeasure extends PerformanceEntry {
+}
+declare var PerformanceMeasure: {
+    prototype: PerformanceMeasure;
+    new (): PerformanceMeasure;
 }
 
-interface DOML2DeprecatedWordWrapSuppression_HTMLDDElement {
-    noWrap: boolean;
-}
-
-interface MSHTMLTableRowElementExtensions {
-    height: any;
-}
-
-interface SVGGradientElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGURIReference {
+interface SVGGradientElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGExternalResourcesRequired, SVGURIReference {
     spreadMethod: SVGAnimatedEnumeration;
     gradientTransform: SVGAnimatedTransformList;
     gradientUnits: SVGAnimatedEnumeration;
@@ -6197,18 +10026,11 @@ interface SVGGradientElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGU
 }
 declare var SVGGradientElement: {
     prototype: SVGGradientElement;
-    new(): SVGGradientElement;
+    new (): SVGGradientElement;
     SVG_SPREADMETHOD_REFLECT: number;
     SVG_SPREADMETHOD_PAD: number;
     SVG_SPREADMETHOD_UNKNOWN: number;
     SVG_SPREADMETHOD_REPEAT: number;
-}
-
-interface DOML2DeprecatedTextFlowControl_HTMLBRElement {
-    clear: string;
-}
-
-interface MSHTMLParagraphElementExtensions extends DOML2DeprecatedTextFlowControl_HTMLBlockElement {
 }
 
 interface NodeFilter {
@@ -6232,7 +10054,7 @@ interface NodeFilter {
 }
 declare var NodeFilter: {
     prototype: NodeFilter;
-    new(): NodeFilter;
+    new (): NodeFilter;
     SHOW_ENTITY_REFERENCE: number;
     SHOW_NOTATION: number;
     SHOW_ENTITY: number;
@@ -6251,70 +10073,6 @@ declare var NodeFilter: {
     SHOW_DOCUMENT_FRAGMENT: number;
 }
 
-interface MSBorderColorStyle_HTMLFrameElement {
-    borderColor: any;
-}
-
-interface MSHTMLOListElementExtensions {
-}
-
-interface DOML2DeprecatedWordWrapSuppression_HTMLDTElement {
-    noWrap: boolean;
-}
-
-interface ScreenView extends AbstractView {
-    outerWidth: number;
-    pageXOffset: number;
-    innerWidth: number;
-    pageYOffset: number;
-    screenY: number;
-    outerHeight: number;
-    screen: Screen;
-    innerHeight: number;
-    screenX: number;
-    scroll(x?: number, y?: number): void;
-    scrollBy(x?: number, y?: number): void;
-    scrollTo(x?: number, y?: number): void;
-}
-
-interface DOML2DeprecatedMarginStyle_HTMLObjectElement {
-    vspace: number;
-    hspace: number;
-}
-
-interface DOML2DeprecatedMarginStyle_HTMLInputElement {
-    vspace: number;
-    hspace: number;
-}
-
-interface MSHTMLTableSectionElementExtensions extends DOML2DeprecatedBackgroundColorStyle {
-    moveRow(indexFrom?: number, indexTo?: number): Object;
-}
-
-interface HTMLFieldSetElement extends HTMLElement, MSHTMLFieldSetElementExtensions {
-    form: HTMLFormElement;
-}
-declare var HTMLFieldSetElement: {
-    prototype: HTMLFieldSetElement;
-    new(): HTMLFieldSetElement;
-}
-
-interface MediaError {
-    code: number;
-    MEDIA_ERR_ABORTED: number;
-    MEDIA_ERR_NETWORK: number;
-    MEDIA_ERR_SRC_NOT_SUPPORTED: number;
-    MEDIA_ERR_DECODE: number;
-}
-declare var MediaError: {
-    prototype: MediaError;
-    new(): MediaError;
-    MEDIA_ERR_ABORTED: number;
-    MEDIA_ERR_NETWORK: number;
-    MEDIA_ERR_SRC_NOT_SUPPORTED: number;
-    MEDIA_ERR_DECODE: number;
-}
-
 interface SVGNumberList {
     numberOfItems: number;
     replaceItem(newItem: SVGNumber, index: number): SVGNumber;
@@ -6327,219 +10085,480 @@ interface SVGNumberList {
 }
 declare var SVGNumberList: {
     prototype: SVGNumberList;
-    new(): SVGNumberList;
+    new (): SVGNumberList;
+}
+
+interface MediaError {
+    code: number;
+    MEDIA_ERR_ABORTED: number;
+    MEDIA_ERR_NETWORK: number;
+    MEDIA_ERR_SRC_NOT_SUPPORTED: number;
+    MEDIA_ERR_DECODE: number;
+}
+declare var MediaError: {
+    prototype: MediaError;
+    new (): MediaError;
+    MEDIA_ERR_ABORTED: number;
+    MEDIA_ERR_NETWORK: number;
+    MEDIA_ERR_SRC_NOT_SUPPORTED: number;
+    MEDIA_ERR_DECODE: number;
+}
+
+interface HTMLFieldSetElement extends HTMLElement {
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
+    form: HTMLFormElement;
+}
+declare var HTMLFieldSetElement: {
+    prototype: HTMLFieldSetElement;
+    new (): HTMLFieldSetElement;
 }
 
 interface HTMLBGSoundElement extends HTMLElement {
+    /**
+      * Sets or gets the value indicating how the volume of the background sound is divided between the left speaker and the right speaker.
+      */
     balance: any;
+    /**
+      * Sets or gets the volume setting for the sound. 
+      */
     volume: any;
+    /**
+      * Sets or gets the URL of a sound to play.
+      */
     src: string;
+    /**
+      * Sets or retrieves the number of times a sound or video clip will loop when activated.
+      */
     loop: number;
 }
 declare var HTMLBGSoundElement: {
     prototype: HTMLBGSoundElement;
-    new(): HTMLBGSoundElement;
+    new (): HTMLBGSoundElement;
 }
 
-interface HTMLElement extends Element, MSHTMLElementRangeExtensions, ElementCSSInlineStyle, MSEventAttachmentTarget, MSHTMLElementExtensions, MSNodeExtensions {
-    ondragend: (ev: DragEvent) => any;
-    addEventListener(type: "dragend", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+interface HTMLElement extends Element, ElementCSSInlineStyle, MSEventAttachmentTarget, MSNodeExtensions {
+    onmouseleave: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseleave", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onbeforecut: (ev: DragEvent) => any;
+    addEventListener(type: "beforecut", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     onkeydown: (ev: KeyboardEvent) => any;
     addEventListener(type: "keydown", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
-    ondragover: (ev: DragEvent) => any;
-    addEventListener(type: "dragover", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    onmove: (ev: MSEventObj) => any;
+    addEventListener(type: "move", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
     onkeyup: (ev: KeyboardEvent) => any;
     addEventListener(type: "keyup", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
-    offsetTop: number;
     onreset: (ev: Event) => any;
     addEventListener(type: "reset", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onmouseup: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseup", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    ondragstart: (ev: DragEvent) => any;
-    addEventListener(type: "dragstart", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    ondrag: (ev: DragEvent) => any;
-    addEventListener(type: "drag", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    innerHTML: string;
-    onmouseover: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onhelp: (ev: Event) => any;
+    addEventListener(type: "help", listener: (ev: Event) => any, useCapture?: boolean): void;
     ondragleave: (ev: DragEvent) => any;
     addEventListener(type: "dragleave", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
-    lang: string;
-    onpause: (ev: Event) => any;
-    addEventListener(type: "pause", listener: (ev: Event) => any, useCapture?: boolean): void;
     className: string;
+    onfocusin: (ev: FocusEvent) => any;
+    addEventListener(type: "focusin", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
     onseeked: (ev: Event) => any;
     addEventListener(type: "seeked", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onmousedown: (ev: MouseEvent) => any;
-    addEventListener(type: "mousedown", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    recordNumber: any;
     title: string;
-    onclick: (ev: MouseEvent) => any;
-    addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onwaiting: (ev: Event) => any;
-    addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
+    parentTextEdit: Element;
     outerHTML: string;
-    offsetLeft: number;
     ondurationchange: (ev: Event) => any;
     addEventListener(type: "durationchange", listener: (ev: Event) => any, useCapture?: boolean): void;
     offsetHeight: number;
-    dir: string;
+    all: HTMLCollection;
     onblur: (ev: FocusEvent) => any;
     addEventListener(type: "blur", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
+    dir: string;
     onemptied: (ev: Event) => any;
     addEventListener(type: "emptied", listener: (ev: Event) => any, useCapture?: boolean): void;
     onseeking: (ev: Event) => any;
     addEventListener(type: "seeking", listener: (ev: Event) => any, useCapture?: boolean): void;
     oncanplay: (ev: Event) => any;
     addEventListener(type: "canplay", listener: (ev: Event) => any, useCapture?: boolean): void;
+    ondeactivate: (ev: UIEvent) => any;
+    addEventListener(type: "deactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    ondatasetchanged: (ev: MSEventObj) => any;
+    addEventListener(type: "datasetchanged", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onrowsdelete: (ev: MSEventObj) => any;
+    addEventListener(type: "rowsdelete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    sourceIndex: number;
+    onloadstart: (ev: Event) => any;
+    addEventListener(type: "loadstart", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onlosecapture: (ev: MSEventObj) => any;
+    addEventListener(type: "losecapture", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    ondragenter: (ev: DragEvent) => any;
+    addEventListener(type: "dragenter", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    oncontrolselect: (ev: MSEventObj) => any;
+    addEventListener(type: "controlselect", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onsubmit: (ev: Event) => any;
+    addEventListener(type: "submit", listener: (ev: Event) => any, useCapture?: boolean): void;
+    behaviorUrns: MSBehaviorUrnsCollection;
+    scopeName: string;
+    onchange: (ev: Event) => any;
+    addEventListener(type: "change", listener: (ev: Event) => any, useCapture?: boolean): void;
+    id: string;
+    onlayoutcomplete: (ev: MSEventObj) => any;
+    addEventListener(type: "layoutcomplete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    uniqueID: string;
+    onbeforeactivate: (ev: UIEvent) => any;
+    addEventListener(type: "beforeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    oncanplaythrough: (ev: Event) => any;
+    addEventListener(type: "canplaythrough", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onbeforeupdate: (ev: MSEventObj) => any;
+    addEventListener(type: "beforeupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onfilterchange: (ev: MSEventObj) => any;
+    addEventListener(type: "filterchange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    offsetParent: Element;
+    ondatasetcomplete: (ev: MSEventObj) => any;
+    addEventListener(type: "datasetcomplete", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onsuspend: (ev: Event) => any;
+    addEventListener(type: "suspend", listener: (ev: Event) => any, useCapture?: boolean): void;
+    readyState: any;
+    onmouseenter: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseenter", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    innerText: string;
+    onerrorupdate: (ev: MSEventObj) => any;
+    addEventListener(type: "errorupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onmouseout: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseout", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    parentElement: HTMLElement;
+    onmousewheel: (ev: MouseWheelEvent) => any;
+    addEventListener(type: "mousewheel", listener: (ev: MouseWheelEvent) => any, useCapture?: boolean): void;
+    onvolumechange: (ev: Event) => any;
+    addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+    oncellchange: (ev: MSEventObj) => any;
+    addEventListener(type: "cellchange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onrowexit: (ev: MSEventObj) => any;
+    addEventListener(type: "rowexit", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onrowsinserted: (ev: MSEventObj) => any;
+    addEventListener(type: "rowsinserted", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onpropertychange: (ev: MSEventObj) => any;
+    addEventListener(type: "propertychange", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    filters: Object;
+    children: HTMLCollection;
+    ondragend: (ev: DragEvent) => any;
+    addEventListener(type: "dragend", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    onbeforepaste: (ev: DragEvent) => any;
+    addEventListener(type: "beforepaste", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    ondragover: (ev: DragEvent) => any;
+    addEventListener(type: "dragover", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    offsetTop: number;
+    onmouseup: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseup", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    ondragstart: (ev: DragEvent) => any;
+    addEventListener(type: "dragstart", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    onbeforecopy: (ev: DragEvent) => any;
+    addEventListener(type: "beforecopy", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    ondrag: (ev: DragEvent) => any;
+    addEventListener(type: "drag", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    innerHTML: string;
+    onmouseover: (ev: MouseEvent) => any;
+    addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    lang: string;
+    uniqueNumber: number;
+    onpause: (ev: Event) => any;
+    addEventListener(type: "pause", listener: (ev: Event) => any, useCapture?: boolean): void;
+    tagUrn: string;
+    onmousedown: (ev: MouseEvent) => any;
+    addEventListener(type: "mousedown", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onclick: (ev: MouseEvent) => any;
+    addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    onwaiting: (ev: Event) => any;
+    addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onresizestart: (ev: MSEventObj) => any;
+    addEventListener(type: "resizestart", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    offsetLeft: number;
+    isTextEdit: boolean;
+    isDisabled: boolean;
+    onpaste: (ev: DragEvent) => any;
+    addEventListener(type: "paste", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+    canHaveHTML: boolean;
+    onmoveend: (ev: MSEventObj) => any;
+    addEventListener(type: "moveend", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    language: string;
     onstalled: (ev: Event) => any;
     addEventListener(type: "stalled", listener: (ev: Event) => any, useCapture?: boolean): void;
     onmousemove: (ev: MouseEvent) => any;
     addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
     style: MSStyleCSSProperties;
     isContentEditable: boolean;
+    onbeforeeditfocus: (ev: MSEventObj) => any;
+    addEventListener(type: "beforeeditfocus", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
     onratechange: (ev: Event) => any;
     addEventListener(type: "ratechange", listener: (ev: Event) => any, useCapture?: boolean): void;
-    onloadstart: (ev: Event) => any;
-    addEventListener(type: "loadstart", listener: (ev: Event) => any, useCapture?: boolean): void;
-    ondragenter: (ev: DragEvent) => any;
-    addEventListener(type: "dragenter", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     contentEditable: string;
-    onsubmit: (ev: Event) => any;
-    addEventListener(type: "submit", listener: (ev: Event) => any, useCapture?: boolean): void;
     tabIndex: number;
+    document: Document;
     onprogress: (ev: any) => any;
     addEventListener(type: "progress", listener: (ev: any) => any, useCapture?: boolean): void;
     ondblclick: (ev: MouseEvent) => any;
     addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
     oncontextmenu: (ev: MouseEvent) => any;
     addEventListener(type: "contextmenu", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
-    onchange: (ev: Event) => any;
-    addEventListener(type: "change", listener: (ev: Event) => any, useCapture?: boolean): void;
     onloadedmetadata: (ev: Event) => any;
     addEventListener(type: "loadedmetadata", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onafterupdate: (ev: MSEventObj) => any;
+    addEventListener(type: "afterupdate", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
     onerror: (ev: Event) => any;
     addEventListener(type: "error", listener: (ev: Event) => any, useCapture?: boolean): void;
     onplay: (ev: Event) => any;
     addEventListener(type: "play", listener: (ev: Event) => any, useCapture?: boolean): void;
-    id: string;
+    onresizeend: (ev: MSEventObj) => any;
+    addEventListener(type: "resizeend", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
     onplaying: (ev: Event) => any;
     addEventListener(type: "playing", listener: (ev: Event) => any, useCapture?: boolean): void;
-    oncanplaythrough: (ev: Event) => any;
-    addEventListener(type: "canplaythrough", listener: (ev: Event) => any, useCapture?: boolean): void;
+    isMultiLine: boolean;
+    onfocusout: (ev: FocusEvent) => any;
+    addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
     onabort: (ev: UIEvent) => any;
     addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    ondataavailable: (ev: MSEventObj) => any;
+    addEventListener(type: "dataavailable", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    hideFocus: boolean;
     onreadystatechange: (ev: Event) => any;
     addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
     onkeypress: (ev: KeyboardEvent) => any;
     addEventListener(type: "keypress", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
-    offsetParent: Element;
     onloadeddata: (ev: Event) => any;
     addEventListener(type: "loadeddata", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onbeforedeactivate: (ev: UIEvent) => any;
+    addEventListener(type: "beforedeactivate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    outerText: string;
     disabled: boolean;
-    onsuspend: (ev: Event) => any;
-    addEventListener(type: "suspend", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onactivate: (ev: UIEvent) => any;
+    addEventListener(type: "activate", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
     accessKey: string;
+    onmovestart: (ev: MSEventObj) => any;
+    addEventListener(type: "movestart", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
+    onselectstart: (ev: Event) => any;
+    addEventListener(type: "selectstart", listener: (ev: Event) => any, useCapture?: boolean): void;
     onfocus: (ev: FocusEvent) => any;
     addEventListener(type: "focus", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
     ontimeupdate: (ev: Event) => any;
     addEventListener(type: "timeupdate", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onresize: (ev: UIEvent) => any;
+    addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+    oncut: (ev: DragEvent) => any;
+    addEventListener(type: "cut", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     onselect: (ev: UIEvent) => any;
     addEventListener(type: "select", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
     ondrop: (ev: DragEvent) => any;
     addEventListener(type: "drop", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     offsetWidth: number;
-    onmouseout: (ev: MouseEvent) => any;
-    addEventListener(type: "mouseout", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+    oncopy: (ev: DragEvent) => any;
+    addEventListener(type: "copy", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
     onended: (ev: Event) => any;
     addEventListener(type: "ended", listener: (ev: Event) => any, useCapture?: boolean): void;
     onscroll: (ev: UIEvent) => any;
     addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-    onmousewheel: (ev: MouseWheelEvent) => any;
-    addEventListener(type: "mousewheel", listener: (ev: MouseWheelEvent) => any, useCapture?: boolean): void;
-    onvolumechange: (ev: Event) => any;
-    addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+    onrowenter: (ev: MSEventObj) => any;
+    addEventListener(type: "rowenter", listener: (ev: MSEventObj) => any, useCapture?: boolean): void;
     onload: (ev: Event) => any;
     addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
+    canHaveChildren: boolean;
     oninput: (ev: Event) => any;
     addEventListener(type: "input", listener: (ev: Event) => any, useCapture?: boolean): void;
-    click(): void;
-    getElementsByClassName(classNames: string): NodeList;
+    dragDrop(): boolean;
     scrollIntoView(top?: boolean): void;
+    addFilter(filter: Object): void;
+    setCapture(containerCapture?: boolean): void;
     focus(): void;
+    getAdjacentText(where: string): string;
+    insertAdjacentText(where: string, text: string): void;
+    getElementsByClassName(classNames: string): NodeList;
+    setActive(): void;
+    removeFilter(filter: Object): void;
     blur(): void;
+    clearAttributes(): void;
+    releaseCapture(): void;
+    createControlRange(): ControlRangeCollection;
+    removeBehavior(cookie: number): boolean;
+    contains(child: HTMLElement): boolean;
+    click(): void;
+    insertAdjacentElement(position: string, insertedElement: Element): Element;
+    mergeAttributes(source: HTMLElement, preserveIdentity?: boolean): void;
+    replaceAdjacentText(where: string, newText: string): string;
+    applyElement(apply: Element, where?: string): Element;
+    addBehavior(bstrUrl: string, factory?: any): number;
     insertAdjacentHTML(where: string, html: string): void;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var HTMLElement: {
     prototype: HTMLElement;
-    new(): HTMLElement;
+    new (): HTMLElement;
 }
 
-interface Comment extends CharacterData, MSCommentExtensions {
+interface Comment extends CharacterData {
+    text: string;
 }
 declare var Comment: {
     prototype: Comment;
-    new(): Comment;
+    new (): Comment;
+}
+
+interface PerformanceResourceTiming extends PerformanceEntry {
+    redirectStart: number;
+    redirectEnd: number;
+    domainLookupEnd: number;
+    responseStart: number;
+    domainLookupStart: number;
+    fetchStart: number;
+    requestStart: number;
+    connectEnd: number;
+    connectStart: number;
+    initiatorType: string;
+    responseEnd: number;
+}
+declare var PerformanceResourceTiming: {
+    prototype: PerformanceResourceTiming;
+    new (): PerformanceResourceTiming;
 }
 
 interface CanvasPattern {
 }
 declare var CanvasPattern: {
     prototype: CanvasPattern;
-    new(): CanvasPattern;
+    new (): CanvasPattern;
 }
 
-interface HTMLHRElement extends HTMLElement, DOML2DeprecatedWidthStyle_HTMLHRElement, MSHTMLHRElementExtensions, HTMLHRElementDOML2Deprecated, DOML2DeprecatedAlignmentStyle_HTMLHRElement, DOML2DeprecatedSizeProperty {
+interface HTMLHRElement extends HTMLElement, DOML2DeprecatedColorProperty, DOML2DeprecatedSizeProperty {
+    /**
+      * Sets or retrieves the width of the object.
+      */
+    width: number;
+    /**
+      * Sets or retrieves how the object is aligned with adjacent text.
+      */
+    align: string;
+    /**
+      * Sets or retrieves whether the horizontal rule is drawn with 3-D shading.
+      */
+    noShade: boolean;
 }
 declare var HTMLHRElement: {
     prototype: HTMLHRElement;
-    new(): HTMLHRElement;
+    new (): HTMLHRElement;
 }
 
-interface MSHTMLFrameSetElementExtensions {
-    name: string;
-    frameBorder: string;
-    border: string;
-    frameSpacing: any;
-}
-
-interface DOML2DeprecatedTextFlowControl_HTMLBlockElement {
-    clear: string;
-}
-
-interface PositionOptions {
-    enableHighAccuracy?: boolean;
-    timeout?: number;
-    maximumAge?: number;
-}
-
-interface HTMLObjectElement extends HTMLElement, MSHTMLObjectElementExtensions, GetSVGDocument, DOML2DeprecatedMarginStyle_HTMLObjectElement, MSDataBindingExtensions, MSDataBindingRecordSetExtensions, DOML2DeprecatedAlignmentStyle_HTMLObjectElement, DOML2DeprecatedBorderStyle_HTMLObjectElement {
+interface HTMLObjectElement extends HTMLElement, GetSVGDocument, DOML2DeprecatedMarginStyle, DOML2DeprecatedBorderStyle, DOML2DeprecatedAlignmentStyle, MSDataBindingExtensions, MSDataBindingRecordSetExtensions {
+    /**
+      * Sets or retrieves the width of the object.
+      */
     width: string;
+    /**
+      * Sets or retrieves the Internet media type for the code associated with the object.
+      */
     codeType: string;
-    archive: string;
-    standby: string;
-    name: string;
-    useMap: string;
+    /**
+      * Retrieves the contained object.
+      */
+    object: Object;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
+    /**
+      * Sets or retrieves the URL of the file containing the compiled Java class.
+      */
+    code: string;
+    /**
+      * Sets or retrieves a character string that can be used to implement your own archive functionality for the object.
+      */
+    archive: string;
+    /**
+      * Sets or retrieves a message to be displayed while an object is loading.
+      */
+    standby: string;
+    /**
+      * Sets or retrieves a text alternative to the graphic.
+      */
+    alt: string;
+    /**
+      * Sets or retrieves the class identifier for the object.
+      */
+    classid: string;
+    /**
+      * Sets or retrieves the name of the object.
+      */
+    name: string;
+    /**
+      * Sets or retrieves the URL, often with a bookmark extension (#name), to use as a client-side image map.
+      */
+    useMap: string;
+    /**
+      * Sets or retrieves the URL that references the data of the object.
+      */
     data: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
     height: string;
+    /**
+      * Retrieves the document object of the page or frame.
+      */
     contentDocument: Document;
+    /**
+      * Gets or sets the optional alternative HTML script to execute if the object fails to load.
+      */
+    altHtml: string;
+    /**
+      * Sets or retrieves the URL of the component.
+      */
     codeBase: string;
     declare: boolean;
+    /**
+      * Sets or retrieves the MIME type of the object.
+      */
     type: string;
-    code: string;
+    /**
+      * Retrieves a string of the URL where the object tag can be found. This is often the href of the document that the object is in, or the value set by a base element.
+      */
+    BaseHref: string;
 }
 declare var HTMLObjectElement: {
     prototype: HTMLObjectElement;
-    new(): HTMLObjectElement;
+    new (): HTMLObjectElement;
 }
 
-interface MSHTMLMenuElementExtensions {
+interface HTMLEmbedElement extends HTMLElement, GetSVGDocument {
+    /**
+      * Sets or retrieves the width of the object.
+      */
+    width: string;
+    /**
+      * Retrieves the palette used for the embedded document.
+      */
+    palette: string;
+    /**
+      * Sets or retrieves a URL to be loaded by the object.
+      */
+    src: string;
+    /**
+      * Sets or retrieves the name of the object.
+      */
+    name: string;
+    /**
+      * Retrieves the URL of the plug-in used to view an embedded document.
+      */
+    pluginspage: string;
+    /**
+      * Sets or retrieves the height of the object.
+      */
+    height: string;
+    /**
+      * Sets or retrieves the height and width units of the embed object.
+      */
+    units: string;
 }
-
-interface DocumentView {
-    defaultView: AbstractView;
-    elementFromPoint(x: number, y: number): Element;
+declare var HTMLEmbedElement: {
+    prototype: HTMLEmbedElement;
+    new (): HTMLEmbedElement;
 }
 
 interface StorageEvent extends Event {
@@ -6552,18 +10571,7 @@ interface StorageEvent extends Event {
 }
 declare var StorageEvent: {
     prototype: StorageEvent;
-    new(): StorageEvent;
-}
-
-interface HTMLEmbedElement extends HTMLElement, GetSVGDocument, MSHTMLEmbedElementExtensions {
-    width: string;
-    src: string;
-    name: string;
-    height: string;
-}
-declare var HTMLEmbedElement: {
-    prototype: HTMLEmbedElement;
-    new(): HTMLEmbedElement;
+    new (): StorageEvent;
 }
 
 interface CharacterData extends Node {
@@ -6577,28 +10585,58 @@ interface CharacterData extends Node {
 }
 declare var CharacterData: {
     prototype: CharacterData;
-    new(): CharacterData;
+    new (): CharacterData;
 }
 
-interface DOML2DeprecatedAlignmentStyle_HTMLTableSectionElement {
-    align: string;
-}
-
-interface HTMLOptGroupElement extends HTMLElement, MSDataBindingExtensions, MSHTMLOptGroupElementExtensions {
+interface HTMLOptGroupElement extends HTMLElement, MSDataBindingExtensions {
+    /**
+      * Sets or retrieves the ordinal position of an option in a list box.
+      */
+    index: number;
+    /**
+      * Sets or retrieves the status of an option.
+      */
+    defaultSelected: boolean;
+    /**
+      * Sets or retrieves the text string specified by the option tag.
+      */
+    text: string;
+    /**
+      * Sets or retrieves the value which is returned to the server when the form control is submitted.
+      */
+    value: string;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
+    form: HTMLFormElement;
+    /**
+      * Sets or retrieves a value that you can use to implement your own label functionality for the object.
+      */
     label: string;
+    /**
+      * Sets or retrieves whether the option in the list box is the default item.
+      */
+    selected: boolean;
 }
 declare var HTMLOptGroupElement: {
     prototype: HTMLOptGroupElement;
-    new(): HTMLOptGroupElement;
+    new (): HTMLOptGroupElement;
 }
 
-interface HTMLIsIndexElement extends HTMLElement, MSHTMLIsIndexElementExtensions {
+interface HTMLIsIndexElement extends HTMLElement {
+    /**
+      * Retrieves a reference to the form that the object is embedded in. 
+      */
     form: HTMLFormElement;
+    /**
+      * Sets or retrieves the URL to which the form content is sent for processing.
+      */
+    action: string;
     prompt: string;
 }
 declare var HTMLIsIndexElement: {
     prototype: HTMLIsIndexElement;
-    new(): HTMLIsIndexElement;
+    new (): HTMLIsIndexElement;
 }
 
 interface SVGPathSegLinetoRel extends SVGPathSeg {
@@ -6607,11 +10645,7 @@ interface SVGPathSegLinetoRel extends SVGPathSeg {
 }
 declare var SVGPathSegLinetoRel: {
     prototype: SVGPathSegLinetoRel;
-    new(): SVGPathSegLinetoRel;
-}
-
-interface MSHTMLDocumentSelection {
-    selection: MSSelection;
+    new (): SVGPathSegLinetoRel;
 }
 
 interface DOMException {
@@ -6645,7 +10679,7 @@ interface DOMException {
 }
 declare var DOMException: {
     prototype: DOMException;
-    new(): DOMException;
+    new (): DOMException;
     HIERARCHY_REQUEST_ERR: number;
     NO_MODIFICATION_ALLOWED_ERR: number;
     INVALID_MODIFICATION_ERR: number;
@@ -6672,41 +10706,29 @@ declare var DOMException: {
     INUSE_ATTRIBUTE_ERR: number;
 }
 
-interface MSCompatibleInfoCollection {
-    length: number;
-    item(index: number): MSCompatibleInfo;
-}
-declare var MSCompatibleInfoCollection: {
-    prototype: MSCompatibleInfoCollection;
-    new(): MSCompatibleInfoCollection;
-}
-
-interface MSHTMLIsIndexElementExtensions {
-    action: string;
-}
-
 interface SVGAnimatedBoolean {
     animVal: boolean;
     baseVal: boolean;
 }
 declare var SVGAnimatedBoolean: {
     prototype: SVGAnimatedBoolean;
-    new(): SVGAnimatedBoolean;
+    new (): SVGAnimatedBoolean;
 }
 
-interface SVGSwitchElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests {
+interface MSCompatibleInfoCollection {
+    length: number;
+    item(index: number): MSCompatibleInfo;
+}
+declare var MSCompatibleInfoCollection: {
+    prototype: MSCompatibleInfoCollection;
+    new (): MSCompatibleInfoCollection;
+}
+
+interface SVGSwitchElement extends SVGElement, SVGStylable, SVGTransformable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
 }
 declare var SVGSwitchElement: {
     prototype: SVGSwitchElement;
-    new(): SVGSwitchElement;
-}
-
-interface MSHTMLIFrameElementExtensions extends DOML2DeprecatedMarginStyle_MSHTMLIFrameElementExtensions, DOML2DeprecatedBorderStyle_MSHTMLIFrameElementExtensions {
-    onload: (ev: Event) => any;
-    addEventListener(type: "load", listener: (ev: Event) => any, useCapture?: boolean): void;
-    frameSpacing: any;
-    noResize: boolean;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    new (): SVGSwitchElement;
 }
 
 interface SVGPreserveAspectRatio {
@@ -6722,14 +10744,14 @@ interface SVGPreserveAspectRatio {
     SVG_PRESERVEASPECTRATIO_XMIDYMAX: number;
     SVG_PRESERVEASPECTRATIO_XMINYMIN: number;
     SVG_MEETORSLICE_MEET: number;
-   SVG_PRESERVEASPECTRATIO_XMIDYMID: number;
+    SVG_PRESERVEASPECTRATIO_XMIDYMID: number;
     SVG_PRESERVEASPECTRATIO_XMIDYMIN: number;
     SVG_MEETORSLICE_SLICE: number;
     SVG_PRESERVEASPECTRATIO_UNKNOWN: number;
 }
 declare var SVGPreserveAspectRatio: {
     prototype: SVGPreserveAspectRatio;
-    new(): SVGPreserveAspectRatio;
+    new (): SVGPreserveAspectRatio;
     SVG_PRESERVEASPECTRATIO_NONE: number;
     SVG_PRESERVEASPECTRATIO_XMINYMID: number;
     SVG_PRESERVEASPECTRATIO_XMAXYMIN: number;
@@ -6746,7 +10768,8 @@ declare var SVGPreserveAspectRatio: {
     SVG_PRESERVEASPECTRATIO_UNKNOWN: number;
 }
 
-interface Attr extends Node, MSAttrExtensions {
+interface Attr extends Node {
+    expando: boolean;
     specified: boolean;
     ownerElement: Element;
     value: string;
@@ -6754,15 +10777,7 @@ interface Attr extends Node, MSAttrExtensions {
 }
 declare var Attr: {
     prototype: Attr;
-    new(): Attr;
-}
-
-interface MSBorderColorStyle_HTMLTableRowElement {
-    borderColor: any;
-}
-
-interface DOML2DeprecatedAlignmentStyle_HTMLTableCaptionElement {
-    align: string;
+    new (): Attr;
 }
 
 interface PerformanceNavigation {
@@ -6776,18 +10791,11 @@ interface PerformanceNavigation {
 }
 declare var PerformanceNavigation: {
     prototype: PerformanceNavigation;
-    new(): PerformanceNavigation;
+    new (): PerformanceNavigation;
     TYPE_RELOAD: number;
     TYPE_RESERVED: number;
     TYPE_BACK_FORWARD: number;
     TYPE_NAVIGATE: number;
-}
-
-interface HTMLBodyElementDOML2Deprecated {
-    link: any;
-    aLink: any;
-    text: any;
-    vLink: any;
 }
 
 interface SVGStopElement extends SVGElement, SVGStylable {
@@ -6795,18 +10803,18 @@ interface SVGStopElement extends SVGElement, SVGStylable {
 }
 declare var SVGStopElement: {
     prototype: SVGStopElement;
-    new(): SVGStopElement;
+    new (): SVGStopElement;
 }
 
 interface PositionCallback {
     (position: Position): void;
 }
 
-interface SVGSymbolElement extends SVGElement, SVGStylable, SVGLangSpace, SVGFitToViewBox {
+interface SVGSymbolElement extends SVGElement, SVGStylable, SVGLangSpace, SVGFitToViewBox, SVGExternalResourcesRequired {
 }
 declare var SVGSymbolElement: {
     prototype: SVGSymbolElement;
-    new(): SVGSymbolElement;
+    new (): SVGSymbolElement;
 }
 
 interface SVGElementInstanceList {
@@ -6815,12 +10823,7 @@ interface SVGElementInstanceList {
 }
 declare var SVGElementInstanceList: {
     prototype: SVGElementInstanceList;
-    new(): SVGElementInstanceList;
-}
-
-interface MSDataBindingRecordSetExtensions {
-    recordset: Object;
-    namedRecordset(dataMember: string, hierarchy?: any): Object;
+    new (): SVGElementInstanceList;
 }
 
 interface CSSRuleList {
@@ -6830,35 +10833,44 @@ interface CSSRuleList {
 }
 declare var CSSRuleList: {
     prototype: CSSRuleList;
-    new(): CSSRuleList;
+    new (): CSSRuleList;
 }
 
-interface MSHTMLTableColElementExtensions {
+interface MSDataBindingRecordSetExtensions {
+    recordset: Object;
+    namedRecordset(dataMember: string, hierarchy?: any): Object;
 }
 
 interface LinkStyle {
+    styleSheet: StyleSheet;
     sheet: StyleSheet;
 }
 
-interface MSHTMLMarqueeElementExtensions {
-}
-
 interface HTMLVideoElement extends HTMLMediaElement {
+    /**
+      * Gets or sets the width of the video element.
+      */
     width: number;
+    /**
+      * Gets the intrinsic width of a video in CSS pixels, or zero if the dimensions are not known.
+      */
     videoWidth: number;
+    /**
+      * Gets the intrinsic height of a video in CSS pixels, or zero if the dimensions are not known.
+      */
     videoHeight: number;
+    /**
+      * Gets or sets the height of the video element.
+      */
     height: number;
+    /**
+      * Gets or sets a URL of an image to display, for example, like a movie poster. This can be a still frame from the video, or another image if no video data is available.
+      */
     poster: string;
 }
 declare var HTMLVideoElement: {
     prototype: HTMLVideoElement;
-    new(): HTMLVideoElement;
-}
-
-interface MSXMLHttpRequestExtensions {
-    responseBody: any;
-    timeout: number;
-    ontimeout: (ev: Event) => any;
+    new (): HTMLVideoElement;
 }
 
 interface ClientRectList {
@@ -6868,14 +10880,10 @@ interface ClientRectList {
 }
 declare var ClientRectList: {
     prototype: ClientRectList;
-    new(): ClientRectList;
+    new (): ClientRectList;
 }
 
-interface DOML2DeprecatedAlignmentStyle_HTMLTableCellElement {
-    align: string;
-}
-
-interface SVGMaskElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangSpace, SVGTests {
+interface SVGMaskElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangSpace, SVGTests, SVGExternalResourcesRequired {
     y: SVGAnimatedLength;
     width: SVGAnimatedLength;
     maskUnits: SVGAnimatedEnumeration;
@@ -6885,7 +10893,14 @@ interface SVGMaskElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangS
 }
 declare var SVGMaskElement: {
     prototype: SVGMaskElement;
-    new(): SVGMaskElement;
+    new (): SVGMaskElement;
+}
+
+interface External {
+}
+declare var External: {
+    prototype: External;
+    new (): External;
 }
 
 declare var Audio: { new (src?: string): HTMLAudioElement; };
@@ -6908,11 +10923,13 @@ declare var ondragstart: (ev: DragEvent) => any;
 declare function addEventListener(type: "dragstart", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
 declare var ondrag: (ev: DragEvent) => any;
 declare function addEventListener(type: "drag", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
+declare var screenX: number;
 declare var onmouseover: (ev: MouseEvent) => any;
 declare function addEventListener(type: "mouseover", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
 declare var ondragleave: (ev: DragEvent) => any;
 declare function addEventListener(type: "dragleave", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
 declare var history: History;
+declare var pageXOffset: number;
 declare var name: string;
 declare var onafterprint: (ev: Event) => any;
 declare function addEventListener(type: "afterprint", listener: (ev: Event) => any, useCapture?: boolean): void;
@@ -6928,6 +10945,7 @@ declare function addEventListener(type: "seeked", listener: (ev: Event) => any, 
 declare var opener: Window;
 declare var onclick: (ev: MouseEvent) => any;
 declare function addEventListener(type: "click", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+declare var innerHeight: number;
 declare var onwaiting: (ev: Event) => any;
 declare function addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var ononline: (ev: Event) => any;
@@ -6943,13 +10961,16 @@ declare var onseeking: (ev: Event) => any;
 declare function addEventListener(type: "seeking", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var oncanplay: (ev: Event) => any;
 declare function addEventListener(type: "canplay", listener: (ev: Event) => any, useCapture?: boolean): void;
+declare var outerWidth: number;
 declare var onstalled: (ev: Event) => any;
 declare function addEventListener(type: "stalled", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var onmousemove: (ev: MouseEvent) => any;
 declare function addEventListener(type: "mousemove", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+declare var innerWidth: number;
 declare var onoffline: (ev: Event) => any;
 declare function addEventListener(type: "offline", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var length: number;
+declare var screen: Screen;
 declare var onbeforeunload: (ev: BeforeUnloadEvent) => any;
 declare function addEventListener(type: "beforeunload", listener: (ev: BeforeUnloadEvent) => any, useCapture?: boolean): void;
 declare var onratechange: (ev: Event) => any;
@@ -6963,10 +10984,12 @@ declare function addEventListener(type: "dragenter", listener: (ev: DragEvent) =
 declare var onsubmit: (ev: Event) => any;
 declare function addEventListener(type: "submit", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var self: Window;
+declare var document: Document;
 declare var onprogress: (ev: any) => any;
 declare function addEventListener(type: "progress", listener: (ev: any) => any, useCapture?: boolean): void;
 declare var ondblclick: (ev: MouseEvent) => any;
 declare function addEventListener(type: "dblclick", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
+declare var pageYOffset: number;
 declare var oncontextmenu: (ev: MouseEvent) => any;
 declare function addEventListener(type: "contextmenu", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
 declare var onchange: (ev: Event) => any;
@@ -6975,7 +10998,7 @@ declare var onloadedmetadata: (ev: Event) => any;
 declare function addEventListener(type: "loadedmetadata", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var onplay: (ev: Event) => any;
 declare function addEventListener(type: "play", listener: (ev: Event) => any, useCapture?: boolean): void;
-declare var onerror: ErrorFunction;
+declare var onerror: ErrorEventHandler;
 declare var onplaying: (ev: Event) => any;
 declare function addEventListener(type: "playing", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var parent: Window;
@@ -6986,6 +11009,7 @@ declare var onabort: (ev: UIEvent) => any;
 declare function addEventListener(type: "abort", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
 declare var onreadystatechange: (ev: Event) => any;
 declare function addEventListener(type: "readystatechange", listener: (ev: Event) => any, useCapture?: boolean): void;
+declare var outerHeight: number;
 declare var onkeypress: (ev: KeyboardEvent) => any;
 declare function addEventListener(type: "keypress", listener: (ev: KeyboardEvent) => any, useCapture?: boolean): void;
 declare var frameElement: Element;
@@ -7002,9 +11026,10 @@ declare var ontimeupdate: (ev: Event) => any;
 declare function addEventListener(type: "timeupdate", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var onresize: (ev: UIEvent) => any;
 declare function addEventListener(type: "resize", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
-declare var navigator: Navigator;
 declare var onselect: (ev: UIEvent) => any;
 declare function addEventListener(type: "select", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+declare var navigator: Navigator;
+declare var styleMedia: StyleMedia;
 declare var ondrop: (ev: DragEvent) => any;
 declare function addEventListener(type: "drop", listener: (ev: DragEvent) => any, useCapture?: boolean): void;
 declare var onmouseout: (ev: MouseEvent) => any;
@@ -7017,6 +11042,7 @@ declare var onunload: (ev: Event) => any;
 declare function addEventListener(type: "unload", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var onscroll: (ev: UIEvent) => any;
 declare function addEventListener(type: "scroll", listener: (ev: UIEvent) => any, useCapture?: boolean): void;
+declare var screenY: number;
 declare var onmousewheel: (ev: MouseWheelEvent) => any;
 declare function addEventListener(type: "mousewheel", listener: (ev: MouseWheelEvent) => any, useCapture?: boolean): void;
 declare var onload: (ev: Event) => any;
@@ -7025,21 +11051,29 @@ declare var onvolumechange: (ev: Event) => any;
 declare function addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare var oninput: (ev: Event) => any;
 declare function addEventListener(type: "input", listener: (ev: Event) => any, useCapture?: boolean): void;
-declare function alert(message?: string): void;
+declare var performance: Performance;
+declare function alert(message?: any): void;
+declare function scroll(x?: number, y?: number): void;
 declare function focus(): void;
+declare function scrollTo(x?: number, y?: number): void;
 declare function print(): void;
 declare function prompt(message?: string, defaul?: string): string;
 declare function toString(): string;
 declare function open(url?: string, target?: string, features?: string, replace?: boolean): Window;
-declare function close(): void;
+declare function scrollBy(x?: number, y?: number): void;
 declare function confirm(message?: string): boolean;
+declare function close(): void;
 declare function postMessage(message: any, targetOrigin: string, ports?: any): void;
 declare function showModalDialog(url?: string, argument?: any, options?: any): any;
 declare function blur(): void;
 declare function getSelection(): Selection;
 declare function getComputedStyle(elt: Element, pseudoElt?: string): CSSStyleDeclaration;
+declare function addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+declare function removeEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+declare function dispatchEvent(evt: Event): boolean;
 declare function attachEvent(event: string, listener: EventListener): boolean;
 declare function detachEvent(event: string, listener: EventListener): void;
+declare var localStorage: Storage;
 declare var status: string;
 declare var onmouseleave: (ev: MouseEvent) => any;
 declare function addEventListener(type: "mouseleave", listener: (ev: MouseEvent) => any, useCapture?: boolean): void;
@@ -7054,7 +11088,7 @@ declare var clientInformation: Navigator;
 declare var closed: boolean;
 declare var onhelp: (ev: Event) => any;
 declare function addEventListener(type: "help", listener: (ev: Event) => any, useCapture?: boolean): void;
-declare var external: BrowserPublic;
+declare var external: External;
 declare var event: MSEventObj;
 declare var onfocusout: (ev: FocusEvent) => any;
 declare function addEventListener(type: "focusout", listener: (ev: FocusEvent) => any, useCapture?: boolean): void;
@@ -7073,35 +11107,22 @@ declare function msWriteProfilerMark(profilerMarkName: string): void;
 declare function moveTo(x?: number, y?: number): void;
 declare function moveBy(x?: number, y?: number): void;
 declare function showHelp(url: string, helpArg?: any, features?: string): void;
-declare var performance: any;
-declare var outerWidth: number;
-declare var pageXOffset: number;
-declare var innerWidth: number;
-declare var pageYOffset: number;
-declare var screenY: number;
-declare var outerHeight: number;
-declare var screen: Screen;
-declare var innerHeight: number;
-declare var screenX: number;
-declare function scroll(x?: number, y?: number): void;
-declare function scrollBy(x?: number, y?: number): void;
-declare function scrollTo(x?: number, y?: number): void;
-declare var styleMedia: StyleMedia;
-declare var document: Document;
-declare function removeEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
-declare function addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
-declare function dispatchEvent(evt: Event): boolean;
-declare var localStorage: Storage;
 declare var sessionStorage: Storage;
 declare function clearTimeout(handle: number): void;
-declare function setTimeout(expression: any, msec?: number, language?: any): number;
+declare function setTimeout(handler: any, timeout?: any, ...args: any[]): number;
 declare function clearInterval(handle: number): void;
-declare function setInterval(expression: any, msec?: number, language?: any): number;
+declare function setInterval(handler: any, timeout?: any, ...args: any[]): number;
 
 
 /////////////////////////////
-/// IE10 DOM APIs
+/// IE10 DOM APIs 
 /////////////////////////////
+
+
+
+interface ObjectURLOptions {
+    oneTimeOnly?: boolean;
+}
 
 interface HTMLBodyElement {
     onpopstate: (ev: PopStateEvent) => any;
@@ -7126,7 +11147,7 @@ interface MSGestureEvent extends UIEvent {
     scale: number;
     gestureObject: any;
     clientX: number;
-    initGestureEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, offsetXArg: number, offsetYArg: number, translationXArg: number, translationYArg: number, scaleArg: number, expansionArg: number, rotationArg: number, velocityXArg: number, velocityYArg: number, velocityExpansionArg: number, velocityAngularArg: number, hwTimestampArg: number): void;
+    initGestureEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, offsetXArg: number, offsetYArg: number, translationXArg: number, translationYArg: number, scaleArg: number, expansionArg: number, rotationArg: number, velocityXArg: number, velocityYArg: number, velocityExpansionArg: number, velocityAngularArg: number, hwTimestampArg: number): void;
     MSGESTURE_FLAG_BEGIN: number;
     MSGESTURE_FLAG_END: number;
     MSGESTURE_FLAG_CANCEL: number;
@@ -7135,7 +11156,7 @@ interface MSGestureEvent extends UIEvent {
 }
 declare var MSGestureEvent: {
     prototype: MSGestureEvent;
-    new(): MSGestureEvent;
+    new (): MSGestureEvent;
     MSGESTURE_FLAG_BEGIN: number;
     MSGESTURE_FLAG_END: number;
     MSGESTURE_FLAG_CANCEL: number;
@@ -7144,33 +11165,111 @@ declare var MSGestureEvent: {
 }
 
 interface HTMLAnchorElement {
+    /**
+      * Retrieves or sets the text of the object as a string. 
+      */
     text: string;
 }
 
 interface HTMLInputElement {
+    /**
+      * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation messages without actually submitting.
+      */
     validationMessage: string;
+    /**
+      * Returns a FileList object on a file type input object.
+      */
     files: FileList;
+    /**
+      * Defines the maximum acceptable value for an input element with type="number".When used with the min and step attributes, lets you control the range and increment (such as only even numbers) that the user can enter into an input field.
+      */
     max: string;
+    /**
+      * Overrides the target attribute on a form element.
+      */
     formTarget: string;
+    /**
+      * Returns whether an element will successfully validate based on forms validation rules and constraints.
+      */
     willValidate: boolean;
+    /**
+      * Defines an increment or jump between values that you want to allow the user to enter. When used with the max and min attributes, lets you control the range and increment (for example, allow only even numbers) that the user can enter into an input field.
+      */
     step: string;
+    /**
+      * Provides a way to direct a user to a specific field when a document loads. This can provide both direction and convenience for a user, reducing the need to click or tab to a field when a page opens. This attribute is true when present on an element, and false when missing.
+      */
     autofocus: boolean;
+    /**
+      * When present, marks an element that can't be submitted without a value.
+      */
     required: boolean;
+    /**
+      * Used to override the encoding (formEnctype attribute) specified on the form element.
+      */
     formEnctype: string;
+    /**
+      * Returns the input field value as a number.
+      */
     valueAsNumber: number;
+    /**
+      * Gets or sets a text string that is displayed in an input field as a hint or prompt to users as the format or type of information they need to enter.The text appears in an input field until the user puts focus on the field.
+      */
     placeholder: string;
+    /**
+      * Overrides the submit method attribute previously specified on a form element.
+      */
     formMethod: string;
+    /**
+      * Specifies the ID of a pre-defined datalist of options for an input element.
+      */
     list: HTMLElement;
+    /**
+      * Specifies whether autocomplete is applied to an editable text field.
+      */
     autocomplete: string;
+    /**
+      * Defines the minimum acceptable value for an input element with type="number". When used with the max and step attributes, lets you control the range and increment (such as even numbers only) that the user can enter into an input field.
+      */
     min: string;
+    /**
+      * Overrides the action attribute (where the data on a form is sent) on the parent form element.
+      */
     formAction: string;
+    /**
+      * Gets or sets a string containing a regular expression that the user's input must match.
+      */
     pattern: string;
+    /**
+      * Returns a  ValidityState object that represents the validity states of an element.
+      */
     validity: ValidityState;
+    /**
+      * Overrides any validation or required attributes on a form or form elements to allow it to be submitted without validation. This can be used to create a "save draft"–type submit option.
+      */
     formNoValidate: string;
+    /**
+      * Sets or retrieves the Boolean value indicating whether multiple items can be selected from a list.
+      */
     multiple: boolean;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
     checkValidity(): boolean;
+    /**
+      * Decrements a range input control's value by the value given by the Step attribute. If the optional parameter is used, it will decrement the input control's step value multiplied by the parameter's value.
+      * @param n Value to decrement the value by.
+      */
     stepDown(n?: number): void;
+    /**
+      * Increments a range input control's value by the value given by the Step attribute. If the optional parameter is used, will increment the input control's value by that value.
+      * @param n Value to increment the value by.
+      */
     stepUp(n?: number): void;
+    /**
+      * Sets a custom error message that is displayed when a form is submitted.
+      * @param error Sets a custom error message that is displayed when a form is submitted.
+      */
     setCustomValidity(error: string): void;
 }
 
@@ -7183,10 +11282,10 @@ interface ErrorEvent extends Event {
 }
 declare var ErrorEvent: {
     prototype: ErrorEvent;
-    new(): ErrorEvent;
+    new (): ErrorEvent;
 }
 
-interface SVGFilterElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangSpace, SVGURIReference {
+interface SVGFilterElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLangSpace, SVGURIReference, SVGExternalResourcesRequired {
     y: SVGAnimatedLength;
     width: SVGAnimatedLength;
     filterResX: SVGAnimatedInteger;
@@ -7199,7 +11298,7 @@ interface SVGFilterElement extends SVGElement, SVGUnitTypes, SVGStylable, SVGLan
 }
 declare var SVGFilterElement: {
     prototype: SVGFilterElement;
-    new(): SVGFilterElement;
+    new (): SVGFilterElement;
 }
 
 interface TrackEvent extends Event {
@@ -7207,7 +11306,7 @@ interface TrackEvent extends Event {
 }
 declare var TrackEvent: {
     prototype: TrackEvent;
-    new(): TrackEvent;
+    new (): TrackEvent;
 }
 
 interface SVGFEMergeNodeElement extends SVGElement {
@@ -7215,17 +11314,409 @@ interface SVGFEMergeNodeElement extends SVGElement {
 }
 declare var SVGFEMergeNodeElement: {
     prototype: SVGFEMergeNodeElement;
-    new(): SVGFEMergeNodeElement;
+    new (): SVGFEMergeNodeElement;
 }
 
 interface SVGFEFloodElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
 }
 declare var SVGFEFloodElement: {
     prototype: SVGFEFloodElement;
-    new(): SVGFEFloodElement;
+    new (): SVGFEFloodElement;
 }
 
-interface MSElementExtensions {
+interface MSGesture {
+    target: Element;
+    addPointer(pointerId: number): void;
+    stop(): void;
+}
+declare var MSGesture: {
+    prototype: MSGesture;
+    new (): MSGesture;
+}
+
+interface TextTrackCue extends EventTarget {
+    onenter: (ev: Event) => any;
+    addEventListener(type: "enter", listener: (ev: Event) => any, useCapture?: boolean): void;
+    track: TextTrack;
+    endTime: number;
+    text: string;
+    pauseOnExit: boolean;
+    id: string;
+    startTime: number;
+    onexit: (ev: Event) => any;
+    addEventListener(type: "exit", listener: (ev: Event) => any, useCapture?: boolean): void;
+    getCueAsHTML(): DocumentFragment;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+declare var TextTrackCue: {
+    prototype: TextTrackCue;
+    new (): TextTrackCue;
+}
+
+interface MSStreamReader extends MSBaseReader {
+    error: DOMError;
+    readAsArrayBuffer(stream: MSStream, size?: number): void;
+    readAsBlob(stream: MSStream, size?: number): void;
+    readAsDataURL(stream: MSStream, size?: number): void;
+    readAsText(stream: MSStream, encoding?: string, size?: number): void;
+}
+declare var MSStreamReader: {
+    prototype: MSStreamReader;
+    new (): MSStreamReader;
+}
+
+interface DOMTokenList {
+    length: number;
+    contains(token: string): boolean;
+    remove(token: string): void;
+    toggle(token: string): boolean;
+    add(token: string): void;
+    item(index: number): string;
+    [index: number]: string;
+    toString(): string;
+}
+declare var DOMTokenList: {
+    prototype: DOMTokenList;
+    new (): DOMTokenList;
+}
+
+interface EventException {
+    name: string;
+}
+
+interface Performance {
+    now(): number;
+}
+
+interface SVGFEFuncAElement extends SVGComponentTransferFunctionElement {
+}
+declare var SVGFEFuncAElement: {
+    prototype: SVGFEFuncAElement;
+    new (): SVGFEFuncAElement;
+}
+
+interface SVGFETileElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
+    in1: SVGAnimatedString;
+}
+declare var SVGFETileElement: {
+    prototype: SVGFETileElement;
+    new (): SVGFETileElement;
+}
+
+interface SVGFEBlendElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
+    in2: SVGAnimatedString;
+    mode: SVGAnimatedEnumeration;
+    in1: SVGAnimatedString;
+    SVG_FEBLEND_MODE_DARKEN: number;
+    SVG_FEBLEND_MODE_UNKNOWN: number;
+    SVG_FEBLEND_MODE_MULTIPLY: number;
+    SVG_FEBLEND_MODE_NORMAL: number;
+    SVG_FEBLEND_MODE_SCREEN: number;
+    SVG_FEBLEND_MODE_LIGHTEN: number;
+}
+declare var SVGFEBlendElement: {
+    prototype: SVGFEBlendElement;
+    new (): SVGFEBlendElement;
+    SVG_FEBLEND_MODE_DARKEN: number;
+    SVG_FEBLEND_MODE_UNKNOWN: number;
+    SVG_FEBLEND_MODE_MULTIPLY: number;
+    SVG_FEBLEND_MODE_NORMAL: number;
+    SVG_FEBLEND_MODE_SCREEN: number;
+    SVG_FEBLEND_MODE_LIGHTEN: number;
+}
+
+interface WindowTimers extends WindowTimersExtension {
+}
+declare var WindowTimers: {
+    prototype: WindowTimers;
+    new (): WindowTimers;
+}
+
+interface CSSStyleDeclaration {
+    animationFillMode: string;
+    floodColor: string;
+    animationIterationCount: string;
+    textShadow: string;
+    backfaceVisibility: string;
+    msAnimationIterationCount: string;
+    animationDelay: string;
+    animationTimingFunction: string;
+    columnWidth: any;
+    msScrollSnapX: string;
+    columnRuleColor: any;
+    columnRuleWidth: any;
+    transitionDelay: string;
+    transition: string;
+    msFlowFrom: string;
+    msScrollSnapType: string;
+    msContentZoomSnapType: string;
+    msGridColumns: string;
+    msAnimationName: string;
+    msGridRowAlign: string;
+    msContentZoomChaining: string;
+    msGridColumn: any;
+    msHyphenateLimitZone: any;
+    msScrollRails: string;
+    msAnimationDelay: string;
+    enableBackground: string;
+    msWrapThrough: string;
+    columnRuleStyle: string;
+    msAnimation: string;
+    msFlexFlow: string;
+    msScrollSnapY: string;
+    msHyphenateLimitLines: any;
+    msTouchAction: string;
+    msScrollLimit: string;
+    animation: string;
+    transform: string;
+    filter: string;
+    colorInterpolationFilters: string;
+    transitionTimingFunction: string;
+    msBackfaceVisibility: string;
+    animationPlayState: string;
+    transformOrigin: string;
+    msScrollLimitYMin: any;
+    msFontFeatureSettings: string;
+    msContentZoomLimitMin: any;
+    columnGap: any;
+    transitionProperty: string;
+    msAnimationDuration: string;
+    msAnimationFillMode: string;
+    msFlexDirection: string;
+    msTransitionDuration: string;
+    fontFeatureSettings: string;
+    breakBefore: string;
+    msFlexWrap: string;
+    perspective: string;
+    msFlowInto: string;
+    msTransformStyle: string;
+    msScrollTranslation: string;
+    msTransitionProperty: string;
+    msUserSelect: string;
+    msOverflowStyle: string;
+    msScrollSnapPointsY: string;
+    animationDirection: string;
+    animationDuration: string;
+    msFlex: string;
+    msTransitionTimingFunction: string;
+    animationName: string;
+    columnRule: string;
+    msGridColumnSpan: any;
+    msFlexNegative: string;
+    columnFill: string;
+    msGridRow: any;
+    msFlexOrder: string;
+    msFlexItemAlign: string;
+    msFlexPositive: string;
+    msContentZoomLimitMax: any;
+    msScrollLimitYMax: any;
+    msGridColumnAlign: string;
+    perspectiveOrigin: string;
+    lightingColor: string;
+    columns: string;
+    msScrollChaining: string;
+    msHyphenateLimitChars: string;
+    msTouchSelect: string;
+    floodOpacity: string;
+    msAnimationDirection: string;
+    msAnimationPlayState: string;
+    columnSpan: string;
+    msContentZooming: string;
+    msPerspective: string;
+    msFlexPack: string;
+    msScrollSnapPointsX: string;
+    msContentZoomSnapPoints: string;
+    msGridRowSpan: any;
+    msContentZoomSnap: string;
+    msScrollLimitXMin: any;
+    breakInside: string;
+    msHighContrastAdjust: string;
+    msFlexLinePack: string;
+    msGridRows: string;
+    transitionDuration: string;
+    msHyphens: string;
+    breakAfter: string;
+    msTransition: string;
+    msPerspectiveOrigin: string;
+    msContentZoomLimit: string;
+    msScrollLimitXMax: any;
+    msFlexAlign: string;
+    msWrapMargin: any;
+    columnCount: any;
+    msAnimationTimingFunction: string;
+    msTransitionDelay: string;
+    transformStyle: string;
+    msWrapFlow: string;
+    msFlexPreferredSize: string;
+}
+
+interface MessageChannel {
+    port2: MessagePort;
+    port1: MessagePort;
+}
+declare var MessageChannel: {
+    prototype: MessageChannel;
+    new (): MessageChannel;
+}
+
+interface SVGFEMergeElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
+}
+declare var SVGFEMergeElement: {
+    prototype: SVGFEMergeElement;
+    new (): SVGFEMergeElement;
+}
+
+interface Navigator extends MSFileSaver {
+    msMaxTouchPoints: number;
+    msPointerEnabled: boolean;
+    msManipulationViewsEnabled: boolean;
+    msLaunchUri(uri: string, successCallback?: MSLaunchUriCallback, noHandlerCallback?: MSLaunchUriCallback): void;
+}
+
+interface TransitionEvent extends Event {
+    propertyName: string;
+    elapsedTime: number;
+    initTransitionEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, propertyNameArg: string, elapsedTimeArg: number): void;
+}
+declare var TransitionEvent: {
+    prototype: TransitionEvent;
+    new (): TransitionEvent;
+}
+
+interface MediaQueryList {
+    matches: boolean;
+    media: string;
+    addListener(listener: MediaQueryListListener): void;
+    removeListener(listener: MediaQueryListListener): void;
+}
+declare var MediaQueryList: {
+    prototype: MediaQueryList;
+    new (): MediaQueryList;
+}
+
+interface DOMError {
+    name: string;
+    toString(): string;
+}
+declare var DOMError: {
+    prototype: DOMError;
+    new (): DOMError;
+}
+
+interface CloseEvent extends Event {
+    wasClean: boolean;
+    reason: string;
+    code: number;
+    initCloseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, wasCleanArg: boolean, codeArg: number, reasonArg: string): void;
+}
+declare var CloseEvent: {
+    prototype: CloseEvent;
+    new (): CloseEvent;
+}
+
+interface WebSocket extends EventTarget {
+    protocol: string;
+    readyState: number;
+    bufferedAmount: number;
+    onopen: (ev: Event) => any;
+    addEventListener(type: "open", listener: (ev: Event) => any, useCapture?: boolean): void;
+    extensions: string;
+    onmessage: (ev: any) => any;
+    addEventListener(type: "message", listener: (ev: any) => any, useCapture?: boolean): void;
+    onclose: (ev: CloseEvent) => any;
+    addEventListener(type: "close", listener: (ev: CloseEvent) => any, useCapture?: boolean): void;
+    onerror: (ev: ErrorEvent) => any;
+    addEventListener(type: "error", listener: (ev: ErrorEvent) => any, useCapture?: boolean): void;
+    binaryType: string;
+    url: string;
+    close(code?: number, reason?: string): void;
+    send(data: any): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    OPEN: number;
+    CLOSING: number;
+    CONNECTING: number;
+    CLOSED: number;
+}
+declare var WebSocket: {
+    prototype: WebSocket;
+    new (url: string): WebSocket;
+    new (url: string, prototcol: string): WebSocket;
+    new (url: string, prototcol: string[]): WebSocket;
+    OPEN: number;
+    CLOSING: number;
+    CONNECTING: number;
+    CLOSED: number;
+}
+
+interface SVGFEPointLightElement extends SVGElement {
+    y: SVGAnimatedNumber;
+    x: SVGAnimatedNumber;
+    z: SVGAnimatedNumber;
+}
+declare var SVGFEPointLightElement: {
+    prototype: SVGFEPointLightElement;
+    new (): SVGFEPointLightElement;
+}
+
+interface ProgressEvent extends Event {
+    loaded: number;
+    lengthComputable: boolean;
+    total: number;
+    initProgressEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, lengthComputableArg: boolean, loadedArg: number, totalArg: number): void;
+}
+declare var ProgressEvent: {
+    prototype: ProgressEvent;
+    new (): ProgressEvent;
+}
+
+interface IDBObjectStore {
+    indexNames: DOMStringList;
+    name: string;
+    transaction: IDBTransaction;
+    keyPath: string;
+    count(key?: any): IDBRequest;
+    add(value: any, key?: any): IDBRequest;
+    clear(): IDBRequest;
+    createIndex(name: string, keyPath: string, optionalParameters?: any): IDBIndex;
+    put(value: any, key?: any): IDBRequest;
+    openCursor(range?: any, direction?: string): IDBRequest;
+    deleteIndex(indexName: string): void;
+    index(name: string): IDBIndex;
+    get(key: any): IDBRequest;
+    delete(key: any): IDBRequest;
+}
+declare var IDBObjectStore: {
+    prototype: IDBObjectStore;
+    new (): IDBObjectStore;
+}
+
+interface HTMLCanvasElement {
+    /**
+      * Returns a blob object encoded as a Portable Network Graphics (PNG) format from a canvas image or drawing.
+      */
+    msToBlob(): Blob;
+}
+
+interface SVGFEGaussianBlurElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
+    stdDeviationX: SVGAnimatedNumber;
+    in1: SVGAnimatedString;
+    stdDeviationY: SVGAnimatedNumber;
+    setStdDeviation(stdDeviationX: number, stdDeviationY: number): void;
+}
+declare var SVGFEGaussianBlurElement: {
+    prototype: SVGFEGaussianBlurElement;
+    new (): SVGFEGaussianBlurElement;
+}
+
+interface SVGFilterPrimitiveStandardAttributes extends SVGStylable {
+    y: SVGAnimatedLength;
+    width: SVGAnimatedLength;
+    x: SVGAnimatedLength;
+    height: SVGAnimatedLength;
+    result: SVGAnimatedString;
+}
+
+interface Element {
     msRegionOverflow: string;
     onmspointerdown: (ev: any) => any;
     addEventListener(type: "mspointerdown", listener: (ev: any) => any, useCapture?: boolean): void;
@@ -7265,361 +11756,6 @@ interface MSElementExtensions {
     msSetPointerCapture(pointerId: number): void;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
-declare var MSElementExtensions: {
-    prototype: MSElementExtensions;
-    new(): MSElementExtensions;
-}
-
-interface MSCSSScrollTranslationProperties {
-    msScrollTranslation: string;
-}
-
-interface MSGesture {
-    target: Element;
-    addPointer(pointerId: number): void;
-    stop(): void;
-}
-declare var MSGesture: {
-    prototype: MSGesture;
-    new (): MSGesture;
-}
-
-interface TextTrackCue extends EventTarget {
-    onenter: (ev: Event) => any;
-    addEventListener(type: "enter", listener: (ev: Event) => any, useCapture?: boolean): void;
-    track: TextTrack;
-    endTime: number;
-    text: string;
-    pauseOnExit: boolean;
-    id: string;
-    startTime: number;
-    onexit: (ev: Event) => any;
-    addEventListener(type: "exit", listener: (ev: Event) => any, useCapture?: boolean): void;
-    getCueAsHTML(): DocumentFragment;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
-}
-declare var TextTrackCue: {
-    prototype: TextTrackCue;
-    new(): TextTrackCue;
-}
-
-interface MSHTMLDocumentViewExtensions {
-    msCSSOMElementFloatMetrics: boolean;
-    msElementsFromPoint(x: number, y: number): NodeList;
-    msElementsFromRect(left: number, top: number, width: number, height: number): NodeList;
-}
-declare var MSHTMLDocumentViewExtensions: {
-    prototype: MSHTMLDocumentViewExtensions;
-    new(): MSHTMLDocumentViewExtensions;
-}
-
-interface MSStreamReader extends MSBaseReader {
-    error: DOMError;
-    readAsArrayBuffer(stream: MSStream, size?: number): void;
-    readAsBlob(stream: MSStream, size?: number): void;
-    readAsDataURL(stream: MSStream, size?: number): void;
-    readAsText(stream: MSStream, encoding?: string, size?: number): void;
-}
-declare var MSStreamReader: {
-    prototype: MSStreamReader;
-    new (): MSStreamReader;
-}
-
-interface CSSFlexibleBoxProperties {
-    msFlex: string;
-    msFlexDirection: string;
-    msFlexNegative: string;
-    msFlexPack: string;
-    msFlexWrap: string;
-    msFlexItemAlign: string;
-    msFlexOrder: string;
-    msFlexPositive: string;
-    msFlexAlign: string;
-    msFlexFlow: string;
-    msFlexPreferredSize: string;
-    msFlexLinePack: string;
-}
-
-interface DOMTokenList {
-    length: number;
-    contains(token: string): boolean;
-    remove(token: string): void;
-    toggle(token: string): boolean;
-    add(token: string): void;
-    item(index: number): string;
-    [index: number]: string;
-    toString(): string;
-}
-declare var DOMTokenList: {
-    prototype: DOMTokenList;
-    new(): DOMTokenList;
-}
-
-interface EventException {
-    name: string;
-}
-
-interface SVGFEFuncAElement extends SVGComponentTransferFunctionElement {
-}
-declare var SVGFEFuncAElement: {
-    prototype: SVGFEFuncAElement;
-    new(): SVGFEFuncAElement;
-}
-
-interface Performance {
-    now(): number;
-}
-
-interface SVGFETileElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
-    in1: SVGAnimatedString;
-}
-declare var SVGFETileElement: {
-    prototype: SVGFETileElement;
-    new(): SVGFETileElement;
-}
-
-interface SVGFEBlendElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
-    in2: SVGAnimatedString;
-    mode: SVGAnimatedEnumeration;
-    in1: SVGAnimatedString;
-    SVG_FEBLEND_MODE_DARKEN: number;
-    SVG_FEBLEND_MODE_UNKNOWN: number;
-    SVG_FEBLEND_MODE_MULTIPLY: number;
-    SVG_FEBLEND_MODE_NORMAL: number;
-    SVG_FEBLEND_MODE_SCREEN: number;
-    SVG_FEBLEND_MODE_LIGHTEN: number;
-}
-declare var SVGFEBlendElement: {
-    prototype: SVGFEBlendElement;
-    new(): SVGFEBlendElement;
-    SVG_FEBLEND_MODE_DARKEN: number;
-    SVG_FEBLEND_MODE_UNKNOWN: number;
-    SVG_FEBLEND_MODE_MULTIPLY: number;
-    SVG_FEBLEND_MODE_NORMAL: number;
-    SVG_FEBLEND_MODE_SCREEN: number;
-    SVG_FEBLEND_MODE_LIGHTEN: number;
-}
-
-interface WindowTimers extends WindowTimersExtension {
-}
-declare var WindowTimers: {
-    prototype: WindowTimers;
-    new(): WindowTimers;
-}
-
-interface CSSStyleDeclaration extends CSS2DTransformsProperties, CSSTransitionsProperties, CSSFontsProperties, MSCSSHighContrastProperties, CSSGridProperties, CSSAnimationsProperties, MSCSSContentZoomProperties, MSCSSScrollTranslationProperties, MSCSSTouchManipulationProperties, CSSFlexibleBoxProperties, MSCSSPositionedFloatsProperties, MSCSSRegionProperties, MSCSSSelectionBoundaryProperties, CSSMultiColumnProperties, CSSTextProperties, CSS3DTransformsProperties {
-}
-
-interface MessageChannel {
-    port2: MessagePort;
-    port1: MessagePort;
-}
-declare var MessageChannel: {
-    prototype: MessageChannel;
-    new (): MessageChannel;
-}
-
-interface SVGFEMergeElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
-}
-declare var SVGFEMergeElement: {
-    prototype: SVGFEMergeElement;
-    new(): SVGFEMergeElement;
-}
-
-interface Navigator extends MSFileSaver {
-}
-
-interface TransitionEvent extends Event {
-    propertyName: string;
-    elapsedTime: number;
-    initTransitionEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, propertyNameArg: string, elapsedTimeArg: number): void;
-}
-declare var TransitionEvent: {
-    prototype: TransitionEvent;
-    new(): TransitionEvent;
-}
-
-interface MediaQueryList {
-    matches: boolean;
-    media: string;
-    addListener(listener: MediaQueryListListener): void;
-    removeListener(listener: MediaQueryListListener): void;
-}
-declare var MediaQueryList: {
-    prototype: MediaQueryList;
-    new(): MediaQueryList;
-}
-
-interface DOMError {
-    name: string;
-    toString(): string;
-}
-declare var DOMError: {
-    prototype: DOMError;
-    new(): DOMError;
-}
-
-interface SVGFEPointLightElement extends SVGElement {
-    y: SVGAnimatedNumber;
-    x: SVGAnimatedNumber;
-    z: SVGAnimatedNumber;
-}
-declare var SVGFEPointLightElement: {
-    prototype: SVGFEPointLightElement;
-    new(): SVGFEPointLightElement;
-}
-
-interface CSSFontsProperties {
-    msFontFeatureSettings: string;
-    fontFeatureSettings: string;
-}
-
-interface CloseEvent extends Event {
-    wasClean: boolean;
-    reason: string;
-    code: number;
-    initCloseEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, wasCleanArg: boolean, codeArg: number, reasonArg: string): void;
-}
-declare var CloseEvent: {
-    prototype: CloseEvent;
-    new(): CloseEvent;
-}
-
-interface WebSocket extends EventTarget {
-    protocol: string;
-    readyState: number;
-    bufferedAmount: number;
-    onopen: (ev: Event) => any;
-    addEventListener(type: "open", listener: (ev: Event) => any, useCapture?: boolean): void;
-    extensions: string;
-    onmessage: (ev: any) => any;
-    addEventListener(type: "message", listener: (ev: any) => any, useCapture?: boolean): void;
-    onclose: (ev: CloseEvent) => any;
-    addEventListener(type: "close", listener: (ev: CloseEvent) => any, useCapture?: boolean): void;
-    onerror: (ev: ErrorEvent) => any;
-    addEventListener(type: "error", listener: (ev: ErrorEvent) => any, useCapture?: boolean): void;
-    binaryType: string;
-    url: string;
-    close(code?: number, reason?: string): void;
-    send(data: any): void;
-    OPEN: number;
-    CLOSING: number;
-    CONNECTING: number;
-    CLOSED: number;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
-}
-declare var WebSocket: {
-    prototype: WebSocket;
-    new (url: string): WebSocket;
-    new (url: string, prototcol: string): WebSocket;
-    new (url: string, prototcol: string[]): WebSocket;
-    OPEN: number;
-    CLOSING: number;
-    CONNECTING: number;
-    CLOSED: number;
-}
-
-interface ProgressEvent extends Event {
-    loaded: number;
-    lengthComputable: boolean;
-    total: number;
-    initProgressEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, lengthComputableArg: boolean, loadedArg: number, totalArg: number): void;
-}
-declare var ProgressEvent: {
-    prototype: ProgressEvent;
-    new(): ProgressEvent;
-}
-
-interface HTMLCanvasElement {
-    msToBlob(): Blob;
-}
-
-interface IDBObjectStore {
-    indexNames: DOMStringList;
-    name: string;
-    transaction: IDBTransaction;
-    keyPath: string;
-    count(key?: any): IDBRequest;
-    add(value: any, key?: any): IDBRequest;
-    clear(): IDBRequest;
-    createIndex(name: string, keyPath: string, optionalParameters?: any): IDBIndex;
-    put(value: any, key?: any): IDBRequest;
-    openCursor(range?: any, direction?: string): IDBRequest;
-    deleteIndex(indexName: string): void;
-    index(name: string): IDBIndex;
-    get(key: any): IDBRequest;
-    delete(key: any): IDBRequest;
-}
-declare var IDBObjectStore: {
-    prototype: IDBObjectStore;
-    new(): IDBObjectStore;
-}
-
-interface ObjectURLOptions {
-    oneTimeOnly?: boolean;
-}
-
-interface SVGFEGaussianBlurElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
-    stdDeviationX: SVGAnimatedNumber;
-    in1: SVGAnimatedString;
-    stdDeviationY: SVGAnimatedNumber;
-    setStdDeviation(stdDeviationX: number, stdDeviationY: number): void;
-}
-declare var SVGFEGaussianBlurElement: {
-    prototype: SVGFEGaussianBlurElement;
-    new(): SVGFEGaussianBlurElement;
-}
-
-interface MSHTMLDocumentExtensions {
-    onmspointerdown: (ev: any) => any;
-    addEventListener(type: "mspointerdown", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointercancel: (ev: any) => any;
-    addEventListener(type: "mspointercancel", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturedoubletap: (ev: any) => any;
-    addEventListener(type: "msgesturedoubletap", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturetap: (ev: any) => any;
-    addEventListener(type: "msgesturetap", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgestureend: (ev: any) => any;
-    addEventListener(type: "msgestureend", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerout: (ev: any) => any;
-    addEventListener(type: "mspointerout", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsmanipulationstatechanged: (ev: any) => any;
-    addEventListener(type: "msmanipulationstatechanged", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsinertiastart: (ev: any) => any;
-    addEventListener(type: "msinertiastart", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerhover: (ev: any) => any;
-    addEventListener(type: "mspointerhover", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmscontentzoom: (ev: any) => any;
-    addEventListener(type: "mscontentzoom", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturehold: (ev: any) => any;
-    addEventListener(type: "msgesturehold", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointermove: (ev: any) => any;
-    addEventListener(type: "mspointermove", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerover: (ev: any) => any;
-    addEventListener(type: "mspointerover", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturechange: (ev: any) => any;
-    addEventListener(type: "msgesturechange", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturestart: (ev: any) => any;
-    addEventListener(type: "msgesturestart", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerup: (ev: any) => any;
-    addEventListener(type: "mspointerup", listener: (ev: any) => any, useCapture?: boolean): void;
-}
-declare var MSHTMLDocumentExtensions: {
-    prototype: MSHTMLDocumentExtensions;
-    new(): MSHTMLDocumentExtensions;
-}
-
-interface MSCSSSelectionBoundaryProperties {
-    msUserSelect: string;
-}
-
-interface SVGFilterPrimitiveStandardAttributes extends SVGStylable {
-    y: SVGAnimatedLength;
-    width: SVGAnimatedLength;
-    x: SVGAnimatedLength;
-    height: SVGAnimatedLength;
-    result: SVGAnimatedString;
-}
 
 interface IDBVersionChangeEvent extends Event {
     newVersion: number;
@@ -7627,7 +11763,7 @@ interface IDBVersionChangeEvent extends Event {
 }
 declare var IDBVersionChangeEvent: {
     prototype: IDBVersionChangeEvent;
-    new(): IDBVersionChangeEvent;
+    new (): IDBVersionChangeEvent;
 }
 
 interface IDBIndex {
@@ -7643,7 +11779,11 @@ interface IDBIndex {
 }
 declare var IDBIndex: {
     prototype: IDBIndex;
-    new(): IDBIndex;
+    new (): IDBIndex;
+}
+
+interface WheelEvent {
+    getCurrentPoint(element: Element): void;
 }
 
 interface FileList {
@@ -7653,7 +11793,7 @@ interface FileList {
 }
 declare var FileList: {
     prototype: FileList;
-    new(): FileList;
+    new (): FileList;
 }
 
 interface IDBCursor {
@@ -7665,31 +11805,18 @@ interface IDBCursor {
     delete(): IDBRequest;
     continue(key?: any): void;
     update(value: any): IDBRequest;
+    PREV: string;
+    PREV_NO_DUPLICATE: string;
+    NEXT: string;
+    NEXT_NO_DUPLICATE: string;
 }
 declare var IDBCursor: {
     prototype: IDBCursor;
-    new(): IDBCursor;
-}
-
-interface CSSAnimationsProperties {
-    animationFillMode: string;
-    msAnimationDirection: string;
-    msAnimationDelay: string;
-    msAnimationFillMode: string;
-    animationIterationCount: string;
-    msAnimationPlayState: string;
-    msAnimationIterationCount: string;
-    animationDelay: string;
-    animationTimingFunction: string;
-    msAnimation: string;
-    animation: string;
-    animationDirection: string;
-    animationDuration: string;
-    animationName: string;
-    animationPlayState: string;
-    msAnimationTimingFunction: string;
-    msAnimationName: string;
-    msAnimationDuration: string;
+    new (): IDBCursor;
+    PREV: string;
+    PREV_NO_DUPLICATE: string;
+    NEXT: string;
+    NEXT_NO_DUPLICATE: string;
 }
 
 interface SVGFESpecularLightingElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -7702,7 +11829,7 @@ interface SVGFESpecularLightingElement extends SVGElement, SVGFilterPrimitiveSta
 }
 declare var SVGFESpecularLightingElement: {
     prototype: SVGFESpecularLightingElement;
-    new(): SVGFESpecularLightingElement;
+    new (): SVGFESpecularLightingElement;
 }
 
 interface File extends Blob {
@@ -7711,7 +11838,7 @@ interface File extends Blob {
 }
 declare var File: {
     prototype: File;
-    new(): File;
+    new (): File;
 }
 
 interface URL {
@@ -7729,18 +11856,46 @@ interface IDBCursorWithValue extends IDBCursor {
 }
 declare var IDBCursorWithValue: {
     prototype: IDBCursorWithValue;
-    new(): IDBCursorWithValue;
+    new (): IDBCursorWithValue;
 }
 
 interface HTMLTextAreaElement {
+    /**
+      * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation messages without actually submitting.
+      */
     validationMessage: string;
+    /**
+      * Provides a way to direct a user to a specific field when a document loads. This can provide both direction and convenience for a user, reducing the need to click or tab to a field when a page opens. This attribute is true when present on an element, and false when missing.
+      */
     autofocus: boolean;
+    /**
+      * Returns a  ValidityState object that represents the validity states of an element.
+      */
     validity: ValidityState;
+    /**
+      * When present, marks an element that can't be submitted without a value.
+      */
     required: boolean;
+    /**
+      * Sets or retrieves the maximum number of characters that the user can enter in a text control.
+      */
     maxLength: number;
+    /**
+      * Returns whether an element will successfully validate based on forms validation rules and constraints.
+      */
     willValidate: boolean;
+    /**
+      * Gets or sets a text string that is displayed in an input field as a hint or prompt to users as the format or type of information they need to enter.The text appears in an input field until the user puts focus on the field.
+      */
     placeholder: string;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
     checkValidity(): boolean;
+    /**
+      * Sets a custom error message that is displayed when a form is submitted.
+      * @param error Sets a custom error message that is displayed when a form is submitted.
+      */
     setCustomValidity(error: string): void;
 }
 
@@ -7763,7 +11918,7 @@ interface XMLHttpRequestEventTarget extends EventTarget {
 }
 declare var XMLHttpRequestEventTarget: {
     prototype: XMLHttpRequestEventTarget;
-    new(): XMLHttpRequestEventTarget;
+    new (): XMLHttpRequestEventTarget;
 }
 
 interface IDBEnvironment {
@@ -7784,7 +11939,7 @@ interface AudioTrackList extends EventTarget {
 }
 declare var AudioTrackList: {
     prototype: AudioTrackList;
-    new(): AudioTrackList;
+    new (): AudioTrackList;
 }
 
 interface MSBaseReader extends EventTarget {
@@ -7803,24 +11958,16 @@ interface MSBaseReader extends EventTarget {
     addEventListener(type: "loadstart", listener: (ev: any) => any, useCapture?: boolean): void;
     result: any;
     abort(): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
     LOADING: number;
     EMPTY: number;
     DONE: number;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 
 interface History {
     state: any;
     replaceState(statedata: any, title: string, url?: string): void;
     pushState(statedata: any, title: string, url?: string): void;
-}
-
-interface MSProtocol {
-    protocol: string;
-}
-declare var MSProtocol: {
-    prototype: MSProtocol;
-    new(): MSProtocol;
 }
 
 interface SVGFEMorphologyElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -7834,40 +11981,42 @@ interface SVGFEMorphologyElement extends SVGElement, SVGFilterPrimitiveStandardA
 }
 declare var SVGFEMorphologyElement: {
     prototype: SVGFEMorphologyElement;
-    new(): SVGFEMorphologyElement;
+    new (): SVGFEMorphologyElement;
     SVG_MORPHOLOGY_OPERATOR_UNKNOWN: number;
     SVG_MORPHOLOGY_OPERATOR_ERODE: number;
     SVG_MORPHOLOGY_OPERATOR_DILATE: number;
 }
 
 interface HTMLSelectElement {
+    /**
+      * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation messages without actually submitting.
+      */
     validationMessage: string;
+    /**
+      * Provides a way to direct a user to a specific field when a document loads. This can provide both direction and convenience for a user, reducing the need to click or tab to a field when a page opens. This attribute is true when present on an element, and false when missing.
+      */
     autofocus: boolean;
+    /**
+      * Returns a  ValidityState object that represents the validity states of an element.
+      */
     validity: ValidityState;
+    /**
+      * When present, marks an element that can't be submitted without a value.
+      */
     required: boolean;
+    /**
+      * Returns whether an element will successfully validate based on forms validation rules and constraints.
+      */
     willValidate: boolean;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
     checkValidity(): boolean;
+    /**
+      * Sets a custom error message that is displayed when a form is submitted.
+      * @param error Sets a custom error message that is displayed when a form is submitted.
+      */
     setCustomValidity(error: string): void;
-}
-
-interface CSSTransitionsProperties {
-    transition: string;
-    transitionDelay: string;
-    transitionDuration: string;
-    msTransitionTimingFunction: string;
-    msTransition: string;
-    msTransitionDuration: string;
-    transitionTimingFunction: string;
-    msTransitionDelay: string;
-    transitionProperty: string;
-    msTransitionProperty: string;
-}
-
-interface SVGFEFuncRElement extends SVGComponentTransferFunctionElement {
-}
-declare var SVGFEFuncRElement: {
-    prototype: SVGFEFuncRElement;
-    new(): SVGFEFuncRElement;
 }
 
 interface CSSRule {
@@ -7876,10 +12025,18 @@ interface CSSRule {
     VIEWPORT_RULE: number;
 }
 //declare var CSSRule: {
+//    prototype: CSSRule;
 //    KEYFRAMES_RULE: number;
 //    KEYFRAME_RULE: number;
 //    VIEWPORT_RULE: number;
 //}
+
+interface SVGFEFuncRElement extends SVGComponentTransferFunctionElement {
+}
+declare var SVGFEFuncRElement: {
+    prototype: SVGFEFuncRElement;
+    new (): SVGFEFuncRElement;
+}
 
 interface WindowTimersExtension {
     msSetImmediate(expression: any, ...args: any[]): number;
@@ -7902,23 +12059,12 @@ interface SVGFEDisplacementMapElement extends SVGElement, SVGFilterPrimitiveStan
 }
 declare var SVGFEDisplacementMapElement: {
     prototype: SVGFEDisplacementMapElement;
-    new(): SVGFEDisplacementMapElement;
+    new (): SVGFEDisplacementMapElement;
     SVG_CHANNEL_B: number;
     SVG_CHANNEL_R: number;
     SVG_CHANNEL_G: number;
     SVG_CHANNEL_UNKNOWN: number;
     SVG_CHANNEL_A: number;
-}
-
-interface MSCSSContentZoomProperties {
-    msContentZoomLimit: string;
-    msContentZooming: string;
-    msContentZoomSnapType: string;
-    msContentZoomLimitMax: any;
-    msContentZoomSnapPoints: string;
-    msContentZoomSnap: string;
-    msContentZoomLimitMin: any;
-    msContentZoomChaining: string;
 }
 
 interface AnimationEvent extends Event {
@@ -7928,7 +12074,7 @@ interface AnimationEvent extends Event {
 }
 declare var AnimationEvent: {
     prototype: AnimationEvent;
-    new(): AnimationEvent;
+    new (): AnimationEvent;
 }
 
 interface SVGComponentTransferFunctionElement extends SVGElement {
@@ -7948,7 +12094,7 @@ interface SVGComponentTransferFunctionElement extends SVGElement {
 }
 declare var SVGComponentTransferFunctionElement: {
     prototype: SVGComponentTransferFunctionElement;
-    new(): SVGComponentTransferFunctionElement;
+    new (): SVGComponentTransferFunctionElement;
     SVG_FECOMPONENTTRANSFER_TYPE_UNKNOWN: number;
     SVG_FECOMPONENTTRANSFER_TYPE_TABLE: number;
     SVG_FECOMPONENTTRANSFER_TYPE_IDENTITY: number;
@@ -7964,27 +12110,7 @@ interface MSRangeCollection {
 }
 declare var MSRangeCollection: {
     prototype: MSRangeCollection;
-    new(): MSRangeCollection;
-}
-
-interface MSHTMLElementExtensions {
-    onmscontentzoom: (ev: any) => any;
-    addEventListener(type: "mscontentzoom", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsmanipulationstatechanged: (ev: any) => any;
-    addEventListener(type: "msmanipulationstatechanged", listener: (ev: any) => any, useCapture?: boolean): void;
-}
-declare var MSHTMLElementExtensions: {
-    prototype: MSHTMLElementExtensions;
-    new(): MSHTMLElementExtensions;
-}
-
-interface MSCSSPositionedFloatsProperties {
-    msWrapMargin: any;
-    msWrapFlow: string;
-}
-
-interface SVGException {
-    name: string;
+    new (): MSRangeCollection;
 }
 
 interface SVGFEDistantLightElement extends SVGElement {
@@ -7993,20 +12119,18 @@ interface SVGFEDistantLightElement extends SVGElement {
 }
 declare var SVGFEDistantLightElement: {
     prototype: SVGFEDistantLightElement;
-    new(): SVGFEDistantLightElement;
+    new (): SVGFEDistantLightElement;
 }
 
-interface MSCSSRegionProperties {
-    msFlowFrom: string;
-    msFlowInto: string;
-    msWrapThrough: string;
+interface SVGException {
+    name: string;
 }
 
 interface SVGFEFuncBElement extends SVGComponentTransferFunctionElement {
 }
 declare var SVGFEFuncBElement: {
     prototype: SVGFEFuncBElement;
-    new(): SVGFEFuncBElement;
+    new (): SVGFEFuncBElement;
 }
 
 interface IDBKeyRange {
@@ -8028,19 +12152,6 @@ interface WindowConsole {
     console: Console;
 }
 
-interface SVG1_1Properties {
-    floodOpacity: string;
-    floodColor: string;
-    filter: string;
-    lightingColor: string;
-    enableBackground: string;
-    colorInterpolationFilters: string;
-}
-declare var SVG1_1Properties: {
-    prototype: SVG1_1Properties;
-    new(): SVG1_1Properties;
-}
-
 interface IDBTransaction extends EventTarget {
     oncomplete: (ev: Event) => any;
     addEventListener(type: "complete", listener: (ev: Event) => any, useCapture?: boolean): void;
@@ -8054,46 +12165,16 @@ interface IDBTransaction extends EventTarget {
     abort(): void;
     objectStore(name: string): IDBObjectStore;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    READ_ONLY: string;
+    VERSION_CHANGE: string;
+    READ_WRITE: string;
 }
 declare var IDBTransaction: {
     prototype: IDBTransaction;
-    new(): IDBTransaction;
-}
-
-interface MSWindowExtensions {
-    onmspointerdown: (ev: any) => any;
-    addEventListener(type: "mspointerdown", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointercancel: (ev: any) => any;
-    addEventListener(type: "mspointercancel", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturedoubletap: (ev: any) => any;
-    addEventListener(type: "msgesturedoubletap", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgestureend: (ev: any) => any;
-    addEventListener(type: "msgestureend", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturetap: (ev: any) => any;
-    addEventListener(type: "msgesturetap", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerout: (ev: any) => any;
-    addEventListener(type: "mspointerout", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerhover: (ev: any) => any;
-    addEventListener(type: "mspointerhover", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsinertiastart: (ev: any) => any;
-    addEventListener(type: "msinertiastart", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointermove: (ev: any) => any;
-    addEventListener(type: "mspointermove", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturehold: (ev: any) => any;
-    addEventListener(type: "msgesturehold", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerover: (ev: any) => any;
-    addEventListener(type: "mspointerover", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturechange: (ev: any) => any;
-    addEventListener(type: "msgesturechange", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmsgesturestart: (ev: any) => any;
-    addEventListener(type: "msgesturestart", listener: (ev: any) => any, useCapture?: boolean): void;
-    onmspointerup: (ev: any) => any;
-    addEventListener(type: "mspointerup", listener: (ev: any) => any, useCapture?: boolean): void;
-    msIsStaticHTML(html: string): boolean;
-}
-declare var MSWindowExtensions: {
-    prototype: MSWindowExtensions;
-    new(): MSWindowExtensions;
+    new (): IDBTransaction;
+    READ_ONLY: string;
+    VERSION_CHANGE: string;
+    READ_WRITE: string;
 }
 
 interface AudioTrack {
@@ -8105,7 +12186,7 @@ interface AudioTrack {
 }
 declare var AudioTrack: {
     prototype: AudioTrack;
-    new(): AudioTrack;
+    new (): AudioTrack;
 }
 
 interface SVGFEConvolveMatrixElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -8128,7 +12209,7 @@ interface SVGFEConvolveMatrixElement extends SVGElement, SVGFilterPrimitiveStand
 }
 declare var SVGFEConvolveMatrixElement: {
     prototype: SVGFEConvolveMatrixElement;
-    new(): SVGFEConvolveMatrixElement;
+    new (): SVGFEConvolveMatrixElement;
     SVG_EDGEMODE_WRAP: number;
     SVG_EDGEMODE_DUPLICATE: number;
     SVG_EDGEMODE_UNKNOWN: number;
@@ -8143,7 +12224,7 @@ interface TextTrackCueList {
 }
 declare var TextTrackCueList: {
     prototype: TextTrackCueList;
-    new(): TextTrackCueList;
+    new (): TextTrackCueList;
 }
 
 interface CSSKeyframesRule extends CSSRule {
@@ -8155,33 +12236,50 @@ interface CSSKeyframesRule extends CSSRule {
 }
 declare var CSSKeyframesRule: {
     prototype: CSSKeyframesRule;
-    new(): CSSKeyframesRule;
+    new (): CSSKeyframesRule;
 }
 
-interface MSCSSTouchManipulationProperties {
-    msScrollSnapPointsY: string;
-    msOverflowStyle: string;
-    msScrollLimitXMax: any;
-    msScrollSnapType: string;
-    msScrollSnapPointsX: string;
-    msScrollLimitYMax: any;
-    msScrollSnapY: string;
-    msScrollLimitXMin: any;
-    msScrollLimitYMin: any;
-    msScrollChaining: string;
-    msTouchAction: string;
-    msScrollSnapX: string;
-    msScrollLimit: string;
-    msScrollRails: string;
-    msTouchSelect: string;
-}
-
-interface Window extends WindowAnimationTiming, WindowBase64, IDBEnvironment, WindowConsole {
+interface Window extends WindowBase64, IDBEnvironment, WindowConsole {
+    onmspointerdown: (ev: any) => any;
+    addEventListener(type: "mspointerdown", listener: (ev: any) => any, useCapture?: boolean): void;
+    animationStartTime: number;
+    onmsgesturedoubletap: (ev: any) => any;
+    addEventListener(type: "msgesturedoubletap", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerhover: (ev: any) => any;
+    addEventListener(type: "mspointerhover", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturehold: (ev: any) => any;
+    addEventListener(type: "msgesturehold", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointermove: (ev: any) => any;
+    addEventListener(type: "mspointermove", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturechange: (ev: any) => any;
+    addEventListener(type: "msgesturechange", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturestart: (ev: any) => any;
+    addEventListener(type: "msgesturestart", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointercancel: (ev: any) => any;
+    addEventListener(type: "mspointercancel", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgestureend: (ev: any) => any;
+    addEventListener(type: "msgestureend", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturetap: (ev: any) => any;
+    addEventListener(type: "msgesturetap", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerout: (ev: any) => any;
+    addEventListener(type: "mspointerout", listener: (ev: any) => any, useCapture?: boolean): void;
+    msAnimationStartTime: number;
+    applicationCache: ApplicationCache;
+    onmsinertiastart: (ev: any) => any;
+    addEventListener(type: "msinertiastart", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerover: (ev: any) => any;
+    addEventListener(type: "mspointerover", listener: (ev: any) => any, useCapture?: boolean): void;
     onpopstate: (ev: PopStateEvent) => any;
     addEventListener(type: "popstate", listener: (ev: PopStateEvent) => any, useCapture?: boolean): void;
-    applicationCache: ApplicationCache;
+    onmspointerup: (ev: any) => any;
+    addEventListener(type: "mspointerup", listener: (ev: any) => any, useCapture?: boolean): void;
+    msCancelRequestAnimationFrame(handle: number): void;
     matchMedia(mediaQuery: string): MediaQueryList;
+    cancelAnimationFrame(handle: number): void;
+    msIsStaticHTML(html: string): boolean;
     msMatchMedia(mediaQuery: string): MediaQueryList;
+    requestAnimationFrame(callback: FrameRequestCallback): number;
+    msRequestAnimationFrame(callback: FrameRequestCallback): number;
 }
 
 interface SVGFETurbulenceElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -8200,7 +12298,7 @@ interface SVGFETurbulenceElement extends SVGElement, SVGFilterPrimitiveStandardA
 }
 declare var SVGFETurbulenceElement: {
     prototype: SVGFETurbulenceElement;
-    new(): SVGFETurbulenceElement;
+    new (): SVGFETurbulenceElement;
     SVG_STITCHTYPE_UNKNOWN: number;
     SVG_STITCHTYPE_NOSTITCH: number;
     SVG_TURBULENCE_TYPE_UNKNOWN: number;
@@ -8216,23 +12314,14 @@ interface TextTrackList {
 }
 declare var TextTrackList: {
     prototype: TextTrackList;
-    new(): TextTrackList;
-}
-
-interface WindowAnimationTiming {
-    animationStartTime: number;
-    msAnimationStartTime: number;
-    msCancelRequestAnimationFrame(handle: number): void;
-    cancelAnimationFrame(handle: number): void;
-    requestAnimationFrame(callback: FrameRequestCallback): number;
-    msRequestAnimationFrame(callback: FrameRequestCallback): number;
+    new (): TextTrackList;
 }
 
 interface SVGFEFuncGElement extends SVGComponentTransferFunctionElement {
 }
 declare var SVGFEFuncGElement: {
     prototype: SVGFEFuncGElement;
-    new(): SVGFEFuncGElement;
+    new (): SVGFEFuncGElement;
 }
 
 interface SVGFEColorMatrixElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -8247,7 +12336,7 @@ interface SVGFEColorMatrixElement extends SVGElement, SVGFilterPrimitiveStandard
 }
 declare var SVGFEColorMatrixElement: {
     prototype: SVGFEColorMatrixElement;
-    new(): SVGFEColorMatrixElement;
+    new (): SVGFEColorMatrixElement;
     SVG_FECOLORMATRIX_TYPE_SATURATE: number;
     SVG_FECOLORMATRIX_TYPE_UNKNOWN: number;
     SVG_FECOLORMATRIX_TYPE_MATRIX: number;
@@ -8256,27 +12345,20 @@ declare var SVGFEColorMatrixElement: {
 }
 
 interface Console {
-    info(): void;
-    info(message: any, ...optionalParams: any[]): void;
-    profile(reportName?: string): boolean;
-    assert(): void;
-    assert(test: boolean): void;
-    assert(test: boolean, message: any, ...optionalParams: any[]): void;
+    info(message?: any, ...optionalParams: any[]): void;
+    profile(reportName?: string): void;
+    assert(test?: boolean, message?: string, ...optionalParams: any[]): void;
     msIsIndependentlyComposed(element: Element): boolean;
-    clear(): boolean;
-    dir(): boolean;
-    dir(value: any, ...optionalParams: any[]): boolean;
-    warn(): void;
-    warn(message: any, ...optionalParams: any[]): void;
-    error(): void;
-    error(message: any, ...optionalParams: any[]): void;
-    log(): void;
-    log(message: any, ...optionalParams: any[]): void;
-    profileEnd(): boolean;
+    clear(): void;
+    dir(value?: any, ...optionalParams: any[]): void;
+    warn(message?: any, ...optionalParams: any[]): void;
+    error(message?: any, ...optionalParams: any[]): void;
+    log(message?: any, ...optionalParams: any[]): void;
+    profileEnd(): void;
 }
 declare var Console: {
     prototype: Console;
-    new(): Console;
+    new (): Console;
 }
 
 interface SVGFESpotLightElement extends SVGElement {
@@ -8291,14 +12373,22 @@ interface SVGFESpotLightElement extends SVGElement {
 }
 declare var SVGFESpotLightElement: {
     prototype: SVGFESpotLightElement;
-    new(): SVGFESpotLightElement;
+    new (): SVGFESpotLightElement;
 }
 
-interface DocumentVisibility {
-    msHidden: boolean;
-    msVisibilityState: string;
-    visibilityState: string;
-    hidden: boolean;
+interface HTMLImageElement {
+    /**
+      * Gets or sets the primary DLNA PlayTo device.
+      */
+    msPlayToPrimary: boolean;
+    /**
+      * Gets or sets whether the DLNA PlayTo device is available.
+      */
+    msPlayToDisabled: boolean;
+    /**
+      * Gets the source associated with the media element for use by the PlayToManager.
+      */
+    msPlayToSource: any;
 }
 
 interface WindowBase64 {
@@ -8322,14 +12412,7 @@ interface IDBDatabase extends EventTarget {
 }
 declare var IDBDatabase: {
     prototype: IDBDatabase;
-    new(): IDBDatabase;
-}
-
-interface MSProtocolsCollection {
-}
-declare var MSProtocolsCollection: {
-    prototype: MSProtocolsCollection;
-    new(): MSProtocolsCollection;
+    new (): IDBDatabase;
 }
 
 interface DOMStringList {
@@ -8340,23 +12423,55 @@ interface DOMStringList {
 }
 declare var DOMStringList: {
     prototype: DOMStringList;
-    new(): DOMStringList;
+    new (): DOMStringList;
 }
 
-interface CSSMultiColumnProperties {
-    breakAfter: string;
-    columnSpan: string;
-    columnRule: string;
-    columnFill: string;
-    columnRuleStyle: string;
-    breakBefore: string;
-    columnCount: any;
-    breakInside: string;
-    columnWidth: any;
-    columns: string;
-    columnRuleColor: any;
-    columnGap: any;
-    columnRuleWidth: any;
+interface HTMLButtonElement {
+    /**
+      * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation messages without actually submitting.
+      */
+    validationMessage: string;
+    /**
+      * Overrides the target attribute on a form element.
+      */
+    formTarget: string;
+    /**
+      * Returns whether an element will successfully validate based on forms validation rules and constraints.
+      */
+    willValidate: boolean;
+    /**
+      * Overrides the action attribute (where the data on a form is sent) on the parent form element.
+      */
+    formAction: string;
+    /**
+      * Provides a way to direct a user to a specific field when a document loads. This can provide both direction and convenience for a user, reducing the need to click or tab to a field when a page opens. This attribute is true when present on an element, and false when missing.
+      */
+    autofocus: boolean;
+    /**
+      * Returns a  ValidityState object that represents the validity states of an element.
+      */
+    validity: ValidityState;
+    /**
+      * Overrides any validation or required attributes on a form or form elements to allow it to be submitted without validation. This can be used to create a "save draft"–type submit option.
+      */
+    formNoValidate: string;
+    /**
+      * Used to override the encoding (formEnctype attribute) specified on the form element.
+      */
+    formEnctype: string;
+    /**
+      * Overrides the submit method attribute previously specified on a form element.
+      */
+    formMethod: string;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
+    checkValidity(): boolean;
+    /**
+      * Sets a custom error message that is displayed when a form is submitted.
+      * @param error Sets a custom error message that is displayed when a form is submitted.
+      */
+    setCustomValidity(error: string): void;
 }
 
 interface IDBOpenDBRequest extends IDBRequest {
@@ -8368,32 +12483,34 @@ interface IDBOpenDBRequest extends IDBRequest {
 }
 declare var IDBOpenDBRequest: {
     prototype: IDBOpenDBRequest;
-    new(): IDBOpenDBRequest;
-}
-
-interface HTMLButtonElement {
-    validationMessage: string;
-    formTarget: string;
-    willValidate: boolean;
-    formAction: string;
-    autofocus: boolean;
-    validity: ValidityState;
-    formNoValidate: string;
-    formEnctype: string;
-    formMethod: string;
-    checkValidity(): boolean;
-    setCustomValidity(error: string): void;
+    new (): IDBOpenDBRequest;
 }
 
 interface HTMLProgressElement extends HTMLElement {
+    /**
+      * Sets or gets the current value of a progress element. The value must be a non-negative number between 0 and the max value.
+      */
     value: number;
+    /**
+      * Defines the maximum, or "done" value for a progress element.
+      */
     max: number;
+    /**
+      * Returns the quotient of value/max when the value attribute is set (determinate progress bar), or -1 when the value attribute is missing (indeterminate progress bar).
+      */
     position: number;
+    /**
+      * Retrieves a reference to the form that the object is embedded in.
+      */
     form: HTMLFormElement;
 }
 declare var HTMLProgressElement: {
     prototype: HTMLProgressElement;
-    new(): HTMLProgressElement;
+    new (): HTMLProgressElement;
+}
+
+interface MSLaunchUriCallback {
+    (): void;
 }
 
 interface SVGFEOffsetElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -8403,12 +12520,21 @@ interface SVGFEOffsetElement extends SVGElement, SVGFilterPrimitiveStandardAttri
 }
 declare var SVGFEOffsetElement: {
     prototype: SVGFEOffsetElement;
-    new(): SVGFEOffsetElement;
+    new (): SVGFEOffsetElement;
 }
 
 interface HTMLFormElement {
+    /**
+      * Specifies whether autocomplete is applied to an editable text field.
+      */
     autocomplete: string;
+    /**
+      * Designates a form that is not validated when submitted.
+      */
     noValidate: boolean;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
     checkValidity(): boolean;
 }
 
@@ -8416,7 +12542,47 @@ interface MSUnsafeFunctionCallback {
     (): any;
 }
 
-interface Document extends DocumentVisibility {
+interface Document {
+    onmspointerdown: (ev: any) => any;
+    addEventListener(type: "mspointerdown", listener: (ev: any) => any, useCapture?: boolean): void;
+    msHidden: boolean;
+    msVisibilityState: string;
+    onmsgesturedoubletap: (ev: any) => any;
+    addEventListener(type: "msgesturedoubletap", listener: (ev: any) => any, useCapture?: boolean): void;
+    visibilityState: string;
+    onmsmanipulationstatechanged: (ev: any) => any;
+    addEventListener(type: "msmanipulationstatechanged", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerhover: (ev: any) => any;
+    addEventListener(type: "mspointerhover", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmscontentzoom: (ev: any) => any;
+    addEventListener(type: "mscontentzoom", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointermove: (ev: any) => any;
+    addEventListener(type: "mspointermove", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturehold: (ev: any) => any;
+    addEventListener(type: "msgesturehold", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturechange: (ev: any) => any;
+    addEventListener(type: "msgesturechange", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturestart: (ev: any) => any;
+    addEventListener(type: "msgesturestart", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointercancel: (ev: any) => any;
+    addEventListener(type: "mspointercancel", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgestureend: (ev: any) => any;
+    addEventListener(type: "msgestureend", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsgesturetap: (ev: any) => any;
+    addEventListener(type: "msgesturetap", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerout: (ev: any) => any;
+    addEventListener(type: "mspointerout", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmsinertiastart: (ev: any) => any;
+    addEventListener(type: "msinertiastart", listener: (ev: any) => any, useCapture?: boolean): void;
+    msCSSOMElementFloatMetrics: boolean;
+    onmspointerover: (ev: any) => any;
+    addEventListener(type: "mspointerover", listener: (ev: any) => any, useCapture?: boolean): void;
+    hidden: boolean;
+    onmspointerup: (ev: any) => any;
+    addEventListener(type: "mspointerup", listener: (ev: any) => any, useCapture?: boolean): void;
+    msElementsFromPoint(x: number, y: number): NodeList;
+    msElementsFromRect(left: number, top: number, width: number, height: number): NodeList;
+    clear(): void;
 }
 
 interface MessageEvent extends Event {
@@ -8427,15 +12593,54 @@ interface HTMLScriptElement {
     async: boolean;
 }
 
-interface HTMLMediaElement extends MSHTMLMediaElementExtensions {
+interface HTMLMediaElement {
+    /**
+      * Specifies the purpose of the audio or video media, such as background audio or alerts.
+      */
+    msAudioCategory: string;
+    /**
+      * Specifies whether or not to enable low-latency playback on the media element.
+      */
+    msRealTime: boolean;
+    /**
+      * Gets or sets the primary DLNA PlayTo device.
+      */
+    msPlayToPrimary: boolean;
     textTracks: TextTrackList;
+    /**
+      * Gets or sets whether the DLNA PlayTo device is available.
+      */
+    msPlayToDisabled: boolean;
+    /**
+      * Returns an AudioTrackList object with the audio tracks for a given video element.
+      */
     audioTracks: AudioTrackList;
+    /**
+      * Gets the source associated with the media element for use by the PlayToManager.
+      */
+    msPlayToSource: any;
+    /**
+      * Specifies the output device id that the audio will be sent to.
+      */
+    msAudioDeviceType: string;
+    /**
+      * Clears all effects from the media pipeline.
+      */
+    msClearEffects(): void;
+    /**
+      * Specifies the media protection manager for a given media pipeline.
+      */
+    msSetMediaProtectionManager(mediaProtectionManager?: any): void;
+    /**
+      * Inserts the specified audio effect into media pipeline.
+      */
+    msInsertAudioEffect(activatableClassId: string, effectRequired: boolean, config?: any): void;
 }
 
 interface TextTrack extends EventTarget {
     language: string;
-    mode: number;
-    readyState: string;
+    mode: any;
+    readyState: number;
     activeCues: TextTrackCueList;
     cues: TextTrackCueList;
     oncuechange: (ev: Event) => any;
@@ -8446,6 +12651,7 @@ interface TextTrack extends EventTarget {
     onerror: (ev: ErrorEvent) => any;
     addEventListener(type: "error", listener: (ev: ErrorEvent) => any, useCapture?: boolean): void;
     label: string;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
     ERROR: number;
     SHOWING: number;
     LOADING: number;
@@ -8453,11 +12659,10 @@ interface TextTrack extends EventTarget {
     NONE: number;
     HIDDEN: number;
     DISABLED: number;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var TextTrack: {
     prototype: TextTrack;
-    new(): TextTrack;
+    new (): TextTrack;
     ERROR: number;
     SHOWING: number;
     LOADING: number;
@@ -8485,7 +12690,7 @@ interface IDBRequest extends EventTarget {
 }
 declare var IDBRequest: {
     prototype: IDBRequest;
-    new(): IDBRequest;
+    new (): IDBRequest;
 }
 
 interface MessagePort extends EventTarget {
@@ -8498,7 +12703,7 @@ interface MessagePort extends EventTarget {
 }
 declare var MessagePort: {
     prototype: MessagePort;
-    new(): MessagePort;
+    new (): MessagePort;
 }
 
 interface FileReader extends MSBaseReader {
@@ -8512,6 +12717,11 @@ declare var FileReader: {
     new (): FileReader;
 }
 
+interface BlobPropertyBag {
+    type?: string;
+    endings?: string;
+}
+
 interface Blob {
     type: string;
     size: number;
@@ -8519,12 +12729,6 @@ interface Blob {
     slice(start?: number, end?: number, contentType?: string): Blob;
     close(): void;
     msClose(): void;
-}
-interface BlobPropertyBag {
-    /** Corresponds to the 'type' property of the Blob object */
-    type?: string;
-    /** Either 'transparent' or 'native' */
-    endings?: string;
 }
 declare var Blob: {
     prototype: Blob;
@@ -8552,61 +12756,44 @@ interface ApplicationCache extends EventTarget {
     swapCache(): void;
     abort(): void;
     update(): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
     CHECKING: number;
     UNCACHED: number;
     UPDATEREADY: number;
     DOWNLOADING: number;
     IDLE: number;
     OBSOLETE: number;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 declare var ApplicationCache: {
     prototype: ApplicationCache;
-    new(): ApplicationCache;
+    new (): ApplicationCache;
     CHECKING: number;
     UNCACHED: number;
     UPDATEREADY: number;
     DOWNLOADING: number;
     IDLE: number;
     OBSOLETE: number;
-}
-
-interface MSHTMLVideoElementExtensions {
-    msIsStereo3D: boolean;
-    msStereo3DPackingMode: string;
-    onMSVideoOptimalLayoutChanged: (ev: any) => any;
-    addEventListener(type: "MSVideoOptimalLayoutChanged", listener: (ev: any) => any, useCapture?: boolean): void;
-    onMSVideoFrameStepCompleted: (ev: any) => any;
-    addEventListener(type: "MSVideoFrameStepCompleted", listener: (ev: any) => any, useCapture?: boolean): void;
-    msStereo3DRenderMode: string;
-    msIsLayoutOptimalForPlayback: boolean;
-    msHorizontalMirror: boolean;
-    onMSVideoFormatChanged: (ev: any) => any;
-    addEventListener(type: "MSVideoFormatChanged", listener: (ev: any) => any, useCapture?: boolean): void;
-    msZoom: boolean;
-    msInsertVideoEffect(activatableClassId: string, effectRequired: boolean, config?: any): void;
-    msSetVideoRectangle(left: number, top: number, right: number, bottom: number): void;
-    msFrameStep(forward: boolean): void;
-    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
 
 interface FrameRequestCallback {
     (time: number): void;
 }
 
-interface CSS3DTransformsProperties {
-    perspective: string;
-    msBackfaceVisibility: string;
-    perspectiveOrigin: string;
-    transformStyle: string;
-    backfaceVisibility: string;
-    msPerspectiveOrigin: string;
-    msTransformStyle: string;
-    msPerspective: string;
-}
-
 interface XMLHttpRequest {
+    response: any;
     withCredentials: boolean;
+    onprogress: (ev: ProgressEvent) => any;
+    addEventListener(type: "progress", listener: (ev: ProgressEvent) => any, useCapture?: boolean): void;
+    onabort: (ev: any) => any;
+    addEventListener(type: "abort", listener: (ev: any) => any, useCapture?: boolean): void;
+    responseType: string;
+    onloadend: (ev: ProgressEvent) => any;
+    addEventListener(type: "loadend", listener: (ev: ProgressEvent) => any, useCapture?: boolean): void;
+    upload: XMLHttpRequestEventTarget;
+    onerror: (ev: ErrorEvent) => any;
+    addEventListener(type: "error", listener: (ev: ErrorEvent) => any, useCapture?: boolean): void;
+    onloadstart: (ev: any) => any;
+    addEventListener(type: "loadstart", listener: (ev: any) => any, useCapture?: boolean): void;
 }
 
 interface PopStateEvent extends Event {
@@ -8615,7 +12802,7 @@ interface PopStateEvent extends Event {
 }
 declare var PopStateEvent: {
     prototype: PopStateEvent;
-    new(): PopStateEvent;
+    new (): PopStateEvent;
 }
 
 interface CSSKeyframeRule extends CSSRule {
@@ -8624,18 +12811,7 @@ interface CSSKeyframeRule extends CSSRule {
 }
 declare var CSSKeyframeRule: {
     prototype: CSSKeyframeRule;
-    new(): CSSKeyframeRule;
-}
-
-interface CSSGridProperties {
-    msGridRows: string;
-    msGridColumnSpan: any;
-    msGridRow: any;
-    msGridRowSpan: any;
-    msGridColumns: string;
-    msGridColumnAlign: string;
-    msGridRowAlign: string;
-    msGridColumn: any;
+    new (): CSSKeyframeRule;
 }
 
 interface MSFileSaver {
@@ -8650,17 +12826,34 @@ interface MSStream {
 }
 declare var MSStream: {
     prototype: MSStream;
-    new(): MSStream;
+    new (): MSStream;
 }
 
-interface MediaError extends MSMediaErrorExtensions {
+interface MediaError {
+    msExtendedCode: number;
 }
 
 interface HTMLFieldSetElement {
+    /**
+      * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation messages without actually submitting.
+      */
     validationMessage: string;
+    /**
+      * Returns a  ValidityState object that represents the validity states of an element.
+      */
     validity: ValidityState;
+    /**
+      * Returns whether an element will successfully validate based on forms validation rules and constraints.
+      */
     willValidate: boolean;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
     checkValidity(): boolean;
+    /**
+      * Sets a custom error message that is displayed when a form is submitted.
+      * @param error Sets a custom error message that is displayed when a form is submitted.
+      */
     setCustomValidity(error: string): void;
 }
 
@@ -8673,15 +12866,15 @@ declare var MSBlobBuilder: {
     new (): MSBlobBuilder;
 }
 
-interface MSRangeExtensions {
-    createContextualFragment(fragment: string): DocumentFragment;
-}
-
 interface HTMLElement {
+    onmscontentzoom: (ev: any) => any;
+    addEventListener(type: "mscontentzoom", listener: (ev: any) => any, useCapture?: boolean): void;
     oncuechange: (ev: Event) => any;
     addEventListener(type: "cuechange", listener: (ev: Event) => any, useCapture?: boolean): void;
     spellcheck: boolean;
     classList: DOMTokenList;
+    onmsmanipulationstatechanged: (ev: any) => any;
+    addEventListener(type: "msmanipulationstatechanged", listener: (ev: any) => any, useCapture?: boolean): void;
     draggable: boolean;
 }
 
@@ -8695,7 +12888,7 @@ interface DOMSettableTokenList extends DOMTokenList {
 }
 declare var DOMSettableTokenList: {
     prototype: DOMSettableTokenList;
-    new(): DOMSettableTokenList;
+    new (): DOMSettableTokenList;
 }
 
 interface IDBFactory {
@@ -8705,17 +12898,34 @@ interface IDBFactory {
 }
 declare var IDBFactory: {
     prototype: IDBFactory;
-    new(): IDBFactory;
+    new (): IDBFactory;
 }
 
-interface Range extends MSRangeExtensions {
+interface Range {
+    createContextualFragment(fragment: string): DocumentFragment;
 }
 
 interface HTMLObjectElement {
+    /**
+      * Returns the error message that would be displayed if the user submits the form, or an empty string if no error message. It also triggers the standard error message, such as "this is a required field". The result is that the user sees validation messages without actually submitting.
+      */
     validationMessage: string;
+    /**
+      * Returns a  ValidityState object that represents the validity states of an element.
+      */
     validity: ValidityState;
+    /**
+      * Returns whether an element will successfully validate based on forms validation rules and constraints.
+      */
     willValidate: boolean;
+    /**
+      * Returns whether a form will validate when it is submitted, without having to submit it.
+      */
     checkValidity(): boolean;
+    /**
+      * Sets a custom error message that is displayed when a form is submitted.
+      * @param error Sets a custom error message that is displayed when a form is submitted.
+      */
     setCustomValidity(error: string): void;
 }
 
@@ -8723,7 +12933,7 @@ interface MSPointerEvent extends MouseEvent {
     width: number;
     rotation: number;
     pressure: number;
-    pointerType: number;
+    pointerType: any;
     isPrimary: boolean;
     tiltY: number;
     height: number;
@@ -8732,7 +12942,7 @@ interface MSPointerEvent extends MouseEvent {
     tiltX: number;
     hwTimestamp: number;
     pointerId: number;
-    initPointerEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget, offsetXArg: number, offsetYArg: number, widthArg: number, heightArg: number, pressure: number, rotation: number, tiltX: number, tiltY: number, pointerIdArg: number, pointerType: number, hwTimestampArg: number, isPrimary: boolean): void;
+    initPointerEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, screenXArg: number, screenYArg: number, clientXArg: number, clientYArg: number, ctrlKeyArg: boolean, altKeyArg: boolean, shiftKeyArg: boolean, metaKeyArg: boolean, buttonArg: number, relatedTargetArg: EventTarget, offsetXArg: number, offsetYArg: number, widthArg: number, heightArg: number, pressure: number, rotation: number, tiltX: number, tiltY: number, pointerIdArg: number, pointerType: any, hwTimestampArg: number, isPrimary: boolean): void;
     getCurrentPoint(element: Element): void;
     getIntermediatePoints(element: Element): void;
     MSPOINTER_TYPE_PEN: number;
@@ -8741,23 +12951,10 @@ interface MSPointerEvent extends MouseEvent {
 }
 declare var MSPointerEvent: {
     prototype: MSPointerEvent;
-    new(): MSPointerEvent;
+    new (): MSPointerEvent;
     MSPOINTER_TYPE_PEN: number;
     MSPOINTER_TYPE_MOUSE: number;
     MSPOINTER_TYPE_TOUCH: number;
-}
-
-interface CSSTextProperties {
-    textShadow: string;
-    msHyphenateLimitLines: any;
-    msHyphens: string;
-    msHyphenateLimitChars: string;
-    msHyphenateLimitZone: any;
-}
-
-interface CSS2DTransformsProperties {
-    transform: string;
-    transformOrigin: string;
 }
 
 interface DOMException {
@@ -8767,26 +12964,23 @@ interface DOMException {
     TIMEOUT_ERR: number;
 }
 //declare var DOMException: {
+//    prototype: DOMException;
 //    INVALID_NODE_TYPE_ERR: number;
 //    DATA_CLONE_ERR: number;
 //    TIMEOUT_ERR: number;
 //}
 
-interface MSCSSHighContrastProperties {
-    msHighContrastAdjust: string;
-}
-
 interface MSManipulationEvent extends UIEvent {
     lastState: number;
     currentState: number;
-    initMSManipulationEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: AbstractView, detailArg: number, lastState: number, currentState: number): void;
+    initMSManipulationEvent(typeArg: string, canBubbleArg: boolean, cancelableArg: boolean, viewArg: Window, detailArg: number, lastState: number, currentState: number): void;
     MS_MANIPULATION_STATE_STOPPED: number;
     MS_MANIPULATION_STATE_ACTIVE: number;
     MS_MANIPULATION_STATE_INERTIA: number;
 }
 declare var MSManipulationEvent: {
     prototype: MSManipulationEvent;
-    new(): MSManipulationEvent;
+    new (): MSManipulationEvent;
     MS_MANIPULATION_STATE_STOPPED: number;
     MS_MANIPULATION_STATE_ACTIVE: number;
     MS_MANIPULATION_STATE_INERTIA: number;
@@ -8800,42 +12994,20 @@ declare var FormData: {
     new (form?: HTMLFormElement): FormData;
 }
 
-interface MSHTMLImageElementExtensions {
-    msPlayToPrimary: boolean;
-    msPlayToDisabled: boolean;
-    msPlayToSource: any;
-}
-declare var MSHTMLImageElementExtensions: {
-    prototype: MSHTMLImageElementExtensions;
-    new(): MSHTMLImageElementExtensions;
-}
-
-interface MSHTMLMediaElementExtensions {
-    msAudioCategory: string;
-    msRealTime: boolean;
-    msPlayToPrimary: boolean;
-    msPlayToDisabled: boolean;
-    msPlayToSource: any;
-    msAudioDeviceType: string;
-    msClearEffects(): void;
-    msSetMediaProtectionManager(mediaProtectionManager?: any): void;
-    msInsertAudioEffect(activatableClassId: string, effectRequired: boolean, config?: any): void;
-}
-
-interface SVGFEImageElement extends SVGElement, SVGLangSpace, SVGFilterPrimitiveStandardAttributes, SVGURIReference {
-    preserveAspectRatio: SVGAnimatedPreserveAspectRatio;
-}
-declare var SVGFEImageElement: {
-    prototype: SVGFEImageElement;
-    new(): SVGFEImageElement;
-}
-
 interface HTMLDataListElement extends HTMLElement {
     options: HTMLCollection;
 }
 declare var HTMLDataListElement: {
     prototype: HTMLDataListElement;
-    new(): HTMLDataListElement;
+    new (): HTMLDataListElement;
+}
+
+interface SVGFEImageElement extends SVGElement, SVGLangSpace, SVGFilterPrimitiveStandardAttributes, SVGURIReference, SVGExternalResourcesRequired {
+    preserveAspectRatio: SVGAnimatedPreserveAspectRatio;
+}
+declare var SVGFEImageElement: {
+    prototype: SVGFEImageElement;
+    new (): SVGFEImageElement;
 }
 
 interface AbstractWorker extends EventTarget {
@@ -8862,7 +13034,7 @@ interface SVGFECompositeElement extends SVGElement, SVGFilterPrimitiveStandardAt
 }
 declare var SVGFECompositeElement: {
     prototype: SVGFECompositeElement;
-    new(): SVGFECompositeElement;
+    new (): SVGFECompositeElement;
     SVG_FECOMPOSITE_OPERATOR_OUT: number;
     SVG_FECOMPOSITE_OPERATOR_OVER: number;
     SVG_FECOMPOSITE_OPERATOR_XOR: number;
@@ -8885,10 +13057,7 @@ interface ValidityState {
 }
 declare var ValidityState: {
     prototype: ValidityState;
-    new(): ValidityState;
-}
-
-interface HTMLVideoElement extends MSHTMLVideoElementExtensions {
+    new (): ValidityState;
 }
 
 interface HTMLTrackElement extends HTMLElement {
@@ -8897,11 +13066,11 @@ interface HTMLTrackElement extends HTMLElement {
     srclang: string;
     track: TextTrack;
     label: string;
-    defaul: boolean;
+    default: boolean;
 }
 declare var HTMLTrackElement: {
     prototype: HTMLTrackElement;
-    new(): HTMLTrackElement;
+    new (): HTMLTrackElement;
 }
 
 interface MSApp {
@@ -8911,31 +13080,37 @@ interface MSApp {
     terminateApp(exceptionObject: any): void;
     createDataPackage(object: any): any;
     execUnsafeLocalFunction(unsafeFunction: MSUnsafeFunctionCallback): any;
-    getHtmlPrintDocumentSource(htmlDoc: any, printTemplate?: string): any;
+    getHtmlPrintDocumentSource(htmlDoc: any): any;
     addPublicLocalApplicationUri(uri: string): void;
     createDataPackageFromSelection(): any;
 }
 declare var MSApp: MSApp;
 
-interface MSXMLHttpRequestExtensions {
-    response: any;
-    onprogress: (ev: ProgressEvent) => any;
-    addEventListener(type: "progress", listener: (ev: ProgressEvent) => any, useCapture?: boolean): void;
-    onabort: (ev: any) => any;
-    addEventListener(type: "abort", listener: (ev: any) => any, useCapture?: boolean): void;
-    responseType: string;
-    onloadend: (ev: ProgressEvent) => any;
-    addEventListener(type: "loadend", listener: (ev: ProgressEvent) => any, useCapture?: boolean): void;
-    upload: XMLHttpRequestEventTarget;
-    onerror: (ev: ErrorEvent) => any;
-    addEventListener(type: "error", listener: (ev: ErrorEvent) => any, useCapture?: boolean): void;
-    onloadstart: (ev: any) => any;
-    addEventListener(type: "loadstart", listener: (ev: any) => any, useCapture?: boolean): void;
+interface HTMLVideoElement {
+    msIsStereo3D: boolean;
+    msStereo3DPackingMode: string;
+    onMSVideoOptimalLayoutChanged: (ev: any) => any;
+    addEventListener(type: "MSVideoOptimalLayoutChanged", listener: (ev: any) => any, useCapture?: boolean): void;
+    onMSVideoFrameStepCompleted: (ev: any) => any;
+    addEventListener(type: "MSVideoFrameStepCompleted", listener: (ev: any) => any, useCapture?: boolean): void;
+    msStereo3DRenderMode: string;
+    msIsLayoutOptimalForPlayback: boolean;
+    msHorizontalMirror: boolean;
+    onMSVideoFormatChanged: (ev: any) => any;
+    addEventListener(type: "MSVideoFormatChanged", listener: (ev: any) => any, useCapture?: boolean): void;
+    msZoom: boolean;
+    msInsertVideoEffect(activatableClassId: string, effectRequired: boolean, config?: any): void;
+    msSetVideoRectangle(left: number, top: number, right: number, bottom: number): void;
+    msFrameStep(forward: boolean): void;
     addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
 }
-declare var MSXMLHttpRequestExtensions: {
-    prototype: MSXMLHttpRequestExtensions;
-    new(): MSXMLHttpRequestExtensions;
+
+interface SVGFEComponentTransferElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
+    in1: SVGAnimatedString;
+}
+declare var SVGFEComponentTransferElement: {
+    prototype: SVGFEComponentTransferElement;
+    new (): SVGFEComponentTransferElement;
 }
 
 interface SVGFEDiffuseLightingElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
@@ -8947,15 +13122,7 @@ interface SVGFEDiffuseLightingElement extends SVGElement, SVGFilterPrimitiveStan
 }
 declare var SVGFEDiffuseLightingElement: {
     prototype: SVGFEDiffuseLightingElement;
-    new(): SVGFEDiffuseLightingElement;
-}
-
-interface SVGFEComponentTransferElement extends SVGElement, SVGFilterPrimitiveStandardAttributes {
-    in1: SVGAnimatedString;
-}
-declare var SVGFEComponentTransferElement: {
-    prototype: SVGFEComponentTransferElement;
-    new(): SVGFEComponentTransferElement;
+    new (): SVGFEDiffuseLightingElement;
 }
 
 interface MSCSSMatrix {
@@ -9013,30 +13180,44 @@ interface HTMLIFrameElement {
     sandbox: DOMSettableTokenList;
 }
 
-interface MSMediaErrorExtensions {
-    msExtendedCode: number;
-}
-
-interface MSNavigatorAbilities {
-    msProtocols: MSProtocolsCollection;
-    msMaxTouchPoints: number;
-    msPointerEnabled: boolean;
-    msManipulationViewsEnabled: boolean;
-}
-declare var MSNavigatorAbilities: {
-    prototype: MSNavigatorAbilities;
-    new(): MSNavigatorAbilities;
-}
-
+declare var onmspointerdown: (ev: any) => any;
+declare function addEventListener(type: "mspointerdown", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var animationStartTime: number;
+declare var onmsgesturedoubletap: (ev: any) => any;
+declare function addEventListener(type: "msgesturedoubletap", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmspointerhover: (ev: any) => any;
+declare function addEventListener(type: "mspointerhover", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmsgesturehold: (ev: any) => any;
+declare function addEventListener(type: "msgesturehold", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmspointermove: (ev: any) => any;
+declare function addEventListener(type: "mspointermove", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmsgesturechange: (ev: any) => any;
+declare function addEventListener(type: "msgesturechange", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmsgesturestart: (ev: any) => any;
+declare function addEventListener(type: "msgesturestart", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmspointercancel: (ev: any) => any;
+declare function addEventListener(type: "mspointercancel", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmsgestureend: (ev: any) => any;
+declare function addEventListener(type: "msgestureend", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmsgesturetap: (ev: any) => any;
+declare function addEventListener(type: "msgesturetap", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmspointerout: (ev: any) => any;
+declare function addEventListener(type: "mspointerout", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var msAnimationStartTime: number;
+declare var applicationCache: ApplicationCache;
+declare var onmsinertiastart: (ev: any) => any;
+declare function addEventListener(type: "msinertiastart", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onmspointerover: (ev: any) => any;
+declare function addEventListener(type: "mspointerover", listener: (ev: any) => any, useCapture?: boolean): void;
 declare var onpopstate: (ev: PopStateEvent) => any;
 declare function addEventListener(type: "popstate", listener: (ev: PopStateEvent) => any, useCapture?: boolean): void;
-declare var applicationCache: ApplicationCache;
-declare function matchMedia(mediaQuery: string): MediaQueryList;
-declare function msMatchMedia(mediaQuery: string): MediaQueryList;
-declare var animationStartTime: number;
-declare var msAnimationStartTime: number;
+declare var onmspointerup: (ev: any) => any;
+declare function addEventListener(type: "mspointerup", listener: (ev: any) => any, useCapture?: boolean): void;
 declare function msCancelRequestAnimationFrame(handle: number): void;
+declare function matchMedia(mediaQuery: string): MediaQueryList;
 declare function cancelAnimationFrame(handle: number): void;
+declare function msIsStaticHTML(html: string): boolean;
+declare function msMatchMedia(mediaQuery: string): MediaQueryList;
 declare function requestAnimationFrame(callback: FrameRequestCallback): number;
 declare function msRequestAnimationFrame(callback: FrameRequestCallback): number;
 declare function btoa(rawString: string): string;
@@ -9045,9 +13226,953 @@ declare var msIndexedDB: IDBFactory;
 declare var indexedDB: IDBFactory;
 declare var console: Console;
 
+/////////////////////////////
+/// IE11 APIs 
+/////////////////////////////
+
+
+
+interface StoreExceptionsInformation extends ExceptionInformation {
+    siteName?: string;
+    explanationString?: string;
+    detailURI?: string;
+}
+
+interface StoreSiteSpecificExceptionsInformation extends StoreExceptionsInformation {
+    arrayOfDomainStrings?: Array<string>;
+}
+
+interface ConfirmSiteSpecificExceptionsInformation extends ExceptionInformation {
+    arrayOfDomainStrings?: Array<string>;
+}
+
+interface AlgorithmParameters {
+}
+
+interface MutationObserverInit {
+    childList?: boolean;
+    attributes?: boolean;
+    characterData?: boolean;
+    subtree?: boolean;
+    attributeOldValue?: boolean;
+    characterDataOldValue?: boolean;
+    attributeFilter?: Array<string>;
+}
+
+interface ExceptionInformation {
+    domain?: string;
+}
+
+interface MsZoomToOptions {
+    contentX?: number;
+    contentY?: number;
+    viewportX?: string;
+    viewportY?: string;
+    scaleFactor?: number;
+    animate?: string;
+}
+
+interface DeviceAccelerationDict {
+    x?: number;
+    y?: number;
+    z?: number;
+}
+
+interface DeviceRotationRateDict {
+    alpha?: number;
+    beta?: number;
+    gamma?: number;
+}
+
+interface Algorithm {
+    name?: string;
+    params?: AlgorithmParameters;
+}
+
+interface NavigatorID {
+    product: string;
+    vendor: string;
+}
+declare var NavigatorID: {
+    prototype: NavigatorID;
+    new (): NavigatorID;
+}
+
+interface HTMLBodyElement {
+    onpageshow: (ev: PageTransitionEvent) => any;
+    addEventListener(type: "pageshow", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+    onpagehide: (ev: PageTransitionEvent) => any;
+    addEventListener(type: "pagehide", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+}
+
+interface MSExecAtPriorityFunctionCallback {
+    (...args: any[]): any;
+}
+
+interface MSWindowExtensions {
+    captureEvents(): void;
+    releaseEvents(): void;
+}
+declare var MSWindowExtensions: {
+    prototype: MSWindowExtensions;
+    new (): MSWindowExtensions;
+}
+
+interface MSGraphicsTrust {
+    status: string;
+    constrictionActive: boolean;
+}
+declare var MSGraphicsTrust: {
+    prototype: MSGraphicsTrust;
+    new (): MSGraphicsTrust;
+}
+
+interface AudioTrack {
+    sourceBuffer: SourceBuffer;
+}
+
+interface DragEvent {
+    msConvertURL(file: File, targetType: string, targetURL?: string): boolean;
+}
+
+interface SubtleCrypto {
+    unwrapKey(wrappedKey: ArrayBufferView, keyAlgorithm: any, keyEncryptionKey: Key, extractable?: boolean, keyUsages?: string[]): KeyOperation;
+    encrypt(algorithm: any, key: Key, buffer?: ArrayBufferView): CryptoOperation;
+    importKey(format: string, keyData: ArrayBufferView, algorithm: any, extractable?: boolean, keyUsages?: string[]): KeyOperation;
+    wrapKey(key: Key, keyEncryptionKey: Key, keyWrappingAlgorithm: any): KeyOperation;
+    verify(algorithm: any, key: Key, signature: ArrayBufferView, buffer?: ArrayBufferView): CryptoOperation;
+    deriveKey(algorithm: any, baseKey: Key, derivedKeyType: any, extractable?: boolean, keyUsages?: string[]): KeyOperation;
+    digest(algorithm: any, buffer?: ArrayBufferView): CryptoOperation;
+    exportKey(format: string, key: Key): KeyOperation;
+    generateKey(algorithm: any, extractable?: boolean, keyUsages?: string[]): KeyOperation;
+    sign(algorithm: any, key: Key, buffer?: ArrayBufferView): CryptoOperation;
+    decrypt(algorithm: any, key: Key, buffer?: ArrayBufferView): CryptoOperation;
+}
+declare var SubtleCrypto: {
+    prototype: SubtleCrypto;
+    new (): SubtleCrypto;
+}
+
+interface Crypto extends RandomSource {
+    subtle: SubtleCrypto;
+}
+declare var Crypto: {
+    prototype: Crypto;
+    new (): Crypto;
+}
+
+interface VideoPlaybackQuality {
+    creationTime: number;
+    totalVideoFrames: number;
+    droppedVideoFrames: number;
+}
+declare var VideoPlaybackQuality: {
+    prototype: VideoPlaybackQuality;
+    new (): VideoPlaybackQuality;
+}
+
+interface Window {
+    onpageshow: (ev: PageTransitionEvent) => any;
+    addEventListener(type: "pageshow", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+    ondevicemotion: (ev: DeviceMotionEvent) => any;
+    addEventListener(type: "devicemotion", listener: (ev: DeviceMotionEvent) => any, useCapture?: boolean): void;
+    devicePixelRatio: number;
+    msCrypto: Crypto;
+    ondeviceorientation: (ev: DeviceOrientationEvent) => any;
+    addEventListener(type: "deviceorientation", listener: (ev: DeviceOrientationEvent) => any, useCapture?: boolean): void;
+    onmspointerenter: (ev: any) => any;
+    addEventListener(type: "mspointerenter", listener: (ev: any) => any, useCapture?: boolean): void;
+    onpagehide: (ev: PageTransitionEvent) => any;
+    addEventListener(type: "pagehide", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+    onmspointerleave: (ev: any) => any;
+    addEventListener(type: "mspointerleave", listener: (ev: any) => any, useCapture?: boolean): void;
+}
+
+interface Key {
+    algorithm: Algorithm;
+    type: string;
+    extractable: boolean;
+    keyUsage: string[];
+}
+declare var Key: {
+    prototype: Key;
+    new (): Key;
+}
+
+interface TextTrackList extends EventTarget {
+    onaddtrack: (ev: any) => any;
+    addEventListener(type: "addtrack", listener: (ev: any) => any, useCapture?: boolean): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+
+interface DeviceAcceleration {
+    y: number;
+    x: number;
+    z: number;
+}
+declare var DeviceAcceleration: {
+    prototype: DeviceAcceleration;
+    new (): DeviceAcceleration;
+}
+
+interface Console {
+    count(countTitle?: string): void;
+    groupEnd(): void;
+    time(timerName?: string): void;
+    timeEnd(timerName?: string): void;
+    trace(): void;
+    group(groupTitle?: string): void;
+    dirxml(value: any): void;
+    debug(message?: string, ...optionalParams: any[]): void;
+    groupCollapsed(groupTitle?: string): void;
+    select(element: Element): void;
+}
+
+interface MSNavigatorDoNotTrack {
+    removeSiteSpecificTrackingException(args: ExceptionInformation): boolean;
+    removeWebWideTrackingException(args: ExceptionInformation): boolean;
+    storeWebWideTrackingException(args: StoreExceptionsInformation): void;
+    storeSiteSpecificTrackingException(args: StoreSiteSpecificExceptionsInformation): void;
+    confirmSiteSpecificTrackingException(args: ConfirmSiteSpecificExceptionsInformation): boolean;
+    confirmWebWideTrackingException(args: ExceptionInformation): boolean;
+}
+declare var MSNavigatorDoNotTrack: {
+    prototype: MSNavigatorDoNotTrack;
+    new (): MSNavigatorDoNotTrack;
+}
+
+interface HTMLImageElement {
+    crossOrigin: string;
+}
+
+interface HTMLAllCollection extends HTMLCollection {
+    namedItem(name: string): Element;
+}
+declare var HTMLAllCollection: {
+    prototype: HTMLAllCollection;
+    new (): HTMLAllCollection;
+}
+
+interface MSNavigatorExtensions {
+    language: string;
+}
+declare var MSNavigatorExtensions: {
+    prototype: MSNavigatorExtensions;
+    new (): MSNavigatorExtensions;
+}
+
+interface AesGcmEncryptResult {
+    ciphertext: ArrayBuffer;
+    tag: ArrayBuffer;
+}
+declare var AesGcmEncryptResult: {
+    prototype: AesGcmEncryptResult;
+    new (): AesGcmEncryptResult;
+}
+
+interface CSSStyleDeclaration {
+    alignItems: string;
+    borderImageSource: string;
+    flexBasis: string;
+    borderImageWidth: string;
+    borderImageRepeat: string;
+    order: string;
+    flex: string;
+    alignContent: string;
+    msImeAlign: string;
+    flexShrink: string;
+    flexGrow: string;
+    borderImageSlice: string;
+    flexWrap: string;
+    borderImageOutset: string;
+    flexDirection: string;
+    flexFlow: string;
+    borderImage: string;
+    justifyContent: string;
+    alignSelf: string;
+    msTextCombineHorizontal: string;
+}
+
+interface HTMLSourceElement {
+    msKeySystem: string;
+}
+
+interface NavigationCompletedEvent extends NavigationEvent {
+    webErrorStatus: number;
+    isSuccess: boolean;
+}
+declare var NavigationCompletedEvent: {
+    prototype: NavigationCompletedEvent;
+    new (): NavigationCompletedEvent;
+}
+
+interface MutationRecord {
+    oldValue: string;
+    previousSibling: Node;
+    addedNodes: NodeList;
+    attributeName: string;
+    removedNodes: NodeList;
+    target: Node;
+    nextSibling: Node;
+    attributeNamespace: string;
+    type: string;
+}
+declare var MutationRecord: {
+    prototype: MutationRecord;
+    new (): MutationRecord;
+}
+
+interface Document extends MSDocumentExtensions {
+    msFullscreenEnabled: boolean;
+    onmsfullscreenerror: (ev: any) => any;
+    addEventListener(type: "msfullscreenerror", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerenter: (ev: any) => any;
+    addEventListener(type: "mspointerenter", listener: (ev: any) => any, useCapture?: boolean): void;
+    msFullscreenElement: Element;
+    onmsfullscreenchange: (ev: any) => any;
+    addEventListener(type: "msfullscreenchange", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerleave: (ev: any) => any;
+    addEventListener(type: "mspointerleave", listener: (ev: any) => any, useCapture?: boolean): void;
+    msExitFullscreen(): void;
+}
+
+interface MimeTypeArray {
+    length: number;
+    item(index: number): Plugin;
+    [index: number]: Plugin;
+    namedItem(type: string): Plugin;
+}
+declare var MimeTypeArray: {
+    prototype: MimeTypeArray;
+    new (): MimeTypeArray;
+}
+
+interface HTMLMediaElement {
+    /**
+      * Gets or sets the path to the preferred media source. This enables the Play To target device to stream the media content, which can be DRM protected, from a different location, such as a cloud media server.
+      */
+    msPlayToPreferredSourceUri: string;
+    onmsneedkey: (ev: MSMediaKeyNeededEvent) => any;
+    addEventListener(type: "msneedkey", listener: (ev: MSMediaKeyNeededEvent) => any, useCapture?: boolean): void;
+    /**
+      * Gets the MSMediaKeys object, which is used for decrypting media data, that is associated with this media element.
+      */
+    msKeys: MSMediaKeys;
+    msGraphicsTrustStatus: MSGraphicsTrust;
+    msSetMediaKeys(mediaKeys: MSMediaKeys): void;
+    addTextTrack(kind: string, label?: string, language?: string): TextTrack;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+
+interface TextTrack {
+    addCue(cue: TextTrackCue): void;
+    removeCue(cue: TextTrackCue): void;
+}
+
+interface KeyOperation extends EventTarget {
+    oncomplete: (ev: any) => any;
+    addEventListener(type: "complete", listener: (ev: any) => any, useCapture?: boolean): void;
+    onerror: (ev: any) => any;
+    addEventListener(type: "error", listener: (ev: any) => any, useCapture?: boolean): void;
+    result: any;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+declare var KeyOperation: {
+    prototype: KeyOperation;
+    new (): KeyOperation;
+}
+
+interface DOMStringMap {
+}
+declare var DOMStringMap: {
+    prototype: DOMStringMap;
+    new (): DOMStringMap;
+}
+
+interface DeviceOrientationEvent extends Event {
+    gamma: number;
+    alpha: number;
+    absolute: boolean;
+    beta: number;
+    initDeviceOrientationEvent(type: string, bubbles: boolean, cancelable: boolean, alpha: number, beta: number, gamma: number, absolute: boolean): void;
+}
+declare var DeviceOrientationEvent: {
+    prototype: DeviceOrientationEvent;
+    new (): DeviceOrientationEvent;
+}
+
+interface MSMediaKeyMessageEvent extends Event {
+    destinationURL: string;
+    message: Uint8Array;
+}
+declare var MSMediaKeyMessageEvent: {
+    prototype: MSMediaKeyMessageEvent;
+    new (): MSMediaKeyMessageEvent;
+}
+
+interface MSMediaKeys {
+    keySystem: string;
+    createSession(type: string, initData: Uint8Array, cdmData?: Uint8Array): MSMediaKeySession;
+    isTypeSupported(keySystem: string, type?: string): boolean;
+}
+declare var MSMediaKeys: {
+    prototype: MSMediaKeys;
+    new (): MSMediaKeys;
+}
+
+interface MSHTMLWebViewElement extends HTMLElement {
+    documentTitle: string;
+    width: number;
+    src: string;
+    canGoForward: boolean;
+    height: number;
+    canGoBack: boolean;
+    navigateWithHttpRequestMessage(requestMessage: any): void;
+    goBack(): void;
+    navigate(uri: string): void;
+    stop(): void;
+    navigateToString(contents: string): void;
+    captureSelectedContentToDataPackageAsync(): MSWebViewAsyncOperation;
+    capturePreviewToBlobAsync(): MSWebViewAsyncOperation;
+    refresh(): void;
+    goForward(): void;
+    navigateToLocalStreamUri(source: string, streamResolver: any): void;
+    invokeScriptAsync(scriptName: string, ...args: any[]): MSWebViewAsyncOperation;
+    buildLocalStreamUri(contentIdentifier: string, relativePath: string): string;
+}
+declare var MSHTMLWebViewElement: {
+    prototype: MSHTMLWebViewElement;
+    new (): MSHTMLWebViewElement;
+}
+
+interface NavigationEvent extends Event {
+    uri: string;
+}
+declare var NavigationEvent: {
+    prototype: NavigationEvent;
+    new (): NavigationEvent;
+}
+
+interface Element {
+    onmspointerenter: (ev: any) => any;
+    addEventListener(type: "mspointerenter", listener: (ev: any) => any, useCapture?: boolean): void;
+    onmspointerleave: (ev: any) => any;
+    addEventListener(type: "mspointerleave", listener: (ev: any) => any, useCapture?: boolean): void;
+    msZoomTo(args: MsZoomToOptions): void;
+    msGetUntransformedBounds(): ClientRect;
+    msRequestFullscreen(): void;
+}
+
+interface RandomSource {
+    getRandomValues(array: ArrayBufferView): ArrayBufferView;
+}
+
+interface XMLHttpRequest {
+    msCaching: string;
+    msCachingEnabled(): boolean;
+    overrideMimeType(mime: string): void;
+}
+
+interface SourceBuffer extends EventTarget {
+    updating: boolean;
+    appendWindowStart: number;
+    appendWindowEnd: number;
+    buffered: TimeRanges;
+    timestampOffset: number;
+    audioTracks: AudioTrackList;
+    appendBuffer(data: ArrayBuffer): void;
+    remove(start: number, end: number): void;
+    abort(): void;
+    appendStream(stream: MSStream, maxSize?: number): void;
+}
+declare var SourceBuffer: {
+    prototype: SourceBuffer;
+    new (): SourceBuffer;
+}
+
+interface MSInputMethodContext extends EventTarget {
+    oncandidatewindowshow: (ev: any) => any;
+    addEventListener(type: "candidatewindowshow", listener: (ev: any) => any, useCapture?: boolean): void;
+    target: HTMLElement;
+    compositionStartOffset: number;
+    oncandidatewindowhide: (ev: any) => any;
+    addEventListener(type: "candidatewindowhide", listener: (ev: any) => any, useCapture?: boolean): void;
+    oncandidatewindowupdate: (ev: any) => any;
+    addEventListener(type: "candidatewindowupdate", listener: (ev: any) => any, useCapture?: boolean): void;
+    compositionEndOffset: number;
+    getCompositionAlternatives(): string[];
+    getCandidateWindowClientRect(): ClientRect;
+    hasComposition(): boolean;
+    isCandidateWindowVisible(): boolean;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+declare var MSInputMethodContext: {
+    prototype: MSInputMethodContext;
+    new (): MSInputMethodContext;
+}
+
+interface DeviceRotationRate {
+    gamma: number;
+    alpha: number;
+    beta: number;
+}
+declare var DeviceRotationRate: {
+    prototype: DeviceRotationRate;
+    new (): DeviceRotationRate;
+}
+
+interface PluginArray {
+    length: number;
+    refresh(reload?: boolean): void;
+    item(index: number): Plugin;
+    [index: number]: Plugin;
+    namedItem(name: string): Plugin;
+}
+declare var PluginArray: {
+    prototype: PluginArray;
+    new (): PluginArray;
+}
+
+interface MSMediaKeyError {
+    systemCode: number;
+    code: number;
+    MS_MEDIA_KEYERR_SERVICE: number;
+    MS_MEDIA_KEYERR_HARDWARECHANGE: number;
+    MS_MEDIA_KEYERR_OUTPUT: number;
+    MS_MEDIA_KEYERR_DOMAIN: number;
+    MS_MEDIA_KEYERR_UNKNOWN: number;
+    MS_MEDIA_KEYERR_CLIENT: number;
+}
+declare var MSMediaKeyError: {
+    prototype: MSMediaKeyError;
+    new (): MSMediaKeyError;
+    MS_MEDIA_KEYERR_SERVICE: number;
+    MS_MEDIA_KEYERR_HARDWARECHANGE: number;
+    MS_MEDIA_KEYERR_OUTPUT: number;
+    MS_MEDIA_KEYERR_DOMAIN: number;
+    MS_MEDIA_KEYERR_UNKNOWN: number;
+    MS_MEDIA_KEYERR_CLIENT: number;
+}
+
+interface Plugin {
+    length: number;
+    filename: string;
+    version: string;
+    name: string;
+    description: string;
+    item(index: number): MimeType;
+    [index: number]: MimeType;
+    namedItem(type: string): MimeType;
+}
+declare var Plugin: {
+    prototype: Plugin;
+    new (): Plugin;
+}
+
+interface HTMLFrameSetElement {
+    onpageshow: (ev: PageTransitionEvent) => any;
+    addEventListener(type: "pageshow", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+    onpagehide: (ev: PageTransitionEvent) => any;
+    addEventListener(type: "pagehide", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+}
+
+interface Screen extends EventTarget {
+    msOrientation: string;
+    onmsorientationchange: (ev: any) => any;
+    addEventListener(type: "msorientationchange", listener: (ev: any) => any, useCapture?: boolean): void;
+    msLockOrientation(orientations: string[]): boolean;
+    msUnlockOrientation(): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+
+interface MediaSource extends EventTarget {
+    sourceBuffers: SourceBufferList;
+    duration: string;
+    readyState: any;
+    activeSourceBuffers: SourceBufferList;
+    addSourceBuffer(type: string): SourceBuffer;
+    endOfStream(error?: string): void;
+    isTypeSupported(type: string): boolean;
+    removeSourceBuffer(sourceBuffer: SourceBuffer): void;
+}
+declare var MediaSource: {
+    prototype: MediaSource;
+    new (): MediaSource;
+}
+
+interface MediaError {
+    MS_MEDIA_ERR_ENCRYPTED: number;
+}
+//declare var MediaError: {
+//    prototype: MediaError;
+//    MS_MEDIA_ERR_ENCRYPTED: number;
+//}
+
+interface SourceBufferList extends EventTarget {
+    length: number;
+    item(index: number): SourceBuffer;
+    [index: number]: SourceBuffer;
+}
+declare var SourceBufferList: {
+    prototype: SourceBufferList;
+    new (): SourceBufferList;
+}
+
+interface XMLDocument extends Document {
+}
+declare var XMLDocument: {
+    prototype: XMLDocument;
+    new (): XMLDocument;
+}
+
+interface DeviceMotionEvent extends Event {
+    rotationRate: DeviceRotationRate;
+    acceleration: DeviceAcceleration;
+    interval: number;
+    accelerationIncludingGravity: DeviceAcceleration;
+    initDeviceMotionEvent(type: string, bubbles: boolean, cancelable: boolean, acceleration: DeviceAccelerationDict, accelerationIncludingGravity: DeviceAccelerationDict, rotationRate: DeviceRotationRateDict, interval: number): void;
+}
+declare var DeviceMotionEvent: {
+    prototype: DeviceMotionEvent;
+    new (): DeviceMotionEvent;
+}
+
+interface MimeType {
+    enabledPlugin: Plugin;
+    suffixes: string;
+    type: string;
+    description: string;
+}
+declare var MimeType: {
+    prototype: MimeType;
+    new (): MimeType;
+}
+
+interface MSDocumentExtensions {
+    captureEvents(): void;
+    releaseEvents(): void;
+}
+
+interface HTMLElement {
+    dataset: DOMStringMap;
+    hidden: boolean;
+    msGetInputContext(): MSInputMethodContext;
+}
+
+interface MutationObserver {
+    observe(target: Node, options: MutationObserverInit): void;
+    takeRecords(): MutationRecord[];
+    disconnect(): void;
+}
+declare var MutationObserver: {
+    prototype: MutationObserver;
+    new (callback: (arr: MutationRecord[], observer: MutationObserver)=>any): MutationObserver;
+}
+
+interface AudioTrackList {
+    onremovetrack: (ev: PluginArray) => any;
+    //addEventListener(type: "removetrack", listener: (ev: PluginArray) => any, useCapture?: boolean): void;
+}
+
+interface HTMLObjectElement {
+    /**
+      * Gets or sets the path to the preferred media source. This enables the Play To target device to stream the media content, which can be DRM protected, from a different location, such as a cloud media server.
+      */
+    msPlayToPreferredSourceUri: string;
+    /**
+      * Gets or sets the primary DLNA PlayTo device.
+      */
+    msPlayToPrimary: boolean;
+    /**
+      * Gets or sets whether the DLNA PlayTo device is available.
+      */
+    msPlayToDisabled: boolean;
+    /**
+      * Gets the source associated with the media element for use by the PlayToManager.
+      */
+    msPlayToSource: any;
+}
+
+interface HTMLEmbedElement {
+    /**
+      * Gets or sets the path to the preferred media source. This enables the Play To target device to stream the media content, which can be DRM protected, from a different location, such as a cloud media server.
+      */
+    msPlayToPreferredSourceUri: string;
+    /**
+      * Gets or sets the primary DLNA PlayTo device.
+      */
+    msPlayToPrimary: boolean;
+    /**
+      * Gets or sets whether the DLNA PlayTo device is available.
+      */
+    msPlayToDisabled: boolean;
+    /**
+      * Gets the source associated with the media element for use by the PlayToManager.
+      */
+    msPlayToSource: any;
+}
+
+interface MSWebViewAsyncOperation extends EventTarget {
+    target: MSHTMLWebViewElement;
+    oncomplete: (ev: any) => any;
+    addEventListener(type: "complete", listener: (ev: any) => any, useCapture?: boolean): void;
+    error: DOMError;
+    onerror: (ev: any) => any;
+    addEventListener(type: "error", listener: (ev: any) => any, useCapture?: boolean): void;
+    readyState: number;
+    type: number;
+    result: any;
+    start(): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+    ERROR: number;
+    TYPE_CREATE_DATA_PACKAGE_FROM_SELECTION: number;
+    TYPE_INVOKE_SCRIPT: number;
+    COMPLETED: number;
+    TYPE_CAPTURE_PREVIEW_TO_RANDOM_ACCESS_STREAM: number;
+    STARTED: number;
+}
+declare var MSWebViewAsyncOperation: {
+    prototype: MSWebViewAsyncOperation;
+    new (): MSWebViewAsyncOperation;
+    ERROR: number;
+    TYPE_CREATE_DATA_PACKAGE_FROM_SELECTION: number;
+    TYPE_INVOKE_SCRIPT: number;
+    COMPLETED: number;
+    TYPE_CAPTURE_PREVIEW_TO_RANDOM_ACCESS_STREAM: number;
+    STARTED: number;
+}
+
+interface ScriptNotifyEvent extends Event {
+    value: string;
+    callingUri: string;
+}
+declare var ScriptNotifyEvent: {
+    prototype: ScriptNotifyEvent;
+    new (): ScriptNotifyEvent;
+}
+
+interface PerformanceNavigationTiming extends PerformanceEntry {
+    redirectStart: number;
+    domainLookupEnd: number;
+    responseStart: number;
+    domComplete: number;
+    domainLookupStart: number;
+    loadEventStart: number;
+    unloadEventEnd: number;
+    fetchStart: number;
+    requestStart: number;
+    domInteractive: number;
+    navigationStart: number;
+    connectEnd: number;
+    loadEventEnd: number;
+    connectStart: number;
+    responseEnd: number;
+    domLoading: number;
+    redirectEnd: number;
+    redirectCount: number;
+    unloadEventStart: number;
+    domContentLoadedEventStart: number;
+    domContentLoadedEventEnd: number;
+    type: string;
+}
+declare var PerformanceNavigationTiming: {
+    prototype: PerformanceNavigationTiming;
+    new (): PerformanceNavigationTiming;
+}
+
+interface MSMediaKeyNeededEvent extends Event {
+    initData: Uint8Array;
+}
+declare var MSMediaKeyNeededEvent: {
+    prototype: MSMediaKeyNeededEvent;
+    new (): MSMediaKeyNeededEvent;
+}
+
+interface MSManipulationEvent {
+    MS_MANIPULATION_STATE_SELECTING: number;
+    MS_MANIPULATION_STATE_COMMITTED: number;
+    MS_MANIPULATION_STATE_PRESELECT: number;
+    MS_MANIPULATION_STATE_DRAGGING: number;
+    MS_MANIPULATION_STATE_CANCELLED: number;
+}
+//declare var MSManipulationEvent: {
+//    prototype: MSManipulationEvent;
+//    MS_MANIPULATION_STATE_SELECTING: number;
+//    MS_MANIPULATION_STATE_COMMITTED: number;
+//    MS_MANIPULATION_STATE_PRESELECT: number;
+//    MS_MANIPULATION_STATE_DRAGGING: number;
+//    MS_MANIPULATION_STATE_CANCELLED: number;
+//}
+
+interface LongRunningScriptDetectedEvent extends Event {
+    stopPageScriptExecution: boolean;
+    executionTime: number;
+}
+declare var LongRunningScriptDetectedEvent: {
+    prototype: LongRunningScriptDetectedEvent;
+    new (): LongRunningScriptDetectedEvent;
+}
+
+interface MSAppView {
+    viewId: number;
+    close(): void;
+    postMessage(message: any, targetOrigin: string, ports?: any): void;
+}
+declare var MSAppView: {
+    prototype: MSAppView;
+    new (): MSAppView;
+}
+
+interface PerfWidgetExternal {
+    maxCpuSpeed: number;
+    performanceCounterFrequency: number;
+    performanceCounter: number;
+    averagePaintTime: number;
+    activeNetworkRequestCount: number;
+    paintRequestsPerSecond: number;
+    repositionWindow(x: number, y: number): void;
+    getRecentMemoryUsage(last: number): any;
+    getMemoryUsage(): number;
+    resizeWindow(width: number, height: number): void;
+    getProcessCpuUsage(): number;
+    removeEventListener(eventType: string, callback: (ev: any) => any): void;
+    getRecentCpuUsage(last: number): any;
+    addEventListener(eventType: string, callback: (ev: any) => any): void;
+    getRecentPaintRequests(last: number): any;
+}
+declare var PerfWidgetExternal: {
+    prototype: PerfWidgetExternal;
+    new (): PerfWidgetExternal;
+}
+
+interface PageTransitionEvent extends Event {
+    persisted: boolean;
+}
+declare var PageTransitionEvent: {
+    prototype: PageTransitionEvent;
+    new (): PageTransitionEvent;
+}
+
+interface MutationCallback {
+    (mutations: MutationRecord[], observer: MutationObserver): void;
+}
+
+interface HTMLDocument extends Document {
+}
+declare var HTMLDocument: {
+    prototype: HTMLDocument;
+    new (): HTMLDocument;
+}
+
+interface KeyPair {
+    privateKey: Key;
+    publicKey: Key;
+}
+declare var KeyPair: {
+    prototype: KeyPair;
+    new (): KeyPair;
+}
+
+interface MSApp {
+    getViewOpener(): MSAppView;
+    suppressSubdownloadCredentialPrompts(suppress: boolean): void;
+    execAsyncAtPriority(asynchronousCallback: MSExecAtPriorityFunctionCallback, priority: string, ...args: any[]): void;
+    isTaskScheduledAtPriorityOrHigher(priority: string): boolean;
+    execAtPriority(synchronousCallback: MSExecAtPriorityFunctionCallback, priority: string, ...args: any[]): any;
+    createNewView(uri: string): MSAppView;
+    getCurrentPriority(): string;
+    NORMAL: string;
+    HIGH: string;
+    IDLE: string;
+    CURRENT: string;
+}
+//declare var MSApp: {
+//    prototype: MSApp;
+//    NORMAL: string;
+//    HIGH: string;
+//    IDLE: string;
+//    CURRENT: string;
+//}
+
+interface HTMLTrackElement {
+    readyState: number;
+    ERROR: number;
+    LOADING: number;
+    LOADED: number;
+    NONE: number;
+}
+//declare var HTMLTrackElement: {
+//    prototype: HTMLTrackElement;
+//    ERROR: number;
+//    LOADING: number;
+//    LOADED: number;
+//    NONE: number;
+//}
+
+interface MSMediaKeySession extends EventTarget {
+    sessionId: string;
+    error: MSMediaKeyError;
+    keySystem: string;
+    close(): void;
+    update(key: Uint8Array): void;
+}
+declare var MSMediaKeySession: {
+    prototype: MSMediaKeySession;
+    new (): MSMediaKeySession;
+}
+
+interface HTMLVideoElement {
+    videoPlaybackQuality: VideoPlaybackQuality;
+}
+
+interface UnviewableContentIdentifiedEvent extends NavigationEvent {
+    referrer: string;
+}
+declare var UnviewableContentIdentifiedEvent: {
+    prototype: UnviewableContentIdentifiedEvent;
+    new (): UnviewableContentIdentifiedEvent;
+}
+
+interface CryptoOperation extends EventTarget {
+    algorithm: Algorithm;
+    oncomplete: (ev: any) => any;
+    addEventListener(type: "complete", listener: (ev: any) => any, useCapture?: boolean): void;
+    onerror: (ev: any) => any;
+    addEventListener(type: "error", listener: (ev: any) => any, useCapture?: boolean): void;
+    onprogress: (ev: any) => any;
+    addEventListener(type: "progress", listener: (ev: any) => any, useCapture?: boolean): void;
+    onabort: (ev: any) => any;
+    addEventListener(type: "abort", listener: (ev: any) => any, useCapture?: boolean): void;
+    key: Key;
+    result: any;
+    abort(): void;
+    finish(): void;
+    process(buffer: ArrayBufferView): void;
+    addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
+}
+declare var CryptoOperation: {
+    prototype: CryptoOperation;
+    new (): CryptoOperation;
+}
+
+declare var onpageshow: (ev: PageTransitionEvent) => any;
+declare function addEventListener(type: "pageshow", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+declare var ondevicemotion: (ev: DeviceMotionEvent) => any;
+declare function addEventListener(type: "devicemotion", listener: (ev: DeviceMotionEvent) => any, useCapture?: boolean): void;
+declare var devicePixelRatio: number;
+declare var msCrypto: Crypto;
+declare var ondeviceorientation: (ev: DeviceOrientationEvent) => any;
+declare function addEventListener(type: "deviceorientation", listener: (ev: DeviceOrientationEvent) => any, useCapture?: boolean): void;
+declare var onmspointerenter: (ev: any) => any;
+declare function addEventListener(type: "mspointerenter", listener: (ev: any) => any, useCapture?: boolean): void;
+declare var onpagehide: (ev: PageTransitionEvent) => any;
+declare function addEventListener(type: "pagehide", listener: (ev: PageTransitionEvent) => any, useCapture?: boolean): void;
+declare var onmspointerleave: (ev: any) => any;
+declare function addEventListener(type: "mspointerleave", listener: (ev: any) => any, useCapture?: boolean): void;
+
 
 /////////////////////////////
-/// WorkerGlobalScope APIs
+/// WorkerGlobalScope APIs 
 /////////////////////////////
 // TODO: These are only available in a Web Worker - should be in a separate lib file
 declare function importScripts(...urls: string[]): void;
@@ -9064,11 +14189,11 @@ interface ITextWriter {
     Close(): void;
 }
 
-declare var WScript : {
-    Echo(s: any);
+declare var WScript: {
+    Echo(s: any): void;
     StdErr: ITextWriter;
     StdOut: ITextWriter;
     Arguments: { length: number; Item(n: number): string; };
     ScriptFullName: string;
-    Quit(exitCode?: number);
+    Quit(exitCode?: number): number;
 }

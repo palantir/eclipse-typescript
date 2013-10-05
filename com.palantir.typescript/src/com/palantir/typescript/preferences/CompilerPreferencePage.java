@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript;
+package com.palantir.typescript.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -38,6 +30,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.google.common.base.Ascii;
+import com.palantir.typescript.Builders;
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.Resources;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 
@@ -52,6 +48,8 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
     private BooleanFieldEditor compileOnSaveField;
     private ComboFieldEditor moduleGenTargetField;
+    private BooleanFieldEditor noImplicitAnyField;
+    private BooleanFieldEditor noLibField;
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
 
@@ -85,24 +83,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
                 // rebuild the workspace
                 if (result == 2) {
-                    String name = Resources.BUNDLE.getString("preferences.compiler.rebuild.job.name");
-                    Job job = new Job(name) {
-                        @Override
-                        protected IStatus run(IProgressMonitor monitor) {
-                            IWorkspace workspace = ResourcesPlugin.getWorkspace();
-
-                            try {
-                                workspace.build(IncrementalProjectBuilder.CLEAN_BUILD, monitor);
-                                workspace.build(IncrementalProjectBuilder.FULL_BUILD, monitor);
-                            } catch (CoreException e) {
-                                return e.getStatus();
-                            }
-
-                            return Status.OK_STATUS;
-                        }
-                    };
-                    job.setRule(ResourcesPlugin.getWorkspace().getRuleFactory().buildRule());
-                    job.schedule();
+                    Builders.rebuildWorkspace();
                 }
             }
 
@@ -126,6 +107,8 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.moduleGenTargetField)
+                || source.equals(this.noImplicitAnyField)
+                || source.equals(this.noLibField)
                 || source.equals(this.removeCommentsField)
                 || source.equals(this.sourceMapField)) {
             this.compilerPreferencesModified = true;
@@ -147,10 +130,17 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
             this.getFieldEditorParent());
         this.addField(this.moduleGenTargetField);
 
-        this.addField(new BooleanFieldEditor(
+        this.noImplicitAnyField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY,
+            getResource("no.implicit.any"),
+            this.getFieldEditorParent());
+        this.addField(this.noImplicitAnyField);
+
+        this.noLibField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
             getResource("no.lib"),
-            this.getFieldEditorParent()));
+            this.getFieldEditorParent());
+        this.addField(this.noLibField);
 
         this.compileOnSaveField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,

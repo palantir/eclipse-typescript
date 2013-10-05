@@ -16,33 +16,36 @@
 
 package com.palantir.typescript.services.language;
 
-import java.util.List;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableList;
 
 /**
- * Corresponds to the class with the same name in compiler/core/diagnostic.ts.
+ * Corresponds to the class with the same name in languageService.ts.
  *
  * @author dcicerone
  */
-public final class Diagnostic {
+public final class CompleteDiagnostic {
 
     private final int start;
     private final int length;
-    private final String diagnosticCode;
-    private final List<String> arguments;
+    private final int line;
+    private final String text;
 
-    public Diagnostic(
+    public CompleteDiagnostic(
             @JsonProperty("start") int start,
             @JsonProperty("length") int length,
-            @JsonProperty("diagnosticCode") String diagnosticCode,
-            @JsonProperty("arguments") List<String> arguments) {
+            @JsonProperty("line") int line,
+            @JsonProperty("text") String text) {
+        checkArgument(start >= 0);
+        checkArgument(length >= 0);
+        checkArgument(line >= 0);
+
         this.start = start;
         this.length = length;
-        this.diagnosticCode = diagnosticCode;
-        this.arguments = arguments != null ? ImmutableList.copyOf(arguments) : ImmutableList.<String> of();
+        this.line = line;
+        this.text = text;
     }
 
     public int getStart() {
@@ -53,12 +56,12 @@ public final class Diagnostic {
         return this.length;
     }
 
-    public String getDiagnosticCode() {
-        return this.diagnosticCode;
+    public int getLine() {
+        return this.line;
     }
 
-    public List<String> getArguments() {
-        return this.arguments;
+    public String getText() {
+        return this.text;
     }
 
     @Override
@@ -66,8 +69,7 @@ public final class Diagnostic {
         return Objects.toStringHelper(this)
             .add("start", this.start)
             .add("length", this.length)
-            .add("diagnosticCode", this.diagnosticCode)
-            .add("arguments", this.arguments)
+            .add("text", this.text)
             .toString();
     }
 }

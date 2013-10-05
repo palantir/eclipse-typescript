@@ -23,10 +23,10 @@ module.exports = function(grunt) {
 
     tslint: {
       options: {
-        configuration: grunt.file.readJSON('.tslintrc')
+        configuration: grunt.file.readJSON('tslint.json')
       },
       files: {
-        src: ["Bridge/src/**/*.ts"]
+        src: ['Bridge/src/**/*.ts']
       }
     },
 

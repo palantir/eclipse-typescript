@@ -16,12 +16,18 @@
 
 package com.palantir.typescript;
 
+import java.io.File;
+import java.util.List;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import org.osgi.framework.BundleContext;
 
+import com.google.common.base.Splitter;
+import com.google.common.base.StandardSystemProperty;
+import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 
@@ -33,6 +39,9 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
 public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public static final String ID = "com.palantir.typescript";
+
+    private static final String OS_NAME = StandardSystemProperty.OS_NAME.value();
+    private static final Splitter PATH_SPLITTER = Splitter.on(File.pathSeparatorChar);
 
     private static TypeScriptPlugin PLUGIN;
 
@@ -77,11 +86,14 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, false);
         store.setDefault(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES, false);
         store.setDefault(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET, ModuleGenTarget.UNSPECIFIED.toString());
+        store.setDefault(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, false);
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
 
         store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS, true);
         store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
+        store.setDefault(IPreferenceConstants.EDITOR_CLOSE_BRACES, true);
+        store.setDefault(IPreferenceConstants.EDITOR_CLOSE_JSDOCS, true);
         store.setDefault(IPreferenceConstants.EDITOR_INDENT_SIZE, 4);
         store.setDefault(IPreferenceConstants.EDITOR_MATCHING_BRACKETS, true);
         store.setDefault(IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR, "128,128,128");
@@ -94,5 +106,37 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS, true);
         store.setDefault(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS, false);
         store.setDefault(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS, false);
+
+        store.setDefault(IPreferenceConstants.GENERAL_NODE_PATH, findNodejs());
+    }
+
+    private static String findNodejs() {
+        String nodeFileName = getNodeFileName();
+        String path = System.getenv("PATH");
+        List<String> directories = Lists.newArrayList(PATH_SPLITTER.split(path));
+
+        // ensure /usr/local/bin is included for OS X
+        if (OS_NAME.startsWith("Mac OS X")) {
+            directories.add("/usr/local/bin");
+        }
+
+        // search for Node.js in the PATH directories
+        for (String directory : directories) {
+            File nodeFile = new File(directory, nodeFileName);
+
+            if (nodeFile.exists()) {
+                return nodeFile.getAbsolutePath();
+            }
+        }
+
+        return "";
+    }
+
+    private static String getNodeFileName() {
+        if (OS_NAME.startsWith("Windows")) {
+            return "node.exe";
+        }
+
+        return "node";
     }
 }

@@ -23,10 +23,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -36,12 +37,15 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Resources;
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
+import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The language service.
@@ -52,26 +56,35 @@ import com.palantir.typescript.services.Request;
  */
 public final class LanguageService {
 
+    private static final String STANDARD_LIBRARY_FILE_NAME = "lib.d.ts";
+
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
     private final MyPropertyChangeListener preferencesListener;
+    private final IProject project;
 
     public LanguageService(String fileName) {
-        this(ImmutableList.of(fileName));
+        this(null, ImmutableList.of(fileName));
     }
 
     public LanguageService(IProject project) {
-        this(getProjectFiles(project));
+        this(project, EclipseResources.getTypeScriptFileNames(project));
     }
 
-    private LanguageService(List<String> fileNames) {
+    private LanguageService(IProject project, List<String> fileNames) {
         checkNotNull(fileNames);
 
         this.bridge = new Bridge();
         this.preferencesListener = new MyPropertyChangeListener();
+        this.project = project;
 
-        this.addDefaultLibrary();
+        // add the default library unless it has been suppressed
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        if (!preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB)) {
+            this.addDefaultLibrary();
+        }
+
         this.addFiles(fileNames);
         this.updateCompilationSettings();
 
@@ -102,12 +115,21 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
-    public Map<String, List<Diagnostic>> getAllDiagnostics() {
+    public Map<String, List<CompleteDiagnostic>> getAllDiagnostics() {
         Request request = new Request(SERVICE, "getAllDiagnostics");
         JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
-        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, CompleteDiagnostic.class);
         MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
         return LanguageService.this.bridge.call(request, returnType);
+    }
+
+    public List<TextSpan> getBraceMatchingAtPosition(String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getBraceMatchingAtPosition", fileName, position);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextSpan.class);
+        return this.bridge.call(request, resultType);
     }
 
     public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
@@ -127,11 +149,11 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public List<Diagnostic> getDiagnostics(String fileName) {
+    public List<CompleteDiagnostic> getDiagnostics(String fileName) {
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getDiagnostics", fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, CompleteDiagnostic.class);
         return this.bridge.call(request, resultType);
     }
 
@@ -154,12 +176,12 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public int getIndentationAtPosition(String fileName, int offset, EditorOptions options) {
+    public int getIndentationAtPosition(String fileName, int position, EditorOptions options) {
         checkNotNull(fileName);
-        checkArgument(offset >= 0);
+        checkArgument(position >= 0);
         checkNotNull(options);
 
-        Request request = new Request(SERVICE, "getIndentationAtPosition", fileName, offset, options);
+        Request request = new Request(SERVICE, "getIndentationAtPosition", fileName, position, options);
         return this.bridge.call(request, Integer.class);
     }
 
@@ -206,6 +228,14 @@ public final class LanguageService {
         return this.bridge.call(request, SignatureInfo.class);
     }
 
+    public List<Diagnostic> getSyntacticDiagnostics(String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getSyntacticDiagnostics", fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public TypeInfo getTypeAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
@@ -234,7 +264,7 @@ public final class LanguageService {
     private void addDefaultLibrary() {
         String libraryContents;
         try {
-            libraryContents = Resources.toString(LanguageService.class.getResource("lib.d.ts"), Charsets.UTF_8);
+            libraryContents = Resources.toString(LanguageService.class.getResource(STANDARD_LIBRARY_FILE_NAME), Charsets.UTF_8);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -248,37 +278,38 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private static List<String> getProjectFiles(final IProject project) {
-        final ImmutableList.Builder<String> fileNames = ImmutableList.builder();
+    private static String getProjectPreference(IProject project, String key) {
+        IScopeContext projectScope = new ProjectScope(project);
+        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
 
-        try {
-            project.accept(new IResourceVisitor() {
-                @Override
-                public boolean visit(IResource resource) throws CoreException {
-                    if (resource.getType() == IResource.FILE && resource.getName().endsWith((".ts"))) {
-                        String fileName = resource.getRawLocation().toOSString();
-
-                        fileNames.add(fileName);
-                    }
-
-                    return true;
-                }
-            });
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        return fileNames.build();
+        return projectPreferences.get(key, "");
     }
 
     private void updateCompilationSettings() {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        CompilationSettings compilationSettings = new CompilationSettings(
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB),
-            LanguageVersion.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)),
-            ModuleGenTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)),
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES),
-            preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        // create the compilation settings from the preferences
+        CompilationSettings compilationSettings = new CompilationSettings();
+        compilationSettings.setCodeGenTarget(LanguageVersion.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)));
+        compilationSettings.setMapSourceFiles(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES));
+        compilationSettings.setModuleGenTarget(ModuleGenTarget.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));
+        compilationSettings.setNoImplicitAny(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY));
+        compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
+        compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        // set the output directory if it was specified
+        if (this.project != null) {
+            String relativePath = getProjectPreference(this.project, IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+
+            if (!Strings.isNullOrEmpty(relativePath)) {
+                IFolder outputFolder = this.project.getFolder(relativePath);
+                String outDir = outputFolder.getRawLocation().toOSString() + "/";
+
+                compilationSettings.setOutDirOption(outDir);
+            }
+        }
 
         Request request = new Request(SERVICE, "setCompilationSettings", compilationSettings);
         this.bridge.call(request, Void.class);
@@ -288,6 +319,16 @@ public final class LanguageService {
         @Override
         public void propertyChange(PropertyChangeEvent event) {
             String property = event.getProperty();
+
+            if (property.equals(IPreferenceConstants.COMPILER_NO_LIB)) {
+                boolean noLib = (Boolean) event.getNewValue();
+
+                if (noLib) {
+                    updateFiles(ImmutableList.of(new FileDelta(Delta.REMOVED, STANDARD_LIBRARY_FILE_NAME)));
+                } else {
+                    addDefaultLibrary();
+                }
+            }
 
             if (IPreferenceConstants.COMPILER_PREFERENCES.contains(property)) {
                 updateCompilationSettings();

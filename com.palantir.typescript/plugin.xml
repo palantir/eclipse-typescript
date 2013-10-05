@@ -100,8 +100,7 @@
             sequence="M1+M3+R"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.rename"
-            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
-      </key>
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
             sequence="M1+M2+C"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
@@ -311,17 +310,53 @@
    </extension>
 
    <extension
-      point = "org.eclipse.ui.preferencePages">
-      <page id="com.palantir.typescript.compilerPreferencePage"
-            class="com.palantir.typescript.CompilerPreferencePage"
+         point = "org.eclipse.ui.preferencePages">
+      <page
+            id="com.palantir.typescript.compilerPreferencePage"
+            category="com.palantir.typescript.generalPreferencePage"
+            class="com.palantir.typescript.preferences.CompilerPreferencePage"
+            name="Compiler">
+      </page>
+      <page
+            id="com.palantir.typescript.formatterPreferencePage"
+            category="com.palantir.typescript.generalPreferencePage"
+            class="com.palantir.typescript.preferences.FormatterPreferencePage"
+            name="Formatter">
+      </page>
+      <page
+            id="com.palantir.typescript.generalPreferencePage"
+            class="com.palantir.typescript.preferences.GeneralPreferencePage"
             name="TypeScript">
-       </page>
-       <page
-             id="com.palantir.typescript.formatterPreferencePage"
-             category="com.palantir.typescript.compilerPreferencePage"
-             class="com.palantir.typescript.FormatterPreferencePage"
-             name="Formatter">
-       </page>
+      </page>
+      <page
+            id="com.palantir.typescript.typingPreferencePage"
+            category="com.palantir.typescript.generalPreferencePage"
+            class="com.palantir.typescript.preferences.TypingPreferencePage"
+            name="Typing">
+      </page>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            class="com.palantir.typescript.preferences.BuildPathPropertyPage"
+            id="com.palantir.typescript.buildPathPropertyPage"
+            name="TypeScript Build Path">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IProject">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.palantir.typescript.typeScriptNature">
+                  </test>
+               </and>
+            </adapt>
+         </enabledWhen>
+      </page>
    </extension>
 
 </plugin>

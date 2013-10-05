@@ -56,7 +56,7 @@ import org.eclipse.ui.texteditor.spelling.SpellingService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.palantir.typescript.ResourceDeltaVisitor;
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -148,7 +148,11 @@ public final class Reconciler implements IReconciler {
                 IResource resource = ResourceUtil.getResource(input);
                 IProject project = resource.getProject();
 
-                this.cachedLanguageService = new LanguageService(project);
+                if (EclipseResources.isContainedInSourceFolder(resource, project)) {
+                    this.cachedLanguageService = new LanguageService(project);
+                } else {
+                    this.cachedLanguageService = new LanguageService(fileName);
+                }
             } else if (input instanceof FileStoreEditorInput) {
                 this.cachedLanguageService = new LanguageService(fileName);
             }
@@ -259,7 +263,7 @@ public final class Reconciler implements IReconciler {
                 IResource resource = ResourceUtil.getResource(input);
                 IProject project = resource.getProject();
 
-                final ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
+                final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
 
                 // update the files on the reconciler thread
                 Reconciler.this.executor.execute(new Runnable() {

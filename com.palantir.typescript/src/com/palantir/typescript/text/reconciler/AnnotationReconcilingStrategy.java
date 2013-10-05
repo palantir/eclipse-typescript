@@ -32,7 +32,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.widgets.Display;
 
 import com.google.common.collect.Maps;
-import com.palantir.typescript.services.language.Diagnostic;
+import com.palantir.typescript.services.language.CompleteDiagnostic;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -63,18 +63,20 @@ public final class AnnotationReconcilingStrategy {
     public void reconcile(LanguageService languageService) {
         checkNotNull(languageService);
 
-        String fileName = this.editor.getFileName();
-        int offset = this.getOffset();
-
         // update the annotations
-        final List<Diagnostic> diagnostics = languageService.getDiagnostics(fileName);
-        final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(fileName, offset);
-        Display.getDefault().asyncExec(new Runnable() {
-            @Override
-            public void run() {
-                updateAnnotations(diagnostics, occurrences);
-            }
-        });
+        int offset = this.getOffset();
+        if (offset >= 0) {
+            String fileName = this.editor.getFileName();
+            final List<CompleteDiagnostic> diagnostics = languageService.getDiagnostics(fileName);
+            final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(fileName, offset);
+
+            Display.getDefault().asyncExec(new Runnable() {
+                @Override
+                public void run() {
+                    updateAnnotations(diagnostics, occurrences);
+                }
+            });
+        }
     }
 
     private int getOffset() {
@@ -106,7 +108,7 @@ public final class AnnotationReconcilingStrategy {
         return dirty.get();
     }
 
-    private void updateAnnotations(List<Diagnostic> diagnostics, List<ReferenceEntry> occurrences) {
+    private void updateAnnotations(List<CompleteDiagnostic> diagnostics, List<ReferenceEntry> occurrences) {
         IAnnotationModelExtension annotationModel = (IAnnotationModelExtension) this.sourceViewer.getAnnotationModel();
 
         if (annotationModel != null) {
@@ -114,7 +116,7 @@ public final class AnnotationReconcilingStrategy {
 
             // add the diagnostics if the editor is dirty
             if (this.isDirty()) {
-                for (Diagnostic diagnostic : diagnostics) {
+                for (CompleteDiagnostic diagnostic : diagnostics) {
                     Annotation annotation = new Annotation(DIAGNOSTIC_TYPE, false, diagnostic.getText());
                     Position position = new Position(diagnostic.getStart(), diagnostic.getLength());
 

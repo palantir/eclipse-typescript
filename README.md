@@ -24,14 +24,6 @@ An Eclipse plug-in for developing in the TypeScript language.
 * syntax highlighting
 * toggle comments
 
-## Roadmap
-* save actions (format on save)
-
-Waiting on TypeScript support:
-* jsdoc assistance (waiting on https://typescript.codeplex.com/workitem/637)
-* search (just added to the "develop" branch)
-* type hierarchy (waiting on https://typescript.codeplex.com/workitem/1494)
-
 ## Additional Information
 * Eclipse Kepler (4.3) is currently the only supported version
     * if this is a problem for your project, please let us know and we'll look into supporting older versions as well

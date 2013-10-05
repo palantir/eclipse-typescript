@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript;
+package com.palantir.typescript.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -22,6 +22,10 @@ import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
+
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.Resources;
+import com.palantir.typescript.TypeScriptPlugin;
 
 /**
  * The formatter preference page.

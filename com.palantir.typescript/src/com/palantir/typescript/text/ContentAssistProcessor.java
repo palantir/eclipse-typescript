@@ -21,6 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -37,6 +39,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.CompletionEntryDetails;
 import com.palantir.typescript.services.language.CompletionInfo;
 import com.palantir.typescript.services.language.ScriptElementKind;
@@ -79,8 +82,15 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         if (this.currentCompletionInfo == null || offset < this.currentOffset) {
             String fileName = this.editor.getFileName();
 
-            this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
-            this.currentOffset = this.getOffset(offset);
+            try {
+                this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
+                this.currentOffset = this.getOffset(offset);
+            } catch (RuntimeException e) {
+                Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
+
+                // log the exception
+                TypeScriptPlugin.getDefault().getLog().log(status);
+            }
         }
 
         // create the completion proposals from the completion entries

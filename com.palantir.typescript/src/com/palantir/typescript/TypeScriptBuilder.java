@@ -20,14 +20,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
@@ -41,8 +39,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
-import com.palantir.typescript.services.language.Diagnostic;
+import com.palantir.typescript.services.language.CompleteDiagnostic;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 import com.palantir.typescript.services.language.LanguageService;
@@ -87,41 +84,18 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             this.cachedLanguageService = null;
         }
 
-        this.clean(this.getAllSourceFiles(), monitor);
+        // clear the problem markers
+        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        this.createMarkers(monitor);
-
         // compile the source files if compile-on-save is enabled
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
         if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
             compile(fileDeltas, monitor);
         }
-    }
 
-    private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        // clear the problem markers
-        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-
-        // remove the built files if compile-on-save is enabled
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            for (FileDelta fileDelta : fileDeltas) {
-                String fileName = fileDelta.getFileName();
-                ImmutableList<String> builtFiles = getBuiltFiles(fileName);
-
-                for (String builtFile : builtFiles) {
-                    Path path = new Path(builtFile);
-                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-
-                    file.refreshLocal(IResource.DEPTH_ZERO, monitor);
-                    if (file.exists()) {
-                        file.delete(false, monitor);
-                    }
-                }
-            }
-        }
+        this.createMarkers(monitor);
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
@@ -133,33 +107,27 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        ImmutableList<FileDelta> fileDeltas = ResourceDeltaVisitor.getFileDeltas(delta, project);
+        ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
             this.getLanguageService().updateFiles(fileDeltas);
 
-            this.clean(fileDeltas, monitor);
+            // clear the problem markers
+            this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
             this.build(fileDeltas, monitor);
         }
     }
 
-    private ImmutableList<FileDelta> getAllSourceFiles() throws CoreException {
-        final ImmutableList.Builder<FileDelta> files = ImmutableList.builder();
+    private ImmutableList<FileDelta> getAllSourceFiles() {
+        ImmutableList<String> fileNames = EclipseResources.getTypeScriptFileNames(this.getProject());
+        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
 
-        this.getProject().accept(new IResourceVisitor() {
-            @Override
-            public boolean visit(IResource resource) throws CoreException {
-                if (resource.getType() == IResource.FILE && resource.getName().endsWith(".ts")) {
-                    String fileName = resource.getRawLocation().toOSString();
+        for (String fileName : fileNames) {
+            fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
+        }
 
-                    files.add(new FileDelta(Delta.ADDED, fileName));
-                }
-
-                return true;
-            }
-        });
-
-        return files.build();
+        return fileDeltas.build();
     }
 
     private LanguageService getLanguageService() {
@@ -197,18 +165,19 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
         LanguageService languageService = this.getLanguageService();
-
         for (String outputFileName : languageService.getEmitOutput(fileName)) {
             Path path = new Path(outputFileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
 
-            file.refreshLocal(IResource.DEPTH_ZERO, monitor);
+            // refresh the resource for the file if it is within the workspace
+            if (file != null) {
+                file.refreshLocal(IResource.DEPTH_ZERO, monitor);
+            }
         }
     }
 
     private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        LanguageService languageService = this.getLanguageService();
-        final Map<String, List<Diagnostic>> diagnostics = languageService.getAllDiagnostics();
+        final Map<String, List<CompleteDiagnostic>> diagnostics = this.getLanguageService().getAllDiagnostics();
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -220,8 +189,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
     }
 
-    private static void createMarkers(final Map<String, List<Diagnostic>> diagnostics) throws CoreException {
-        for (Map.Entry<String, List<Diagnostic>> entry : diagnostics.entrySet()) {
+    private static void createMarkers(final Map<String, List<CompleteDiagnostic>> diagnostics) throws CoreException {
+        for (Map.Entry<String, List<CompleteDiagnostic>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
 
             // ignore the default library
@@ -232,9 +201,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             // create the markers for this file
             Path path = new Path(fileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
-            List<Diagnostic> fileDiagnostics = entry.getValue();
-            Set<Diagnostic> uniqueFileDiagnostics = Sets.newLinkedHashSet(fileDiagnostics); // workaround for https://typescript.codeplex.com/workitem/1516
-            for (Diagnostic diagnostic : uniqueFileDiagnostics) {
+            List<CompleteDiagnostic> fileDiagnostics = entry.getValue();
+            for (CompleteDiagnostic diagnostic : fileDiagnostics) {
                 IMarker marker = file.createMarker(MARKER_TYPE);
                 Map<String, Object> attributes = createMarkerAttributes(diagnostic);
 
@@ -243,7 +211,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private static Map<String, Object> createMarkerAttributes(Diagnostic diagnostic) {
+    private static Map<String, Object> createMarkerAttributes(CompleteDiagnostic diagnostic) {
         ImmutableMap.Builder<String, Object> attributes = ImmutableMap.builder();
 
         attributes.put(IMarker.CHAR_START, diagnostic.getStart());
@@ -254,14 +222,5 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 
         return attributes.build();
-    }
-
-    private static ImmutableList<String> getBuiltFiles(String fileName) {
-        ImmutableList.Builder<String> builtFiles = ImmutableList.builder();
-
-        builtFiles.add(fileName.replaceFirst(".ts$", ".js"));
-        builtFiles.add(fileName.replaceFirst(".ts$", ".js.map"));
-
-        return builtFiles.build();
     }
 }

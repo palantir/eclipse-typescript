@@ -145,6 +145,7 @@ module Bridge {
         }
 
         public log(message: string): void {
+            // does nothing
         }
 
         public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
@@ -176,6 +177,7 @@ module Bridge {
     class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
 
         public log(message: string): void {
+            // does nothing
         }
     }
 

@@ -67,6 +67,10 @@ module Bridge {
 
         public getAllDiagnostics(): any {
             var diagnostics = {};
+
+            // HACKHACK: replace the language service to avoid caching bugs in it
+            this.languageService = new Services.LanguageService(this.languageServiceHost);
+
             this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
                 var resolvedDiagnostics = this.getDiagnostics(fileName);
 
@@ -74,6 +78,10 @@ module Bridge {
             });
 
             return diagnostics;
+        }
+
+        public getBraceMatchingAtPosition(fileName: string, position: number): TypeScript.TextSpan[] {
+            return this.languageService.getBraceMatchingAtPosition(fileName, position);
         }
 
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
@@ -108,7 +116,7 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getDiagnostics(fileName: string): Diagnostic[] {
+        public getDiagnostics(fileName: string): CompleteDiagnostic[] {
             var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
 
             if (diagnostics.length === 0) {
@@ -134,9 +142,9 @@ module Bridge {
         }
 
         public getEmitOutput(fileName: string): string[] {
-            return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFileName) {
-                IO.writeFile(outputFileName.name, outputFileName.text, outputFileName.writeByteOrderMark);
-                return outputFileName.name;
+            return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFile) {
+                IOUtils.writeFileAndFolderStructure(IO, outputFile.name, outputFile.text, outputFile.writeByteOrderMark);
+                return outputFile.name;
             });
         }
 
@@ -168,6 +176,10 @@ module Bridge {
 
         public getSignatureAtPosition(fileName: string, position: number): Services.SignatureInfo {
             return this.languageService.getSignatureAtPosition(fileName, position);
+        }
+
+        public getSyntacticDiagnostics(fileName: string): TypeScript.Diagnostic[] {
+            return this.languageService.getSyntacticDiagnostics(fileName);
         }
 
         public getTypeAtPosition(fileName: string, position: number): TypeInfo {
@@ -205,7 +217,7 @@ module Bridge {
         memberCompletion: boolean;
     }
 
-    export interface Diagnostic {
+    export interface CompleteDiagnostic {
         length: number;
         line: number;
         start: number;

@@ -24,7 +24,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.text.IInformationControl;
 import org.eclipse.jface.text.IInformationControlExtension2;
-import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreePath;
@@ -61,8 +60,6 @@ import com.palantir.typescript.services.language.NavigateToItem;
  * @author tyleradams
  */
 public final class TypeScriptOutlineInformationControl extends PopupDialog implements IInformationControl, IInformationControlExtension2 {
-
-    private static final int HEIGHT_HINT = 12;
 
     private final TypeScriptEditor editor;
     private final int treeStyle;
@@ -144,6 +141,12 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
         this.textBox.setText("");
         this.treeViewer.setInput(input);
         this.treeViewer.setSelection(this.getSearchSelection());
+
+        // expand all the nodes if there aren't too many of them
+        List<NavigateToItem> items = (List) input;
+        if (items.size() < 500) {
+            this.treeViewer.expandAll();
+        }
     }
 
     @Override
@@ -182,14 +185,13 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
         });
 
         GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = tree.getItemHeight() * HEIGHT_HINT;
+        gridData.heightHint = tree.getItemHeight() * 12;
         tree.setLayoutData(gridData);
 
         this.treeViewer = new TreeViewer(tree);
         this.treeViewer.addFilter(new MyViewerFilter());
         this.treeViewer.setContentProvider(new ContentProvider());
         this.treeViewer.setLabelProvider(new LabelProvider());
-        this.treeViewer.setAutoExpandLevel(AbstractTreeViewer.ALL_LEVELS);
 
         // set up the text box
         this.textBox.setText("");
@@ -256,10 +258,15 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
 
         TreeItem item = tree.getItem(0);
 
-        segments.add(item.getData());
-        while (item.getItemCount() > 0 && !this.matchesSearchString(((NavigateToItem) item.getData()))) {
+        Object itemData = item.getData();
+        segments.add(itemData);
+        while (item.getItemCount() > 0 && !this.matchesSearchString((NavigateToItem) itemData)) {
             item = item.getItem(0);
-            segments.add(item.getData());
+            itemData = item.getData();
+
+            if (itemData != null) {
+                segments.add(itemData);
+            }
         }
 
         TreePath treePath = new TreePath(segments.toArray());
@@ -294,7 +301,6 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
     private void refreshTree() {
         this.treeViewer.getControl().setRedraw(false);
         this.treeViewer.refresh();
-        this.treeViewer.expandAll();
         this.treeViewer.setSelection(this.getSearchSelection());
         this.treeViewer.getControl().setRedraw(true);
     }

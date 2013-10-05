@@ -24,21 +24,28 @@ import com.google.common.collect.ImmutableList;
  * @author tyleradams
  */
 public interface IPreferenceConstants {
+
+    String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
+
     String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
     String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
+    String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
     String COMPILER_NO_LIB = "compiler.noLib";
+    String COMPILER_OUTPUT_DIR_OPTION = "compiler.optionDirOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
-
     ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
         COMPILER_CODE_GEN_TARGET,
         COMPILER_COMPILE_ON_SAVE,
         COMPILER_MAP_SOURCE_FILES,
         COMPILER_MODULE_GEN_TARGET,
         COMPILER_NO_LIB,
+        COMPILER_OUTPUT_DIR_OPTION,
         COMPILER_REMOVE_COMMENTS);
 
+    String EDITOR_CLOSE_BRACES = "editor.closeBraces";
+    String EDITOR_CLOSE_JSDOCS = "editor.closeJSDocs";
     String EDITOR_INDENT_SIZE = "editor.indentSize";
     String EDITOR_MATCHING_BRACKETS = "editor.matchingBrackets";
     String EDITOR_MATCHING_BRACKETS_COLOR = "editor.matchingBracketsColor";
@@ -51,4 +58,6 @@ public interface IPreferenceConstants {
     String FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS = "formatter.insertSpaceBeforeAndAfterBinaryOperators";
     String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS = "formatter.placeOpenBraceOnNewLineForControlBlocks";
     String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS = "formatter.placeOpenBraceOnNewLineForFunctions";
+
+    String GENERAL_NODE_PATH = "general.nodePath";
 }
