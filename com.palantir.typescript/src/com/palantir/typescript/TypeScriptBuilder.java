@@ -177,23 +177,16 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        // HACKHACK: create a new language service for each build since it seems to have some incorrect caching behavior
-        // fix is: https://typescript.codeplex.com/SourceControl/changeset/8b1915815ce48b5c17772de750a02a38bb309044
-        LanguageService languageService = new LanguageService(this.getProject());
-        try {
-            final Map<String, List<CompleteDiagnostic>> diagnostics = languageService.getAllDiagnostics();
+        final Map<String, List<CompleteDiagnostic>> diagnostics = this.getLanguageService().getAllDiagnostics();
 
-            // create the markers within a workspace runnable for greater efficiency
-            IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-                @Override
-                public void run(IProgressMonitor runnableMonitor) throws CoreException {
-                    createMarkers(diagnostics);
-                }
-            };
-            ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
-        } finally {
-            languageService.dispose();
-        }
+        // create the markers within a workspace runnable for greater efficiency
+        IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+            @Override
+            public void run(IProgressMonitor runnableMonitor) throws CoreException {
+                createMarkers(diagnostics);
+            }
+        };
+        ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
     }
 
     private static void createMarkers(final Map<String, List<CompleteDiagnostic>> diagnostics) throws CoreException {

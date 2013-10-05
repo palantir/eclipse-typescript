@@ -67,6 +67,10 @@ module Bridge {
 
         public getAllDiagnostics(): any {
             var diagnostics = {};
+
+            // HACKHACK: replace the language service to avoid caching bugs in it
+            this.languageService = new Services.LanguageService(this.languageServiceHost);
+
             this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
                 var resolvedDiagnostics = this.getDiagnostics(fileName);
 
