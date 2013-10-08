@@ -146,7 +146,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 String fileName = fileDelta.getFileName();
 
                 // skip ambient declaration files
-                if (fileName.endsWith("d.ts")) {
+                if (fileName.endsWith(".d.ts")) {
                     continue;
                 }
 
