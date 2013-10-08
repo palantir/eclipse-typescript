@@ -7,8 +7,6 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-tslint": "~0.2.3",
-    "grunt-typescript": "~0.2.4"
+    "grunt-chmod": "~1.0.3"
   }
 }
-
