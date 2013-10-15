@@ -10,20 +10,21 @@ module.exports = function(grunt) {
   grunt.registerMultiTask("tsc", function() {
     var done = this.async();
     var options = this.options();
-    var args = "";
+    var args = [];
 
     this.files.forEach(function(file) {
-      args += "--out " + file.dest;
-
       file.src.filter(function(filepath) {
-        args += " " + filepath;
+        args.push(filepath);
       });
+
+      args.push("--out");
+      args.push(file.dest);
     });
 
     grunt.log.write("Running tsc...");
     grunt.util.spawn({
       cmd: options.bin,
-      args: [args]
+      args: args
     }, function(err) {
       if (err) {
         grunt.warn("tsc exited unexpectedly with error: " + err.message);
