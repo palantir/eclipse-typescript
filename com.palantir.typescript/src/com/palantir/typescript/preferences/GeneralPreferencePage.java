@@ -18,6 +18,7 @@ package com.palantir.typescript.preferences;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -94,6 +95,11 @@ public final class GeneralPreferencePage extends PreferencePage implements IWork
         }
 
         return true;
+    }
+
+    @Override
+    protected IPreferenceStore doGetPreferenceStore() {
+        return TypeScriptPlugin.getDefault().getPreferenceStore();
     }
 
     private static String getResource(String key) {

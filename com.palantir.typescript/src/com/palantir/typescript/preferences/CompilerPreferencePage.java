@@ -18,12 +18,14 @@ package com.palantir.typescript.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
@@ -42,7 +44,7 @@ import com.palantir.typescript.services.language.ModuleGenTarget;
  *
  * @author tyleradams
  */
-public final class CompilerPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public final class CompilerPreferencePage extends FieldEditorProjectPreferencePage implements IWorkbenchPreferencePage {
 
     private boolean compilerPreferencesModified;
 
@@ -55,8 +57,6 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
-
-        this.setPreferenceStore(TypeScriptPlugin.getDefault().getPreferenceStore());
     }
 
     @Override
@@ -83,7 +83,13 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
 
                 // rebuild the workspace
                 if (result == 2) {
-                    Builders.rebuildWorkspace();
+                    if (this.isPropertyPage()) {
+                        IProject project = (IProject) this.getElement().getAdapter(IProject.class);
+
+                        Builders.rebuildProject(project);
+                    } else {
+                        Builders.rebuildWorkspace();
+                    }
                 }
             }
 
@@ -102,7 +108,7 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
         Object source = event.getSource();
 
         if (source.equals(this.compileOnSaveField) && event.getProperty().equals(FieldEditor.VALUE)) {
-            this.synchronizeCompileOnSave();
+            this.updateFieldEditors();
         }
 
         if (source.equals(this.compileOnSaveField)
@@ -162,17 +168,43 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
     }
 
     @Override
+    protected IPreferenceStore doGetPreferenceStore() {
+        return TypeScriptPlugin.getDefault().getPreferenceStore();
+    }
+
+    @Override
+    protected String getPreferenceNodeId() {
+        return "com.palantir.typescript.compilerPreferencePage";
+    }
+
+    @Override
+    protected String getSentinelPropertyName() {
+        return IPreferenceConstants.COMPILER_CODE_GEN_TARGET;
+    }
+
+    @Override
     protected void initialize() {
         super.initialize();
 
-        this.synchronizeCompileOnSave();
+        this.updateFieldEditors();
     }
 
     @Override
     protected void performDefaults() {
         super.performDefaults();
 
-        this.synchronizeCompileOnSave();
+        this.updateFieldEditors();
+    }
+
+    @Override
+    protected void updateFieldEditors() {
+        super.updateFieldEditors();
+
+        boolean enabled = this.compileOnSaveField.getBooleanValue() && this.isProjectSpecific();
+        Composite parent = this.getFieldEditorParent();
+
+        this.removeCommentsField.setEnabled(enabled, parent);
+        this.sourceMapField.setEnabled(enabled, parent);
     }
 
     private String[][] createComboFieldValues(Enum[] enums) {
@@ -188,14 +220,6 @@ public final class CompilerPreferencePage extends FieldEditorPreferencePage impl
         }
 
         return fieldValues;
-    }
-
-    private void synchronizeCompileOnSave() {
-        boolean enabled = this.compileOnSaveField.getBooleanValue();
-        Composite parent = this.getFieldEditorParent();
-
-        this.removeCommentsField.setEnabled(enabled, parent);
-        this.sourceMapField.setEnabled(enabled, parent);
     }
 
     private static String getResource(String key) {

@@ -18,6 +18,7 @@ package com.palantir.typescript.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -34,8 +35,6 @@ public final class TypingPreferencePage extends FieldEditorPreferencePage implem
 
     public TypingPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
-
-        this.setPreferenceStore(TypeScriptPlugin.getDefault().getPreferenceStore());
     }
 
     @Override
@@ -53,6 +52,11 @@ public final class TypingPreferencePage extends FieldEditorPreferencePage implem
             IPreferenceConstants.EDITOR_CLOSE_JSDOCS,
             getResource("preferences.editor.close.jsdocs"),
             this.getFieldEditorParent()));
+    }
+
+    @Override
+    protected IPreferenceStore doGetPreferenceStore() {
+        return TypeScriptPlugin.getDefault().getPreferenceStore();
     }
 
     private static String getResource(String key) {

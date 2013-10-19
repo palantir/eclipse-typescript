@@ -27,6 +27,8 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
@@ -43,6 +45,7 @@ import com.google.common.io.Resources;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 import com.palantir.typescript.services.language.FileDelta.Delta;
@@ -61,7 +64,7 @@ public final class LanguageService {
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
-    private final MyPropertyChangeListener preferencesListener;
+    private final MyPreferenceChangeListener preferencesListener;
     private final IProject project;
 
     public LanguageService(String fileName) {
@@ -76,7 +79,7 @@ public final class LanguageService {
         checkNotNull(fileNames);
 
         this.bridge = new Bridge();
-        this.preferencesListener = new MyPropertyChangeListener();
+        this.preferencesListener = new MyPreferenceChangeListener();
         this.project = project;
 
         // add the default library unless it has been suppressed
@@ -89,10 +92,25 @@ public final class LanguageService {
         this.updateCompilationSettings();
 
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
+
+        if (this.project != null) {
+            IScopeContext projectScope = new ProjectScope(this.project);
+            IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
+
+            projectPreferences.addPreferenceChangeListener(this.preferencesListener);
+        }
     }
 
     public void dispose() {
+        if (this.project != null) {
+            IScopeContext projectScope = new ProjectScope(this.project);
+            IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
+
+            projectPreferences.removePreferenceChangeListener(this.preferencesListener);
+        }
+
         TypeScriptPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this.preferencesListener);
+
         this.bridge.dispose();
     }
 
@@ -278,15 +296,18 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private static String getProjectPreference(IProject project, String key) {
-        IScopeContext projectScope = new ProjectScope(project);
-        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
+    private IPreferenceStore getPreferenceStore() {
+        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
-        return projectPreferences.get(key, "");
+        if (this.project != null) {
+            preferenceStore = new ProjectPreferenceStore(this.project, preferenceStore, "");
+        }
+
+        return preferenceStore;
     }
 
     private void updateCompilationSettings() {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore preferenceStore = this.getPreferenceStore();
 
         // create the compilation settings from the preferences
         CompilationSettings compilationSettings = new CompilationSettings();
@@ -301,7 +322,7 @@ public final class LanguageService {
 
         // set the output directory if it was specified
         if (this.project != null) {
-            String relativePath = getProjectPreference(this.project, IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+            String relativePath = preferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
 
             if (!Strings.isNullOrEmpty(relativePath)) {
                 IFolder outputFolder = this.project.getFolder(relativePath);
@@ -315,13 +336,20 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private final class MyPropertyChangeListener implements IPropertyChangeListener {
+    private final class MyPreferenceChangeListener implements IPreferenceChangeListener, IPropertyChangeListener {
+        @Override
+        public void preferenceChange(PreferenceChangeEvent event) {
+            this.preferenceChanged(event.getKey());
+        }
+
         @Override
         public void propertyChange(PropertyChangeEvent event) {
-            String property = event.getProperty();
+            this.preferenceChanged(event.getProperty());
+        }
 
-            if (property.equals(IPreferenceConstants.COMPILER_NO_LIB)) {
-                boolean noLib = (Boolean) event.getNewValue();
+        private void preferenceChanged(String name) {
+            if (name.equals(IPreferenceConstants.COMPILER_NO_LIB)) {
+                boolean noLib = getPreferenceStore().getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
 
                 if (noLib) {
                     updateFiles(ImmutableList.of(new FileDelta(Delta.REMOVED, STANDARD_LIBRARY_FILE_NAME)));
@@ -330,7 +358,7 @@ public final class LanguageService {
                 }
             }
 
-            if (IPreferenceConstants.COMPILER_PREFERENCES.contains(property)) {
+            if (IPreferenceConstants.COMPILER_PREFERENCES.contains(name)) {
                 updateCompilationSettings();
             }
         }

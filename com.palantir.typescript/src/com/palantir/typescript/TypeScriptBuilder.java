@@ -39,6 +39,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.CompleteDiagnostic;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
@@ -89,9 +90,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        // compile the source files if compile-on-save is enabled
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        if (preferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject(), preferenceStore, "");
+
+        // compile the source files if compile-on-save is enabled
+        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
             compile(fileDeltas, monitor);
         }
 

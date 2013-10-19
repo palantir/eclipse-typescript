@@ -18,6 +18,7 @@ package com.palantir.typescript.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -36,8 +37,6 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
 
     public FormatterPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
-
-        this.setPreferenceStore(TypeScriptPlugin.getDefault().getPreferenceStore());
     }
 
     @Override
@@ -102,6 +101,11 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
             IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS,
             getResource("preferences.formatter.place.open.brace.on.new.line.for.control.blocks"),
             this.getFieldEditorParent()));
+    }
+
+    @Override
+    protected IPreferenceStore doGetPreferenceStore() {
+        return TypeScriptPlugin.getDefault().getPreferenceStore();
     }
 
     private static String getResource(String key) {
