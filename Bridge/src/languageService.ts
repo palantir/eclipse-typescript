@@ -48,7 +48,7 @@ module Bridge {
             return references.map((reference) => {
                 var snapshot = this.languageServiceHost.getScriptSnapshot(reference.fileName);
                 var lineStarts = snapshot.getLineStartPositions();
-                var lineMap = new TypeScript.LineMap(lineStarts, snapshot.getLength());
+                var lineMap = new TypeScript.LineMap(() => lineStarts, snapshot.getLength());
                 var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
                 var lineStart = lineMap.getLineStartPosition(lineNumber);
                 var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
@@ -123,14 +123,11 @@ module Bridge {
             var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
             var lineStarts = snapshot.getLineStartPositions();
             var length = snapshot.getLength();
-            var lineMap = new TypeScript.LineMap(lineStarts, length);
             var resolvedDiagnostics = diagnostics.map((diagnostic) => {
-                var line = lineMap.getLineNumberFromPosition(diagnostic.start());
-
                 return {
                     start: diagnostic.start(),
                     length: diagnostic.length(),
-                    line: line,
+                    line: diagnostic.line(),
                     text: diagnostic.text().substring(0, 500) // truncate ridiculously long error messages
                 };
             });
