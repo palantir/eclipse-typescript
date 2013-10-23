@@ -154,6 +154,10 @@ abstract class FieldEditorProjectPreferencePage extends FieldEditorPreferencePag
         super.addField(editor);
     }
 
+    protected final boolean isPageEnabled() {
+        return !this.isPropertyPage() || this.isProjectSpecific();
+    }
+
     protected final boolean isPropertyPage() {
         return this.element != null;
     }
@@ -174,11 +178,11 @@ abstract class FieldEditorProjectPreferencePage extends FieldEditorPreferencePag
     }
 
     protected void updateFieldEditors() {
-        boolean projectSpecific = this.isProjectSpecific();
+        boolean pageEnabled = this.isPageEnabled();
         Composite parent = this.getFieldEditorParent();
 
         for (FieldEditor field : this.fields) {
-            field.setEnabled(projectSpecific, parent);
+            field.setEnabled(pageEnabled, parent);
         }
     }
 

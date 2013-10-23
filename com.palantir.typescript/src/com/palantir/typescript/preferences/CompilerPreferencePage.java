@@ -200,7 +200,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     protected void updateFieldEditors() {
         super.updateFieldEditors();
 
-        boolean enabled = this.compileOnSaveField.getBooleanValue() && this.isProjectSpecific();
+        boolean enabled = this.compileOnSaveField.getBooleanValue() && this.isPageEnabled();
         Composite parent = this.getFieldEditorParent();
 
         this.removeCommentsField.setEnabled(enabled, parent);
