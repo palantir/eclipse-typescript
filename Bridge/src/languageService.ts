@@ -52,7 +52,7 @@ module Bridge {
                 var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
                 var lineStart = lineMap.getLineStartPosition(lineNumber);
                 var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
-                var line = snapshot.getText(lineStart, lineEnd).substring(0, 500); // truncate long lines
+                var line = snapshot.getText(lineStart, lineEnd).substring(0, 1000); // truncate long lines
 
                 return {
                     fileName: reference.fileName,

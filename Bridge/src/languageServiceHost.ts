@@ -31,7 +31,7 @@ module Bridge {
         constructor() {
             this.compilationSettings = new TypeScript.CompilationSettings();
             this.diagnostics = new LanguageServicesDiagnostics();
-            this.fileInfos = new Map();
+            this.fileInfos = new Map<string, FileInfo>();
         }
 
         public addDefaultLibrary(libraryContents: string) {

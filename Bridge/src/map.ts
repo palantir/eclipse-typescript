@@ -18,15 +18,15 @@ module Bridge {
 
     export class Map<K, V> {
 
-        private entries: any;
+        private entries: {[stringKey: string]: Entry<K, V>};
         private headEntry: Entry<K, V>;
 
         // if true, the iteration is ordered from least recent access to most recent access
         private accessOrder: boolean;
 
-        constructor(accessOrder: boolean = false) {
+        constructor(accessOrder = false) {
             this.accessOrder = accessOrder;
-            this.entries = {};
+            this.entries = Object.create(null);
 
             // initialize a circular doubly linked list that allows quick access to the first or last entry
             // and also maintains order of entries
@@ -107,7 +107,7 @@ module Bridge {
             return this.array((entry) => entry.value);
         }
 
-        private array<T>(transform: (Entry) => T): T[] {
+        private array<T>(transform: (entry: Entry<K, V>) => T): T[] {
             var array = [];
 
             var entry = this.headEntry.next;

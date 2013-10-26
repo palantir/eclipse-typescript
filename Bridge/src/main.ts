@@ -30,7 +30,7 @@ module Bridge {
         private services: Map<string, any>;
 
         constructor() {
-            this.services = new Map();
+            this.services = new Map<string, any>();
             this.services.set("classifier", new ClassifierService());
             this.services.set("language", new LanguageService());
         }
