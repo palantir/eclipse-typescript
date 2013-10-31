@@ -20,13 +20,13 @@ module Bridge {
 
     export class ClassifierService {
 
-        private classifier: Services.Classifier;
+        private classifier: TypeScript.Services.Classifier;
 
         constructor() {
-            this.classifier = new Services.Classifier(new TypeScript.NullLogger());
+            this.classifier = new TypeScript.Services.Classifier(new TypeScript.NullLogger());
         }
 
-        public getClassificationsForLines(lines: string[], lexState: Services.EndOfLineState): Services.ClassificationResult[] {
+        public getClassificationsForLines(lines: string[], lexState: TypeScript.Services.EndOfLineState): TypeScript.Services.ClassificationResult[] {
             var lastLexState = lexState;
             var results = [];
 

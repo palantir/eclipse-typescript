@@ -22,10 +22,10 @@
 
 module Bridge {
 
-    export class LanguageServiceHost implements Services.ILanguageServiceHost {
+    export class LanguageServiceHost implements TypeScript.Services.ILanguageServiceHost {
 
         private compilationSettings: TypeScript.CompilationSettings;
-        private diagnostics: Services.ILanguageServicesDiagnostics;
+        private diagnostics: TypeScript.Services.ILanguageServicesDiagnostics;
         private fileInfos: Map<string, FileInfo>;
 
         constructor() {
@@ -35,7 +35,7 @@ module Bridge {
         }
 
         public addDefaultLibrary(libraryContents: string) {
-            var fileInfo = new FileInfo(ByteOrderMark.None, libraryContents);
+            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libraryContents);
 
             this.fileInfos.set("lib.d.ts", fileInfo);
         }
@@ -43,7 +43,7 @@ module Bridge {
         public addFiles(fileNames: string[]) {
             fileNames.forEach((fileName) => {
                 try {
-                    var fileInformation = IO.readFile(fileName, null);
+                    var fileInformation = TypeScript.IO.readFile(fileName, null);
                     var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
                     this.fileInfos.set(fileName, fileInfo);
@@ -73,12 +73,12 @@ module Bridge {
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
                             if (!fileInfo.getOpen()) {
-                                var fileInformation = IO.readFile(fileName, null);
+                                var fileInformation = TypeScript.IO.readFile(fileName, null);
 
                                 fileInfo.updateFile(fileInformation);
                             }
                         } else {
-                            var fileInformation = IO.readFile(fileName, null);
+                            var fileInformation = TypeScript.IO.readFile(fileName, null);
 
                             fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
 
@@ -112,11 +112,11 @@ module Bridge {
             return this.fileInfos.get(fileName).getOpen();
         }
 
-        public getScriptByteOrderMark(fileName: string): ByteOrderMark {
-            return ByteOrderMark.None;
+        public getScriptByteOrderMark(fileName: string): TypeScript.ByteOrderMark {
+            return TypeScript.ByteOrderMark.None;
         }
 
-        public getDiagnosticsObject(): Services.ILanguageServicesDiagnostics {
+        public getDiagnosticsObject(): TypeScript.Services.ILanguageServicesDiagnostics {
             return this.diagnostics;
         }
 
@@ -153,19 +153,19 @@ module Bridge {
         }
 
         public resolveRelativePath(path: string, directory: string): string {
-            return IO.resolvePath(path);
+            return TypeScript.IO.resolvePath(path);
         }
 
         public fileExists(path: string): boolean {
-            return IO.fileExists(path);
+            return TypeScript.IO.fileExists(path);
         }
 
         public directoryExists(path: string): boolean {
-            return IO.directoryExists(path);
+            return TypeScript.IO.directoryExists(path);
         }
 
         public getParentDirectory(path: string): string {
-            return IO.dirName(path);
+            return TypeScript.IO.dirName(path);
         }
     }
 
@@ -174,7 +174,7 @@ module Bridge {
         fileName: string;
     }
 
-    class LanguageServicesDiagnostics implements Services.ILanguageServicesDiagnostics {
+    class LanguageServicesDiagnostics implements TypeScript.Services.ILanguageServicesDiagnostics {
 
         public log(message: string): void {
             // does nothing
@@ -183,12 +183,12 @@ module Bridge {
 
     class FileInfo {
 
-        private byteOrderMark: ByteOrderMark;
+        private byteOrderMark: TypeScript.ByteOrderMark;
         private changes: TypeScript.TextChangeRange[];
         private contents: string;
         private open: boolean;
 
-        constructor(byteOrderMark: ByteOrderMark, contents: string) {
+        constructor(byteOrderMark: TypeScript.ByteOrderMark, contents: string) {
             this.byteOrderMark = byteOrderMark;
             this.changes = [];
             this.contents = contents;
@@ -223,7 +223,7 @@ module Bridge {
             return this.changes.length;
         }
 
-        public updateFile(fileInformation: FileInformation) {
+        public updateFile(fileInformation: TypeScript.FileInformation) {
             var newContents = fileInformation.contents;
             var span = new TypeScript.TextSpan(0, this.contents.length);
             var change = new TypeScript.TextChangeRange(span, newContents.length);

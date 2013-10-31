@@ -22,12 +22,12 @@ module Bridge {
 
     export class LanguageService {
 
-        private languageService: Services.LanguageService;
+        private languageService: TypeScript.Services.LanguageService;
         private languageServiceHost: LanguageServiceHost;
 
         constructor() {
             this.languageServiceHost = new LanguageServiceHost();
-            this.languageService = new Services.LanguageService(this.languageServiceHost);
+            this.languageService = new TypeScript.Services.LanguageService(this.languageServiceHost);
         }
 
         public addDefaultLibrary(libraryContents: string) {
@@ -87,8 +87,8 @@ module Bridge {
             if (completions !== null) {
                 // filter out the keyword & primitive entries
                 var filteredEntries = completions.entries.filter((entry) => {
-                    if (entry.kind === Services.ScriptElementKind.keyword
-                        || entry.kind === Services.ScriptElementKind.primitiveType) {
+                    if (entry.kind === TypeScript.Services.ScriptElementKind.keyword
+                        || entry.kind === TypeScript.Services.ScriptElementKind.primitiveType) {
                         return false;
                     }
 
@@ -109,7 +109,7 @@ module Bridge {
             return null;
         }
 
-        public getDefinitionAtPosition(fileName: string, position: number): Services.DefinitionInfo[] {
+        public getDefinitionAtPosition(fileName: string, position: number): TypeScript.Services.DefinitionInfo[] {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
@@ -137,38 +137,38 @@ module Bridge {
 
         public getEmitOutput(fileName: string): string[] {
             return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFile) {
-                IOUtils.writeFileAndFolderStructure(IO, outputFile.name, outputFile.text, outputFile.writeByteOrderMark);
+                TypeScript.IOUtils.writeFileAndFolderStructure(TypeScript.IO, outputFile.name, outputFile.text, outputFile.writeByteOrderMark);
                 return outputFile.name;
             });
         }
 
-        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: Services.FormatCodeOptions):
-            Services.TextEdit[] {
+        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions):
+            TypeScript.Services.TextEdit[] {
 
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
-        public getIndentationAtPosition(fileName: string, position: number, options: Services.EditorOptions): number {
+        public getIndentationAtPosition(fileName: string, position: number, options: TypeScript.Services.EditorOptions): number {
             return this.languageService.getIndentationAtPosition(fileName, position, options);
         }
 
-        public getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): Services.SpanInfo {
+        public getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): TypeScript.Services.SpanInfo {
             return this.languageService.getNameOrDottedNameSpan(fileName, startPos, endPos);
         }
 
-        public getOccurrencesAtPosition(fileName: string, position: number): Services.ReferenceEntry[] {
+        public getOccurrencesAtPosition(fileName: string, position: number): TypeScript.Services.ReferenceEntry[] {
             return this.languageService.getOccurrencesAtPosition(fileName, position);
         }
 
-        public getReferencesAtPosition(fileName: string, position: number): Services.ReferenceEntry[] {
+        public getReferencesAtPosition(fileName: string, position: number): TypeScript.Services.ReferenceEntry[] {
             return this.languageService.getReferencesAtPosition(fileName, position);
         }
 
-        public getScriptLexicalStructure(fileName: string): Services.NavigateToItem[] {
+        public getScriptLexicalStructure(fileName: string): TypeScript.Services.NavigateToItem[] {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
 
-        public getSignatureAtPosition(fileName: string, position: number): Services.SignatureInfo {
+        public getSignatureAtPosition(fileName: string, position: number): TypeScript.Services.SignatureInfo {
             return this.languageService.getSignatureAtPosition(fileName, position);
         }
 
@@ -207,7 +207,7 @@ module Bridge {
     }
 
     export interface CompletionInfo {
-        entries: Services.CompletionEntryDetails[];
+        entries: TypeScript.Services.CompletionEntryDetails[];
         memberCompletion: boolean;
     }
 
