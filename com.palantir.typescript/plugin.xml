@@ -341,7 +341,27 @@
       <page
             class="com.palantir.typescript.preferences.BuildPathPropertyPage"
             id="com.palantir.typescript.buildPathPropertyPage"
-            name="TypeScript Build Path">
+            name="TypeScript">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IProject">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.palantir.typescript.typeScriptNature">
+                  </test>
+               </and>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="com.palantir.typescript.buildPathPropertyPage"
+            class="com.palantir.typescript.preferences.CompilerPreferencePage"
+            id="com.palantir.typescript.compilerPreferencePage"
+            name="Compiler">
          <enabledWhen>
             <adapt
                   type="org.eclipse.core.resources.IProject">
