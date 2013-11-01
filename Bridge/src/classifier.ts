@@ -26,9 +26,9 @@ module Bridge {
             this.classifier = new TypeScript.Services.Classifier(new TypeScript.NullLogger());
         }
 
-        public getClassificationsForLines(lines: string[], lexState: TypeScript.Services.EndOfLineState): TypeScript.Services.ClassificationResult[] {
+        public getClassificationsForLines(lines: string[], lexState: TypeScript.Services.EndOfLineState) {
             var lastLexState = lexState;
-            var results = [];
+            var results: TypeScript.Services.ClassificationResult[] = [];
 
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];

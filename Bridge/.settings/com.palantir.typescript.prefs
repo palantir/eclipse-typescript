@@ -1,0 +1,8 @@
+compiler.codeGenTarget=ECMASCRIPT5
+compiler.compileOnSave=false
+compiler.mapSourceFiles=false
+compiler.moduleGenTarget=SYNCHRONOUS
+compiler.noImplicitAny=true
+compiler.noLib=false
+compiler.removeComments=false
+eclipse.preferences.version=1

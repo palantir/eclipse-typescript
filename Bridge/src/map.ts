@@ -108,7 +108,7 @@ module Bridge {
         }
 
         private array<T>(transform: (entry: Entry<K, V>) => T): T[] {
-            var array = [];
+            var array: T[] = [];
 
             var entry = this.headEntry.next;
             while (entry !== this.headEntry) {
@@ -139,7 +139,7 @@ module Bridge {
         }
 
         private stringify(key: K): string {
-            var suffix;
+            var suffix: any;
 
             // use the key directly if it's already a string
             if (typeof suffix === "string") {
