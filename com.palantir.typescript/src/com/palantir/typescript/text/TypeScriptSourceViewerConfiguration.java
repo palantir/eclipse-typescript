@@ -91,7 +91,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
 
     @Override
     public IContentFormatter getContentFormatter(ISourceViewer sourceViewer) {
-        return new ContentFormatter(this.editor);
+        return new ContentFormatter(this.editor, this.fPreferenceStore);
     }
 
     @Override
@@ -149,5 +149,4 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
             return new DefaultInformationControl(parent);
         }
     }
-
 }

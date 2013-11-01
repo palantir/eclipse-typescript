@@ -33,7 +33,7 @@ import com.palantir.typescript.TypeScriptPlugin;
  *
  * @author dcicerone
  */
-public final class FormatterPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public final class FormatterPreferencePage extends FieldEditorProjectPreferencePage implements IWorkbenchPreferencePage {
 
     public FormatterPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
@@ -106,6 +106,16 @@ public final class FormatterPreferencePage extends FieldEditorPreferencePage imp
     @Override
     protected IPreferenceStore doGetPreferenceStore() {
         return TypeScriptPlugin.getDefault().getPreferenceStore();
+    }
+
+    @Override
+    protected String getPreferenceNodeId() {
+        return "com.palantir.typescript.formatterPreferencePage";
+    }
+
+    @Override
+    protected String getSentinelPropertyName() {
+        return IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER;
     }
 
     private static String getResource(String key) {

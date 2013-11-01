@@ -30,7 +30,6 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.FormatCodeOptions;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.TextEdit;
@@ -43,11 +42,14 @@ import com.palantir.typescript.services.language.TextEdit;
 public final class ContentFormatter implements IContentFormatter {
 
     private final TypeScriptEditor editor;
+    private final IPreferenceStore preferenceStore;
 
-    public ContentFormatter(TypeScriptEditor editor) {
+    public ContentFormatter(TypeScriptEditor editor, IPreferenceStore preferenceStore) {
         checkNotNull(editor);
+        checkNotNull(preferenceStore);
 
         this.editor = editor;
+        this.preferenceStore = preferenceStore;
     }
 
     @Override
@@ -78,20 +80,18 @@ public final class ContentFormatter implements IContentFormatter {
         throw new UnsupportedOperationException();
     }
 
-    private static FormatCodeOptions createFormatCodeOptions() {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-
+    private FormatCodeOptions createFormatCodeOptions() {
         return new FormatCodeOptions(
-            preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
-            preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH),
-            preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS),
-            preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS));
+            this.preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
+            this.preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH),
+            this.preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS));
     }
 }

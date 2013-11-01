@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -61,10 +60,10 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
@@ -160,6 +159,15 @@ public final class TypeScriptEditor extends TextEditor {
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
+
+            // set a project-specific preference store
+            IPreferenceStore pluginPreferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+            ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
+                    new ProjectPreferenceStore(project, pluginPreferenceStore, ""),
+                    EditorsUI.getPreferenceStore(),
+                    PlatformUI.getPreferenceStore()
+            });
+            this.setPreferenceStore(chainedPreferenceStore);
 
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                 this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
@@ -284,12 +292,11 @@ public final class TypeScriptEditor extends TextEditor {
         super.initializeEditor();
 
         // set the preference store
-        List<IPreferenceStore> preferenceStores = Lists.newArrayList();
-        preferenceStores.add(TypeScriptPlugin.getDefault().getPreferenceStore());
-        preferenceStores.add(EditorsUI.getPreferenceStore());
-        preferenceStores.add(PlatformUI.getPreferenceStore());
-        IPreferenceStore[] array = preferenceStores.toArray(new IPreferenceStore[preferenceStores.size()]);
-        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(array);
+        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
+                TypeScriptPlugin.getDefault().getPreferenceStore(),
+                EditorsUI.getPreferenceStore(),
+                PlatformUI.getPreferenceStore()
+        });
         this.setPreferenceStore(chainedPreferenceStore);
     }
 
