@@ -136,7 +136,7 @@ module Bridge {
         }
 
         public getEmitOutput(fileName: string): string[] {
-            return this.languageService.getEmitOutput(fileName).outputFiles.map(function(outputFile) {
+            return this.languageService.getEmitOutput(fileName).outputFiles.map((outputFile) => {
                 TypeScript.IOUtils.writeFileAndFolderStructure(TypeScript.IO, outputFile.name, outputFile.text, outputFile.writeByteOrderMark);
                 return outputFile.name;
             });
