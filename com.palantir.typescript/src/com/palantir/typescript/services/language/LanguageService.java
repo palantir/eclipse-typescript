@@ -212,6 +212,14 @@ public final class LanguageService {
         return this.bridge.call(request, SpanInfo.class);
     }
 
+    public List<NavigateToItem> getNavigateToItems(String searchValue) {
+        checkNotNull(searchValue);
+
+        Request request = new Request(SERVICE, "getNavigateToItems", searchValue);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public List<ReferenceEntry> getOccurrencesAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);

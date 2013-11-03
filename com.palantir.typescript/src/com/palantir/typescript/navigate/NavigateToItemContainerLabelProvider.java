@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.text;
+package com.palantir.typescript.navigate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Tree;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.Images;
@@ -30,21 +29,20 @@ import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.services.language.ScriptElementModifierKind;
 
 /**
- * Generates labels for {@link Tree} elements.
+ * A label provider which provides labels for the container of a {@link NavigateToItem}.
  *
  * @author dcicerone
  */
-public final class LabelProvider extends BaseLabelProvider implements ILabelProvider {
+public final class NavigateToItemContainerLabelProvider extends BaseLabelProvider implements ILabelProvider {
 
     @Override
     public Image getImage(Object element) {
         checkNotNull(element);
 
         NavigateToItem item = (NavigateToItem) element;
-        ScriptElementKind kind = item.getKind();
-        ImmutableList<ScriptElementModifierKind> kindModifiers = item.getKindModifiers();
+        ScriptElementKind kind = item.getContainerKind();
 
-        return Images.getImage(kind, kindModifiers);
+        return Images.getImage(kind, ImmutableList.<ScriptElementModifierKind> of());
     }
 
     @Override
@@ -52,6 +50,6 @@ public final class LabelProvider extends BaseLabelProvider implements ILabelProv
         checkNotNull(element);
 
         NavigateToItem item = (NavigateToItem) element;
-        return item.getName();
+        return item.getContainerName();
     }
 }

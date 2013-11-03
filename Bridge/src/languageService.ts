@@ -156,6 +156,10 @@ module Bridge {
             return this.languageService.getNameOrDottedNameSpan(fileName, startPos, endPos);
         }
 
+        public getNavigateToItems(searchValue: string): TypeScript.Services.NavigateToItem[] {
+            return this.languageService.getNavigateToItems(searchValue);
+        }
+
         public getOccurrencesAtPosition(fileName: string, position: number): TypeScript.Services.ReferenceEntry[] {
             return this.languageService.getOccurrencesAtPosition(fileName, position);
         }

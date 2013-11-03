@@ -36,6 +36,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.typescript.navigate.NavigateToItemLabelProvider;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.NavigateToItem;
 
@@ -67,7 +68,7 @@ public final class OutlinePage extends ContentOutlinePage {
         TreeViewer treeViewer = this.getTreeViewer();
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());
         treeViewer.setContentProvider(new ContentProvider());
-        treeViewer.setLabelProvider(new LabelProvider());
+        treeViewer.setLabelProvider(new NavigateToItemLabelProvider());
         treeViewer.setInput(lexicalStructure);
 
         // expand all the nodes if there aren't too many of them
