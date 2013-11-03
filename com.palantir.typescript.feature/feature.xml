@@ -17,7 +17,7 @@
 <feature
       id="com.palantir.typescript.feature"
       label="TypeScript"
-      version="1.0.0.qualifier"
+      version="0.9.5.qualifier"
       provider-name="Palantir Technologies, Inc.">
 
    <description url="https://github.com/palantir/eclipse-typescript">
@@ -237,6 +237,6 @@
          id="com.palantir.typescript"
          download-size="0"
          install-size="0"
-         version="1.0.0.qualifier"/>
+         version="0.9.5.qualifier"/>
 
 </feature>
