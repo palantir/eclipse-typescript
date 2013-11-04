@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
@@ -167,7 +169,17 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         String fileName = this.editor.getFileName();
         EditorOptions options = new EditorOptions(this.indentSize, this.tabWidth, this.spacesForTabs);
 
-        return this.editor.getLanguageService().getIndentationAtPosition(fileName, position, options);
+        try {
+            return this.editor.getLanguageService().getIndentationAtPosition(fileName, position, options);
+        } catch (RuntimeException e) {
+            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
+
+            // log the exception
+            TypeScriptPlugin.getDefault().getLog().log(status);
+
+            // fallback to no indentation (its better than the enter key not working)
+            return 0;
+        }
     }
 
     private void readPreferences() {
