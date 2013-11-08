@@ -254,14 +254,6 @@ public final class LanguageService {
         return this.bridge.call(request, SignatureInfo.class);
     }
 
-    public List<Diagnostic> getSyntacticDiagnostics(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getSyntacticDiagnostics", fileName);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Diagnostic.class);
-        return this.bridge.call(request, returnType);
-    }
-
     public TypeInfo getTypeAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);

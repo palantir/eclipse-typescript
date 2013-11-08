@@ -176,10 +176,6 @@ module Bridge {
             return this.languageService.getSignatureAtPosition(fileName, position);
         }
 
-        public getSyntacticDiagnostics(fileName: string): TypeScript.Diagnostic[] {
-            return this.languageService.getSyntacticDiagnostics(fileName);
-        }
-
         public getTypeAtPosition(fileName: string, position: number): TypeInfo {
             var type = this.languageService.getTypeAtPosition(fileName, position);
 

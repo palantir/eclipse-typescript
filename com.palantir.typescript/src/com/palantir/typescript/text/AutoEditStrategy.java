@@ -35,7 +35,6 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
-import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.TextSpan;
 
@@ -102,29 +101,17 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private boolean closeBrace(IDocument document, DocumentCommand command) throws BadLocationException {
         int offset = command.offset;
 
-        if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{') {
-            String fileName = this.editor.getFileName();
-            List<Diagnostic> diagnostics = this.editor.getLanguageService().getSyntacticDiagnostics(fileName);
+        if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{' && !this.isBraceClosed(offset)) {
+            int indentation = this.getIndentationAtPosition(offset);
+            int tabIndentation = this.spacesForTabs ? this.tabWidth : 1;
+            String caretIndentationText = this.createIndentationText(indentation);
+            String closingBraceIndentationText = this.createIndentationText(indentation - tabIndentation);
 
-            if (!diagnostics.isEmpty()) {
-                int indentation = this.getIndentationAtPosition(offset);
-                int tabIndentation = this.spacesForTabs ? this.tabWidth : 1;
+            command.caretOffset = offset + caretIndentationText.length() + 1;
+            command.shiftsCaret = false;
+            command.text += caretIndentationText + command.text + closingBraceIndentationText + "}";
 
-                // workaround for differing indentation results depending upon whether a syntax error was detected or brace matching failed
-                List<TextSpan> braceMatching = this.editor.getLanguageService().getBraceMatchingAtPosition(fileName, offset - 1);
-                if (!braceMatching.isEmpty()) {
-                    indentation -= tabIndentation;
-                }
-
-                String caretIndentationText = this.createIndentationText(indentation + tabIndentation);
-                String braceIndentationText = this.createIndentationText(indentation);
-
-                command.caretOffset = offset + caretIndentationText.length() + 1;
-                command.shiftsCaret = false;
-                command.text += caretIndentationText + command.text + braceIndentationText + "}";
-
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -179,6 +166,34 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
             // fallback to no indentation (its better than the enter key not working)
             return 0;
+        }
+    }
+
+    private boolean isBraceClosed(int offset) {
+        String fileName = this.editor.getFileName();
+        List<TextSpan> braceMatching = this.editor.getLanguageService().getBraceMatchingAtPosition(fileName, offset - 1);
+
+        // matching braces come in pairs so if there is no pair, there is no match (happens at the end of files)
+        if (braceMatching.size() != 2) {
+            return false;
+        }
+
+        // get the indentation of the opening brace
+        int openingBraceOffset = braceMatching.get(0).getStart();
+        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - this.indentSize;
+
+        // get the indentation of the closing brace
+        int closingBraceOffset = braceMatching.get(1).getStart();
+        IDocument document = this.editor.getDocument();
+        try {
+            int closingBraceLine = document.getLineOfOffset(closingBraceOffset);
+            int closingBraceLineOffset = document.getLineOffset(closingBraceLine);
+            int closingBraceIndentation = closingBraceOffset - closingBraceLineOffset;
+
+            // consider the opening brace closed if the opening and closing braces have the same indentation
+            return openingBraceIndentation == closingBraceIndentation;
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
         }
     }
 
