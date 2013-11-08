@@ -180,7 +180,8 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         // get the indentation of the opening brace
         int openingBraceOffset = braceMatching.get(0).getStart();
-        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - this.indentSize;
+        int tabIndentation = this.spacesForTabs ? this.tabWidth : 1;
+        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - tabIndentation;
 
         // get the indentation of the closing brace
         int closingBraceOffset = braceMatching.get(1).getStart();
