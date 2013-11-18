@@ -19,6 +19,7 @@ package com.palantir.typescript.services.language;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 /**
  * Corresponds to the class with the same name in languageService.ts.
@@ -47,5 +48,15 @@ public class EditorOptions {
         this.tabSize = tabSize;
         this.newLineCharacter = System.getProperty("line.separator");
         this.convertTabsToSpaces = convertTabsToSpaces;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("indentSize", this.indentSize)
+            .add("tabSize", this.tabSize)
+            .add("newLineCharacter", this.newLineCharacter)
+            .add("convertTabsToSpaces", this.convertTabsToSpaces)
+            .toString();
     }
 }
