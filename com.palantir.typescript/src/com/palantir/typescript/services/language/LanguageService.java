@@ -83,7 +83,7 @@ public final class LanguageService {
         this.project = project;
 
         // add the default library unless it has been suppressed
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
+        IPreferenceStore preferenceStore = this.getPreferenceStore();
         if (!preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB)) {
             this.addDefaultLibrary();
         }
