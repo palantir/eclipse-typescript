@@ -50,6 +50,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private static final Pattern JSDOC_START = Pattern.compile("\\s*/\\*\\*");
 
     private final TypeScriptEditor editor;
+    private final IPreferenceStore preferenceStore;
 
     private boolean closeBraces;
     private boolean closeJSDocs;
@@ -57,10 +58,12 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private boolean spacesForTabs;
     private int tabWidth;
 
-    public AutoEditStrategy(TypeScriptEditor editor) {
+    public AutoEditStrategy(TypeScriptEditor editor, IPreferenceStore preferenceStore) {
         checkNotNull(editor);
+        checkNotNull(preferenceStore);
 
         this.editor = editor;
+        this.preferenceStore = preferenceStore;
     }
 
     @Override
@@ -103,9 +106,8 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{' && !this.isBraceClosed(offset)) {
             int indentation = this.getIndentationAtPosition(offset);
-            int tabIndentation = this.spacesForTabs ? this.tabWidth : 1;
             String caretIndentationText = this.createIndentationText(indentation);
-            String closingBraceIndentationText = this.createIndentationText(indentation - tabIndentation);
+            String closingBraceIndentationText = this.createIndentationText(indentation - this.indentSize);
 
             command.caretOffset = offset + caretIndentationText.length() + 1;
             command.shiftsCaret = false;
@@ -149,7 +151,17 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private String createIndentationText(int indentation) {
-        return Strings.repeat(this.spacesForTabs ? " " : "\t", indentation);
+        int tabs = 0;
+        int spaces = 0;
+
+        if (this.spacesForTabs) {
+            spaces = indentation;
+        } else {
+            tabs = indentation / this.tabWidth;
+            spaces = indentation % this.tabWidth;
+        }
+
+        return Strings.repeat("\t", tabs) + Strings.repeat(" ", spaces);
     }
 
     private int getIndentationAtPosition(int position) {
@@ -180,8 +192,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         // get the indentation of the opening brace
         int openingBraceOffset = braceMatching.get(0).getStart();
-        int tabIndentation = this.spacesForTabs ? this.tabWidth : 1;
-        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - tabIndentation;
+        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - this.indentSize;
 
         // get the indentation of the closing brace
         int closingBraceOffset = braceMatching.get(1).getStart();
@@ -199,13 +210,11 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private void readPreferences() {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-
-        this.closeBraces = preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_BRACES);
-        this.closeJSDocs = preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_JSDOCS);
-        this.indentSize = preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
-        this.spacesForTabs = preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
-        this.tabWidth = preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH);
+        this.closeBraces = this.preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_BRACES);
+        this.closeJSDocs = this.preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_JSDOCS);
+        this.indentSize = this.preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
+        this.spacesForTabs = this.preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
+        this.tabWidth = this.preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH);
     }
 
     private static String getIndentationText(String lineText) {

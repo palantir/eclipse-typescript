@@ -69,7 +69,7 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
 
     @Override
     public IAutoEditStrategy[] getAutoEditStrategies(ISourceViewer sourceViewer, String contentType) {
-        return new IAutoEditStrategy[] { new AutoEditStrategy(this.editor) };
+        return new IAutoEditStrategy[] { new AutoEditStrategy(this.editor, this.fPreferenceStore) };
     }
 
     @Override
