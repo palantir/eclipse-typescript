@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.google.common.escape.Escaper;
+import com.google.common.escape.Escapers;
 
 /**
  * Corresponds to the class with the same name in languageService.ts.
@@ -27,6 +29,11 @@ import com.google.common.base.Objects;
  * @author dcicerone
  */
 public class EditorOptions {
+
+    protected static final Escaper NEW_LINE_ESCAPER = Escapers.builder()
+        .addEscape('\n', "\\n")
+        .addEscape('\r', "\\r")
+        .build();
 
     @JsonProperty("IndentSize")
     private int indentSize;
@@ -50,12 +57,28 @@ public class EditorOptions {
         this.convertTabsToSpaces = convertTabsToSpaces;
     }
 
+    public int getIndentSize() {
+        return this.indentSize;
+    }
+
+    public int getTabSize() {
+        return this.tabSize;
+    }
+
+    public String getNewLineCharacter() {
+        return this.newLineCharacter;
+    }
+
+    public boolean getConvertTabsToSpaces() {
+        return this.convertTabsToSpaces;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("indentSize", this.indentSize)
             .add("tabSize", this.tabSize)
-            .add("newLineCharacter", this.newLineCharacter)
+            .add("newLineCharacter", NEW_LINE_ESCAPER.escape(this.newLineCharacter))
             .add("convertTabsToSpaces", this.convertTabsToSpaces)
             .toString();
     }

@@ -77,6 +77,10 @@ public final class FormatCodeOptions extends EditorOptions {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
+            .add("indentSize", this.getIndentSize())
+            .add("tabSize", this.getTabSize())
+            .add("newLineCharacter", NEW_LINE_ESCAPER.escape(this.getNewLineCharacter()))
+            .add("convertTabsToSpaces", this.getConvertTabsToSpaces())
             .add("insertSpaceAfterCommaDelimiter", this.insertSpaceAfterCommaDelimiter)
             .add("insertSpaceAfterSemicolonInForStatements", this.insertSpaceAfterSemicolonInForStatements)
             .add("insertSpaceBeforeAndAfterBinaryOperators", this.insertSpaceBeforeAndAfterBinaryOperators)
