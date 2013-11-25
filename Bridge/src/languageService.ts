@@ -69,9 +69,11 @@ module Bridge {
             var diagnostics = {};
 
             this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
-                var resolvedDiagnostics = this.getDiagnostics(fileName);
+                if (fileName !== "lib.d.ts") {
+                    var resolvedDiagnostics = this.getDiagnostics(fileName);
 
-                diagnostics[fileName] = resolvedDiagnostics;
+                    diagnostics[fileName] = resolvedDiagnostics;
+                }
             });
 
             return diagnostics;

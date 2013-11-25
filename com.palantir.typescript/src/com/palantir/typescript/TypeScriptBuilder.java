@@ -196,11 +196,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         for (Map.Entry<String, List<CompleteDiagnostic>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
 
-            // ignore the default library
-            if (fileName.equals("lib.d.ts")) {
-                continue;
-            }
-
             // create the markers for this file
             Path path = new Path(fileName);
             IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
