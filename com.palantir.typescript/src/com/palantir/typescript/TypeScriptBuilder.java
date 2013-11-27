@@ -123,11 +123,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private ImmutableList<FileDelta> getAllSourceFiles() {
-        ImmutableList<String> fileNames = EclipseResources.getTypeScriptFileNames(this.getProject());
+        ImmutableList<IFile> files = EclipseResources.getTypeScriptFiles(this.getProject());
         ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
 
-        for (String fileName : fileNames) {
-            fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
+        for (IFile file : files) {
+            fileDeltas.add(new FileDelta(Delta.ADDED, file));
         }
 
         return fileDeltas.build();
@@ -197,8 +197,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             String fileName = entry.getKey();
 
             // create the markers for this file
-            Path path = new Path(fileName);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+            IFile file = EclipseResources.getFile(fileName);
             List<CompleteDiagnostic> fileDiagnostics = entry.getValue();
             for (CompleteDiagnostic diagnostic : fileDiagnostics) {
                 IMarker marker = file.createMarker(MARKER_TYPE);

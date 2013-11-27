@@ -21,8 +21,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 
-import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -43,6 +43,7 @@ import org.eclipse.jface.text.source.IVerticalRuler;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -145,7 +146,13 @@ public final class TypeScriptEditor extends TextEditor {
     public String getFileName() {
         IEditorInput input = this.getEditorInput();
 
-        return this.getFileName(input);
+        return getFileName(input);
+    }
+
+    public String getFilePath() {
+        IEditorInput input = this.getEditorInput();
+
+        return getFilePath(input);
     }
 
     public LanguageService getLanguageService() {
@@ -154,7 +161,7 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        String fileName = this.getFileName(input);
+        String fileName = getFileName(input);
 
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
@@ -172,10 +179,14 @@ public final class TypeScriptEditor extends TextEditor {
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                 this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
             } else {
-                this.languageService = new LanguageService(fileName);
+                String filePath = getFilePath(input);
+
+                this.languageService = new LanguageService(fileName, filePath);
             }
         } else if (input instanceof FileStoreEditorInput) {
-            this.languageService = new LanguageService(fileName);
+            String filePath = getFilePath(input);
+
+            this.languageService = new LanguageService(fileName, filePath);
         }
 
         // inform the language service that the file is open
@@ -190,12 +201,11 @@ public final class TypeScriptEditor extends TextEditor {
         String fileName = definition.getFileName();
         if (!fileName.isEmpty()) {
             IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-            File definitionFile = new File(fileName);
-            IFileStore localFile = EFS.getLocalFileSystem().fromLocalFile(definitionFile);
+            IFileStore fileStore = EclipseResources.getFileStore(fileName);
 
             // open the editor and select the text
             try {
-                TypeScriptEditor definitionEditor = (TypeScriptEditor) IDE.openEditorOnFileStore(activePage, localFile);
+                TypeScriptEditor definitionEditor = (TypeScriptEditor) IDE.openEditorOnFileStore(activePage, fileStore);
                 int minChar = definition.getMinChar();
                 int limChar = definition.getLimChar();
                 String name = definition.getName();
@@ -316,15 +326,31 @@ public final class TypeScriptEditor extends TextEditor {
         this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
     }
 
-    private String getFileName(IEditorInput input) {
-        if (input instanceof IPathEditorInput) {
-            IPathEditorInput editorInput = (IPathEditorInput) input;
+    private static String getFileName(IEditorInput input) {
+        if (input instanceof IFileEditorInput) {
+            IFileEditorInput fileInput = (IFileEditorInput) input;
+            IFile file = fileInput.getFile();
 
-            return editorInput.getPath().toOSString();
+            return EclipseResources.getFileName(file);
         } else if (input instanceof FileStoreEditorInput) {
-            FileStoreEditorInput editorInput = (FileStoreEditorInput) input;
+            FileStoreEditorInput fileStoreInput = (FileStoreEditorInput) input;
 
-            return new File(editorInput.getURI()).getAbsolutePath();
+            return fileStoreInput.getURI().toString();
+        }
+
+        throw new UnsupportedOperationException();
+    }
+
+    private static String getFilePath(IEditorInput input) {
+        if (input instanceof IFileEditorInput) {
+            IFileEditorInput fileInput = (IFileEditorInput) input;
+            IFile file = fileInput.getFile();
+
+            return EclipseResources.getFilePath(file);
+        } else if (input instanceof FileStoreEditorInput) {
+            FileStoreEditorInput fileStoreInput = (FileStoreEditorInput) input;
+
+            return new File(fileStoreInput.getURI()).getAbsolutePath();
         }
 
         throw new UnsupportedOperationException();

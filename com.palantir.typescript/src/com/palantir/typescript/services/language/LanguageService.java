@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -41,6 +42,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.io.Resources;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
@@ -48,7 +51,6 @@ import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
-import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * The language service.
@@ -67,17 +69,16 @@ public final class LanguageService {
     private final MyPreferenceChangeListener preferencesListener;
     private final IProject project;
 
-    public LanguageService(String fileName) {
-        this(null, ImmutableList.of(fileName));
+    public LanguageService(String fileName, String filePath) {
+        this((IProject) null);
+
+        checkNotNull(fileName);
+        checkNotNull(filePath);
+
+        this.addFiles(ImmutableMap.of(fileName, filePath));
     }
 
     public LanguageService(IProject project) {
-        this(project, EclipseResources.getTypeScriptFileNames(project));
-    }
-
-    private LanguageService(IProject project, List<String> fileNames) {
-        checkNotNull(fileNames);
-
         this.bridge = new Bridge();
         this.preferencesListener = new MyPreferenceChangeListener();
         this.project = project;
@@ -88,7 +89,19 @@ public final class LanguageService {
             this.addDefaultLibrary();
         }
 
-        this.addFiles(fileNames);
+        if (this.project != null) {
+            ImmutableList<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(project);
+
+            Map<String, String> filePaths = Maps.newHashMap();
+            for (IFile typeScriptFile : typeScriptFiles) {
+                String fileName = EclipseResources.getFileName(typeScriptFile);
+                String filePath = EclipseResources.getFilePath(typeScriptFile);
+
+                filePaths.put(fileName, filePath);
+            }
+
+            this.addFiles(filePaths);
+        }
         this.updateCompilationSettings();
 
         TypeScriptPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this.preferencesListener);
@@ -291,8 +304,13 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    private void addFiles(List<String> fileNames) {
-        Request request = new Request(SERVICE, "addFiles", fileNames);
+    private void removeDefaultLibrary() {
+        Request request = new Request(SERVICE, "removeDefaultLibrary");
+        this.bridge.call(request, Void.class);
+    }
+
+    private void addFiles(Map<String, String> files) {
+        Request request = new Request(SERVICE, "addFiles", files);
         this.bridge.call(request, Void.class);
     }
 
@@ -352,7 +370,7 @@ public final class LanguageService {
                 boolean noLib = getPreferenceStore().getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
 
                 if (noLib) {
-                    updateFiles(ImmutableList.of(new FileDelta(Delta.REMOVED, STANDARD_LIBRARY_FILE_NAME)));
+                    removeDefaultLibrary();
                 } else {
                     addDefaultLibrary();
                 }

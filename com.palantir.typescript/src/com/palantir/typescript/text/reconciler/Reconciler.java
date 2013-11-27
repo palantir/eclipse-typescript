@@ -143,6 +143,7 @@ public final class Reconciler implements IReconciler {
         if (this.cachedLanguageService == null) {
             IEditorInput input = Reconciler.this.editor.getEditorInput();
             String fileName = this.editor.getFileName();
+            String filePath = this.editor.getFilePath();
 
             if (input instanceof IPathEditorInput) {
                 IResource resource = ResourceUtil.getResource(input);
@@ -151,10 +152,10 @@ public final class Reconciler implements IReconciler {
                 if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                     this.cachedLanguageService = new LanguageService(project);
                 } else {
-                    this.cachedLanguageService = new LanguageService(fileName);
+                    this.cachedLanguageService = new LanguageService(fileName, filePath);
                 }
             } else if (input instanceof FileStoreEditorInput) {
-                this.cachedLanguageService = new LanguageService(fileName);
+                this.cachedLanguageService = new LanguageService(fileName, filePath);
             }
 
             // set the file as open so that resource change events are not processed for it

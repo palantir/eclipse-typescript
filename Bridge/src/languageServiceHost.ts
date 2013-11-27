@@ -35,22 +35,33 @@ module Bridge {
         }
 
         public addDefaultLibrary(libraryContents: string) {
-            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libraryContents);
+            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libraryContents, null);
 
             this.fileInfos.set("lib.d.ts", fileInfo);
         }
 
-        public addFiles(fileNames: string[]) {
-            fileNames.forEach((fileName) => {
-                try {
-                    var fileInformation = TypeScript.IO.readFile(fileName, null);
-                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
+        public removeDefaultLibrary() {
+            this.fileInfos.delete("lib.d.ts");
+        }
 
+        public addFiles(files: { [fileName: string]: string }) {
+            for (var fileName in files) {
+                if (files.hasOwnProperty(fileName)) {
+                    var filePath = files[fileName];
+
+                    // read the file
+                    try {
+                        var fileInformation = TypeScript.IO.readFile(filePath, null);
+                    } catch (e) {
+                        // ignore failures (they are likely due to the workspace being out-of-sync)
+                        continue;
+                    }
+
+                    // cache the file
+                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
                     this.fileInfos.set(fileName, fileInfo);
-                } catch (e) {
-                    // ignore failures (they are likely due to the workspace being out-of-sync)
                 }
-            });
+            }
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
@@ -73,14 +84,15 @@ module Bridge {
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
                             if (!fileInfo.getOpen()) {
-                                var fileInformation = TypeScript.IO.readFile(fileName, null);
+                                var fileInformation = TypeScript.IO.readFile(fileInfo.getPath(), null);
 
                                 fileInfo.updateFile(fileInformation);
                             }
                         } else {
-                            var fileInformation = TypeScript.IO.readFile(fileName, null);
+                            var filePath = delta.filePath;
+                            var fileInformation = TypeScript.IO.readFile(filePath, null);
 
-                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents);
+                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
 
                             this.fileInfos.set(fileName, fileInfo);
                         }
@@ -172,6 +184,7 @@ module Bridge {
     export interface IFileDelta {
         delta: string;
         fileName: string;
+        filePath: string;
     }
 
     class LanguageServicesDiagnostics implements TypeScript.Services.ILanguageServicesDiagnostics {
@@ -187,12 +200,14 @@ module Bridge {
         private changes: TypeScript.TextChangeRange[];
         private contents: string;
         private open: boolean;
+        private path: string;
 
-        constructor(byteOrderMark: TypeScript.ByteOrderMark, contents: string) {
+        constructor(byteOrderMark: TypeScript.ByteOrderMark, contents: string, path: string) {
             this.byteOrderMark = byteOrderMark;
             this.changes = [];
             this.contents = contents;
             this.open = false;
+            this.path = path;
         }
 
         public editContents(offset: number, length: number, text: string): void {
@@ -213,6 +228,10 @@ module Bridge {
 
         public setOpen(open: boolean) {
             this.open = open;
+        }
+
+        public getPath() {
+            return this.path;
         }
 
         public getScriptSnapshot(): TypeScript.IScriptSnapshot {

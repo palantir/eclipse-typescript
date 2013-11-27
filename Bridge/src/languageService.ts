@@ -34,8 +34,12 @@ module Bridge {
             this.languageServiceHost.addDefaultLibrary(libraryContents);
         }
 
-        public addFiles(fileNames: string[]) {
-            this.languageServiceHost.addFiles(fileNames);
+        public removeDefaultLibrary() {
+            this.languageServiceHost.removeDefaultLibrary();
+        }
+
+        public addFiles(files: { [fileName: string]: string }) {
+            this.languageServiceHost.addFiles(files);
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
