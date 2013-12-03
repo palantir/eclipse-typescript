@@ -188,11 +188,11 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public List<String> getEmitOutput(String fileName) {
+    public List<OutputFile> getEmitOutput(String fileName) {
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getEmitOutput", fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, String.class);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, OutputFile.class);
         return this.bridge.call(request, resultType);
     }
 

@@ -141,11 +141,8 @@ module Bridge {
             return resolvedDiagnostics;
         }
 
-        public getEmitOutput(fileName: string): string[] {
-            return this.languageService.getEmitOutput(fileName).outputFiles.map((outputFile) => {
-                TypeScript.IOUtils.writeFileAndFolderStructure(TypeScript.IO, outputFile.name, outputFile.text, outputFile.writeByteOrderMark);
-                return outputFile.name;
-            });
+        public getEmitOutput(fileName: string): TypeScript.OutputFile[] {
+            return this.languageService.getEmitOutput(fileName).outputFiles;
         }
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions):

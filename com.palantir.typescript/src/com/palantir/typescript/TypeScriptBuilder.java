@@ -18,6 +18,8 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,17 +35,19 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.CompleteDiagnostic;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.OutputFile;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -168,14 +172,23 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
         LanguageService languageService = this.getLanguageService();
-        for (String outputFileName : languageService.getEmitOutput(fileName)) {
-            Path path = new Path(outputFileName);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
 
-            // refresh the resource for the file if it is within the workspace
-            if (file != null) {
-                file.refreshLocal(IResource.DEPTH_ZERO, monitor);
+        for (OutputFile outputFile : languageService.getEmitOutput(fileName)) {
+            String outputFileName = outputFile.getName();
+            IFile eclipseFile = EclipseResources.getFile(outputFileName);
+            String filePath = EclipseResources.getFilePath(eclipseFile);
+            File file = new File(filePath);
+
+            // write the file
+            try {
+                Files.createParentDirs(file);
+                Files.write(outputFile.getText(), file, Charsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+
+            // refresh the file so that eclipse knows about it
+            eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
         }
     }
 
