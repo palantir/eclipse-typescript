@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextListener;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
-import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.TextEvent;
 import org.eclipse.jface.text.TextPresentation;
 import org.eclipse.jface.text.presentation.IPresentationDamager;
@@ -38,13 +38,18 @@ import org.eclipse.jface.text.presentation.IPresentationRepairer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
+import com.google.common.base.CaseFormat;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.palantir.typescript.Colors;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.classifier.ClassificationInfo;
 import com.palantir.typescript.services.classifier.ClassificationResult;
 import com.palantir.typescript.services.classifier.Classifier;
@@ -65,7 +70,13 @@ public final class PresentationReconciler implements IPresentationReconciler {
         }
     });
 
-    private final ImmutableMap<TokenClass, TextAttribute> classificationTextAttributes;
+    private static final LoadingCache<RGB, Color> COLORS = CacheBuilder.newBuilder().build(new CacheLoader<RGB, Color>() {
+        @Override
+        public Color load(RGB rgb) throws Exception {
+            return new Color(Display.getCurrent(), rgb);
+        }
+    });
+
     private final Map<Integer, EndOfLineState> finalLexStates;
 
     private Classifier classifier;
@@ -74,7 +85,6 @@ public final class PresentationReconciler implements IPresentationReconciler {
 
     public PresentationReconciler() {
         this.classifier = CLASSIFIER_SUPPLIER.get();
-        this.classificationTextAttributes = createClassificationTextAttributes();
         this.listener = new MyTextListener();
         this.finalLexStates = Maps.newTreeMap();
     }
@@ -277,29 +287,25 @@ public final class PresentationReconciler implements IPresentationReconciler {
     }
 
     private void addStyleRange(TextPresentation presentation, int offset, int length, TokenClass classification) {
-        TextAttribute textAttribute = this.classificationTextAttributes.get(classification);
-        Color foreground = textAttribute.getForeground();
-        Color background = textAttribute.getBackground();
-        int fontStyle = textAttribute.getStyle();
-        StyleRange styleRange = new StyleRange(offset, length, foreground, background, fontStyle);
+        Color foreground = getForegroundColor(classification);
+        int fontStyle = (classification == TokenClass.KEYWORD ? SWT.BOLD : SWT.NONE);
+        StyleRange styleRange = new StyleRange(offset, length, foreground, null, fontStyle);
 
         presentation.addStyleRange(styleRange);
     }
 
-    private static ImmutableMap<TokenClass, TextAttribute> createClassificationTextAttributes() {
-        ImmutableMap.Builder<TokenClass, TextAttribute> classAttributes = ImmutableMap.builder();
+    private static Color getForegroundColor(TokenClass classification) {
+        String camelClassificationName = CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, classification.name());
+        String preferenceName = "syntaxColoring." + camelClassificationName + ".color";
+        String colorString = TypeScriptPlugin.getDefault().getPreferenceStore().getString(preferenceName);
 
-        classAttributes.put(TokenClass.COMMENT, new TextAttribute(Colors.getColor(Colors.COMMENT)));
-        classAttributes.put(TokenClass.IDENTIFIER, new TextAttribute(Colors.getColor(Colors.IDENTIFIER)));
-        classAttributes.put(TokenClass.KEYWORD, new TextAttribute(Colors.getColor(Colors.KEYWORD), null, SWT.BOLD));
-        classAttributes.put(TokenClass.NUMBER_LITERAL, new TextAttribute(Colors.getColor(Colors.NUMBER_LITERAL)));
-        classAttributes.put(TokenClass.OPERATOR, new TextAttribute(Colors.getColor(Colors.OPERATOR)));
-        classAttributes.put(TokenClass.PUNCTUATION, new TextAttribute(Colors.getColor(Colors.PUNCTUATION)));
-        classAttributes.put(TokenClass.REG_EXP_LITERAL, new TextAttribute(Colors.getColor(Colors.REG_EXP_LITERAL)));
-        classAttributes.put(TokenClass.STRING_LITERAL, new TextAttribute(Colors.getColor(Colors.STRING_LITERAL)));
-        classAttributes.put(TokenClass.WHITESPACE, new TextAttribute(Colors.getColor(Colors.WHITESPACE)));
+        if (!colorString.isEmpty()) {
+            RGB rgb = StringConverter.asRGB(colorString);
 
-        return classAttributes.build();
+            return COLORS.getUnchecked(rgb);
+        }
+
+        return null;
     }
 
     private final class MyTextListener implements ITextListener {

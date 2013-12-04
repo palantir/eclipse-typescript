@@ -108,6 +108,15 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS, false);
 
         store.setDefault(IPreferenceConstants.GENERAL_NODE_PATH, findNodejs());
+
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_COMMENT_COLOR, "63,127,95");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_IDENTIFIER_COLOR, "0,0,0");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_KEYWORD_COLOR, "127,0,85");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_NUMBER_LITERAL_COLOR, "0,0,0");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_OPERATOR_COLOR, "0,0,0");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_PUNCTUATION_COLOR, "0,0,0");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_REG_EXP_LITERAL_COLOR, "219,0,0");
+        store.setDefault(IPreferenceConstants.SYNTAX_COLORING_STRING_LITERAL_COLOR, "42,0,255");
     }
 
     private static String findNodejs() {

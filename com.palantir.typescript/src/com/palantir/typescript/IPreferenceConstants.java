@@ -60,4 +60,13 @@ public interface IPreferenceConstants {
     String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS = "formatter.placeOpenBraceOnNewLineForFunctions";
 
     String GENERAL_NODE_PATH = "general.nodePath";
+
+    String SYNTAX_COLORING_COMMENT_COLOR = "syntaxColoring.comment.color";
+    String SYNTAX_COLORING_IDENTIFIER_COLOR = "syntaxColoring.identifier.color";
+    String SYNTAX_COLORING_KEYWORD_COLOR = "syntaxColoring.keyword.color";
+    String SYNTAX_COLORING_NUMBER_LITERAL_COLOR = "syntaxColoring.numberLiteral.color";
+    String SYNTAX_COLORING_OPERATOR_COLOR = "syntaxColoring.operator.color";
+    String SYNTAX_COLORING_PUNCTUATION_COLOR = "syntaxColoring.punctuation.color";
+    String SYNTAX_COLORING_REG_EXP_LITERAL_COLOR = "syntaxColoring.regExpLiteral.color";
+    String SYNTAX_COLORING_STRING_LITERAL_COLOR = "syntaxColoring.stringLiteral.color";
 }
