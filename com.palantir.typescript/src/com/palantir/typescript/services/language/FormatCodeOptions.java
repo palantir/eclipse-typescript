@@ -17,6 +17,7 @@
 package com.palantir.typescript.services.language;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 /**
  * Corresponds to the class with the same name in languageService.ts.
@@ -71,5 +72,24 @@ public final class FormatCodeOptions extends EditorOptions {
         this.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis;
         this.placeOpenBraceOnNewLineForFunctions = placeOpenBraceOnNewLineForFunctions;
         this.placeOpenBraceOnNewLineForControlBlocks = placeOpenBraceOnNewLineForControlBlocks;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("indentSize", this.getIndentSize())
+            .add("tabSize", this.getTabSize())
+            .add("newLineCharacter", NEW_LINE_ESCAPER.escape(this.getNewLineCharacter()))
+            .add("convertTabsToSpaces", this.getConvertTabsToSpaces())
+            .add("insertSpaceAfterCommaDelimiter", this.insertSpaceAfterCommaDelimiter)
+            .add("insertSpaceAfterSemicolonInForStatements", this.insertSpaceAfterSemicolonInForStatements)
+            .add("insertSpaceBeforeAndAfterBinaryOperators", this.insertSpaceBeforeAndAfterBinaryOperators)
+            .add("insertSpaceAfterKeywordsInControlFlowStatements", this.insertSpaceAfterKeywordsInControlFlowStatements)
+            .add("insertSpaceAfterFunctionKeywordForAnonymousFunctions", this.insertSpaceAfterFunctionKeywordForAnonymousFunctions)
+            .add("insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis",
+                this.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis)
+            .add("placeOpenBraceOnNewLineForFunctions", this.placeOpenBraceOnNewLineForFunctions)
+            .add("placeOpenBraceOnNewLineForControlBlocks", this.placeOpenBraceOnNewLineForControlBlocks)
+            .toString();
     }
 }

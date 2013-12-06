@@ -172,7 +172,12 @@ public final class ProjectPreferenceStore extends PreferenceStore {
     }
 
     private synchronized void insertValue(String name) {
-        if (this.inserting || super.contains(name)) {
+        // check if an insertion is already in-progress
+        if (this.inserting) {
+            return;
+        }
+
+        if (this.projectSpecificSettings && super.contains(name)) {
             return;
         }
 

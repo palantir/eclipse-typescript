@@ -18,6 +18,8 @@ package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -33,17 +35,19 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Files;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.CompleteDiagnostic;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.OutputFile;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -123,11 +127,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private ImmutableList<FileDelta> getAllSourceFiles() {
-        ImmutableList<String> fileNames = EclipseResources.getTypeScriptFileNames(this.getProject());
+        ImmutableList<IFile> files = EclipseResources.getTypeScriptFiles(this.getProject());
         ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
 
-        for (String fileName : fileNames) {
-            fileDeltas.add(new FileDelta(Delta.ADDED, fileName));
+        for (IFile file : files) {
+            fileDeltas.add(new FileDelta(Delta.ADDED, file));
         }
 
         return fileDeltas.build();
@@ -168,49 +172,45 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
         LanguageService languageService = this.getLanguageService();
-        for (String outputFileName : languageService.getEmitOutput(fileName)) {
-            Path path = new Path(outputFileName);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
 
-            // refresh the resource for the file if it is within the workspace
-            if (file != null) {
-                file.refreshLocal(IResource.DEPTH_ZERO, monitor);
+        for (OutputFile outputFile : languageService.getEmitOutput(fileName)) {
+            String outputFileName = outputFile.getName();
+            IFile eclipseFile = EclipseResources.getFile(outputFileName);
+            String filePath = EclipseResources.getFilePath(eclipseFile);
+            File file = new File(filePath);
+
+            // write the file
+            try {
+                Files.createParentDirs(file);
+                Files.write(outputFile.getText(), file, Charsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+
+            // refresh the file so that eclipse knows about it
+            eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
         }
     }
 
     private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        // HACKHACK: create a new language service for each build since it seems to have some incorrect caching behavior
-        // fix is: https://typescript.codeplex.com/SourceControl/changeset/8b1915815ce48b5c17772de750a02a38bb309044
-        LanguageService languageService = new LanguageService(this.getProject());
-        try {
-            final Map<String, List<CompleteDiagnostic>> diagnostics = languageService.getAllDiagnostics();
+        final Map<String, List<CompleteDiagnostic>> diagnostics = this.getLanguageService().getAllDiagnostics();
 
-            // create the markers within a workspace runnable for greater efficiency
-            IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
-                @Override
-                public void run(IProgressMonitor runnableMonitor) throws CoreException {
-                    createMarkers(diagnostics);
-                }
-            };
-            ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
-        } finally {
-            languageService.dispose();
-        }
+        // create the markers within a workspace runnable for greater efficiency
+        IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
+            @Override
+            public void run(IProgressMonitor runnableMonitor) throws CoreException {
+                createMarkers(diagnostics);
+            }
+        };
+        ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
     }
 
     private static void createMarkers(final Map<String, List<CompleteDiagnostic>> diagnostics) throws CoreException {
         for (Map.Entry<String, List<CompleteDiagnostic>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
 
-            // ignore the default library
-            if (fileName.equals("lib.d.ts")) {
-                continue;
-            }
-
             // create the markers for this file
-            Path path = new Path(fileName);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+            IFile file = EclipseResources.getFile(fileName);
             List<CompleteDiagnostic> fileDiagnostics = entry.getValue();
             for (CompleteDiagnostic diagnostic : fileDiagnostics) {
                 IMarker marker = file.createMarker(MARKER_TYPE);

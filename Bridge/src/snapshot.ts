@@ -28,7 +28,7 @@ module Bridge {
         constructor(changes: TypeScript.TextChangeRange[], contents: string, version: number) {
             this.changes = changes;
             this.contents = contents;
-            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(TypeScript.SimpleText.fromString(contents));
+            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(this.contents);
             this.version = version;
         }
 

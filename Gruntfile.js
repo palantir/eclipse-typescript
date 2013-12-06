@@ -21,19 +21,25 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    tslint: {
-      options: {
-        configuration: grunt.file.readJSON('tslint.json')
+    chmod: {
+      execute: {
+        options: {
+          mode: '744'
+        },
+        src: ['Bridge/typescript/bin/tsc']
       },
-      files: {
-        src: ['Bridge/src/**/*.ts']
+      noexecute: {
+        options: {
+          mode: '644'
+        },
+        src: ['Bridge/typescript/bin/tsc']
       }
     },
 
-    typescript: {
+    tsc: {
       compile: {
         options: {
-          target: 'es5'
+          bin: 'Bridge/typescript/bin/tsc'
         },
         src: ['Bridge/src/main.ts'],
         dest: 'com.palantir.typescript/bin/bridge.js'
@@ -42,10 +48,12 @@ module.exports = function(grunt) {
   });
 
   // load NPM tasks
-  grunt.loadNpmTasks('grunt-tslint');
-  grunt.loadNpmTasks('grunt-typescript');
+  grunt.loadNpmTasks('grunt-chmod');
+
+  // load our custom tasks
+  grunt.loadTasks("tasks");
 
   // other tasks
-  grunt.registerTask('default', ['typescript', 'tslint']);
+  grunt.registerTask('default', ['chmod:execute', 'tsc', 'chmod:noexecute']);
   grunt.registerTask('travis', ['default']);
 };

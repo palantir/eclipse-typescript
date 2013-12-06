@@ -87,6 +87,10 @@
             commandId="com.palantir.typescript.text.format"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
+            sequence="M1+M2+M"
+            commandId="com.palantir.typescript.navigate.openType"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
             sequence="F3"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.openDefinition"
@@ -124,6 +128,11 @@
             id="com.palantir.typescript.typeScriptNature.category"
             name="%command.category">
       </category>
+      <command
+            id="com.palantir.typescript.navigate.openType"
+            defaultHandler="com.palantir.typescript.navigate.OpenTypeHandler"
+            name="%command.openType.name">
+      </command>
       <command
             id="com.palantir.typescript.toggleNature"
             categoryId="com.palantir.typescript.typeScriptNature.category"
@@ -362,6 +371,26 @@
             class="com.palantir.typescript.preferences.CompilerPreferencePage"
             id="com.palantir.typescript.compilerPreferencePage"
             name="Compiler">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.core.resources.IProject">
+               <and>
+                  <instanceof
+                        value="org.eclipse.core.resources.IProject">
+                  </instanceof>
+                  <test
+                        property="org.eclipse.core.resources.projectNature"
+                        value="com.palantir.typescript.typeScriptNature">
+                  </test>
+               </and>
+            </adapt>
+         </enabledWhen>
+      </page>
+      <page
+            category="com.palantir.typescript.buildPathPropertyPage"
+            class="com.palantir.typescript.preferences.FormatterPreferencePage"
+            id="com.palantir.typescript.formatterPreferencePage"
+            name="Formatter">
          <enabledWhen>
             <adapt
                   type="org.eclipse.core.resources.IProject">

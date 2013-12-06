@@ -18,8 +18,11 @@ package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IFile;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.palantir.typescript.EclipseResources;
 
 /**
  * A file delta.
@@ -38,12 +41,16 @@ public final class FileDelta {
     @JsonProperty("fileName")
     private final String fileName;
 
-    public FileDelta(Delta delta, String fileName) {
+    @JsonProperty("filePath")
+    private final String filePath;
+
+    public FileDelta(Delta delta, IFile file) {
         checkNotNull(delta);
-        checkNotNull(fileName);
+        checkNotNull(file);
 
         this.delta = delta;
-        this.fileName = fileName;
+        this.fileName = EclipseResources.getFileName(file);
+        this.filePath = EclipseResources.getFilePath(file);
     }
 
     public Delta getDelta() {
@@ -54,11 +61,16 @@ public final class FileDelta {
         return this.fileName;
     }
 
+    public String getFilePath() {
+        return this.filePath;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("delta", this.delta)
             .add("fileName", this.fileName)
+            .add("filePath", this.filePath)
             .toString();
     }
 }

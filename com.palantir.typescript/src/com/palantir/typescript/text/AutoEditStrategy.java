@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
@@ -33,7 +35,6 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
-import com.palantir.typescript.services.language.Diagnostic;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.TextSpan;
 
@@ -49,6 +50,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private static final Pattern JSDOC_START = Pattern.compile("\\s*/\\*\\*");
 
     private final TypeScriptEditor editor;
+    private final IPreferenceStore preferenceStore;
 
     private boolean closeBraces;
     private boolean closeJSDocs;
@@ -56,10 +58,12 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private boolean spacesForTabs;
     private int tabWidth;
 
-    public AutoEditStrategy(TypeScriptEditor editor) {
+    public AutoEditStrategy(TypeScriptEditor editor, IPreferenceStore preferenceStore) {
         checkNotNull(editor);
+        checkNotNull(preferenceStore);
 
         this.editor = editor;
+        this.preferenceStore = preferenceStore;
     }
 
     @Override
@@ -100,29 +104,16 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private boolean closeBrace(IDocument document, DocumentCommand command) throws BadLocationException {
         int offset = command.offset;
 
-        if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{') {
-            String fileName = this.editor.getFileName();
-            List<Diagnostic> diagnostics = this.editor.getLanguageService().getSyntacticDiagnostics(fileName);
+        if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{' && !this.isBraceClosed(offset)) {
+            int indentation = this.getIndentationAtPosition(offset);
+            String caretIndentationText = this.createIndentationText(indentation);
+            String closingBraceIndentationText = this.createIndentationText(indentation - this.indentSize);
 
-            if (!diagnostics.isEmpty()) {
-                int indentation = this.getIndentationAtPosition(offset);
-                int tabIndentation = this.spacesForTabs ? this.tabWidth : 1;
+            command.caretOffset = offset + caretIndentationText.length() + 1;
+            command.shiftsCaret = false;
+            command.text += caretIndentationText + command.text + closingBraceIndentationText + "}";
 
-                // workaround for differing indentation results depending upon whether a syntax error was detected or brace matching failed
-                List<TextSpan> braceMatching = this.editor.getLanguageService().getBraceMatchingAtPosition(fileName, offset - 1);
-                if (!braceMatching.isEmpty()) {
-                    indentation -= tabIndentation;
-                }
-
-                String caretIndentationText = this.createIndentationText(indentation + tabIndentation);
-                String braceIndentationText = this.createIndentationText(indentation);
-
-                command.caretOffset = offset + caretIndentationText.length() + 1;
-                command.shiftsCaret = false;
-                command.text += caretIndentationText + command.text + braceIndentationText + "}";
-
-                return true;
-            }
+            return true;
         }
 
         return false;
@@ -160,24 +151,70 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private String createIndentationText(int indentation) {
-        return Strings.repeat(this.spacesForTabs ? " " : "\t", indentation);
+        int tabs = 0;
+        int spaces = 0;
+
+        if (this.spacesForTabs) {
+            spaces = indentation;
+        } else {
+            tabs = indentation / this.tabWidth;
+            spaces = indentation % this.tabWidth;
+        }
+
+        return Strings.repeat("\t", tabs) + Strings.repeat(" ", spaces);
     }
 
     private int getIndentationAtPosition(int position) {
         String fileName = this.editor.getFileName();
         EditorOptions options = new EditorOptions(this.indentSize, this.tabWidth, this.spacesForTabs);
 
-        return this.editor.getLanguageService().getIndentationAtPosition(fileName, position, options);
+        try {
+            return this.editor.getLanguageService().getIndentationAtPosition(fileName, position, options);
+        } catch (RuntimeException e) {
+            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
+
+            // log the exception
+            TypeScriptPlugin.getDefault().getLog().log(status);
+
+            // fallback to no indentation (its better than the enter key not working)
+            return 0;
+        }
+    }
+
+    private boolean isBraceClosed(int offset) {
+        String fileName = this.editor.getFileName();
+        List<TextSpan> braceMatching = this.editor.getLanguageService().getBraceMatchingAtPosition(fileName, offset - 1);
+
+        // matching braces come in pairs so if there is no pair, there is no match (happens at the end of files)
+        if (braceMatching.size() != 2) {
+            return false;
+        }
+
+        // get the indentation of the opening brace
+        int openingBraceOffset = braceMatching.get(0).getStart();
+        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - this.indentSize;
+
+        // get the indentation of the closing brace
+        int closingBraceOffset = braceMatching.get(1).getStart();
+        IDocument document = this.editor.getDocument();
+        try {
+            int closingBraceLine = document.getLineOfOffset(closingBraceOffset);
+            int closingBraceLineOffset = document.getLineOffset(closingBraceLine);
+            int closingBraceIndentation = closingBraceOffset - closingBraceLineOffset;
+
+            // consider the opening brace closed if the opening and closing braces have the same indentation
+            return openingBraceIndentation == closingBraceIndentation;
+        } catch (BadLocationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void readPreferences() {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-
-        this.closeBraces = preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_BRACES);
-        this.closeJSDocs = preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_JSDOCS);
-        this.indentSize = preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
-        this.spacesForTabs = preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
-        this.tabWidth = preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH);
+        this.closeBraces = this.preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_BRACES);
+        this.closeJSDocs = this.preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_JSDOCS);
+        this.indentSize = this.preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
+        this.spacesForTabs = this.preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
+        this.tabWidth = this.preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH);
     }
 
     private static String getIndentationText(String lineText) {
