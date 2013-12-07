@@ -2,6 +2,8 @@
 
 An Eclipse plug-in for developing in the TypeScript language.
 
+Please note: the current version of this plug-in (0.9.5) is less than the previous one (1.0.0) so updating to the latest release will require uninstalling the previous version and then re-installing.  The version was downgraded both to more closely match the corresponding version of TypeScript used by the plug-in and also to prevent automatic updates since there were many breaking changes to the TypeScript syntax in version 0.9.5.
+
 ## Installation
 1. Install [Node.js](http://nodejs.org/)
 1. Open Eclipse and go to Help->Install New Software
