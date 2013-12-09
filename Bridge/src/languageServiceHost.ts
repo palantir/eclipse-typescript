@@ -165,7 +165,7 @@ module Bridge {
         }
 
         public resolveRelativePath(path: string, directory: string): string {
-            return TypeScript.IO.resolvePath(path);
+            return path;
         }
 
         public fileExists(path: string): boolean {

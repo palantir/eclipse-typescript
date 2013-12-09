@@ -26,6 +26,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.IFileSystem;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
@@ -98,6 +99,12 @@ public final class EclipseResources {
         checkNotNull(file);
 
         return ECLIPSE_URI_PREFIX + file.getFullPath().toPortableString();
+    }
+
+    public static String getFolderName(IFolder folder) {
+        checkNotNull(folder);
+
+        return ECLIPSE_URI_PREFIX + folder.getFullPath().toPortableString() + "/";
     }
 
     public static String getFilePath(IFile file) {

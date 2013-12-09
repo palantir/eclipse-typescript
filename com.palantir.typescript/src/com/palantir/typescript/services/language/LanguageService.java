@@ -344,7 +344,7 @@ public final class LanguageService {
 
             if (!Strings.isNullOrEmpty(relativePath)) {
                 IFolder outputFolder = this.project.getFolder(relativePath);
-                String outDir = outputFolder.getRawLocation().toOSString() + "/";
+                String outDir = EclipseResources.getFolderName(outputFolder);
 
                 compilationSettings.setOutDirOption(outDir);
             }
