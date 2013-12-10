@@ -23,6 +23,7 @@ import org.eclipse.ltk.core.refactoring.participants.RefactoringProcessor;
 import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Shell;
 
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.SpanInfo;
 import com.palantir.typescript.text.RenameRefactoringWizard;
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -37,6 +38,18 @@ public final class RenameAction extends TypeScriptEditorAction {
 
     public RenameAction(TypeScriptEditor editor) {
         super(editor);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        TypeScriptEditor editor = this.getTextEditor();
+
+        // non-workspace files cannot be refactored
+        if (!EclipseResources.isEclipseFile(editor.getFileName())) {
+            return false;
+        }
+
+        return super.isEnabled();
     }
 
     @Override

@@ -113,6 +113,12 @@ public final class EclipseResources {
         return file.getRawLocation().toOSString();
     }
 
+    public static boolean isEclipseFile(String fileName) {
+        checkNotNull(fileName);
+
+        return fileName.startsWith(ECLIPSE_URI_PREFIX);
+    }
+
     public static IFile getFile(String fileName) {
         checkNotNull(fileName);
         checkArgument(fileName.startsWith(ECLIPSE_URI_PREFIX));

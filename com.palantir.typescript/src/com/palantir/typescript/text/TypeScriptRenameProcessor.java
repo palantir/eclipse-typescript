@@ -22,12 +22,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
@@ -42,6 +39,7 @@ import org.eclipse.text.edits.ReplaceEdit;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ReferenceEntry;
 
@@ -116,8 +114,7 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
         List<Change> fileChanges = Lists.newArrayList();
         for (String referenceFileName : referencesByFileName.keySet()) {
             List<ReferenceEntry> fileReferences = referencesByFileName.get(referenceFileName);
-            IPath path = Path.fromOSString(referenceFileName);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+            IFile file = EclipseResources.getFile(referenceFileName);
             TextFileChange change = new TextFileChange(file.getName(), file);
             change.setEdit(new MultiTextEdit());
             change.setTextType("ts");

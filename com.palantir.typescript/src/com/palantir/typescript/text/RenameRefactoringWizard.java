@@ -39,7 +39,6 @@ import com.palantir.typescript.Resources;
  */
 public final class RenameRefactoringWizard extends RefactoringWizard {
 
-
     public RenameRefactoringWizard(Refactoring refactoring) {
         super(refactoring, SWT.NONE);
 
