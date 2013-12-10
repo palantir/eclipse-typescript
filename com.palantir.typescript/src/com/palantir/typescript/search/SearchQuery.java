@@ -22,16 +22,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.List;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 
+import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.Reference;
 
@@ -68,8 +66,7 @@ public final class SearchQuery implements ISearchQuery {
 
         for (Reference reference : references) {
             String referenceFileName = reference.getFileName();
-            IPath path = Path.fromOSString(referenceFileName);
-            IFile file = ResourcesPlugin.getWorkspace().getRoot().getFileForLocation(path);
+            IFile file = EclipseResources.getFile(referenceFileName);
             int minChar = reference.getMinChar();
             int limChar = reference.getLimChar();
             FindReferenceMatch match = new FindReferenceMatch(file, minChar, limChar - minChar, reference);
