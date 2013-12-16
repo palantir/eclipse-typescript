@@ -239,7 +239,16 @@ public final class TypeScriptEditor extends TextEditor {
 
         // configure character matching
         char[] matchChars = { '(', ')', '[', ']', '{', '}' };
-        support.setCharacterPairMatcher(new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true));
+        DefaultCharacterPairMatcher pairMatcher;
+        try { // the 3-arg constructor is only available in 3.8+
+            DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
+            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
+        } catch (NoSuchMethodException e) {
+            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
+        support.setCharacterPairMatcher(pairMatcher);
         support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
             IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
     }
