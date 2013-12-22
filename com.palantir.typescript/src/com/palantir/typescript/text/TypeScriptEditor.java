@@ -168,9 +168,8 @@ public final class TypeScriptEditor extends TextEditor {
             IProject project = resource.getProject();
 
             // set a project-specific preference store
-            IPreferenceStore pluginPreferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
             ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
-                    new ProjectPreferenceStore(project, pluginPreferenceStore),
+                    new ProjectPreferenceStore(project),
                     EditorsUI.getPreferenceStore(),
                     PlatformUI.getPreferenceStore()
             });

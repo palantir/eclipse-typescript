@@ -94,8 +94,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject(), preferenceStore);
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
