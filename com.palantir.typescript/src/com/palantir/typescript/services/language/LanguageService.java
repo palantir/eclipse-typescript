@@ -318,7 +318,7 @@ public final class LanguageService {
         IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
 
         if (this.project != null) {
-            preferenceStore = new ProjectPreferenceStore(this.project, preferenceStore, "");
+            preferenceStore = new ProjectPreferenceStore(this.project, preferenceStore);
         }
 
         return preferenceStore;
