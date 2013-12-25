@@ -19,18 +19,18 @@ package com.palantir.typescript.text.actions;
 import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
- * Navigates to the matching bracket.
+ * Highlights the range of matching brackets.
  *
  * @author yupengf
  */
-public final class GoToMatchingBracketAction extends TypeScriptEditorAction {
-    public GoToMatchingBracketAction(TypeScriptEditor editor) {
+public final class HighlightMatchingBracketAction extends TypeScriptEditorAction {
+    public HighlightMatchingBracketAction(TypeScriptEditor editor) {
         super(editor);
     }
 
     @Override
     public void run() {
         TypeScriptEditor editor = this.getTextEditor();
-        editor.gotoMatchingBracket();
+        editor.highlightMatchingBrackets();
     }
 }

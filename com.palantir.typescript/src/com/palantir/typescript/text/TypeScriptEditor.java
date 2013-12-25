@@ -20,7 +20,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
-import java.util.List;
 
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
@@ -38,14 +37,10 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextInputListener;
-import org.eclipse.jface.text.ITextViewerExtension5;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
-import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
-import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
@@ -68,7 +63,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
@@ -78,7 +72,7 @@ import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
-import com.palantir.typescript.text.actions.GoToMatchingBracketAction;
+import com.palantir.typescript.text.actions.HighlightMatchingBracketAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.QuickOutlineAction;
 import com.palantir.typescript.text.actions.RenameAction;
@@ -126,9 +120,6 @@ public final class TypeScriptEditor extends TextEditor {
     private LanguageService languageService;
 
     private DefaultCharacterPairMatcher pairMatcher;
-
-    // Previous location history for goto matching bracket action.
-    private List<IRegion> previousSelections;
 
     protected static final char[] BRACKETS = { '{', '}', '(', ')', '[', ']' };
 
@@ -250,40 +241,22 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     /**
-     * Jumps to the matching bracket.
-     * Based on org.eclipse.jdt.internal.ui.javaeditor.JavaEditor.gotoMatchingBracket()
+     * Highlights the matching brackets.
      */
-    public void gotoMatchingBracket() {
+    public void highlightMatchingBrackets() {
 
         ISourceViewer sourceViewer = getSourceViewer();
         IDocument document = sourceViewer.getDocument();
         if (document == null)
             return;
 
-        IRegion selection = getSignedSelection(sourceViewer);
-        if (this.previousSelections == null)
-            initializePreviousSelectionList();
+        Point viewerSelection = sourceViewer.getSelectedRange();
+        int offset = viewerSelection.x;
+        int length = viewerSelection.y;
 
-        IRegion region = this.pairMatcher.match(document, selection.getOffset(), selection.getLength());
+        IRegion region = this.pairMatcher.match(document, offset, length);
         if (region == null) {
-            region = this.pairMatcher.findEnclosingPeerCharacters(document, selection.getOffset(), selection.getLength());
-            initializePreviousSelectionList();
-            this.previousSelections.add(selection);
-        } else {
-            if (this.previousSelections.size() == 2) {
-                if (!selection.equals(this.previousSelections.get(1))) {
-                    initializePreviousSelectionList();
-                }
-            } else if (this.previousSelections.size() == 3) {
-                if (selection.equals(this.previousSelections.get(2)) && !selection.equals(this.previousSelections.get(0))) {
-                    IRegion originalSelection = this.previousSelections.get(0);
-                    sourceViewer.setSelectedRange(originalSelection.getOffset(), originalSelection.getLength());
-                    sourceViewer.revealRange(originalSelection.getOffset(), originalSelection.getLength());
-                    initializePreviousSelectionList();
-                    return;
-                }
-                initializePreviousSelectionList();
-            }
+            region = this.pairMatcher.findEnclosingPeerCharacters(document, offset, length);
         }
 
         if (region == null) {
@@ -292,100 +265,7 @@ public final class TypeScriptEditor extends TextEditor {
             return;
         }
 
-        int offset = region.getOffset();
-        int length = region.getLength();
-
-        if (length < 1)
-            return;
-
-        int anchor = this.pairMatcher.getAnchor();
-        int targetOffset = (ICharacterPairMatcher.RIGHT == anchor) ? offset + 1 : offset + length - 1;
-
-        boolean visible = false;
-        if (sourceViewer instanceof ITextViewerExtension5) {
-            ITextViewerExtension5 extension = (ITextViewerExtension5) sourceViewer;
-            visible = (extension.modelOffset2WidgetOffset(targetOffset) > -1);
-        } else {
-            IRegion visibleRegion = sourceViewer.getVisibleRegion();
-            visible = (targetOffset >= visibleRegion.getOffset() && targetOffset <= visibleRegion.getOffset() + visibleRegion.getLength());
-        }
-
-        if (!visible) {
-            setStatusLineErrorMessage("Matching bracket is not visible");
-            sourceViewer.getTextWidget().getDisplay().beep();
-            return;
-        }
-
-        int adjustment = getOffsetAdjustment(document, selection.getOffset() + selection.getLength(), selection.getLength());
-        targetOffset += adjustment;
-        int direction = (selection.getLength() == 0) ? 0 : ((selection.getLength() > 0) ? 1 : -1);
-        if (this.previousSelections.size() == 1 && direction < 0) {
-            targetOffset++;
-        }
-
-        if (this.previousSelections.size() > 0) {
-            this.previousSelections.add(new Region(targetOffset, direction));
-        }
-        sourceViewer.setSelectedRange(targetOffset, direction);
-        sourceViewer.revealRange(targetOffset, direction);
-    }
-
-    private void initializePreviousSelectionList() {
-        this.previousSelections = Lists.newArrayList();
-    }
-
-    /**
-     * Copy of org.eclipse.jface.text.source.MatchingCharacterPainter.getSignedSelection(ISourceViewer).
-     */
-    private static IRegion getSignedSelection(ISourceViewer sourceViewer) {
-        Point viewerSelection = sourceViewer.getSelectedRange();
-
-        StyledText text = sourceViewer.getTextWidget();
-        Point selection = text.getSelectionRange();
-        if (text.getCaretOffset() == selection.x) {
-            viewerSelection.x = viewerSelection.x + viewerSelection.y;
-            viewerSelection.y = -viewerSelection.y;
-        }
-
-        return new Region(viewerSelection.x, viewerSelection.y);
-    }
-
-    /**
-     * Copy of org.eclipse.jface.text.source.DefaultCharacterPairMatcher.getOffsetAdjustment(IDocument, int, int).
-     */
-    private static int getOffsetAdjustment(IDocument document, int offset, int length) {
-        if (length == 0 || Math.abs(length) > 1)
-            return 0;
-        try {
-            if (length < 0) {
-                if (isOpeningBracket(document.getChar(offset))) {
-                    return 1;
-                }
-            } else {
-                if (isClosingBracket(document.getChar(offset - 1))) {
-                    return -1;
-                }
-            }
-        } catch (BadLocationException e) {
-            //do nothing
-        }
-        return 0;
-    }
-
-    private static boolean isOpeningBracket(char character) {
-        for (int i = 0; i < BRACKETS.length; i += 2) {
-            if (character == BRACKETS[i])
-                return true;
-        }
-        return false;
-    }
-
-    private static boolean isClosingBracket(char character) {
-        for (int i = 1; i < BRACKETS.length; i += 2) {
-            if (character == BRACKETS[i])
-                return true;
-        }
-        return false;
+        this.selectAndReveal(region.getOffset(), region.getLength());
     }
 
     private DefaultCharacterPairMatcher getPairMatcher() {
@@ -426,10 +306,10 @@ public final class TypeScriptEditor extends TextEditor {
         formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
         this.setAction(ITypeScriptActionDefinitionIds.FORMAT, formatAction);
 
-        // go to matching bracket
-        GoToMatchingBracketAction gotoMatchingBracketAction = new GoToMatchingBracketAction(this);
-        gotoMatchingBracketAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.GO_TO_MATCHIING_BRACKET);
-        this.setAction(ITypeScriptActionDefinitionIds.GO_TO_MATCHIING_BRACKET, gotoMatchingBracketAction);
+        // highlight matching brackets
+        HighlightMatchingBracketAction highlightMatchingBracketsAction = new HighlightMatchingBracketAction(this);
+        highlightMatchingBracketsAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.HIGHLIGHT_MATCHIING_BRACKETS);
+        this.setAction(ITypeScriptActionDefinitionIds.HIGHLIGHT_MATCHIING_BRACKETS, highlightMatchingBracketsAction);
 
         // open definition
         OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction(this);
