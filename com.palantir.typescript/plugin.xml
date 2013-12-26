@@ -91,6 +91,11 @@
             commandId="com.palantir.typescript.navigate.openType"
             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
       <key
+             sequence="M1+M2+P"
+             contextId="com.palantir.typescript.text.typeScriptEditorScope"
+             commandId="com.palantir.typescript.text.goToMatchingBracket"
+             schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"/>
+      <key
             sequence="F3"
             contextId="com.palantir.typescript.text.typeScriptEditorScope"
             commandId="com.palantir.typescript.text.openDefinition"
@@ -146,6 +151,10 @@
       <command
             id="com.palantir.typescript.text.format"
             name="%command.format.name">
+      </command>
+      <command
+            id="com.palantir.typescript.text.goToMatchingBracket"
+            name="%command.goToMatchingBracket.name">
       </command>
       <command
             id="com.palantir.typescript.text.openDefinition"

@@ -70,6 +70,7 @@ import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
+import com.palantir.typescript.text.actions.GoToMatchingBracketAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.QuickOutlineAction;
 import com.palantir.typescript.text.actions.RenameAction;
@@ -115,6 +116,10 @@ public final class TypeScriptEditor extends TextEditor {
 
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
+
+    private DefaultCharacterPairMatcher pairMatcher;
+
+    private static final char[] BRACKETS = { '{', '}', '(', ')', '[', ']' };
 
     @Override
     public void dispose() {
@@ -233,22 +238,25 @@ public final class TypeScriptEditor extends TextEditor {
         }
     }
 
+    public DefaultCharacterPairMatcher characterPairMatcher() {
+        if (this.pairMatcher == null) {
+            try { // the 3-arg constructor is only available in 3.8+
+                DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
+                this.pairMatcher = new DefaultCharacterPairMatcher(BRACKETS, IDocumentExtension3.DEFAULT_PARTITIONING, true);
+            } catch (NoSuchMethodException e) {
+                this.pairMatcher = new DefaultCharacterPairMatcher(BRACKETS, IDocumentExtension3.DEFAULT_PARTITIONING);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return this.pairMatcher;
+    }
+
     @Override
     protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
         super.configureSourceViewerDecorationSupport(support);
 
-        // configure character matching
-        char[] matchChars = { '(', ')', '[', ']', '{', '}' };
-        DefaultCharacterPairMatcher pairMatcher;
-        try { // the 3-arg constructor is only available in 3.8+
-            DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
-            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-        } catch (NoSuchMethodException e) {
-            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
-        support.setCharacterPairMatcher(pairMatcher);
+        support.setCharacterPairMatcher(characterPairMatcher());
         support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
             IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
     }
@@ -266,6 +274,11 @@ public final class TypeScriptEditor extends TextEditor {
         FormatAction formatAction = new FormatAction(this);
         formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
         this.setAction(ITypeScriptActionDefinitionIds.FORMAT, formatAction);
+
+        // go to matching bracket
+        GoToMatchingBracketAction goToMatchingBracketAction = new GoToMatchingBracketAction(this);
+        goToMatchingBracketAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.GOTO_MATCHING_BRACKET);
+        this.setAction(ITypeScriptActionDefinitionIds.GOTO_MATCHING_BRACKET, goToMatchingBracketAction);
 
         // open definition
         OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction(this);
