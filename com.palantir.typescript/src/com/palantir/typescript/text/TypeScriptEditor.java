@@ -35,11 +35,13 @@ import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -70,6 +72,7 @@ import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
+import com.palantir.typescript.text.actions.HighlightMatchingBracketAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.QuickOutlineAction;
 import com.palantir.typescript.text.actions.RenameAction;
@@ -115,6 +118,10 @@ public final class TypeScriptEditor extends TextEditor {
 
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
+
+    private DefaultCharacterPairMatcher pairMatcher;
+
+    protected static final char[] BRACKETS = { '{', '}', '(', ')', '[', ']' };
 
     @Override
     public void dispose() {
@@ -232,22 +239,54 @@ public final class TypeScriptEditor extends TextEditor {
         }
     }
 
+    /**
+     * Highlights the matching brackets.
+     */
+    public void highlightMatchingBrackets() {
+
+        ISourceViewer sourceViewer = getSourceViewer();
+        IDocument document = sourceViewer.getDocument();
+        if (document == null)
+            return;
+
+        Point viewerSelection = sourceViewer.getSelectedRange();
+        int offset = viewerSelection.x;
+        int length = viewerSelection.y;
+
+        IRegion region = this.pairMatcher.match(document, offset, length);
+        if (region == null) {
+            region = this.pairMatcher.findEnclosingPeerCharacters(document, offset, length);
+        }
+
+        if (region == null) {
+            setStatusLineErrorMessage("No matching bracket found");
+            sourceViewer.getTextWidget().getDisplay().beep();
+            return;
+        }
+
+        this.selectAndReveal(region.getOffset(), region.getLength());
+    }
+
+    private DefaultCharacterPairMatcher getPairMatcher() {
+        if (this.pairMatcher == null) {
+            // configure character matching
+            try { // the 3-arg constructor is only available in 3.8+
+                DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
+                this.pairMatcher = new DefaultCharacterPairMatcher(BRACKETS, IDocumentExtension3.DEFAULT_PARTITIONING, true);
+            } catch (NoSuchMethodException e) {
+                this.pairMatcher = new DefaultCharacterPairMatcher(BRACKETS, IDocumentExtension3.DEFAULT_PARTITIONING);
+            } catch (SecurityException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return this.pairMatcher;
+    }
+
     @Override
     protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
         super.configureSourceViewerDecorationSupport(support);
 
-        // configure character matching
-        char[] matchChars = { '(', ')', '[', ']', '{', '}' };
-        DefaultCharacterPairMatcher pairMatcher;
-        try { // the 3-arg constructor is only available in 3.8+
-            DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
-            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-        } catch (NoSuchMethodException e) {
-            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
-        support.setCharacterPairMatcher(pairMatcher);
+        support.setCharacterPairMatcher(getPairMatcher());
         support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
             IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
     }
@@ -265,6 +304,11 @@ public final class TypeScriptEditor extends TextEditor {
         FormatAction formatAction = new FormatAction(this);
         formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
         this.setAction(ITypeScriptActionDefinitionIds.FORMAT, formatAction);
+
+        // highlight matching brackets
+        HighlightMatchingBracketAction highlightMatchingBracketsAction = new HighlightMatchingBracketAction(this);
+        highlightMatchingBracketsAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.HIGHLIGHT_MATCHIING_BRACKETS);
+        this.setAction(ITypeScriptActionDefinitionIds.HIGHLIGHT_MATCHIING_BRACKETS, highlightMatchingBracketsAction);
 
         // open definition
         OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction(this);
