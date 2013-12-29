@@ -19,7 +19,6 @@ package com.palantir.typescript.text.actions;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
 
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -30,6 +29,7 @@ import com.palantir.typescript.text.TypeScriptEditor;
  * @author yupengf
  */
 public final class GoToMatchingBracketAction extends TypeScriptEditorAction {
+
     public GoToMatchingBracketAction(TypeScriptEditor editor) {
         super(editor);
     }
@@ -38,22 +38,17 @@ public final class GoToMatchingBracketAction extends TypeScriptEditorAction {
     public void run() {
         TypeScriptEditor editor = this.getTextEditor();
         IDocument document = editor.getDocument();
-        if (document == null) {
-            return;
-        }
-
         ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
+        ICharacterPairMatcher characterPairMatcher = editor.getCharacterPairMatcher();
+        IRegion region = characterPairMatcher.match(document, selection.getOffset());
 
-        DefaultCharacterPairMatcher pairMatcher = editor.characterPairMatcher();
-        IRegion region = pairMatcher.match(document, selection.getOffset(), selection.getLength());
-        if (region == null) {
-            return;
+        if (region != null) {
+            int anchor = characterPairMatcher.getAnchor();
+            int offset = region.getOffset();
+            int length = region.getLength();
+            int adjustedOffset = (ICharacterPairMatcher.RIGHT == anchor) ? offset + 1 : offset + length - 1;
+
+            editor.selectAndReveal(adjustedOffset, 0);
         }
-
-        int offset = region.getOffset();
-        int length = region.getLength();
-        int anchor = pairMatcher.getAnchor();
-        int targetOffset = (ICharacterPairMatcher.RIGHT == anchor) ? offset + 1 : offset + length - 1;
-        editor.selectAndReveal(targetOffset, 0);
     }
 }

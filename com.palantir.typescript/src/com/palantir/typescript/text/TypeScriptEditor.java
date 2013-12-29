@@ -37,6 +37,7 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
+import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -114,12 +115,9 @@ public final class TypeScriptEditor extends TextEditor {
             }
         });
 
+    private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
-
-    private DefaultCharacterPairMatcher pairMatcher;
-
-    private static final char[] BRACKETS = { '{', '}', '(', ')', '[', ']' };
 
     @Override
     public void dispose() {
@@ -142,6 +140,10 @@ public final class TypeScriptEditor extends TextEditor {
         }
 
         return super.getAdapter(adapter);
+    }
+
+    public ICharacterPairMatcher getCharacterPairMatcher() {
+        return this.characterPairMatcher;
     }
 
     public IDocument getDocument() {
@@ -237,25 +239,11 @@ public final class TypeScriptEditor extends TextEditor {
         }
     }
 
-    public DefaultCharacterPairMatcher characterPairMatcher() {
-        if (this.pairMatcher == null) {
-            try { // the 3-arg constructor is only available in 3.8+
-                DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
-                this.pairMatcher = new DefaultCharacterPairMatcher(BRACKETS, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-            } catch (NoSuchMethodException e) {
-                this.pairMatcher = new DefaultCharacterPairMatcher(BRACKETS, IDocumentExtension3.DEFAULT_PARTITIONING);
-            } catch (SecurityException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return this.pairMatcher;
-    }
-
     @Override
     protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
         super.configureSourceViewerDecorationSupport(support);
 
-        support.setCharacterPairMatcher(characterPairMatcher());
+        support.setCharacterPairMatcher(this.characterPairMatcher);
         support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
             IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
     }
@@ -276,8 +264,8 @@ public final class TypeScriptEditor extends TextEditor {
 
         // go to matching bracket
         GoToMatchingBracketAction goToMatchingBracketAction = new GoToMatchingBracketAction(this);
-        goToMatchingBracketAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.GOTO_MATCHING_BRACKET);
-        this.setAction(ITypeScriptActionDefinitionIds.GOTO_MATCHING_BRACKET, goToMatchingBracketAction);
+        goToMatchingBracketAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.GO_TO_MATCHING_BRACKET);
+        this.setAction(ITypeScriptActionDefinitionIds.GO_TO_MATCHING_BRACKET, goToMatchingBracketAction);
 
         // open definition
         OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction(this);
@@ -322,6 +310,8 @@ public final class TypeScriptEditor extends TextEditor {
     protected void initializeEditor() {
         super.initializeEditor();
 
+        this.characterPairMatcher = createCharacterPairMatcher();
+
         // set the preference store
         ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
                 TypeScriptPlugin.getDefault().getPreferenceStore(),
@@ -345,6 +335,20 @@ public final class TypeScriptEditor extends TextEditor {
 
         // set a new source viewer configuration when the preference store is changed
         this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
+    }
+
+    private static ICharacterPairMatcher createCharacterPairMatcher() {
+        char[] chars = new char[] { '{', '}', '(', ')', '[', ']' };
+
+        try { // the 3-arg constructor is only available in 3.8+
+            DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
+
+            return new DefaultCharacterPairMatcher(chars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
+        } catch (NoSuchMethodException e) {
+            return new DefaultCharacterPairMatcher(chars, IDocumentExtension3.DEFAULT_PARTITIONING);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String getFileName(IEditorInput input) {
