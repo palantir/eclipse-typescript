@@ -69,6 +69,7 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
 import com.palantir.typescript.text.actions.GoToMatchingBracketAction;
@@ -215,6 +216,11 @@ public final class TypeScriptEditor extends TextEditor {
                 int minChar = definition.getMinChar();
                 int limChar = definition.getLimChar();
                 String name = definition.getName();
+
+                // constructors don't use the name from the defintion so they require special handling
+                if (definition.getKind() == ScriptElementKind.CONSTRUCTOR_IMPLEMENTATION_ELEMENT){
+                    name = "constructor";
+                }
 
                 definitionEditor.selectAndReveal(minChar, limChar - minChar, name);
             } catch (PartInitException e) {
