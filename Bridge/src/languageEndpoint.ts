@@ -20,7 +20,7 @@
 
 module Bridge {
 
-    export class LanguageService {
+    export class LanguageEndpoint {
 
         private languageService: TypeScript.Services.LanguageService;
         private languageServiceHost: LanguageServiceHost;

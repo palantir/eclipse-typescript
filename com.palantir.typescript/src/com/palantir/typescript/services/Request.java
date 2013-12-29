@@ -32,8 +32,8 @@ import com.google.common.base.Objects;
  */
 public final class Request {
 
-    @JsonProperty("service")
-    private final String service;
+    @JsonProperty("endpoint")
+    private final String endpoint;
 
     @JsonProperty("method")
     private final String method;
@@ -41,12 +41,12 @@ public final class Request {
     @JsonProperty("arguments")
     private final List<Object> arguments;
 
-    public Request(String service, String method, Object... arguments) {
-        checkNotNull(service);
+    public Request(String endpoint, String method, Object... arguments) {
+        checkNotNull(endpoint);
         checkNotNull(method);
         checkNotNull(arguments);
 
-        this.service = service;
+        this.endpoint = endpoint;
         this.method = method;
         this.arguments = Collections.unmodifiableList(Arrays.asList(arguments));
     }
@@ -54,7 +54,7 @@ public final class Request {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-            .add("service", this.service)
+            .add("endpoint", this.endpoint)
             .add("method", this.method)
             .add("arguments", this.arguments)
             .toString();

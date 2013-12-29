@@ -18,7 +18,7 @@
 
 module Bridge {
 
-    export class ClassifierService {
+    export class ClassifierEndpoint {
 
         private classifier: TypeScript.Services.Classifier;
 

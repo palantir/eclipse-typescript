@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-///<reference path='classifier.ts' />
-///<reference path='languageService.ts' />
+///<reference path='classifierEndpoint.ts' />
+///<reference path='languageEndpoint.ts' />
 ///<reference path='map.ts' />
 
 /**
@@ -27,12 +27,12 @@ module Bridge {
 
     export class Main {
 
-        private services: Map<string, any>;
+        private endpoints: Map<string, any>;
 
         constructor() {
-            this.services = new Map<string, any>();
-            this.services.set("classifier", new ClassifierService());
-            this.services.set("language", new LanguageService());
+            this.endpoints = new Map<string, any>();
+            this.endpoints.set("classifier", new ClassifierEndpoint());
+            this.endpoints.set("language", new LanguageEndpoint());
         }
 
         public run() {
@@ -55,10 +55,10 @@ module Bridge {
             try {
                 var request: Request = JSON.parse(requestJson);
 
-                // invoke the service method with the supplied arguments
-                var service = this.services.get(request.service);
-                var method = service[request.method];
-                var result = method.apply(service, request.arguments);
+                // invoke the endpoint method with the supplied arguments
+                var endpoint = this.endpoints.get(request.endpoint);
+                var method = endpoint[request.method];
+                var result = method.apply(endpoint, request.arguments);
 
                 // convert undefined to null (its basically the Java equivalent of void)
                 if (result === undefined) {
@@ -85,7 +85,7 @@ module Bridge {
     }
 
     interface Request {
-        service: string;
+        endpoint: string;
         method: string;
         arguments: any[];
     }
