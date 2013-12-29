@@ -20,6 +20,8 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.source.ICharacterPairMatcher;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.texteditor.IEditorStatusLine;
 
 import com.palantir.typescript.text.TypeScriptEditor;
 
@@ -49,6 +51,14 @@ public final class GoToMatchingBracketAction extends TypeScriptEditorAction {
             int adjustedOffset = (ICharacterPairMatcher.RIGHT == anchor) ? offset + 1 : offset + length - 1;
 
             editor.selectAndReveal(adjustedOffset, 0);
+        } else { // matching bracket could not be found
+            IEditorStatusLine editorStatusLine = (IEditorStatusLine) editor.getAdapter(IEditorStatusLine.class);
+
+            if (editorStatusLine != null) {
+                editorStatusLine.setMessage(true, "No matching bracket found", null);
+            }
+
+            Display.getCurrent().beep();
         }
     }
 }
