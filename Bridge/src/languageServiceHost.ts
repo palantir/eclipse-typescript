@@ -17,7 +17,6 @@
 ///<reference path='../typescript/src/compiler/io.ts'/>
 ///<reference path='../typescript/src/compiler/precompile.ts'/>
 ///<reference path='../typescript/src/services/languageService.ts'/>
-///<reference path='map.ts'/>
 ///<reference path='snapshot.ts'/>
 
 module Bridge {
@@ -26,22 +25,22 @@ module Bridge {
 
         private compilationSettings: TypeScript.CompilationSettings;
         private diagnostics: TypeScript.Services.ILanguageServicesDiagnostics;
-        private fileInfos: Map<string, FileInfo>;
+        private fileInfos: { [fileName: string]: FileInfo };
 
         constructor() {
             this.compilationSettings = new TypeScript.CompilationSettings();
             this.diagnostics = new LanguageServicesDiagnostics();
-            this.fileInfos = new Map<string, FileInfo>();
+            this.fileInfos = Object.create(null);
         }
 
         public addDefaultLibrary(libraryContents: string) {
             var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libraryContents, null);
 
-            this.fileInfos.set("lib.d.ts", fileInfo);
+            this.fileInfos["lib.d.ts"] = fileInfo;
         }
 
         public removeDefaultLibrary() {
-            this.fileInfos.delete("lib.d.ts");
+            delete this.fileInfos["lib.d.ts"];
         }
 
         public addFiles(files: { [fileName: string]: string }) {
@@ -59,17 +58,17 @@ module Bridge {
 
                     // cache the file
                     var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
-                    this.fileInfos.set(fileName, fileInfo);
+                    this.fileInfos[fileName] = fileInfo;
                 }
             }
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
-            this.fileInfos.get(fileName).editContents(offset, length, text);
+            this.fileInfos[fileName].editContents(offset, length, text);
         }
 
         public setFileOpen(fileName: string, open: boolean) {
-            this.fileInfos.get(fileName).setOpen(open);
+            this.fileInfos[fileName].setOpen(open);
         }
 
         public updateFiles(deltas: IFileDelta[]) {
@@ -79,7 +78,7 @@ module Bridge {
                 switch (delta.delta) {
                     case "ADDED":
                     case "CHANGED":
-                        var fileInfo = this.fileInfos.get(fileName);
+                        var fileInfo = this.fileInfos[fileName];
 
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
@@ -94,11 +93,11 @@ module Bridge {
 
                             fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
 
-                            this.fileInfos.set(fileName, fileInfo);
+                            this.fileInfos[fileName] = fileInfo;
                         }
                         break;
                     case "REMOVED":
-                        this.fileInfos.delete(fileName);
+                        delete this.fileInfos[fileName];
                         break;
                 }
             });
@@ -113,15 +112,15 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            return this.fileInfos.keys();
+            return Object.getOwnPropertyNames(this.fileInfos);
         }
 
         public getScriptVersion(fileName: string): number {
-            return this.fileInfos.get(fileName).getVersion();
+            return this.fileInfos[fileName].getVersion();
         }
 
         public getScriptIsOpen(fileName: string): boolean {
-            return this.fileInfos.get(fileName).getOpen();
+            return this.fileInfos[fileName].getOpen();
         }
 
         public getScriptByteOrderMark(fileName: string): TypeScript.ByteOrderMark {
@@ -161,7 +160,7 @@ module Bridge {
         }
 
         public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
-            return this.fileInfos.get(fileName).getScriptSnapshot();
+            return this.fileInfos[fileName].getScriptSnapshot();
         }
 
         public resolveRelativePath(path: string, directory: string): string {

@@ -16,7 +16,6 @@
 
 ///<reference path='classifierEndpoint.ts' />
 ///<reference path='languageEndpoint.ts' />
-///<reference path='map.ts' />
 
 /**
   * This module provides an interface between stdin, stdout and many of the TypeScript services.
@@ -27,12 +26,12 @@ module Bridge {
 
     export class Main {
 
-        private endpoints: Map<string, any>;
+        private endpoints: { [endpoint: string]: any };
 
         constructor() {
-            this.endpoints = new Map<string, any>();
-            this.endpoints.set("classifier", new ClassifierEndpoint());
-            this.endpoints.set("language", new LanguageEndpoint());
+            this.endpoints = Object.create(null);
+            this.endpoints["classifier"] = new ClassifierEndpoint();
+            this.endpoints["language"] = new LanguageEndpoint();
         }
 
         public run() {
@@ -56,7 +55,7 @@ module Bridge {
                 var request: Request = JSON.parse(requestJson);
 
                 // invoke the endpoint method with the supplied arguments
-                var endpoint = this.endpoints.get(request.endpoint);
+                var endpoint = this.endpoints[request.endpoint];
                 var method = endpoint[request.method];
                 var result = method.apply(endpoint, request.arguments);
 
