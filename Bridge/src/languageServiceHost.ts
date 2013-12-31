@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/compiler/io.ts'/>
-///<reference path='../typescript/src/compiler/precompile.ts'/>
-///<reference path='../typescript/src/services/languageService.ts'/>
-///<reference path='snapshot.ts'/>
+/// <reference path="../typescript/src/compiler/io.ts" />
+/// <reference path="../typescript/src/compiler/precompile.ts" />
+/// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="snapshot.ts" />
 
 module Bridge {
 

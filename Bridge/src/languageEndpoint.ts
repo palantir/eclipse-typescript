@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/services/languageService.ts'/>
-///<reference path='languageServiceHost.ts'/>
-///<reference path='snapshot.ts'/>
+/// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="languageServiceHost.ts" />
+/// <reference path="snapshot.ts" />
 
 module Bridge {
 

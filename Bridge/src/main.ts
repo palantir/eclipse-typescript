@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-///<reference path='classifierEndpoint.ts' />
-///<reference path='languageEndpoint.ts' />
+/// <reference path="classifierEndpoint.ts" />
+/// <reference path="languageEndpoint.ts" />
 
 /**
   * This module provides an interface between stdin, stdout and many of the TypeScript services.

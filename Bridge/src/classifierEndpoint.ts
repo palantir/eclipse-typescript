@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/services/classifier.ts' />
+/// <reference path="../typescript/src/services/classifier.ts" />
 
 module Bridge {
 
