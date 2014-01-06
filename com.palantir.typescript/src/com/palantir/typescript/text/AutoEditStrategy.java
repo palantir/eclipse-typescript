@@ -16,6 +16,7 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
@@ -106,6 +107,13 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{' && !this.isBraceClosed(offset)) {
             int indentation = this.getIndentationAtPosition(offset);
+
+            // workaround for a TypeScript language service bug that returns 0 when a file is relatively empty
+            // TODO: remove this workaround if the bug is fixed in v1.0.0
+            if (indentation == 0) {
+                indentation = this.indentSize;
+            }
+
             String caretIndentationText = this.createIndentationText(indentation);
             String closingBraceIndentationText = this.createIndentationText(indentation - this.indentSize);
 
@@ -151,6 +159,8 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private String createIndentationText(int indentation) {
+        checkArgument(indentation >= 0);
+
         int tabs = 0;
         int spaces = 0;
 
