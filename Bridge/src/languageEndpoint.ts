@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-///<reference path='../typescript/src/services/languageService.ts'/>
-///<reference path='languageServiceHost.ts'/>
-///<reference path='snapshot.ts'/>
+/// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="languageServiceHost.ts" />
+/// <reference path="snapshot.ts" />
 
 module Bridge {
 
-    export class LanguageService {
+    export class LanguageEndpoint {
 
         private languageService: TypeScript.Services.LanguageService;
         private languageServiceHost: LanguageServiceHost;
@@ -90,7 +90,7 @@ module Bridge {
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
             var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
 
-            if (completions !== null) {
+            if (completions != null) {
                 // filter out the keyword & primitive entries
                 var filteredEntries = completions.entries.filter((entry) => {
                     if (entry.kind === TypeScript.Services.ScriptElementKind.keyword
@@ -105,6 +105,9 @@ module Bridge {
                 var detailEntries = filteredEntries.map((entry) => {
                     return this.languageService.getCompletionEntryDetails(fileName, position, entry.name);
                 });
+
+                // remove null entries
+                detailEntries = detailEntries.filter((detailEntry) => detailEntry != null);
 
                 return {
                     entries: detailEntries,

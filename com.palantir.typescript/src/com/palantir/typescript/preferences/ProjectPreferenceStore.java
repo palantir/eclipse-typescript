@@ -47,6 +47,10 @@ public final class ProjectPreferenceStore extends PreferenceStore {
 
     private transient boolean inserting;
 
+    public ProjectPreferenceStore(IProject project) {
+        this(project, TypeScriptPlugin.getDefault().getPreferenceStore(), "");
+    }
+
     public ProjectPreferenceStore(IProject project, IPreferenceStore preferenceStore, String sentinelPropertyName) {
         checkNotNull(project);
         checkNotNull(preferenceStore);

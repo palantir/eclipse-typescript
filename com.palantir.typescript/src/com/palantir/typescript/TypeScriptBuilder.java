@@ -94,11 +94,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject(), preferenceStore, "");
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            clean(fileDeltas, monitor);
             compile(fileDeltas, monitor);
         }
 
@@ -143,6 +143,24 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
 
         return this.cachedLanguageService;
+    }
+
+    private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+        for (FileDelta fileDelta : fileDeltas) {
+            Delta delta = fileDelta.getDelta();
+
+            if (delta == Delta.REMOVED) {
+                String removedFileName = fileDelta.getFileName();
+
+                // skip ambient declaration files
+                if (removedFileName.endsWith(".d.ts")) {
+                    continue;
+                }
+
+                cleanEmittedFile(removedFileName, ".js", monitor);
+                cleanEmittedFile(removedFileName, ".js.map", monitor);
+            }
+        }
     }
 
     private void compile(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -232,5 +250,18 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 
         return attributes.build();
+    }
+
+    private static void cleanEmittedFile(String removedFileName, String extension, IProgressMonitor monitor) throws CoreException {
+        String fileName = removedFileName.substring(0, removedFileName.length() - 3) + extension;
+        IFile eclipseFile = EclipseResources.getFile(fileName);
+        String filePath = EclipseResources.getFilePath(eclipseFile);
+        File file = new File(filePath);
+
+        // delete the file
+        file.delete();
+
+        // refresh the file so that eclipse knows about it
+        eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
 }

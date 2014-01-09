@@ -315,13 +315,11 @@ public final class LanguageService {
     }
 
     private IPreferenceStore getPreferenceStore() {
-        IPreferenceStore preferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
-
         if (this.project != null) {
-            preferenceStore = new ProjectPreferenceStore(this.project, preferenceStore, "");
+            return new ProjectPreferenceStore(this.project);
+        } else {
+            return TypeScriptPlugin.getDefault().getPreferenceStore();
         }
-
-        return preferenceStore;
     }
 
     private void updateCompilationSettings() {

@@ -37,6 +37,7 @@ import org.eclipse.jface.text.IDocumentExtension3;
 import org.eclipse.jface.text.IDocumentListener;
 import org.eclipse.jface.text.ITextInputListener;
 import org.eclipse.jface.text.source.DefaultCharacterPairMatcher;
+import org.eclipse.jface.text.source.ICharacterPairMatcher;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
@@ -68,8 +69,10 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
+import com.palantir.typescript.text.actions.GoToMatchingBracketAction;
 import com.palantir.typescript.text.actions.OpenDefinitionAction;
 import com.palantir.typescript.text.actions.QuickOutlineAction;
 import com.palantir.typescript.text.actions.RenameAction;
@@ -113,6 +116,7 @@ public final class TypeScriptEditor extends TextEditor {
             }
         });
 
+    private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
 
@@ -137,6 +141,10 @@ public final class TypeScriptEditor extends TextEditor {
         }
 
         return super.getAdapter(adapter);
+    }
+
+    public ICharacterPairMatcher getCharacterPairMatcher() {
+        return this.characterPairMatcher;
     }
 
     public IDocument getDocument() {
@@ -168,9 +176,8 @@ public final class TypeScriptEditor extends TextEditor {
             IProject project = resource.getProject();
 
             // set a project-specific preference store
-            IPreferenceStore pluginPreferenceStore = TypeScriptPlugin.getDefault().getPreferenceStore();
             ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
-                    new ProjectPreferenceStore(project, pluginPreferenceStore, ""),
+                    new ProjectPreferenceStore(project),
                     EditorsUI.getPreferenceStore(),
                     PlatformUI.getPreferenceStore()
             });
@@ -210,6 +217,11 @@ public final class TypeScriptEditor extends TextEditor {
                 int limChar = definition.getLimChar();
                 String name = definition.getName();
 
+                // constructors don't use the name from the defintion so they require special handling
+                if (definition.getKind() == ScriptElementKind.CONSTRUCTOR_IMPLEMENTATION_ELEMENT){
+                    name = "constructor";
+                }
+
                 definitionEditor.selectAndReveal(minChar, limChar - minChar, name);
             } catch (PartInitException e) {
                 throw new RuntimeException(e);
@@ -237,18 +249,7 @@ public final class TypeScriptEditor extends TextEditor {
     protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
         super.configureSourceViewerDecorationSupport(support);
 
-        // configure character matching
-        char[] matchChars = { '(', ')', '[', ']', '{', '}' };
-        DefaultCharacterPairMatcher pairMatcher;
-        try { // the 3-arg constructor is only available in 3.8+
-            DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
-            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
-        } catch (NoSuchMethodException e) {
-            pairMatcher = new DefaultCharacterPairMatcher(matchChars, IDocumentExtension3.DEFAULT_PARTITIONING);
-        } catch (SecurityException e) {
-            throw new RuntimeException(e);
-        }
-        support.setCharacterPairMatcher(pairMatcher);
+        support.setCharacterPairMatcher(this.characterPairMatcher);
         support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
             IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
     }
@@ -266,6 +267,11 @@ public final class TypeScriptEditor extends TextEditor {
         FormatAction formatAction = new FormatAction(this);
         formatAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.FORMAT);
         this.setAction(ITypeScriptActionDefinitionIds.FORMAT, formatAction);
+
+        // go to matching bracket
+        GoToMatchingBracketAction goToMatchingBracketAction = new GoToMatchingBracketAction(this);
+        goToMatchingBracketAction.setActionDefinitionId(ITypeScriptActionDefinitionIds.GO_TO_MATCHING_BRACKET);
+        this.setAction(ITypeScriptActionDefinitionIds.GO_TO_MATCHING_BRACKET, goToMatchingBracketAction);
 
         // open definition
         OpenDefinitionAction openDefinitionAction = new OpenDefinitionAction(this);
@@ -310,6 +316,8 @@ public final class TypeScriptEditor extends TextEditor {
     protected void initializeEditor() {
         super.initializeEditor();
 
+        this.characterPairMatcher = createCharacterPairMatcher();
+
         // set the preference store
         ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
                 TypeScriptPlugin.getDefault().getPreferenceStore(),
@@ -333,6 +341,20 @@ public final class TypeScriptEditor extends TextEditor {
 
         // set a new source viewer configuration when the preference store is changed
         this.setSourceViewerConfiguration(new TypeScriptSourceViewerConfiguration(this, this.getPreferenceStore()));
+    }
+
+    private static ICharacterPairMatcher createCharacterPairMatcher() {
+        char[] chars = new char[] { '{', '}', '(', ')', '[', ']' };
+
+        try { // the 3-arg constructor is only available in 3.8+
+            DefaultCharacterPairMatcher.class.getDeclaredConstructor(char[].class, String.class, boolean.class);
+
+            return new DefaultCharacterPairMatcher(chars, IDocumentExtension3.DEFAULT_PARTITIONING, true);
+        } catch (NoSuchMethodException e) {
+            return new DefaultCharacterPairMatcher(chars, IDocumentExtension3.DEFAULT_PARTITIONING);
+        } catch (SecurityException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String getFileName(IEditorInput input) {

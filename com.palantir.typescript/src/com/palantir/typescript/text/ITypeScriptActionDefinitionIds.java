@@ -25,6 +25,7 @@ public interface ITypeScriptActionDefinitionIds {
 
     String FIND_REFERENCES = "com.palantir.typescript.text.findReferences";
     String FORMAT = "com.palantir.typescript.text.format";
+    String GO_TO_MATCHING_BRACKET = "com.palantir.typescript.text.goToMatchingBracket";
     String OPEN_DEFINITION = "com.palantir.typescript.text.openDefinition";
     String QUICK_OUTLINE = "com.palantir.typescript.text.quickOutline";
     String RENAME = "com.palantir.typescript.text.rename";

@@ -36,7 +36,8 @@ public final class ClassificationResult {
     private final EndOfLineState finalLexState;
 
     @JsonCreator
-    public ClassificationResult(@JsonProperty("entries") List<ClassificationInfo> entries,
+    public ClassificationResult(
+            @JsonProperty("entries") List<ClassificationInfo> entries,
             @JsonProperty("finalLexState") EndOfLineState finalLexState) {
         checkNotNull(finalLexState);
 

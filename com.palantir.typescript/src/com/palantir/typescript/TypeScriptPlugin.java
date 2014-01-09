@@ -61,8 +61,6 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     /**
      * Returns the shared instance.
-     *
-     * @return the shared instance
      */
     public static TypeScriptPlugin getDefault() {
         return PLUGIN;
@@ -70,9 +68,6 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     /**
      * Returns an image descriptor for the image file at the given plug-in relative path.
-     *
-     * @param path
-     * @return the image descriptor
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(TypeScriptPlugin.ID, path);
