@@ -24,29 +24,6 @@ module Bridge {
             super(host);
         }
 
-        public getReferencesAtPositionEx(fileName: string, position: number): ReferenceEntryEx[] {
-            var references = this.getReferencesAtPosition(fileName, position);
-
-            return references.map((reference) => {
-                var snapshot = this.host.getScriptSnapshot(reference.fileName);
-                var lineStarts = snapshot.getLineStartPositions();
-                var lineMap = new TypeScript.LineMap(() => lineStarts, snapshot.getLength());
-                var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
-                var lineStart = lineMap.getLineStartPosition(lineNumber);
-                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
-                var line = snapshot.getText(lineStart, lineEnd);
-
-                return {
-                    fileName: reference.fileName,
-                    minChar: reference.minChar,
-                    limChar: reference.limChar,
-                    line: line,
-                    lineNumber: lineNumber,
-                    lineStart: lineStart
-                };
-            });
-        }
-
         public getAllDiagnostics(): any {
             var diagnostics = {};
 
@@ -99,10 +76,7 @@ module Bridge {
                 diagnostics = super.getSemanticDiagnostics(fileName);
             }
 
-            var snapshot = this.host.getScriptSnapshot(fileName);
-            var lineStarts = snapshot.getLineStartPositions();
-            var length = snapshot.getLength();
-            var resolvedDiagnostics = diagnostics.map((diagnostic) => {
+            return diagnostics.map((diagnostic) => {
                 return {
                     start: diagnostic.start(),
                     length: diagnostic.length(),
@@ -110,12 +84,33 @@ module Bridge {
                     text: diagnostic.text()
                 };
             });
-
-            return resolvedDiagnostics;
         }
 
         public getEmitOutputFiles(fileName: string): TypeScript.OutputFile[] {
             return super.getEmitOutput(fileName).outputFiles;
+        }
+
+        public getReferencesAtPositionEx(fileName: string, position: number): ReferenceEntryEx[] {
+            var references = this.getReferencesAtPosition(fileName, position);
+
+            return references.map((reference) => {
+                var snapshot = this.host.getScriptSnapshot(reference.fileName);
+                var lineStarts = snapshot.getLineStartPositions();
+                var lineMap = new TypeScript.LineMap(() => lineStarts, snapshot.getLength());
+                var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
+                var lineStart = lineMap.getLineStartPosition(lineNumber);
+                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
+                var line = snapshot.getText(lineStart, lineEnd);
+
+                return {
+                    fileName: reference.fileName,
+                    minChar: reference.minChar,
+                    limChar: reference.limChar,
+                    line: line,
+                    lineNumber: lineNumber,
+                    lineStart: lineStart
+                };
+            });
         }
 
         public getTypeAtPositionEx(fileName: string, position: number): TypeInfoEx {

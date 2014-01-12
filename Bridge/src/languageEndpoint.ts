@@ -29,22 +29,6 @@ module Bridge {
             this.languageService = new LanguageService(this.languageServiceHost);
         }
 
-        public addDefaultLibrary(libraryContents: string) {
-            this.languageServiceHost.addDefaultLibrary(libraryContents);
-        }
-
-        public removeDefaultLibrary() {
-            this.languageServiceHost.removeDefaultLibrary();
-        }
-
-        public addFiles(files: { [fileName: string]: string }) {
-            this.languageServiceHost.addFiles(files);
-        }
-
-        public editFile(fileName: string, offset: number, length: number, text: string) {
-            this.languageServiceHost.editFile(fileName, offset, length, text);
-        }
-
         public findReferences(fileName: string, position: number): ReferenceEntryEx[] {
             return this.languageService.getReferencesAtPositionEx(fileName, position);
         }
@@ -75,7 +59,6 @@ module Bridge {
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions):
             TypeScript.Services.TextEdit[] {
-
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
@@ -109,6 +92,22 @@ module Bridge {
 
         public getTypeAtPosition(fileName: string, position: number): TypeInfoEx {
             return this.languageService.getTypeAtPositionEx(fileName, position);
+        }
+
+        public addDefaultLibrary(libraryContents: string) {
+            this.languageServiceHost.addDefaultLibrary(libraryContents);
+        }
+
+        public removeDefaultLibrary() {
+            this.languageServiceHost.removeDefaultLibrary();
+        }
+
+        public addFiles(files: { [fileName: string]: string }) {
+            this.languageServiceHost.addFiles(files);
+        }
+
+        public editFile(fileName: string, offset: number, length: number, text: string) {
+            this.languageServiceHost.editFile(fileName, offset, length, text);
         }
 
         public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
