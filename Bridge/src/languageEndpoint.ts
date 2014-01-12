@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-/// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="languageService.ts" />
 /// <reference path="languageServiceHost.ts" />
-/// <reference path="snapshot.ts" />
 
 module Bridge {
 
     export class LanguageEndpoint {
 
-        private languageService: TypeScript.Services.LanguageService;
+        private languageService: LanguageService;
         private languageServiceHost: LanguageServiceHost;
 
         constructor() {
             this.languageServiceHost = new LanguageServiceHost();
-            this.languageService = new TypeScript.Services.LanguageService(this.languageServiceHost);
+            this.languageService = new LanguageService(this.languageServiceHost);
         }
 
         public addDefaultLibrary(libraryContents: string) {
@@ -47,40 +46,11 @@ module Bridge {
         }
 
         public findReferences(fileName: string, position: number): Reference[] {
-            var references = this.getReferencesAtPosition(fileName, position);
-
-            return references.map((reference) => {
-                var snapshot = this.languageServiceHost.getScriptSnapshot(reference.fileName);
-                var lineStarts = snapshot.getLineStartPositions();
-                var lineMap = new TypeScript.LineMap(() => lineStarts, snapshot.getLength());
-                var lineNumber = lineMap.getLineNumberFromPosition(reference.minChar);
-                var lineStart = lineMap.getLineStartPosition(lineNumber);
-                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
-                var line = snapshot.getText(lineStart, lineEnd);
-
-                return {
-                    fileName: reference.fileName,
-                    minChar: reference.minChar,
-                    limChar: reference.limChar,
-                    line: line,
-                    lineNumber: lineNumber,
-                    lineStart: lineStart
-                };
-            });
+            return this.languageService.findReferences(fileName, position);
         }
 
         public getAllDiagnostics(): any {
-            var diagnostics = {};
-
-            this.languageServiceHost.getScriptFileNames().forEach((fileName) => {
-                if (fileName !== "lib.d.ts") {
-                    var resolvedDiagnostics = this.getDiagnostics(fileName);
-
-                    diagnostics[fileName] = resolvedDiagnostics;
-                }
-            });
-
-            return diagnostics;
+            return this.languageService.getAllDiagnostics();
         }
 
         public getBraceMatchingAtPosition(fileName: string, position: number): TypeScript.TextSpan[] {
@@ -88,34 +58,7 @@ module Bridge {
         }
 
         public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
-            var completions = this.languageService.getCompletionsAtPosition(fileName, position, true);
-
-            if (completions != null) {
-                // filter out the keyword & primitive entries
-                var filteredEntries = completions.entries.filter((entry) => {
-                    if (entry.kind === TypeScript.Services.ScriptElementKind.keyword
-                        || entry.kind === TypeScript.Services.ScriptElementKind.primitiveType) {
-                        return false;
-                    }
-
-                    return true;
-                });
-
-                // get the details for each entry
-                var detailEntries = filteredEntries.map((entry) => {
-                    return this.languageService.getCompletionEntryDetails(fileName, position, entry.name);
-                });
-
-                // remove null entries
-                detailEntries = detailEntries.filter((detailEntry) => detailEntry != null);
-
-                return {
-                    entries: detailEntries,
-                    memberCompletion: completions.isMemberCompletion
-                };
-            }
-
-            return null;
+            return this.languageService.getCompletionsAtPositionEx(fileName, position);
         }
 
         public getDefinitionAtPosition(fileName: string, position: number): TypeScript.Services.DefinitionInfo[] {
@@ -123,29 +66,11 @@ module Bridge {
         }
 
         public getDiagnostics(fileName: string): CompleteDiagnostic[] {
-            var diagnostics = this.languageService.getSyntacticDiagnostics(fileName);
-
-            if (diagnostics.length === 0) {
-                diagnostics = this.languageService.getSemanticDiagnostics(fileName);
-            }
-
-            var snapshot = this.languageServiceHost.getScriptSnapshot(fileName);
-            var lineStarts = snapshot.getLineStartPositions();
-            var length = snapshot.getLength();
-            var resolvedDiagnostics = diagnostics.map((diagnostic) => {
-                return {
-                    start: diagnostic.start(),
-                    length: diagnostic.length(),
-                    line: diagnostic.line(),
-                    text: diagnostic.text()
-                };
-            });
-
-            return resolvedDiagnostics;
+            return this.languageService.getDiagnostics(fileName);
         }
 
         public getEmitOutput(fileName: string): TypeScript.OutputFile[] {
-            return this.languageService.getEmitOutput(fileName).outputFiles;
+            return this.languageService.getEmitOutputFiles(fileName);
         }
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions):
@@ -183,20 +108,7 @@ module Bridge {
         }
 
         public getTypeAtPosition(fileName: string, position: number): TypeInfo {
-            var type = this.languageService.getTypeAtPosition(fileName, position);
-
-            if (type !== null) {
-                return {
-                    memberName: type.memberName.toString(),
-                    docComment: type.docComment,
-                    fullSymbolName: type.fullSymbolName,
-                    kind: type.kind,
-                    minChar: type.minChar,
-                    limChar: type.limChar
-                };
-            }
-
-            return null;
+            return this.languageService.getTypeAtPositionEx(fileName, position);
         }
 
         public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
@@ -210,35 +122,5 @@ module Bridge {
         public updateFiles(deltas: IFileDelta[]) {
             this.languageServiceHost.updateFiles(deltas);
         }
-    }
-
-    export interface CompletionInfo {
-        entries: TypeScript.Services.CompletionEntryDetails[];
-        memberCompletion: boolean;
-    }
-
-    export interface CompleteDiagnostic {
-        length: number;
-        line: number;
-        start: number;
-        text: string;
-    }
-
-    export interface Reference {
-        fileName: string;
-        limChar: number;
-        line: string;
-        lineNumber: number;
-        lineStart: number;
-        minChar: number;
-    }
-
-    export interface TypeInfo {
-        docComment: string;
-        fullSymbolName: string;
-        kind: string;
-        limChar: number;
-        memberName: string;
-        minChar: number;
     }
 }
