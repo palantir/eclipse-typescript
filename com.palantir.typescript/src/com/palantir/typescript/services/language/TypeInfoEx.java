@@ -27,7 +27,7 @@ import com.google.common.base.Objects;
  *
  * @author dcicerone
  */
-public final class TypeInfo {
+public final class TypeInfoEx {
 
     private final String memberName;
     private final String docComment;
@@ -36,7 +36,7 @@ public final class TypeInfo {
     private final int minChar;
     private final int limChar;
 
-    public TypeInfo(
+    public TypeInfoEx(
             @JsonProperty("memberName") String memberName,
             @JsonProperty("docComment") String docComment,
             @JsonProperty("fullSymbolName") String fullSymbolName,

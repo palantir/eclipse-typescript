@@ -24,7 +24,7 @@ module Bridge {
             super(host);
         }
 
-        public findReferences(fileName: string, position: number): Reference[] {
+        public getReferencesAtPositionEx(fileName: string, position: number): ReferenceEntryEx[] {
             var references = this.getReferencesAtPosition(fileName, position);
 
             return references.map((reference) => {
@@ -61,7 +61,7 @@ module Bridge {
             return diagnostics;
         }
 
-        public getCompletionsAtPositionEx(fileName: string, position: number): CompletionInfo {
+        public getCompletionsAtPositionEx(fileName: string, position: number): CompletionInfoEx {
             var completions = super.getCompletionsAtPosition(fileName, position, true);
 
             if (completions != null) {
@@ -92,7 +92,7 @@ module Bridge {
             return null;
         }
 
-        public getDiagnostics(fileName: string): CompleteDiagnostic[] {
+        public getDiagnostics(fileName: string): DiagnosticEx[] {
             var diagnostics = super.getSyntacticDiagnostics(fileName);
 
             if (diagnostics.length === 0) {
@@ -118,7 +118,7 @@ module Bridge {
             return super.getEmitOutput(fileName).outputFiles;
         }
 
-        public getTypeAtPositionEx(fileName: string, position: number): TypeInfo {
+        public getTypeAtPositionEx(fileName: string, position: number): TypeInfoEx {
             var type = super.getTypeAtPosition(fileName, position);
 
             if (type !== null) {
@@ -136,19 +136,19 @@ module Bridge {
         }
     }
 
-    export interface CompletionInfo {
+    export interface CompletionInfoEx {
         entries: TypeScript.Services.CompletionEntryDetails[];
         memberCompletion: boolean;
     }
 
-    export interface CompleteDiagnostic {
+    export interface DiagnosticEx {
         length: number;
         line: number;
         start: number;
         text: string;
     }
 
-    export interface Reference {
+    export interface ReferenceEntryEx {
         fileName: string;
         limChar: number;
         line: string;
@@ -157,7 +157,7 @@ module Bridge {
         minChar: number;
     }
 
-    export interface TypeInfo {
+    export interface TypeInfoEx {
         docComment: string;
         fullSymbolName: string;
         kind: string;

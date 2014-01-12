@@ -25,7 +25,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
 
-import com.palantir.typescript.services.language.TypeInfo;
+import com.palantir.typescript.services.language.TypeInfoEx;
 
 /**
  * Determines what to display when hovering over the text.
@@ -63,7 +63,7 @@ public final class TextHover extends DefaultTextHover implements ITextHoverExten
         if (hoverInfo == null) {
             String fileName = this.editor.getFileName();
             int offset = hoverRegion.getOffset();
-            TypeInfo type = this.editor.getLanguageService().getTypeAtPosition(fileName, offset);
+            TypeInfoEx type = this.editor.getLanguageService().getTypeAtPosition(fileName, offset);
 
             if (type != null) {
                 switch (type.getKind()) {

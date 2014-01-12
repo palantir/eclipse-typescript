@@ -29,12 +29,12 @@ import com.google.common.collect.ImmutableList;
  *
  * @author dcicerone
  */
-public final class CompletionInfo {
+public final class CompletionInfoEx {
 
     private final ImmutableList<CompletionEntryDetails> entries;
     private final boolean memberCompletion;
 
-    public CompletionInfo(
+    public CompletionInfoEx(
             @JsonProperty("entries") List<CompletionEntryDetails> entries,
             @JsonProperty("isMemberCompletion") boolean memberCompletion) {
         checkNotNull(entries);

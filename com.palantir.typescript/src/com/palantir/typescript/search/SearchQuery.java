@@ -31,7 +31,7 @@ import org.eclipse.search.ui.ISearchResult;
 
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.LanguageService;
-import com.palantir.typescript.services.language.Reference;
+import com.palantir.typescript.services.language.ReferenceEntryEx;
 
 /**
  * A TypeScript search query.
@@ -62,9 +62,9 @@ public final class SearchQuery implements ISearchQuery {
 
     @Override
     public IStatus run(IProgressMonitor monitor) throws OperationCanceledException {
-        List<Reference> references = this.languageService.findReferences(this.fileName, this.offset);
+        List<ReferenceEntryEx> references = this.languageService.findReferences(this.fileName, this.offset);
 
-        for (Reference reference : references) {
+        for (ReferenceEntryEx reference : references) {
             String referenceFileName = reference.getFileName();
             IFile file = EclipseResources.getFile(referenceFileName);
             int minChar = reference.getMinChar();

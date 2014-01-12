@@ -45,8 +45,8 @@ module Bridge {
             this.languageServiceHost.editFile(fileName, offset, length, text);
         }
 
-        public findReferences(fileName: string, position: number): Reference[] {
-            return this.languageService.findReferences(fileName, position);
+        public findReferences(fileName: string, position: number): ReferenceEntryEx[] {
+            return this.languageService.getReferencesAtPositionEx(fileName, position);
         }
 
         public getAllDiagnostics(): any {
@@ -57,7 +57,7 @@ module Bridge {
             return this.languageService.getBraceMatchingAtPosition(fileName, position);
         }
 
-        public getCompletionsAtPosition(fileName: string, position: number): CompletionInfo {
+        public getCompletionsAtPosition(fileName: string, position: number): CompletionInfoEx {
             return this.languageService.getCompletionsAtPositionEx(fileName, position);
         }
 
@@ -65,7 +65,7 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getDiagnostics(fileName: string): CompleteDiagnostic[] {
+        public getDiagnostics(fileName: string): DiagnosticEx[] {
             return this.languageService.getDiagnostics(fileName);
         }
 
@@ -107,7 +107,7 @@ module Bridge {
             return this.languageService.getSignatureAtPosition(fileName, position);
         }
 
-        public getTypeAtPosition(fileName: string, position: number): TypeInfo {
+        public getTypeAtPosition(fileName: string, position: number): TypeInfoEx {
             return this.languageService.getTypeAtPositionEx(fileName, position);
         }
 

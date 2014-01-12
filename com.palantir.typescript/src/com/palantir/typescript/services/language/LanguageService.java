@@ -137,19 +137,19 @@ public final class LanguageService {
         this.bridge.call(request, Void.class);
     }
 
-    public List<Reference> findReferences(String fileName, int position) {
+    public List<ReferenceEntryEx> findReferences(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
         Request request = new Request(SERVICE, "findReferences", fileName, position);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, Reference.class);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntryEx.class);
         return this.bridge.call(request, returnType);
     }
 
-    public Map<String, List<CompleteDiagnostic>> getAllDiagnostics() {
+    public Map<String, List<DiagnosticEx>> getAllDiagnostics() {
         Request request = new Request(SERVICE, "getAllDiagnostics");
         JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
-        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, CompleteDiagnostic.class);
+        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
         MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
         return LanguageService.this.bridge.call(request, returnType);
     }
@@ -163,12 +163,12 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public CompletionInfo getCompletionsAtPosition(String fileName, int position) {
+    public CompletionInfoEx getCompletionsAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
         Request request = new Request(SERVICE, "getCompletionsAtPosition", fileName, position);
-        return this.bridge.call(request, CompletionInfo.class);
+        return this.bridge.call(request, CompletionInfoEx.class);
     }
 
     public List<DefinitionInfo> getDefinitionAtPosition(String fileName, int position) {
@@ -180,11 +180,11 @@ public final class LanguageService {
         return this.bridge.call(request, resultType);
     }
 
-    public List<CompleteDiagnostic> getDiagnostics(String fileName) {
+    public List<DiagnosticEx> getDiagnostics(String fileName) {
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getDiagnostics", fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, CompleteDiagnostic.class);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
         return this.bridge.call(request, resultType);
     }
 
@@ -267,12 +267,12 @@ public final class LanguageService {
         return this.bridge.call(request, SignatureInfo.class);
     }
 
-    public TypeInfo getTypeAtPosition(String fileName, int position) {
+    public TypeInfoEx getTypeAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
         Request request = new Request(SERVICE, "getTypeAtPosition", fileName, position);
-        return this.bridge.call(request, TypeInfo.class);
+        return this.bridge.call(request, TypeInfoEx.class);
     }
 
     public void setFileOpen(String fileName, boolean open) {
