@@ -17,6 +17,7 @@
 /// <reference path="../typescript/src/compiler/io.ts" />
 /// <reference path="../typescript/src/compiler/precompile.ts" />
 /// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="fileInfo.ts" />
 /// <reference path="snapshot.ts" />
 
 module Bridge {
@@ -190,66 +191,6 @@ module Bridge {
 
         public log(message: string): void {
             // does nothing
-        }
-    }
-
-    class FileInfo {
-
-        private byteOrderMark: TypeScript.ByteOrderMark;
-        private changes: TypeScript.TextChangeRange[];
-        private contents: string;
-        private open: boolean;
-        private path: string;
-
-        constructor(byteOrderMark: TypeScript.ByteOrderMark, contents: string, path: string) {
-            this.byteOrderMark = byteOrderMark;
-            this.changes = [];
-            this.contents = contents;
-            this.open = false;
-            this.path = path;
-        }
-
-        public editContents(offset: number, length: number, text: string): void {
-            var prefix = this.contents.substring(0, offset);
-            var suffix = this.contents.substring(offset + length);
-            var newContents = prefix + text + suffix;
-            var span = new TypeScript.TextSpan(offset, length);
-            var change = new TypeScript.TextChangeRange(span, text.length);
-
-            this.contents = newContents;
-
-            this.changes.push(change);
-        }
-
-        public getOpen(): boolean {
-            return this.open;
-        }
-
-        public setOpen(open: boolean) {
-            this.open = open;
-        }
-
-        public getPath() {
-            return this.path;
-        }
-
-        public getScriptSnapshot(): TypeScript.IScriptSnapshot {
-            return new ScriptSnapshot(this.changes.slice(0), this.contents, this.getVersion());
-        }
-
-        public getVersion(): number {
-            return this.changes.length;
-        }
-
-        public updateFile(fileInformation: TypeScript.FileInformation) {
-            var newContents = fileInformation.contents;
-            var span = new TypeScript.TextSpan(0, this.contents.length);
-            var change = new TypeScript.TextChangeRange(span, newContents.length);
-
-            this.byteOrderMark = fileInformation.byteOrderMark;
-            this.contents = newContents;
-
-            this.changes.push(change);
         }
     }
 }
