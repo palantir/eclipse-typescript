@@ -112,6 +112,10 @@ module Bridge {
             this.compilationSettings = compilationSettings;
         }
 
+        public getScriptByteOrderMark(fileName: string): TypeScript.ByteOrderMark {
+            return this.fileInfos[fileName].getByteOrderMark();
+        }
+
         public getScriptFileNames(): string[] {
             return Object.getOwnPropertyNames(this.fileInfos);
         }
@@ -122,10 +126,6 @@ module Bridge {
 
         public getScriptIsOpen(fileName: string): boolean {
             return this.fileInfos[fileName].getOpen();
-        }
-
-        public getScriptByteOrderMark(fileName: string): TypeScript.ByteOrderMark {
-            return TypeScript.ByteOrderMark.None;
         }
 
         public getDiagnosticsObject(): TypeScript.Services.ILanguageServicesDiagnostics {

@@ -44,6 +44,10 @@ module Bridge {
             this.changes.push(change);
         }
 
+        public getByteOrderMark(): TypeScript.ByteOrderMark {
+            return this.byteOrderMark;
+        }
+
         public getOpen(): boolean {
             return this.open;
         }
