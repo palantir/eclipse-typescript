@@ -19,6 +19,8 @@ package com.palantir.typescript.text.actions;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.search.ui.NewSearchUI;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.texteditor.IEditorStatusLine;
 
 import com.palantir.typescript.search.SearchQuery;
 import com.palantir.typescript.services.language.LanguageService;
@@ -38,13 +40,6 @@ public final class FindReferencesAction extends TypeScriptEditorAction {
 
     @Override
     public void run() {
-        SearchQuery query = this.getSearchQuery();
-
-        // display the search results
-        NewSearchUI.runQueryInForeground(null, query);
-    }
-
-    private SearchQuery getSearchQuery() {
         TypeScriptEditor editor = this.getTextEditor();
         LanguageService languageService = editor.getLanguageService();
         String fileName = editor.getFileName();
@@ -52,11 +47,28 @@ public final class FindReferencesAction extends TypeScriptEditorAction {
         int offset = selection.getOffset();
         String searchString = getSearchString(editor, languageService, fileName, offset);
 
-        return new SearchQuery(languageService, fileName, offset, searchString);
+        if (searchString != null) {
+            SearchQuery query = new SearchQuery(languageService, fileName, offset, searchString);
+
+            // display the search results
+            NewSearchUI.runQueryInForeground(null, query);
+        } else {
+            IEditorStatusLine editorStatusLine = (IEditorStatusLine) editor.getAdapter(IEditorStatusLine.class);
+
+            if (editorStatusLine != null) {
+                editorStatusLine.setMessage(true, "No search text found", null);
+            }
+
+            Display.getCurrent().beep();
+        }
     }
 
-    private String getSearchString(TypeScriptEditor editor, LanguageService languageService, String fileName, int offset) {
+    private static String getSearchString(TypeScriptEditor editor, LanguageService languageService, String fileName, int offset) {
         SpanInfo spanInfo = languageService.getNameOrDottedNameSpan(fileName, offset, offset);
+        if (spanInfo == null) {
+            return null;
+        }
+
         int minChar = spanInfo.getMinChar();
         int limChar = spanInfo.getLimChar();
 
