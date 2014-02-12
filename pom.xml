@@ -19,7 +19,7 @@
 
   <groupId>com.palantir</groupId>
   <artifactId>parent</artifactId>
-  <version>0.9.5.qualifier</version>
+  <version>0.9.7.qualifier</version>
   <packaging>pom</packaging>
 
   <modules>

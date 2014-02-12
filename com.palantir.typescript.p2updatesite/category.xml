@@ -15,7 +15,7 @@
   limitations under the License.
 -->
 <site>
-   <feature url="features/com.palantir.typescript.feature_0.9.5.qualifier.jar" id="com.palantir.typescript.feature" version="0.9.5.qualifier">
+   <feature url="features/com.palantir.typescript.feature_0.9.7.qualifier.jar" id="com.palantir.typescript.feature" version="0.9.7.qualifier">
       <category name="com.palantir.typescript"/>
    </feature>
    <category-def name="com.palantir.typescript" label="TypeScript"/>
