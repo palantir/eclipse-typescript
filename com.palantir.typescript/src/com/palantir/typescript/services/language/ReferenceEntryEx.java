@@ -27,7 +27,7 @@ import com.google.common.base.Objects;
  *
  * @author dcicerone
  */
-public final class Reference {
+public final class ReferenceEntryEx {
 
     private final String fileName;
     private final int minChar;
@@ -36,7 +36,7 @@ public final class Reference {
     private final int lineNumber;
     private final int lineStart;
 
-    public Reference(
+    public ReferenceEntryEx(
             @JsonProperty("fileName") String fileName,
             @JsonProperty("minChar") int minChar,
             @JsonProperty("limChar") int limChar,

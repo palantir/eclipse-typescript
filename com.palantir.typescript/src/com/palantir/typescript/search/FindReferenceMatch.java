@@ -21,7 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import org.eclipse.search.ui.text.Match;
 
 import com.google.common.primitives.Ints;
-import com.palantir.typescript.services.language.Reference;
+import com.palantir.typescript.services.language.ReferenceEntryEx;
 
 /**
  * A find references match.
@@ -30,15 +30,15 @@ import com.palantir.typescript.services.language.Reference;
  */
 public final class FindReferenceMatch extends Match implements Comparable {
 
-    private final Reference reference;
+    private final ReferenceEntryEx reference;
 
-    public FindReferenceMatch(Object element, int offset, int length, Reference reference) {
+    public FindReferenceMatch(Object element, int offset, int length, ReferenceEntryEx reference) {
         super(element, offset, length);
 
         this.reference = checkNotNull(reference);
     }
 
-    public Reference getReference() {
+    public ReferenceEntryEx getReference() {
         return this.reference;
     }
 

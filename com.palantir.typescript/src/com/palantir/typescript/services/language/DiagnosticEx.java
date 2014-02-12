@@ -26,14 +26,14 @@ import com.google.common.base.Objects;
  *
  * @author dcicerone
  */
-public final class CompleteDiagnostic {
+public final class DiagnosticEx {
 
     private final int start;
     private final int length;
     private final int line;
     private final String text;
 
-    public CompleteDiagnostic(
+    public DiagnosticEx(
             @JsonProperty("start") int start,
             @JsonProperty("length") int length,
             @JsonProperty("line") int line,

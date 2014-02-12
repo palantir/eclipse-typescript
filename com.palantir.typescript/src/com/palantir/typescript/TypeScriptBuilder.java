@@ -43,7 +43,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
-import com.palantir.typescript.services.language.CompleteDiagnostic;
+import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 import com.palantir.typescript.services.language.LanguageService;
@@ -211,7 +211,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<CompleteDiagnostic>> diagnostics = this.getLanguageService().getAllDiagnostics();
+        final Map<String, List<DiagnosticEx>> diagnostics = this.getLanguageService().getAllDiagnostics();
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -223,14 +223,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
     }
 
-    private static void createMarkers(final Map<String, List<CompleteDiagnostic>> diagnostics) throws CoreException {
-        for (Map.Entry<String, List<CompleteDiagnostic>> entry : diagnostics.entrySet()) {
+    private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics) throws CoreException {
+        for (Map.Entry<String, List<DiagnosticEx>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
 
             // create the markers for this file
             IFile file = EclipseResources.getFile(fileName);
-            List<CompleteDiagnostic> fileDiagnostics = entry.getValue();
-            for (CompleteDiagnostic diagnostic : fileDiagnostics) {
+            List<DiagnosticEx> fileDiagnostics = entry.getValue();
+            for (DiagnosticEx diagnostic : fileDiagnostics) {
                 IMarker marker = file.createMarker(MARKER_TYPE);
                 Map<String, Object> attributes = createMarkerAttributes(diagnostic);
 
@@ -239,7 +239,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private static Map<String, Object> createMarkerAttributes(CompleteDiagnostic diagnostic) {
+    private static Map<String, Object> createMarkerAttributes(DiagnosticEx diagnostic) {
         ImmutableMap.Builder<String, Object> attributes = ImmutableMap.builder();
 
         attributes.put(IMarker.CHAR_START, diagnostic.getStart());

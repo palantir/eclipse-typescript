@@ -41,7 +41,7 @@ import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.CompletionEntryDetails;
-import com.palantir.typescript.services.language.CompletionInfo;
+import com.palantir.typescript.services.language.CompletionInfoEx;
 import com.palantir.typescript.services.language.ScriptElementKind;
 
 /**
@@ -55,7 +55,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
     private final TypeScriptEditor editor;
 
-    private CompletionInfo currentCompletionInfo;
+    private CompletionInfoEx currentCompletionInfo;
     private int currentOffset;
 
     public ContentAssistProcessor(TypeScriptEditor editor) {
