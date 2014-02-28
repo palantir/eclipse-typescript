@@ -25,7 +25,7 @@ module Bridge {
         }
 
         public getAllDiagnostics(): any {
-            var diagnostics = {};
+            var diagnostics: { [fileName: string]: DiagnosticEx[] } = {};
 
             this.host.getScriptFileNames().forEach((fileName) => {
                 if (fileName !== "lib.d.ts") {
