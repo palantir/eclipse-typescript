@@ -29,68 +29,67 @@ module Bridge {
             this.languageService = new LanguageService(this.languageServiceHost);
         }
 
-        public findReferences(fileName: string, position: number): ReferenceEntryEx[] {
+        public findReferences(fileName: string, position: number) {
             return this.languageService.getReferencesAtPositionEx(fileName, position);
         }
 
-        public getAllDiagnostics(): any {
+        public getAllDiagnostics() {
             return this.languageService.getAllDiagnostics();
         }
 
-        public getBraceMatchingAtPosition(fileName: string, position: number): TypeScript.TextSpan[] {
+        public getBraceMatchingAtPosition(fileName: string, position: number) {
             return this.languageService.getBraceMatchingAtPosition(fileName, position);
         }
 
-        public getCompletionsAtPosition(fileName: string, position: number): CompletionInfoEx {
+        public getCompletionsAtPosition(fileName: string, position: number) {
             return this.languageService.getCompletionsAtPositionEx(fileName, position);
         }
 
-        public getDefinitionAtPosition(fileName: string, position: number): TypeScript.Services.DefinitionInfo[] {
+        public getDefinitionAtPosition(fileName: string, position: number) {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getDiagnostics(fileName: string): DiagnosticEx[] {
+        public getDiagnostics(fileName: string) {
             return this.languageService.getDiagnostics(fileName);
         }
 
-        public getEmitOutput(fileName: string): TypeScript.OutputFile[] {
+        public getEmitOutput(fileName: string) {
             return this.languageService.getEmitOutputFiles(fileName);
         }
 
-        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions):
-            TypeScript.Services.TextEdit[] {
+        public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions) {
             return this.languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
         }
 
-        public getIndentationAtPosition(fileName: string, position: number, options: TypeScript.Services.EditorOptions): number {
+        public getIndentationAtPosition(fileName: string, position: number, options: TypeScript.Services.EditorOptions) {
             return this.languageService.getIndentationAtPosition(fileName, position, options);
         }
 
-        public getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): TypeScript.Services.SpanInfo {
+        public getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number) {
             return this.languageService.getNameOrDottedNameSpan(fileName, startPos, endPos);
         }
 
-        public getNavigateToItems(searchValue: string): TypeScript.Services.NavigateToItem[] {
+        public getNavigateToItems(searchValue: string) {
             return this.languageService.getNavigateToItems(searchValue);
         }
 
-        public getOccurrencesAtPosition(fileName: string, position: number): TypeScript.Services.ReferenceEntry[] {
+        public getOccurrencesAtPosition(fileName: string, position: number) {
             return this.languageService.getOccurrencesAtPosition(fileName, position);
         }
 
-        public getReferencesAtPosition(fileName: string, position: number): TypeScript.Services.ReferenceEntry[] {
+        public getReferencesAtPosition(fileName: string, position: number) {
             return this.languageService.getReferencesAtPosition(fileName, position);
         }
 
-        public getScriptLexicalStructure(fileName: string): TypeScript.Services.NavigateToItem[] {
+        public getScriptLexicalStructure(fileName: string) {
             return this.languageService.getScriptLexicalStructure(fileName);
         }
 
-        public getSignatureAtPosition(fileName: string, position: number): TypeScript.Services.SignatureInfo {
+        public getSignatureAtPosition(fileName: string, position: number) {
             return this.languageService.getSignatureAtPosition(fileName, position);
         }
 
-        public getTypeAtPosition(fileName: string, position: number): TypeInfoEx {
+        public getTypeAtPosition(fileName: string, position: number) {
             return this.languageService.getTypeAtPositionEx(fileName, position);
         }
 

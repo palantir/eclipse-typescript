@@ -24,7 +24,7 @@ module Bridge {
             super(host);
         }
 
-        public getAllDiagnostics(): any {
+        public getAllDiagnostics() {
             var diagnostics: { [fileName: string]: DiagnosticEx[] } = {};
 
             this.host.getScriptFileNames().forEach((fileName) => {
@@ -38,7 +38,7 @@ module Bridge {
             return diagnostics;
         }
 
-        public getCompletionsAtPositionEx(fileName: string, position: number): CompletionInfoEx {
+        public getCompletionsAtPositionEx(fileName: string, position: number) {
             var completions = super.getCompletionsAtPosition(fileName, position, true);
 
             if (completions != null) {
@@ -69,7 +69,7 @@ module Bridge {
             return null;
         }
 
-        public getDiagnostics(fileName: string): DiagnosticEx[] {
+        public getDiagnostics(fileName: string) {
             var diagnostics = super.getSyntacticDiagnostics(fileName);
 
             if (diagnostics.length === 0) {
@@ -86,11 +86,11 @@ module Bridge {
             });
         }
 
-        public getEmitOutputFiles(fileName: string): TypeScript.OutputFile[] {
+        public getEmitOutputFiles(fileName: string) {
             return super.getEmitOutput(fileName).outputFiles;
         }
 
-        public getReferencesAtPositionEx(fileName: string, position: number): ReferenceEntryEx[] {
+        public getReferencesAtPositionEx(fileName: string, position: number) {
             var references = this.getReferencesAtPosition(fileName, position);
 
             return references.map((reference) => {
@@ -113,7 +113,7 @@ module Bridge {
             });
         }
 
-        public getTypeAtPositionEx(fileName: string, position: number): TypeInfoEx {
+        public getTypeAtPositionEx(fileName: string, position: number) {
             var type = super.getTypeAtPosition(fileName, position);
 
             if (type !== null) {
@@ -131,33 +131,10 @@ module Bridge {
         }
     }
 
-    export interface CompletionInfoEx {
-        entries: TypeScript.Services.CompletionEntryDetails[];
-        memberCompletion: boolean;
-    }
-
     export interface DiagnosticEx {
         length: number;
         line: number;
         start: number;
         text: string;
-    }
-
-    export interface ReferenceEntryEx {
-        fileName: string;
-        limChar: number;
-        line: string;
-        lineNumber: number;
-        lineStart: number;
-        minChar: number;
-    }
-
-    export interface TypeInfoEx {
-        docComment: string;
-        fullSymbolName: string;
-        kind: string;
-        limChar: number;
-        memberName: string;
-        minChar: number;
     }
 }
