@@ -44,6 +44,10 @@ public interface IPreferenceConstants {
         COMPILER_OUTPUT_DIR_OPTION,
         COMPILER_REMOVE_COMMENTS);
 
+    String CONTENT_ASSIST_AUTO_ACTIVATION_DELAY = "contentAssist.autoActivationDelay";
+    String CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED = "contentAssist.autoActivationEnabled";
+    String CONTENT_ASSIST_AUTO_ACTIVATION_TRIGGERS = "contentAssist.autoActivationTriggers";
+
     String EDITOR_CLOSE_BRACES = "editor.closeBraces";
     String EDITOR_CLOSE_JSDOCS = "editor.closeJSDocs";
     String EDITOR_INDENT_SIZE = "editor.indentSize";

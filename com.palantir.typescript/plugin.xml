@@ -348,6 +348,12 @@
             name="Compiler">
       </page>
       <page
+            id="com.palantir.typescript.contentAssistPreferencePage"
+            category="com.palantir.typescript.generalPreferencePage"
+            class="com.palantir.typescript.preferences.ContentAssistPreferencePage"
+            name="Content Assist">
+      </page>
+      <page
             id="com.palantir.typescript.formatterPreferencePage"
             category="com.palantir.typescript.generalPreferencePage"
             class="com.palantir.typescript.preferences.FormatterPreferencePage"

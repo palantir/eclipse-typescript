@@ -55,12 +55,14 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
     private final TypeScriptEditor editor;
 
+    private char[] completionAutoActivationCharacters;
     private CompletionInfoEx currentCompletionInfo;
     private int currentOffset;
 
     public ContentAssistProcessor(TypeScriptEditor editor) {
         checkNotNull(editor);
 
+        this.completionAutoActivationCharacters = new char[] { '.' };
         this.editor = editor;
     }
 
@@ -137,7 +139,13 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
     @Override
     public char[] getCompletionProposalAutoActivationCharacters() {
-        return new char[] { '.' };
+        return this.completionAutoActivationCharacters.clone();
+    }
+
+    public void setCompletionProposalAutoActivationCharacters(String completionAutoActivationCharacters) {
+        checkNotNull(completionAutoActivationCharacters);
+
+        this.completionAutoActivationCharacters = completionAutoActivationCharacters.toCharArray();
     }
 
     @Override

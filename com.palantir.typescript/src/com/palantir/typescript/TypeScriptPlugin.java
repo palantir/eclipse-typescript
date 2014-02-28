@@ -85,6 +85,10 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
 
+        store.setDefault(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_DELAY, 200);
+        store.setDefault(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED, true);
+        store.setDefault(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_TRIGGERS, ".");
+
         store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS, true);
         store.setDefault(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH, 4);
         store.setDefault(IPreferenceConstants.EDITOR_CLOSE_BRACES, false);

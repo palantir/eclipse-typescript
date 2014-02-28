@@ -41,6 +41,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.editors.text.TextSourceViewerConfiguration;
 
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.text.reconciler.PresentationReconciler;
 import com.palantir.typescript.text.reconciler.Reconciler;
 
@@ -76,12 +77,17 @@ public final class TypeScriptSourceViewerConfiguration extends TextSourceViewerC
     public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
         checkNotNull(sourceViewer);
 
+        boolean autoActivationEnabled = this.fPreferenceStore.getBoolean(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED);
+        int autoActivationDelay = this.fPreferenceStore.getInt(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_DELAY);
+        String autoActivationTriggers = this.fPreferenceStore.getString(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_TRIGGERS);
+
         ContentAssistProcessor contentAssistProcessor = new ContentAssistProcessor(this.editor);
+        contentAssistProcessor.setCompletionProposalAutoActivationCharacters(autoActivationTriggers);
 
         ContentAssistant contentAssistant = new ContentAssistant();
         contentAssistant.addCompletionListener(contentAssistProcessor);
-        contentAssistant.enableAutoActivation(true);
-        contentAssistant.setAutoActivationDelay(200);
+        contentAssistant.enableAutoActivation(autoActivationEnabled);
+        contentAssistant.setAutoActivationDelay(autoActivationDelay);
         contentAssistant.setContentAssistProcessor(contentAssistProcessor, IDocument.DEFAULT_CONTENT_TYPE);
         contentAssistant.setInformationControlCreator(new MyInformationControlCreator());
         contentAssistant.enableAutoInsert(true);
