@@ -107,6 +107,12 @@ public final class EclipseResources {
         return ECLIPSE_URI_PREFIX + folder.getFullPath().toPortableString() + "/";
     }
 
+    public static String getProjectName(IProject project) {
+        checkNotNull(project);
+
+        return ECLIPSE_URI_PREFIX + project.getFullPath().toPortableString() + "/";
+    }
+
     public static String getFilePath(IFile file) {
         checkNotNull(file);
 

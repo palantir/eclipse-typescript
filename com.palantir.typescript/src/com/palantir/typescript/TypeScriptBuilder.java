@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
@@ -107,6 +108,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
         ImmutableList<FileDelta> fileDeltas = this.getAllSourceFiles();
+
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+        if (!fileDeltas.isEmpty() && !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION))) {
+            fileDeltas = ImmutableList.of(fileDeltas.get(0));
+        }
 
         this.build(fileDeltas, monitor);
     }

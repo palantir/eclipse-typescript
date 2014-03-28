@@ -58,6 +58,7 @@ import com.palantir.typescript.TypeScriptPlugin;
  */
 public final class BuildPathPropertyPage extends PropertyPage {
 
+    private Text outputFileField;
     private Text outputFolderField;
     private Text sourceFolderField;
 
@@ -65,13 +66,16 @@ public final class BuildPathPropertyPage extends PropertyPage {
     public boolean performOk() {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
         String oldSourceFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        String oldOutputFile = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION, "");
         String oldOutputFolder = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, "");
         String newSourceFolder = this.sourceFolderField.getText();
+        String newOutputFile = this.outputFileField.getText();
         String newOutputFolder = this.outputFolderField.getText();
 
-        if (!oldSourceFolder.equals(newSourceFolder) || !oldOutputFolder.equals(newOutputFolder)) {
+        if (!oldSourceFolder.equals(newSourceFolder) || !oldOutputFile.equals(newOutputFile) || !oldOutputFolder.equals(newOutputFolder)) {
             projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, newSourceFolder);
             projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, newOutputFolder);
+            projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION, newOutputFile);
 
             // save the preferences
             try {
@@ -95,13 +99,29 @@ public final class BuildPathPropertyPage extends PropertyPage {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setFont(parent.getFont());
 
-        this.sourceFolderField = this.createField(composite, SWT.NONE, "Source folder:", IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
-        this.outputFolderField = this.createField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+        this.sourceFolderField = this.createFolderField(composite, SWT.NONE, "Source folder:", IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+        this.outputFolderField = this.createFolderField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+        this.outputFileField = this.createFileField(composite, SWT.PUSH, "Output file name:", IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION);
 
         return composite;
     }
 
-    private Text createField(Composite composite, int style, String labelText, String preferenceKey) {
+    private Text createFileField(Composite composite, int style, String labelText, String preferenceKey) {
+        IEclipsePreferences projectPreferences = this.getProjectPreferences();
+
+        Label label = new Label(composite, style);
+        label.setLayoutData(new GridData(GridData.BEGINNING, SWT.CENTER, false, false));
+        label.setText(labelText);
+
+        Text text = new Text(composite, SWT.BORDER);
+        text.setFont(composite.getFont());
+        text.setLayoutData(new GridData(GridData.FILL, SWT.CENTER, true, false));
+        text.setText(projectPreferences.get(preferenceKey, ""));
+
+        return text;
+    }
+
+    private Text createFolderField(Composite composite, int style, String labelText, String preferenceKey) {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
 
         Label label = new Label(composite, style);

@@ -336,15 +336,27 @@ public final class LanguageService {
         compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
         compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
 
-        // set the output directory if it was specified
+        // set the output directory or file if it was specified
         if (this.project != null) {
-            String relativePath = preferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+            String outputDir = preferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+            String outputFile = preferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION);
 
-            if (!Strings.isNullOrEmpty(relativePath)) {
-                IFolder outputFolder = this.project.getFolder(relativePath);
-                String outDir = EclipseResources.getFolderName(outputFolder);
+            // get the eclipse name for the output directory
+            String outputFolderName = null;
+            if (!Strings.isNullOrEmpty(outputDir)) {
+                IFolder outputFolder = this.project.getFolder(outputDir);
 
-                compilationSettings.setOutDirOption(outDir);
+                outputFolderName = EclipseResources.getFolderName(outputFolder);
+            }
+
+            if (!Strings.isNullOrEmpty(outputFile)) {
+                if (outputFolderName == null) {
+                    outputFolderName = EclipseResources.getProjectName(this.project);
+                }
+
+                compilationSettings.setOutFileOption(outputFolderName + outputFile);
+            } else if (outputFolderName != null) {
+                compilationSettings.setOutDirOption(outputFolderName);
             }
         }
 

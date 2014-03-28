@@ -33,7 +33,8 @@ public interface IPreferenceConstants {
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
     String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
     String COMPILER_NO_LIB = "compiler.noLib";
-    String COMPILER_OUTPUT_DIR_OPTION = "compiler.optionDirOption";
+    String COMPILER_OUTPUT_DIR_OPTION = "compiler.outputDirOption";
+    String COMPILER_OUTPUT_FILE_OPTION = "compiler.outputFileOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
     ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
         COMPILER_CODE_GEN_TARGET,
@@ -42,6 +43,7 @@ public interface IPreferenceConstants {
         COMPILER_MODULE_GEN_TARGET,
         COMPILER_NO_LIB,
         COMPILER_OUTPUT_DIR_OPTION,
+        COMPILER_OUTPUT_FILE_OPTION,
         COMPILER_REMOVE_COMMENTS);
 
     String CONTENT_ASSIST_AUTO_ACTIVATION_DELAY = "contentAssist.autoActivationDelay";
