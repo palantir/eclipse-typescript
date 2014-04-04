@@ -19,6 +19,8 @@ package com.palantir.typescript.services.language;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
@@ -38,6 +40,7 @@ public final class NavigateToItem {
     private final String fileName;
     private final int minChar;
     private final int limChar;
+    private final ImmutableList<SpanInfo> additionalSpans;
     private final String containerName;
     private final ScriptElementKind containerKind;
 
@@ -50,6 +53,7 @@ public final class NavigateToItem {
             @JsonProperty("fileName") String fileName,
             @JsonProperty("minChar") int minChar,
             @JsonProperty("limChar") int limChar,
+            @JsonProperty("additionalSpans") List<SpanInfo> additionalSpans,
             @JsonProperty("containerName") String containerName,
             @JsonProperty("containerKind") ScriptElementKind containerKind) {
         checkNotNull(name);
@@ -69,6 +73,7 @@ public final class NavigateToItem {
         this.fileName = fileName;
         this.minChar = minChar;
         this.limChar = limChar;
+        this.additionalSpans = (additionalSpans != null ? ImmutableList.copyOf(additionalSpans) : ImmutableList.<SpanInfo> of());
         this.containerName = containerName;
         this.containerKind = containerKind;
     }
@@ -101,6 +106,10 @@ public final class NavigateToItem {
         return this.limChar;
     }
 
+    public ImmutableList<SpanInfo> getAdditionalSpans() {
+        return this.additionalSpans;
+    }
+
     public String getContainerName() {
         return this.containerName;
     }
@@ -123,7 +132,9 @@ public final class NavigateToItem {
                     && this.fileName.equals(other.fileName)
                     && this.minChar == other.minChar
                     && this.limChar == other.limChar
-                    && this.containerName.equals(other.containerName);
+                    && this.additionalSpans.equals(other.additionalSpans)
+                    && this.containerName.equals(other.containerName)
+                    && this.containerKind == other.containerKind;
         }
 
         return false;
@@ -139,6 +150,7 @@ public final class NavigateToItem {
             this.fileName,
             this.minChar,
             this.limChar,
+            this.additionalSpans,
             this.containerName,
             this.containerKind);
     }
@@ -153,6 +165,7 @@ public final class NavigateToItem {
             .add("fileName", this.fileName)
             .add("minChar", this.minChar)
             .add("limChar", this.limChar)
+            .add("additionalSpans", this.additionalSpans)
             .add("containerName", this.containerName)
             .add("containerKind", this.containerKind)
             .toString();
