@@ -30,6 +30,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
@@ -148,14 +150,17 @@ public final class OutlinePage extends ContentOutlinePage {
     private final class MySelectionChangedListener implements ISelectionChangedListener {
         @Override
         public void selectionChanged(SelectionChangedEvent event) {
-            TreeSelection selection = (TreeSelection) event.getSelection();
-            NavigateToItem item = (NavigateToItem) selection.getFirstElement();
+            // only respond to the selection change if the Tree is focused
+            if (Display.getCurrent().getFocusControl() instanceof Tree) {
+                TreeSelection selection = (TreeSelection) event.getSelection();
+                NavigateToItem item = (NavigateToItem) selection.getFirstElement();
 
-            if (item != null) {
-                int minChar = item.getMinChar();
-                int limChar = item.getLimChar();
+                if (item != null) {
+                    int minChar = item.getMinChar();
+                    int limChar = item.getLimChar();
 
-                OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
+                    OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
+                }
             }
         }
     }
