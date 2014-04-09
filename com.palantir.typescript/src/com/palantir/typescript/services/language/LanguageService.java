@@ -27,6 +27,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
@@ -90,15 +91,9 @@ public final class LanguageService {
         }
 
         if (this.project != null) {
-            ImmutableList<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(project);
 
             Map<String, String> filePaths = Maps.newHashMap();
-            for (IFile typeScriptFile : typeScriptFiles) {
-                String fileName = EclipseResources.getFileName(typeScriptFile);
-                String filePath = EclipseResources.getFilePath(typeScriptFile);
-
-                filePaths.put(fileName, filePath);
-            }
+            findAllFilesinProjects(this.project, filePaths);
 
             this.addFiles(filePaths);
         }
@@ -111,6 +106,28 @@ public final class LanguageService {
             IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
 
             projectPreferences.addPreferenceChangeListener(this.preferencesListener);
+        }
+    }
+
+    private void findAllFilesinProjects(IProject tmpProject, Map<String, String> filePaths) {
+        if (tmpProject != null) {
+            ImmutableList<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(tmpProject);
+
+            for (IFile typeScriptFile : typeScriptFiles) {
+                String fileName = EclipseResources.getFileName(typeScriptFile);
+                String filePath = EclipseResources.getFilePath(typeScriptFile);
+
+                filePaths.put(fileName, filePath);
+            }
+
+            try {
+                for (IProject refProject : tmpProject.getReferencedProjects()) {
+                    findAllFilesinProjects(refProject, filePaths);
+                }
+            } catch (CoreException e) {
+                // skip
+            }
+
         }
     }
 
