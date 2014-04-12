@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.net.URI;
+import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -40,6 +41,7 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.services.language.FileDelta;
@@ -54,45 +56,64 @@ public final class EclipseResources {
 
     private static final String ECLIPSE_URI_PREFIX = "eclipse:";
     private static final String FILE_URI_PREFIX = "file:";
+    private static final Splitter PATH_SPLITTER = Splitter.on(';');
 
     public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
         checkNotNull(delta);
         checkNotNull(project);
 
-        IContainer sourceFolder = getSourceFolder(project);
-        MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
+        List<IContainer> sourceFolders = getSourceFolders(project);
+        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
 
-        try {
-            delta.accept(visitor);
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
+        for (IContainer sourceFolder : sourceFolders) {
+            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
+
+            try {
+                delta.accept(visitor);
+            } catch (CoreException e) {
+                throw new RuntimeException(e);
+            }
+
+            fileDeltas.addAll(fileDeltas.build());
         }
 
-        return visitor.fileDeltas.build();
+        return fileDeltas.build();
     }
 
     public static ImmutableList<IFile> getTypeScriptFiles(IProject project) {
         checkNotNull(project);
 
-        IContainer sourceFolder = getSourceFolder(project);
-        MyResourceVisitor visitor = new MyResourceVisitor();
+        List<IContainer> sourceFolders = getSourceFolders(project);
+        ImmutableList.Builder<IFile> typeScriptFiles = ImmutableList.builder();
 
-        try {
-            sourceFolder.accept(visitor);
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
+        for (IContainer sourceFolder : sourceFolders) {
+            MyResourceVisitor visitor = new MyResourceVisitor();
+
+            try {
+                sourceFolder.accept(visitor);
+            } catch (CoreException e) {
+                throw new RuntimeException(e);
+            }
+
+            typeScriptFiles.addAll(visitor.files.build());
         }
 
-        return visitor.files.build();
+        return typeScriptFiles.build();
     }
 
     public static boolean isContainedInSourceFolder(IResource resource, IProject project) {
         checkNotNull(resource);
         checkNotNull(project);
 
-        IContainer sourceFolder = getSourceFolder(project);
+        List<IContainer> sourceFolders = getSourceFolders(project);
 
-        return isContainedIn(resource, sourceFolder);
+        for (IContainer sourceFolder : sourceFolders) {
+            if (isContainedIn(resource, sourceFolder)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static String getFileName(IFile file) {
@@ -154,17 +175,24 @@ public final class EclipseResources {
         throw new IllegalStateException();
     }
 
-    private static IContainer getSourceFolder(IProject project) {
+    private static List<IContainer> getSourceFolders(IProject project) {
         IScopeContext projectScope = new ProjectScope(project);
         IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
         String sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
 
         if (!Strings.isNullOrEmpty(sourceFolderName)) {
-            IPath relativeSourceFolderPath = Path.fromPortableString(sourceFolderName);
+            ImmutableList.Builder<IContainer> sourceFolders = ImmutableList.builder();
 
-            return project.getFolder(relativeSourceFolderPath);
+            for (String sourceFolderName2 : PATH_SPLITTER.splitToList(sourceFolderName)) {
+                IPath relativeSourceFolderPath = Path.fromPortableString(sourceFolderName2);
+                IFolder sourceFolder = project.getFolder(relativeSourceFolderPath);
+
+                sourceFolders.add(sourceFolder);
+            }
+
+            return sourceFolders.build();
         } else {
-            return project;
+            return ImmutableList.<IContainer> of(project);
         }
     }
 
