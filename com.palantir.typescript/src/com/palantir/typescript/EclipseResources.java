@@ -74,7 +74,7 @@ public final class EclipseResources {
                 throw new RuntimeException(e);
             }
 
-            fileDeltas.addAll(fileDeltas.build());
+            fileDeltas.addAll(visitor.fileDeltas.build());
         }
 
         return fileDeltas.build();
