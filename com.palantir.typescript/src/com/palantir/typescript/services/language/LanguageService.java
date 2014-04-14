@@ -93,7 +93,7 @@ public final class LanguageService {
         if (this.project != null) {
 
             Map<String, String> filePaths = Maps.newHashMap();
-            findAllFilesinProjects(this.project, filePaths);
+            findAllFilesInProjects(this.project, filePaths);
 
             this.addFiles(filePaths);
         }
@@ -109,7 +109,7 @@ public final class LanguageService {
         }
     }
 
-    private void findAllFilesinProjects(IProject tmpProject, Map<String, String> filePaths) {
+    private void findAllFilesInProjects(IProject tmpProject, Map<String, String> filePaths) {
         if (tmpProject != null) {
             ImmutableList<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(tmpProject);
 
@@ -122,7 +122,7 @@ public final class LanguageService {
 
             try {
                 for (IProject refProject : tmpProject.getReferencedProjects()) {
-                    findAllFilesinProjects(refProject, filePaths);
+                    findAllFilesInProjects(refProject, filePaths);
                 }
             } catch (CoreException e) {
                 // skip
