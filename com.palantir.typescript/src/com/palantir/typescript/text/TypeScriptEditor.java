@@ -119,6 +119,7 @@ public final class TypeScriptEditor extends TextEditor {
     private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
     private LanguageService languageService;
+    private IProject currentProject;
 
     @Override
     public void dispose() {
@@ -185,6 +186,7 @@ public final class TypeScriptEditor extends TextEditor {
 
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                 this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+                this.currentProject = project;
             } else {
                 String filePath = getFilePath(input);
 
@@ -400,6 +402,20 @@ public final class TypeScriptEditor extends TextEditor {
             String text = event.getText();
 
             TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
+
+            if (TypeScriptEditor.this.currentProject != null) {
+                sendToAllProjects(TypeScriptEditor.this.currentProject, fileName, offset, length, text);
+            }
+        }
+
+        private void sendToAllProjects(IProject project, String fileName, int offset, int length, String text) {
+            for (IProject p : project.getReferencingProjects()) {
+                LanguageService ls = LANGUAGE_SERVICE_CACHE.getIfPresent(p);
+                if (ls != null) {
+                    ls.editFile(fileName, offset, length, text);
+                }
+                sendToAllProjects(p, fileName, offset, length, text);
+            }
         }
 
         @Override
