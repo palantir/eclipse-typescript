@@ -105,11 +105,13 @@ public final class EclipseResources {
         checkNotNull(resource);
         checkNotNull(project);
 
-        List<IContainer> sourceFolders = getSourceFolders(project);
+        if (TypeScriptBuilder.isConfigured(project)) {
+            List<IContainer> sourceFolders = getSourceFolders(project);
 
-        for (IContainer sourceFolder : sourceFolders) {
-            if (isContainedIn(resource, sourceFolder)) {
-                return true;
+            for (IContainer sourceFolder : sourceFolders) {
+                if (isContainedIn(resource, sourceFolder)) {
+                    return true;
+                }
             }
         }
 

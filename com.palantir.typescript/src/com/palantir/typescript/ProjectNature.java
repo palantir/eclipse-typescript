@@ -37,35 +37,33 @@ public final class ProjectNature implements IProjectNature {
 
     @Override
     public void configure() throws CoreException {
-        IProjectDescription description = this.project.getDescription();
-        ICommand[] commands = description.getBuildSpec();
+        if (!TypeScriptBuilder.isConfigured(this.project)) {
+            IProjectDescription description = this.project.getDescription();
+            ICommand[] commands = description.getBuildSpec();
 
-        for (int i = 0; i < commands.length; ++i) {
-            if (commands[i].getBuilderName().equals(TypeScriptBuilder.ID)) {
-                return;
-            }
+            ICommand[] newCommands = new ICommand[commands.length + 1];
+            System.arraycopy(commands, 0, newCommands, 0, commands.length);
+            ICommand command = description.newCommand();
+            command.setBuilderName(TypeScriptBuilder.ID);
+            newCommands[newCommands.length - 1] = command;
+            description.setBuildSpec(newCommands);
+
+            this.project.setDescription(description, null);
         }
-
-        ICommand[] newCommands = new ICommand[commands.length + 1];
-        System.arraycopy(commands, 0, newCommands, 0, commands.length);
-        ICommand command = description.newCommand();
-        command.setBuilderName(TypeScriptBuilder.ID);
-        newCommands[newCommands.length - 1] = command;
-        description.setBuildSpec(newCommands);
-        this.project.setDescription(description, null);
     }
 
     @Override
     public void deconfigure() throws CoreException {
         IProjectDescription description = getProject().getDescription();
         ICommand[] commands = description.getBuildSpec();
+
         for (int i = 0; i < commands.length; ++i) {
             if (commands[i].getBuilderName().equals(TypeScriptBuilder.ID)) {
                 ICommand[] newCommands = new ICommand[commands.length - 1];
                 System.arraycopy(commands, 0, newCommands, 0, i);
-                System.arraycopy(commands, i + 1, newCommands, i,
-                    commands.length - i - 1);
+                System.arraycopy(commands, i + 1, newCommands, i, commands.length - i - 1);
                 description.setBuildSpec(newCommands);
+
                 this.project.setDescription(description, null);
                 return;
             }

@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IWorkspace;
@@ -62,6 +64,25 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
 
     private LanguageService cachedLanguageService;
+
+    public static boolean isConfigured(IProject project) {
+        checkNotNull(project);
+
+        IProjectDescription description;
+        try {
+            description = project.getDescription();
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (ICommand command : description.getBuildSpec()) {
+            if (command.getBuilderName().equals(TypeScriptBuilder.ID)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     @Override
     protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
@@ -110,7 +131,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableList<FileDelta> fileDeltas = this.getAllSourceFiles();
 
         IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
-        if (!fileDeltas.isEmpty() && !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION))) {
+        if (!fileDeltas.isEmpty()
+                && !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION))) {
             fileDeltas = ImmutableList.of(fileDeltas.get(0));
         }
 

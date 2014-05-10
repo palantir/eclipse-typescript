@@ -183,7 +183,7 @@ public final class LanguageService {
     public List<DiagnosticEx> getDiagnostics(String fileName) {
         checkNotNull(fileName);
 
-        Request request = new Request(SERVICE, "getDiagnostics", fileName);
+        Request request = new Request(SERVICE, "getDiagnostics", fileName, this.project != null);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
         return this.bridge.call(request, resultType);
     }

@@ -49,8 +49,8 @@ module Bridge {
             return this.languageService.getDefinitionAtPosition(fileName, position);
         }
 
-        public getDiagnostics(fileName: string) {
-            return this.languageService.getDiagnostics(fileName);
+        public getDiagnostics(fileName: string, semantic: boolean) {
+            return this.languageService.getDiagnostics(fileName, semantic);
         }
 
         public getEmitOutput(fileName: string) {

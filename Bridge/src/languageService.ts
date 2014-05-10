@@ -29,7 +29,7 @@ module Bridge {
 
             this.host.getScriptFileNames().forEach((fileName) => {
                 if (fileName !== "lib.d.ts") {
-                    var resolvedDiagnostics = this.getDiagnostics(fileName);
+                    var resolvedDiagnostics = this.getDiagnostics(fileName, true);
 
                     diagnostics[fileName] = resolvedDiagnostics;
                 }
@@ -69,10 +69,10 @@ module Bridge {
             return null;
         }
 
-        public getDiagnostics(fileName: string) {
+        public getDiagnostics(fileName: string, semantic: boolean) {
             var diagnostics = super.getSyntacticDiagnostics(fileName);
 
-            if (diagnostics.length === 0) {
+            if (semantic && diagnostics.length === 0) {
                 diagnostics = super.getSemanticDiagnostics(fileName);
             }
 
