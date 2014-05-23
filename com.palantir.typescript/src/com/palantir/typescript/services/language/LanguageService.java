@@ -329,6 +329,8 @@ public final class LanguageService {
         CompilationSettings compilationSettings = new CompilationSettings();
         compilationSettings.setCodeGenTarget(LanguageVersion.valueOf(preferenceStore
             .getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)));
+        compilationSettings.setGenerateDeclarationFiles(preferenceStore
+            .getBoolean(IPreferenceConstants.COMPILER_GENERATE_DECLARATION_FILES));
         compilationSettings.setMapSourceFiles(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES));
         compilationSettings.setModuleGenTarget(ModuleGenTarget.valueOf(preferenceStore
             .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));

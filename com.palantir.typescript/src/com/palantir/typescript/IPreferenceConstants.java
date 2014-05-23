@@ -29,6 +29,7 @@ public interface IPreferenceConstants {
 
     String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
+    String COMPILER_GENERATE_DECLARATION_FILES = "compiler.generateDeclarationFiles";
     String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
     String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
     String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
@@ -39,6 +40,7 @@ public interface IPreferenceConstants {
     ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
         COMPILER_CODE_GEN_TARGET,
         COMPILER_COMPILE_ON_SAVE,
+        COMPILER_GENERATE_DECLARATION_FILES,
         COMPILER_MAP_SOURCE_FILES,
         COMPILER_MODULE_GEN_TARGET,
         COMPILER_NO_LIB,

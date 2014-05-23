@@ -49,6 +49,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private boolean compilerPreferencesModified;
 
     private BooleanFieldEditor compileOnSaveField;
+    private BooleanFieldEditor generateDeclarationFilesField;
     private ComboFieldEditor moduleGenTargetField;
     private BooleanFieldEditor noImplicitAnyField;
     private BooleanFieldEditor noLibField;
@@ -112,6 +113,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         }
 
         if (source.equals(this.compileOnSaveField)
+                || source.equals(this.generateDeclarationFilesField)
                 || source.equals(this.moduleGenTargetField)
                 || source.equals(this.noImplicitAnyField)
                 || source.equals(this.noLibField)
@@ -160,6 +162,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.getFieldEditorParent());
         this.addField(this.sourceMapField);
 
+        this.generateDeclarationFilesField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_GENERATE_DECLARATION_FILES,
+            getResource("generate.declaration.files"),
+            this.getFieldEditorParent());
+        this.addField(this.generateDeclarationFilesField);
+
         this.removeCommentsField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_REMOVE_COMMENTS,
             getResource("remove.comments"),
@@ -203,6 +211,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         boolean enabled = this.compileOnSaveField.getBooleanValue() && this.isPageEnabled();
         Composite parent = this.getFieldEditorParent();
 
+        this.generateDeclarationFilesField.setEnabled(enabled, parent);
         this.removeCommentsField.setEnabled(enabled, parent);
         this.sourceMapField.setEnabled(enabled, parent);
     }

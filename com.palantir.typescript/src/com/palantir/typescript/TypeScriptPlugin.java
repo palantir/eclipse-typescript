@@ -79,6 +79,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
         store.setDefault(IPreferenceConstants.COMPILER_CODE_GEN_TARGET, LanguageVersion.ECMASCRIPT3.toString());
         store.setDefault(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, false);
+        store.setDefault(IPreferenceConstants.COMPILER_GENERATE_DECLARATION_FILES, false);
         store.setDefault(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES, false);
         store.setDefault(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET, ModuleGenTarget.UNSPECIFIED.toString());
         store.setDefault(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, false);
