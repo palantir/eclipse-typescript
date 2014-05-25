@@ -117,7 +117,15 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            return Object.getOwnPropertyNames(this.fileInfos);
+            var scriptFileNames = Object.getOwnPropertyNames(this.fileInfos);
+
+            if (!isEmpty(this.compilationSettings.outFileOption)) {
+                var resolutionResults = TypeScript.ReferenceResolver.resolve(scriptFileNames, this, true);
+
+                scriptFileNames = resolutionResults.resolvedFiles.map(resolvedFile => resolvedFile.path);
+            }
+
+            return scriptFileNames;
         }
 
         public getScriptVersion(fileName: string): number {
@@ -165,20 +173,37 @@ module Bridge {
         }
 
         public resolveRelativePath(path: string, directory: string): string {
-            return path;
+            var resolvedPath = path;
+
+            if (!isEmpty(directory)) {
+                while (path.indexOf("../") === 0) {
+                    directory = this.getParentDirectory(directory);
+                    path = path.substring(3, path.length);
+                }
+
+                resolvedPath = directory + "/" + path;
+            }
+
+            return resolvedPath;
         }
 
         public fileExists(path: string): boolean {
-            return TypeScript.IO.fileExists(path);
+            return this.fileInfos[path] != null;
         }
 
         public directoryExists(path: string): boolean {
-            return TypeScript.IO.directoryExists(path);
+            throw new Error("not implemented");
         }
 
         public getParentDirectory(path: string): string {
-            return TypeScript.IO.dirName(path);
+            var index = path.lastIndexOf("/");
+
+            return path.substring(0, index);
         }
+    }
+
+    function isEmpty(str: string) {
+        return (str == null || str.length == 0);
     }
 
     export interface IFileDelta {
