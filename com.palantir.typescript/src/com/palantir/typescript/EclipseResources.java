@@ -54,6 +54,7 @@ import com.palantir.typescript.services.language.FileDelta.Delta;
  */
 public final class EclipseResources {
 
+
     private static final String ECLIPSE_URI_PREFIX = "eclipse:";
     private static final String FILE_URI_PREFIX = "file:";
     private static final Splitter PATH_SPLITTER = Splitter.on(';');
