@@ -130,12 +130,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
         ImmutableList<FileDelta> fileDeltas = this.getAllSourceFiles();
 
-        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
-        if (!fileDeltas.isEmpty()
-                && !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION))) {
-            fileDeltas = ImmutableList.of(fileDeltas.get(0));
-        }
-
         this.build(fileDeltas, monitor);
     }
 
@@ -174,43 +168,57 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        for (FileDelta fileDelta : fileDeltas) {
-            Delta delta = fileDelta.getDelta();
+        if (!isOutputFileSpecified()) {
+            for (FileDelta fileDelta : fileDeltas) {
+                Delta delta = fileDelta.getDelta();
 
-            if (delta == Delta.REMOVED) {
-                String removedFileName = fileDelta.getFileName();
+                if (delta == Delta.REMOVED) {
+                    String removedFileName = fileDelta.getFileName();
 
-                // skip ambient declaration files
-                if (removedFileName.endsWith(".d.ts")) {
-                    continue;
+                    // skip ambient declaration files
+                    if (removedFileName.endsWith(".d.ts")) {
+                        continue;
+                    }
+
+                    cleanEmittedFile(removedFileName, ".js", monitor);
+                    cleanEmittedFile(removedFileName, ".js.map", monitor);
                 }
-
-                cleanEmittedFile(removedFileName, ".js", monitor);
-                cleanEmittedFile(removedFileName, ".js.map", monitor);
             }
         }
     }
 
     private void compile(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        for (FileDelta fileDelta : fileDeltas) {
-            Delta delta = fileDelta.getDelta();
+        if (isOutputFileSpecified()) {
+            // HACKHACK: make a new language service every time to ensure the proper ordering of files
+            this.cachedLanguageService = null;
 
-            if (delta == Delta.ADDED || delta == Delta.CHANGED) {
-                String fileName = fileDelta.getFileName();
+            // pick the first file delta as the one to "compile"
+            if (!fileDeltas.isEmpty()) {
+                String fileName = fileDeltas.get(0).getFileName();
 
-                // skip ambient declaration files
-                if (fileName.endsWith(".d.ts")) {
-                    continue;
-                }
+                this.compile(fileName, monitor);
+            }
+        } else {
+            for (FileDelta fileDelta : fileDeltas) {
+                Delta delta = fileDelta.getDelta();
 
-                // compile the file
-                try {
-                    compile(fileName, monitor);
-                } catch (RuntimeException e) {
-                    String errorMessage = "Compilation of '" + fileName + "' failed.";
-                    Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+                if (delta == Delta.ADDED || delta == Delta.CHANGED) {
+                    String fileName = fileDelta.getFileName();
 
-                    TypeScriptPlugin.getDefault().getLog().log(status);
+                    // skip ambient declaration files
+                    if (fileName.endsWith(".d.ts")) {
+                        continue;
+                    }
+
+                    // compile the file
+                    try {
+                        this.compile(fileName, monitor);
+                    } catch (RuntimeException e) {
+                        String errorMessage = "Compilation of '" + fileName + "' failed.";
+                        Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+
+                        TypeScriptPlugin.getDefault().getLog().log(status);
+                    }
                 }
             }
         }
@@ -249,6 +257,12 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             }
         };
         ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
+    }
+
+    private boolean isOutputFileSpecified() {
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+
+        return !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION));
     }
 
     private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics) throws CoreException {
