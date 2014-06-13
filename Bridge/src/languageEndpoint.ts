@@ -54,6 +54,11 @@ module Bridge {
         }
 
         public getEmitOutput(fileName: string) {
+            var outputFileSpecified = !isEmpty(this.languageServiceHost.getCompilationSettings().outFileOption);
+
+            // resolve references if an output file has been specified
+            this.languageServiceHost.setResolveReferences(outputFileSpecified);
+
             return this.languageService.getEmitOutputFiles(fileName);
         }
 
@@ -120,5 +125,9 @@ module Bridge {
         public updateFiles(deltas: IFileDelta[]) {
             this.languageServiceHost.updateFiles(deltas);
         }
+    }
+
+    function isEmpty(str: string) {
+        return (str == null || str.length == 0);
     }
 }
