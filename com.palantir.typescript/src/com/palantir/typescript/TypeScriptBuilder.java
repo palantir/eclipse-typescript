@@ -120,8 +120,20 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            clean(fileDeltas, monitor);
-            compile(fileDeltas, monitor);
+            if (isOutputFileSpecified()) {
+                // pick the first file as the one to "compile" (like a clean build)
+                if (!fileDeltas.isEmpty()) {
+                    String fileName = fileDeltas.get(0).getFileName();
+
+                    // HACKHACK: make a new language service every time to ensure the proper ordering of files
+                    this.cachedLanguageService = null;
+
+                    this.compile(fileName, monitor);
+                }
+            } else {
+                clean(fileDeltas, monitor);
+                compile(fileDeltas, monitor);
+            }
         }
 
         this.createMarkers(monitor);
@@ -143,6 +155,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
             // clear the problem markers
             this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
+            // replace the file deltas with all the source files if an output file is specified
+            if (isOutputFileSpecified()) {
+                fileDeltas = this.getAllSourceFiles();
+            }
 
             this.build(fileDeltas, monitor);
         }
@@ -168,57 +185,43 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        if (!isOutputFileSpecified()) {
-            for (FileDelta fileDelta : fileDeltas) {
-                Delta delta = fileDelta.getDelta();
+        for (FileDelta fileDelta : fileDeltas) {
+            Delta delta = fileDelta.getDelta();
 
-                if (delta == Delta.REMOVED) {
-                    String removedFileName = fileDelta.getFileName();
+            if (delta == Delta.REMOVED) {
+                String removedFileName = fileDelta.getFileName();
 
-                    // skip ambient declaration files
-                    if (removedFileName.endsWith(".d.ts")) {
-                        continue;
-                    }
-
-                    cleanEmittedFile(removedFileName, ".js", monitor);
-                    cleanEmittedFile(removedFileName, ".js.map", monitor);
+                // skip ambient declaration files
+                if (removedFileName.endsWith(".d.ts")) {
+                    continue;
                 }
+
+                cleanEmittedFile(removedFileName, ".js", monitor);
+                cleanEmittedFile(removedFileName, ".js.map", monitor);
             }
         }
     }
 
     private void compile(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        if (isOutputFileSpecified()) {
-            // HACKHACK: make a new language service every time to ensure the proper ordering of files
-            this.cachedLanguageService = null;
+        for (FileDelta fileDelta : fileDeltas) {
+            Delta delta = fileDelta.getDelta();
 
-            // pick the first file delta as the one to "compile"
-            if (!fileDeltas.isEmpty()) {
-                String fileName = fileDeltas.get(0).getFileName();
+            if (delta == Delta.ADDED || delta == Delta.CHANGED) {
+                String fileName = fileDelta.getFileName();
 
-                this.compile(fileName, monitor);
-            }
-        } else {
-            for (FileDelta fileDelta : fileDeltas) {
-                Delta delta = fileDelta.getDelta();
+                // skip ambient declaration files
+                if (fileName.endsWith(".d.ts")) {
+                    continue;
+                }
 
-                if (delta == Delta.ADDED || delta == Delta.CHANGED) {
-                    String fileName = fileDelta.getFileName();
+                // compile the file
+                try {
+                    this.compile(fileName, monitor);
+                } catch (RuntimeException e) {
+                    String errorMessage = "Compilation of '" + fileName + "' failed.";
+                    Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
 
-                    // skip ambient declaration files
-                    if (fileName.endsWith(".d.ts")) {
-                        continue;
-                    }
-
-                    // compile the file
-                    try {
-                        this.compile(fileName, monitor);
-                    } catch (RuntimeException e) {
-                        String errorMessage = "Compilation of '" + fileName + "' failed.";
-                        Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-
-                        TypeScriptPlugin.getDefault().getLog().log(status);
-                    }
+                    TypeScriptPlugin.getDefault().getLog().log(status);
                 }
             }
         }
