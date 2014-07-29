@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -113,6 +114,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // clear the problem markers
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
+        // delete the output directory if one was specified
+        cleanOutputDirectory(monitor);
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -137,6 +141,28 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
 
         this.createMarkers(monitor);
+    }
+
+    private void cleanOutputDirectory(IProgressMonitor monitor) throws CoreException {
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+        boolean compileOnSave = projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE);
+        String outputDir = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+        String outputFile = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION);
+
+        // delete the output directory if compile-on-save is enabled and an output file wasn't specified
+        if (compileOnSave && !Strings.isNullOrEmpty(outputDir) && Strings.isNullOrEmpty(outputFile)) {
+            IFolder outputFolder = this.getProject().getFolder(outputDir);
+
+            if (outputFolder.exists()) {
+                outputFolder.delete(true, monitor);
+            } else { // the output folder may exist but be filtered from Eclipse
+                File outputFolderFile = new File(outputFolder.getRawLocation().toOSString());
+
+                if (outputFolderFile.exists() && outputFolderFile.isDirectory()) {
+                    deleteDirectory(outputFolderFile);
+                }
+            }
+        }
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
@@ -308,5 +334,17 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // refresh the file so that eclipse knows about it
         eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
+    }
+
+    private static void deleteDirectory(File file) {
+        for (File child : file.listFiles()) {
+            if (child.isDirectory()) {
+                deleteDirectory(child);
+            } else {
+                child.delete();
+            }
+        }
+
+        file.delete();
     }
 }
