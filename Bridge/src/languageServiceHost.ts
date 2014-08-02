@@ -77,6 +77,15 @@ module Bridge {
             this.cachedScriptFileNames = undefined;
         }
 
+        public setFileContents(fileName: string, byteOrderMark: TypeScript.ByteOrderMark, contents: string) {
+            var fileInfo = new FileInfo(byteOrderMark, contents, null);
+
+            this.fileInfos[fileName] = fileInfo;
+
+            // clear the cached script file names
+            this.cachedScriptFileNames = undefined;
+        }
+
         public setFileOpen(fileName: string, open: boolean) {
             this.fileInfos[fileName].setOpen(open);
         }

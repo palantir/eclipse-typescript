@@ -66,6 +66,7 @@ import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
+import com.palantir.typescript.services.language.ByteOrderMark;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageService;
@@ -169,8 +170,9 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-        String fileName = getFileName(input);
+        super.init(site, input);
 
+        String fileName = getFileName(input);
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
@@ -194,12 +196,14 @@ public final class TypeScriptEditor extends TextEditor {
             String filePath = getFilePath(input);
 
             this.languageService = new LanguageService(fileName, filePath);
+        } else {
+            String contents = this.getDocumentProvider().getDocument(input).get();
+
+            this.languageService = new LanguageService(fileName, ByteOrderMark.NONE, contents);
         }
 
         // inform the language service that the file is open
         this.languageService.setFileOpen(fileName, true);
-
-        super.init(site, input);
     }
 
     public static void openDefinition(DefinitionInfo definition) {
@@ -367,9 +371,9 @@ public final class TypeScriptEditor extends TextEditor {
             FileStoreEditorInput fileStoreInput = (FileStoreEditorInput) input;
 
             return fileStoreInput.getURI().toString();
+        } else {
+            return "unknown";
         }
-
-        throw new UnsupportedOperationException();
     }
 
     private static String getFilePath(IEditorInput input) {

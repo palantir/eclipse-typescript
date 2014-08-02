@@ -118,6 +118,10 @@ module Bridge {
             this.languageServiceHost.setCompilationSettings(compilationSettings);
         }
 
+        public setFileContents(fileName: string, byteOrderMark: number, contents: string) {
+            this.languageServiceHost.setFileContents(fileName, (<any> TypeScript.ByteOrderMark)[byteOrderMark], contents);
+        }
+
         public setFileOpen(fileName: string, open: boolean) {
             this.languageServiceHost.setFileOpen(fileName, open);
         }

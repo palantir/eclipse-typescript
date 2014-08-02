@@ -69,6 +69,15 @@ public final class LanguageService {
     private final MyPreferenceChangeListener preferencesListener;
     private final IProject project;
 
+    public LanguageService(String fileName, ByteOrderMark byteOrderMark, String contents) {
+        this((IProject) null);
+
+        checkNotNull(fileName);
+        checkNotNull(contents);
+
+        this.setFileContents(fileName, byteOrderMark, contents);
+    }
+
     public LanguageService(String fileName, String filePath) {
         this((IProject) null);
 
@@ -273,6 +282,15 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "getTypeAtPosition", fileName, position);
         return this.bridge.call(request, TypeInfoEx.class);
+    }
+
+    public void setFileContents(String fileName, ByteOrderMark byteOrderMark, String contents) {
+        checkNotNull(fileName);
+        checkNotNull(byteOrderMark);
+        checkNotNull(contents);
+
+        Request request = new Request(SERVICE, "setFileContents", fileName, byteOrderMark.ordinal(), contents);
+        this.bridge.call(request, Void.class);
     }
 
     public void setFileOpen(String fileName, boolean open) {
