@@ -47,12 +47,11 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
 
     @Override
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
-        String fileName = this.editor.getFileName();
         int offset = region.getOffset();
-        SpanInfo span = this.editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
+        SpanInfo span = this.editor.getLanguageService().getNameOrDottedNameSpan(offset, offset);
 
         if (span != null) {
-            List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(fileName, offset);
+            List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(offset);
 
             if (definitions != null && !definitions.isEmpty()) {
                 int spanOffset = getUndottedNameOffset(textViewer, span);

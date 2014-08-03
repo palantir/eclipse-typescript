@@ -31,7 +31,6 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.services.language.FormatCodeOptions;
-import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.TextEdit;
 
 /**
@@ -54,12 +53,10 @@ public final class ContentFormatter implements IContentFormatter {
 
     @Override
     public void format(IDocument document, IRegion region) {
-        String fileName = this.editor.getFileName();
         int minChar = region.getOffset();
         int limChar = minChar + region.getLength();
         FormatCodeOptions options = createFormatCodeOptions();
-        LanguageService languageService = this.editor.getLanguageService();
-        List<TextEdit> edits = languageService.getFormattingEditsForRange(fileName, minChar, limChar, options);
+        List<TextEdit> edits = this.editor.getLanguageService().getFormattingEditsForRange(minChar, limChar, options);
 
         // apply the edits
         try {

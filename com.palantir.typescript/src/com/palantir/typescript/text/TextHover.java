@@ -61,9 +61,8 @@ public final class TextHover extends DefaultTextHover implements ITextHoverExten
 
         // get the type information
         if (hoverInfo == null) {
-            String fileName = this.editor.getFileName();
             int offset = hoverRegion.getOffset();
-            TypeInfoEx type = this.editor.getLanguageService().getTypeAtPosition(fileName, offset);
+            TypeInfoEx type = this.editor.getLanguageService().getTypeAtPosition(offset);
 
             if (type != null) {
                 switch (type.getKind()) {

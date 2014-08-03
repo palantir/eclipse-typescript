@@ -39,7 +39,6 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.navigate.NavigateToItemLabelProvider;
-import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.NavigateToItem;
 
 /**
@@ -63,9 +62,7 @@ public final class OutlinePage extends ContentOutlinePage {
     public void createControl(Composite parent) {
         super.createControl(parent);
 
-        String fileName = this.editor.getFileName();
-        LanguageService languageService = this.editor.getLanguageService();
-        List<NavigateToItem> lexicalStructure = languageService.getScriptLexicalStructure(fileName);
+        List<NavigateToItem> lexicalStructure = this.editor.getLanguageService().getScriptLexicalStructure();
 
         TreeViewer treeViewer = this.getTreeViewer();
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());
@@ -95,8 +92,7 @@ public final class OutlinePage extends ContentOutlinePage {
     }
 
     public void refreshInput() {
-        String fileName = this.editor.getFileName();
-        List<NavigateToItem> lexicalStructure = this.editor.getLanguageService().getScriptLexicalStructure(fileName);
+        List<NavigateToItem> lexicalStructure = this.editor.getLanguageService().getScriptLexicalStructure();
 
         this.setInput(lexicalStructure);
     }

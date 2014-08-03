@@ -48,7 +48,7 @@ public final class InformationProvider implements IInformationProvider, IInforma
 
     @Override
     public Object getInformation2(ITextViewer textViewer, IRegion subject) {
-        return this.editor.getLanguageService().getScriptLexicalStructure(this.editor.getFileName());
+        return this.editor.getLanguageService().getScriptLexicalStructure();
     }
 
     @Override

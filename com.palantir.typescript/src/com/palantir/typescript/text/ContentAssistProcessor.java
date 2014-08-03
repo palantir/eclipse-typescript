@@ -82,10 +82,8 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
         // get the completion info
         if (this.currentCompletionInfo == null || offset < this.currentOffset) {
-            String fileName = this.editor.getFileName();
-
             try {
-                this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(fileName, offset);
+                this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(offset);
                 this.currentOffset = this.getOffset(offset);
             } catch (RuntimeException e) {
                 Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);

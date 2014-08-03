@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.IEditorStatusLine;
 
 import com.palantir.typescript.search.SearchQuery;
-import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.SpanInfo;
+import com.palantir.typescript.text.EditorLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
@@ -41,14 +41,13 @@ public final class FindReferencesAction extends TypeScriptEditorAction {
     @Override
     public void run() {
         TypeScriptEditor editor = this.getTextEditor();
-        LanguageService languageService = editor.getLanguageService();
-        String fileName = editor.getFileName();
+        EditorLanguageService languageService = editor.getLanguageService();
         ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
         int offset = selection.getOffset();
-        String searchString = getSearchString(editor, languageService, fileName, offset);
+        String searchString = getSearchString(editor, languageService, offset);
 
         if (searchString != null) {
-            SearchQuery query = new SearchQuery(languageService, fileName, offset, searchString);
+            SearchQuery query = new SearchQuery(languageService, offset, searchString);
 
             // display the search results
             NewSearchUI.runQueryInForeground(null, query);
@@ -63,8 +62,8 @@ public final class FindReferencesAction extends TypeScriptEditorAction {
         }
     }
 
-    private static String getSearchString(TypeScriptEditor editor, LanguageService languageService, String fileName, int offset) {
-        SpanInfo spanInfo = languageService.getNameOrDottedNameSpan(fileName, offset, offset);
+    private static String getSearchString(TypeScriptEditor editor, EditorLanguageService languageService, int offset) {
+        SpanInfo spanInfo = languageService.getNameOrDottedNameSpan(offset, offset);
         if (spanInfo == null) {
             return null;
         }
