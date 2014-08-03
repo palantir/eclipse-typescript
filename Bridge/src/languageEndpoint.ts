@@ -33,10 +33,6 @@ module Bridge {
             return this.languageService.getReferencesAtPositionEx(fileName, position);
         }
 
-        public getAllDiagnostics() {
-            return this.languageService.getAllDiagnostics();
-        }
-
         public getBraceMatchingAtPosition(fileName: string, position: number) {
             return this.languageService.getBraceMatchingAtPosition(fileName, position);
         }
@@ -51,15 +47,6 @@ module Bridge {
 
         public getDiagnostics(fileName: string, semantic: boolean) {
             return this.languageService.getDiagnostics(fileName, semantic);
-        }
-
-        public getEmitOutput(fileName: string) {
-            var outputFileSpecified = !isEmpty(this.languageServiceHost.getCompilationSettings().outFileOption);
-
-            // resolve references if an output file has been specified
-            this.languageServiceHost.setResolveReferences(outputFileSpecified);
-
-            return this.languageService.getEmitOutputFiles(fileName);
         }
 
         public getFormattingEditsForRange(fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions) {

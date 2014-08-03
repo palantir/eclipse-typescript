@@ -30,6 +30,7 @@ import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
+import com.palantir.typescript.services.language.WorkspaceLanguageService;
 
 /**
  * The TypeScript plug-in for the Eclipse platform.
@@ -45,15 +46,21 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     private static TypeScriptPlugin PLUGIN;
 
+    private WorkspaceLanguageService builderLanguageService;
+
     @Override
     public void start(BundleContext context) throws Exception {
         super.start(context);
 
         PLUGIN = this;
+
+        this.builderLanguageService = new WorkspaceLanguageService();
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
+        this.builderLanguageService.dispose();
+
         PLUGIN = null;
 
         super.stop(context);
@@ -71,6 +78,10 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
      */
     public static ImageDescriptor getImageDescriptor(String path) {
         return imageDescriptorFromPlugin(TypeScriptPlugin.ID, path);
+    }
+
+    public WorkspaceLanguageService getBuilderLanguageService() {
+        return this.builderLanguageService;
     }
 
     @Override

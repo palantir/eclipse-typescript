@@ -35,9 +35,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -155,14 +153,6 @@ public final class LanguageService {
         return this.bridge.call(request, returnType);
     }
 
-    public Map<String, List<DiagnosticEx>> getAllDiagnostics() {
-        Request request = new Request(SERVICE, "getAllDiagnostics");
-        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
-        CollectionType diagnosticListType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
-        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, diagnosticListType);
-        return LanguageService.this.bridge.call(request, returnType);
-    }
-
     public List<TextSpan> getBraceMatchingAtPosition(String fileName, int position) {
         checkNotNull(fileName);
         checkArgument(position >= 0);
@@ -194,14 +184,6 @@ public final class LanguageService {
 
         Request request = new Request(SERVICE, "getDiagnostics", fileName, this.project != null);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
-        return this.bridge.call(request, resultType);
-    }
-
-    public List<OutputFile> getEmitOutput(String fileName) {
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getEmitOutput", fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, OutputFile.class);
         return this.bridge.call(request, resultType);
     }
 

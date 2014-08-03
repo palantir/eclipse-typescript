@@ -24,17 +24,14 @@ module Bridge {
 
     export class LanguageServiceHost implements TypeScript.Services.ILanguageServiceHost {
 
-        private cachedScriptFileNames: string[];
         private compilationSettings: TypeScript.CompilationSettings;
         private diagnostics: TypeScript.Services.ILanguageServicesDiagnostics;
         private fileInfos: { [fileName: string]: FileInfo };
-        private resolveReferences: boolean;
 
         constructor() {
             this.compilationSettings = new TypeScript.CompilationSettings();
             this.diagnostics = new LanguageServicesDiagnostics();
             this.fileInfos = Object.create(null);
-            this.resolveReferences = false;
         }
 
         public addDefaultLibrary(libraryContents: string) {
@@ -65,25 +62,16 @@ module Bridge {
                     this.fileInfos[fileName] = fileInfo;
                 }
             }
-
-            // clear the cached script file names
-            this.cachedScriptFileNames = undefined;
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
             this.fileInfos[fileName].editContents(offset, length, text);
-
-            // clear the cached script file names
-            this.cachedScriptFileNames = undefined;
         }
 
         public setFileContents(fileName: string, byteOrderMark: TypeScript.ByteOrderMark, contents: string) {
             var fileInfo = new FileInfo(byteOrderMark, contents, null);
 
             this.fileInfos[fileName] = fileInfo;
-
-            // clear the cached script file names
-            this.cachedScriptFileNames = undefined;
         }
 
         public setFileOpen(fileName: string, open: boolean) {
@@ -120,9 +108,6 @@ module Bridge {
                         break;
                 }
             });
-
-            // clear the cached script file names
-            this.cachedScriptFileNames = undefined;
         }
 
         public getCompilationSettings(): TypeScript.CompilationSettings {
@@ -138,17 +123,7 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            if (this.cachedScriptFileNames === undefined) {
-                this.cachedScriptFileNames = Object.getOwnPropertyNames(this.fileInfos);
-
-                if (this.resolveReferences) {
-                    var resolutionResults = TypeScript.ReferenceResolver.resolve(this.cachedScriptFileNames, this, true);
-
-                    this.cachedScriptFileNames = resolutionResults.resolvedFiles.map(resolvedFile => resolvedFile.path);
-                }
-            }
-
-            return this.cachedScriptFileNames;
+            return Object.getOwnPropertyNames(this.fileInfos);
         }
 
         public getScriptVersion(fileName: string): number {
@@ -222,10 +197,6 @@ module Bridge {
             var index = path.lastIndexOf("/");
 
             return path.substring(0, index);
-        }
-
-        public setResolveReferences(resolveReferences: boolean) {
-            this.resolveReferences = resolveReferences;
         }
     }
 

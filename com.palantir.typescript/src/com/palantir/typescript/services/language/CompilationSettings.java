@@ -18,7 +18,15 @@ package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Strings;
+import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.preferences.ProjectPreferenceStore;
 
 /**
  * Corresponds to the class with the same name in compiler/precompile.ts.
@@ -198,5 +206,48 @@ public final class CompilationSettings {
 
     public void setCodepage(Integer codepage) {
         this.codepage = codepage;
+    }
+
+    public static CompilationSettings fromProject(IProject project) {
+        checkNotNull(project);
+
+        IPreferenceStore preferenceStore = new ProjectPreferenceStore(project);
+
+        // create the compilation settings from the preferences
+        CompilationSettings compilationSettings = new CompilationSettings();
+        compilationSettings.setCodeGenTarget(LanguageVersion.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_CODE_GEN_TARGET)));
+        compilationSettings.setGenerateDeclarationFiles(preferenceStore
+            .getBoolean(IPreferenceConstants.COMPILER_GENERATE_DECLARATION_FILES));
+        compilationSettings.setMapSourceFiles(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES));
+        compilationSettings.setModuleGenTarget(ModuleGenTarget.valueOf(preferenceStore
+            .getString(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET)));
+        compilationSettings.setNoImplicitAny(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY));
+        compilationSettings.setNoLib(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB));
+        compilationSettings.setRemoveComments(preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS));
+
+        // set the output directory or file if it was specified
+        String outputDir = preferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+        String outputFile = preferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION);
+
+        // get the eclipse name for the output directory
+        String outputFolderName = null;
+        if (!Strings.isNullOrEmpty(outputDir)) {
+            IFolder outputFolder = project.getFolder(outputDir);
+
+            outputFolderName = EclipseResources.getFolderName(outputFolder);
+        }
+
+        if (!Strings.isNullOrEmpty(outputFile)) {
+            if (outputFolderName == null) {
+                outputFolderName = EclipseResources.getProjectName(project);
+            }
+
+            compilationSettings.setOutFileOption(outputFolderName + outputFile);
+        } else if (outputFolderName != null) {
+            compilationSettings.setOutDirOption(outputFolderName);
+        }
+
+        return compilationSettings;
     }
 }

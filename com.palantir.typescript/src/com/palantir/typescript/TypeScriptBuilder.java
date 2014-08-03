@@ -50,8 +50,8 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
-import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.OutputFile;
+import com.palantir.typescript.services.language.WorkspaceLanguageService;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -64,7 +64,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
 
-    private LanguageService cachedLanguageService;
+    private final WorkspaceLanguageService languageService;
+
+    public TypeScriptBuilder() {
+        this.languageService = TypeScriptPlugin.getDefault().getBuilderLanguageService();
+    }
 
     public static boolean isConfigured(IProject project) {
         checkNotNull(project);
@@ -106,17 +110,21 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        // dispose the language service in case it is out-of-sync
-        if (this.cachedLanguageService != null) {
-            this.cachedLanguageService.dispose();
-            this.cachedLanguageService = null;
-        }
+        // clean the language service in case it is out-of-sync
+        this.languageService.cleanProject(this.getProject());
 
         // clear the problem markers
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
         // delete the output directory if one was specified
         cleanOutputDirectory(monitor);
+    }
+
+    @Override
+    protected void startupOnInitialize() {
+        super.startupOnInitialize();
+
+        this.languageService.initializeProject(this.getProject());
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -128,9 +136,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 // pick the first file as the one to "compile" (like a clean build)
                 if (!fileDeltas.isEmpty()) {
                     String fileName = fileDeltas.get(0).getFileName();
-
-                    // HACKHACK: make a new language service every time to ensure the proper ordering of files
-                    this.cachedLanguageService = null;
 
                     this.compile(fileName, monitor);
                 }
@@ -168,6 +173,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
         ImmutableList<FileDelta> fileDeltas = this.getAllSourceFiles();
 
+        // initialize the project in the language service to ensure it is up-to-date
+        this.languageService.initializeProject(this.getProject());
+
         this.build(fileDeltas, monitor);
     }
 
@@ -177,7 +185,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
-            this.getLanguageService().updateFiles(fileDeltas);
+            this.languageService.updateFiles(fileDeltas);
 
             // clear the problem markers
             this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
@@ -200,14 +208,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
 
         return fileDeltas.build();
-    }
-
-    private LanguageService getLanguageService() {
-        if (this.cachedLanguageService == null) {
-            this.cachedLanguageService = new LanguageService(this.getProject());
-        }
-
-        return this.cachedLanguageService;
     }
 
     private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -254,9 +254,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
-        LanguageService languageService = this.getLanguageService();
-
-        for (OutputFile outputFile : languageService.getEmitOutput(fileName)) {
+        for (OutputFile outputFile : this.languageService.getEmitOutput(this.getProject(), fileName)) {
             String outputFileName = outputFile.getName();
             IFile eclipseFile = EclipseResources.getFile(outputFileName);
             String filePath = EclipseResources.getFilePath(eclipseFile);
@@ -276,7 +274,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<DiagnosticEx>> diagnostics = this.getLanguageService().getAllDiagnostics();
+        final Map<String, List<DiagnosticEx>> diagnostics = this.languageService.getAllDiagnostics(this.getProject());
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
