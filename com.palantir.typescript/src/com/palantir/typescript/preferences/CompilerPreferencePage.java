@@ -48,6 +48,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     private boolean compilerPreferencesModified;
 
+    private ComboFieldEditor codeGenTargetField;
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor generateDeclarationFilesField;
     private ComboFieldEditor moduleGenTargetField;
@@ -112,7 +113,8 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.updateFieldEditors();
         }
 
-        if (source.equals(this.compileOnSaveField)
+        if (source.equals(this.codeGenTargetField)
+                || source.equals(this.compileOnSaveField)
                 || source.equals(this.generateDeclarationFilesField)
                 || source.equals(this.moduleGenTargetField)
                 || source.equals(this.noImplicitAnyField)
@@ -125,11 +127,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     @Override
     protected void createFieldEditors() {
-        this.addField(new ComboFieldEditor(
+        this.codeGenTargetField = new ComboFieldEditor(
             IPreferenceConstants.COMPILER_CODE_GEN_TARGET,
             getResource("code.gen.target"),
             this.createComboFieldValues(LanguageVersion.values()),
-            this.getFieldEditorParent()));
+            this.getFieldEditorParent());
+        this.addField(this.codeGenTargetField);
 
         this.moduleGenTargetField = new ComboFieldEditor(
             IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
