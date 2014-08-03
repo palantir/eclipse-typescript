@@ -37,10 +37,9 @@ public final class OpenDefinitionAction extends TypeScriptEditorAction {
     @Override
     public void run() {
         TypeScriptEditor editor = this.getTextEditor();
-        String fileName = editor.getFileName();
         ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
         int position = selection.getOffset();
-        List<DefinitionInfo> definitions = editor.getLanguageService().getDefinitionAtPosition(fileName, position);
+        List<DefinitionInfo> definitions = editor.getLanguageService().getDefinitionAtPosition(position);
 
         if (definitions != null && !definitions.isEmpty()) {
             DefinitionInfo definition = definitions.get(0);

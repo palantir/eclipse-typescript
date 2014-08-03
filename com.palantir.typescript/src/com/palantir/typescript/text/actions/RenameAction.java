@@ -55,11 +55,10 @@ public final class RenameAction extends TypeScriptEditorAction {
     @Override
     public void run() {
         TypeScriptEditor editor = this.getTextEditor();
-        String fileName = editor.getFileName();
         ITextSelection selection = (ITextSelection) editor.getSelectionProvider().getSelection();
         int offset = selection.getOffset();
         String oldName = this.getOldName(offset);
-        RefactoringProcessor processor = new TypeScriptRenameProcessor(editor.getLanguageService(), fileName, offset, oldName);
+        RefactoringProcessor processor = new TypeScriptRenameProcessor(editor.getLanguageService(), offset, oldName);
         ProcessorBasedRefactoring refactoring = new ProcessorBasedRefactoring(processor);
         RenameRefactoringWizard wizard = new RenameRefactoringWizard(refactoring);
         RefactoringWizardOpenOperation operation = new RefactoringWizardOpenOperation(wizard);
@@ -74,8 +73,7 @@ public final class RenameAction extends TypeScriptEditorAction {
 
     private String getOldName(int offset) {
         TypeScriptEditor editor = this.getTextEditor();
-        String fileName = editor.getFileName();
-        SpanInfo spanInfo = editor.getLanguageService().getNameOrDottedNameSpan(fileName, offset, offset);
+        SpanInfo spanInfo = editor.getLanguageService().getNameOrDottedNameSpan(offset, offset);
         int minChar = spanInfo.getMinChar();
         int limChar = spanInfo.getLimChar();
 

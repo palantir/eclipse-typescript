@@ -40,7 +40,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.EclipseResources;
-import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ReferenceEntry;
 
 /**
@@ -52,19 +51,16 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
 
     private String newName;
 
-    private final LanguageService languageService;
-    private final String fileName;
+    private final EditorLanguageService languageService;
     private final int offset;
     private final String oldName;
 
-    public TypeScriptRenameProcessor(LanguageService languageService, String fileName, int offset, String oldName) {
+    public TypeScriptRenameProcessor(EditorLanguageService languageService, int offset, String oldName) {
         checkNotNull(languageService);
-        checkNotNull(fileName);
         checkArgument(offset >= 0);
         checkNotNull(oldName);
 
         this.languageService = languageService;
-        this.fileName = fileName;
         this.offset = offset;
         this.oldName = oldName;
     }
@@ -102,7 +98,7 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
 
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        List<ReferenceEntry> references = this.languageService.getReferencesAtPosition(this.fileName, this.offset);
+        List<ReferenceEntry> references = this.languageService.getReferencesAtPosition(this.offset);
 
         // group the references by file name
         ListMultimap<String, ReferenceEntry> referencesByFileName = ArrayListMultimap.create();

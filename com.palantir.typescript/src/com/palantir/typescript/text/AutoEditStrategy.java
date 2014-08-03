@@ -175,11 +175,10 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private int getIndentationAtPosition(int position) {
-        String fileName = this.editor.getFileName();
         EditorOptions options = new EditorOptions(this.indentSize, this.tabWidth, this.spacesForTabs);
 
         try {
-            return this.editor.getLanguageService().getIndentationAtPosition(fileName, position, options);
+            return this.editor.getLanguageService().getIndentationAtPosition(position, options);
         } catch (RuntimeException e) {
             Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
 
@@ -192,8 +191,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private boolean isBraceClosed(int offset) {
-        String fileName = this.editor.getFileName();
-        List<TextSpan> braceMatching = this.editor.getLanguageService().getBraceMatchingAtPosition(fileName, offset - 1);
+        List<TextSpan> braceMatching = this.editor.getLanguageService().getBraceMatchingAtPosition(offset - 1);
 
         // matching braces come in pairs so if there is no pair, there is no match (happens at the end of files)
         if (braceMatching.size() != 2) {

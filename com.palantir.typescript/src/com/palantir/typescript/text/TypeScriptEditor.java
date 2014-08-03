@@ -119,13 +119,13 @@ public final class TypeScriptEditor extends TextEditor {
 
     private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
-    private LanguageService languageService;
+    private EditorLanguageService languageService;
 
     @Override
     public void dispose() {
         // inform the language service that the file is no longer open
         if (this.getEditorInput() != null) {
-            this.languageService.setFileOpen(this.getFileName(), false);
+            this.languageService.setFileOpen(false);
         }
 
         super.dispose();
@@ -164,7 +164,7 @@ public final class TypeScriptEditor extends TextEditor {
         return getFilePath(input);
     }
 
-    public LanguageService getLanguageService() {
+    public EditorLanguageService getLanguageService() {
         return this.languageService;
     }
 
@@ -186,24 +186,24 @@ public final class TypeScriptEditor extends TextEditor {
             this.setPreferenceStore(chainedPreferenceStore);
 
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
-                this.languageService = LANGUAGE_SERVICE_CACHE.getUnchecked(project);
+                this.languageService = new EditorLanguageService(fileName, LANGUAGE_SERVICE_CACHE.getUnchecked(project));
             } else {
                 String filePath = getFilePath(input);
 
-                this.languageService = new LanguageService(fileName, filePath);
+                this.languageService = new EditorLanguageService(fileName, new LanguageService(fileName, filePath));
             }
         } else if (input instanceof FileStoreEditorInput) {
             String filePath = getFilePath(input);
 
-            this.languageService = new LanguageService(fileName, filePath);
+            this.languageService = new EditorLanguageService(fileName, new LanguageService(fileName, filePath));
         } else {
             String contents = this.getDocumentProvider().getDocument(input).get();
 
-            this.languageService = new LanguageService(fileName, ByteOrderMark.NONE, contents);
+            this.languageService = new EditorLanguageService(fileName, new LanguageService(fileName, ByteOrderMark.NONE, contents));
         }
 
         // inform the language service that the file is open
-        this.languageService.setFileOpen(fileName, true);
+        this.languageService.setFileOpen(true);
     }
 
     public static void openDefinition(DefinitionInfo definition) {
@@ -398,12 +398,11 @@ public final class TypeScriptEditor extends TextEditor {
 
         @Override
         public void documentChanged(DocumentEvent event) {
-            String fileName = TypeScriptEditor.this.getFileName();
             int offset = event.getOffset();
             int length = event.getLength();
             String text = event.getText();
 
-            TypeScriptEditor.this.languageService.editFile(fileName, offset, length, text);
+            TypeScriptEditor.this.languageService.editFile(offset, length, text);
         }
 
         @Override
