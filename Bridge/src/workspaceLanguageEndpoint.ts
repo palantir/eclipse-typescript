@@ -45,9 +45,78 @@ module Bridge {
 
         public initializeProject(projectName: string, compilationSettings: TypeScript.CompilationSettings, files: { [fileName: string]: string }) {
             this.cleanProject(projectName);
+            this.languageServices[projectName] = this.createLanguageService(compilationSettings, (fileName) => isProjectFile(projectName, fileName));
+            this.addFiles(files);
+        }
 
-            // create a new language service
-            this.languageServices[projectName] = new LanguageService({
+        public getAllDiagnostics(projectName: string) {
+            return this.languageServices[projectName].getAllDiagnostics();
+        }
+
+        public getEmitOutput(projectName: string, fileName: string) {
+            return this.languageServices[projectName].getEmitOutputFiles(fileName);
+        }
+
+        public setLibContents(libContents: string) {
+            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libContents, null);
+
+            this.fileInfos[LIB_FILE_NAME] = fileInfo;
+        }
+
+        public updateFiles(deltas: IFileDelta[]) {
+            deltas.forEach((delta) => {
+                var fileName = delta.fileName;
+
+                switch (delta.delta) {
+                    case "ADDED":
+                    case "CHANGED":
+                        var fileInfo = this.fileInfos[fileName];
+
+                        if (fileInfo !== undefined) {
+                            // only update files not currently open in an editor
+                            if (!fileInfo.getOpen()) {
+                                var fileInformation = TypeScript.IO.readFile(fileInfo.getPath(), null);
+
+                                fileInfo.updateFile(fileInformation);
+                            }
+                        } else {
+                            var filePath = delta.filePath;
+                            var fileInformation = TypeScript.IO.readFile(filePath, null);
+
+                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
+
+                            this.fileInfos[fileName] = fileInfo;
+                        }
+                        break;
+                    case "REMOVED":
+                        delete this.fileInfos[fileName];
+                        break;
+                }
+            });
+        }
+
+        private addFiles(files: { [fileName: string]: string }) {
+            for (var fileName in files) {
+                if (files.hasOwnProperty(fileName)) {
+                    var filePath = files[fileName];
+
+                    // read the file
+                    try {
+                        var fileInformation = TypeScript.IO.readFile(filePath, null);
+                    } catch (e) {
+                        // ignore failures (they are likely due to the workspace being out-of-sync)
+                        continue;
+                    }
+
+                    // cache the file
+                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
+                    this.fileInfos[fileName] = fileInfo;
+                }
+            }
+        }
+
+        private createLanguageService(compilationSettings: TypeScript.CompilationSettings, fileFilter: (fileName: string) => boolean) {
+            return new LanguageService({
                 getCompilationSettings: () => {
                     return compilationSettings;
                 },
@@ -58,7 +127,7 @@ module Bridge {
                             return !compilationSettings.noLib;
                         }
 
-                        return isProjectFile(projectName, fileName);
+                        return fileFilter(fileName);
                     });
                 },
                 getScriptVersion: (fileName: string) => {
@@ -128,75 +197,6 @@ module Bridge {
                     return path.substring(0, index);
                 }
             });
-
-            // add the project files
-            this.addFiles(files);
-        }
-
-        public getAllDiagnostics(projectName: string) {
-            return this.languageServices[projectName].getAllDiagnostics();
-        }
-
-        public getEmitOutput(projectName: string, fileName: string) {
-            return this.languageServices[projectName].getEmitOutputFiles(fileName);
-        }
-
-        public setLibContents(libContents: string) {
-            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libContents, null);
-
-            this.fileInfos[LIB_FILE_NAME] = fileInfo;
-        }
-
-        public updateFiles(deltas: IFileDelta[]) {
-            deltas.forEach((delta) => {
-                var fileName = delta.fileName;
-
-                switch (delta.delta) {
-                    case "ADDED":
-                    case "CHANGED":
-                        var fileInfo = this.fileInfos[fileName];
-
-                        if (fileInfo !== undefined) {
-                            // only update files not currently open in an editor
-                            if (!fileInfo.getOpen()) {
-                                var fileInformation = TypeScript.IO.readFile(fileInfo.getPath(), null);
-
-                                fileInfo.updateFile(fileInformation);
-                            }
-                        } else {
-                            var filePath = delta.filePath;
-                            var fileInformation = TypeScript.IO.readFile(filePath, null);
-
-                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
-
-                            this.fileInfos[fileName] = fileInfo;
-                        }
-                        break;
-                    case "REMOVED":
-                        delete this.fileInfos[fileName];
-                        break;
-                }
-            });
-        }
-
-        private addFiles(files: { [fileName: string]: string }) {
-            for (var fileName in files) {
-                if (files.hasOwnProperty(fileName)) {
-                    var filePath = files[fileName];
-
-                    // read the file
-                    try {
-                        var fileInformation = TypeScript.IO.readFile(filePath, null);
-                    } catch (e) {
-                        // ignore failures (they are likely due to the workspace being out-of-sync)
-                        continue;
-                    }
-
-                    // cache the file
-                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
-                    this.fileInfos[fileName] = fileInfo;
-                }
-            }
         }
     }
 
