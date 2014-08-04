@@ -16,6 +16,7 @@
 
 package com.palantir.typescript.services.language;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
@@ -74,6 +75,31 @@ public final class WorkspaceLanguageService {
         this.bridge.call(request, Void.class);
     }
 
+    public boolean isProjectInitialized(IProject project) {
+        checkNotNull(project);
+
+        String projectName = project.getName();
+        Request request = new Request(SERVICE, "isProjectInitialized", projectName);
+        return this.bridge.call(request, Boolean.class);
+    }
+
+    public void initializeIsolatedLanguageService(String serviceKey, String fileName, String fileContents) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+        checkNotNull(fileContents);
+
+        Request request = new Request(SERVICE, "initializeIsolatedLanguageService", serviceKey, fileName, fileContents);
+        this.bridge.call(request, Void.class);
+    }
+
+    public void closeIsolatedLanguageService(String serviceKey, String fileName) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "closeIsolatedLanguageService", serviceKey, fileName);
+        this.bridge.call(request, Void.class);
+    }
+
     public Map<String, List<DiagnosticEx>> getAllDiagnostics(IProject project) {
         checkNotNull(project);
 
@@ -92,6 +118,112 @@ public final class WorkspaceLanguageService {
         Request request = new Request(SERVICE, "getEmitOutput", projectName, fileName);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, OutputFile.class);
         return this.bridge.call(request, resultType);
+    }
+
+    public void editFile(String fileName, int offset, int length, String replacementText) {
+        checkNotNull(fileName);
+        checkArgument(offset >= 0);
+        checkArgument(length >= 0);
+        checkNotNull(replacementText);
+
+        Request request = new Request(SERVICE, "editFile", fileName, offset, length, replacementText);
+        this.bridge.call(request, Void.class);
+    }
+
+    public List<ReferenceEntryEx> findReferences(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "findReferences", serviceKey, fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntryEx.class);
+        return this.bridge.call(request, returnType);
+    }
+
+    public List<TextSpan> getBraceMatchingAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getBraceMatchingAtPosition", serviceKey, fileName, position);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextSpan.class);
+        return this.bridge.call(request, resultType);
+    }
+
+    public CompletionInfoEx getCompletionsAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getCompletionsAtPosition", serviceKey, fileName, position);
+        return this.bridge.call(request, CompletionInfoEx.class);
+    }
+
+    public List<DefinitionInfo> getDefinitionAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getDefinitionAtPosition", serviceKey, fileName, position);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DefinitionInfo.class);
+        return this.bridge.call(request, resultType);
+    }
+
+    public List<TextEdit> getFormattingEditsForRange(String serviceKey, String fileName, int minChar, int limChar, FormatCodeOptions options) {
+        checkNotNull(fileName);
+        checkArgument(minChar >= 0);
+        checkArgument(limChar >= 0);
+        checkNotNull(options);
+
+        Request request = new Request(SERVICE, "getFormattingEditsForRange", serviceKey, fileName, minChar, limChar, options);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
+        return this.bridge.call(request, resultType);
+    }
+
+    public int getIndentationAtPosition(String serviceKey, String fileName, int position, EditorOptions options) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+        checkNotNull(options);
+
+        Request request = new Request(SERVICE, "getIndentationAtPosition", serviceKey, fileName, position, options);
+        return this.bridge.call(request, Integer.class);
+    }
+
+    public SpanInfo getNameOrDottedNameSpan(String serviceKey, String fileName, int startPos, int endPos) {
+        checkNotNull(fileName);
+        checkArgument(startPos >= 0);
+        checkArgument(endPos >= 0);
+
+        Request request = new Request(SERVICE, "getNameOrDottedNameSpan", serviceKey, fileName, startPos, endPos);
+        return this.bridge.call(request, SpanInfo.class);
+    }
+
+    public List<ReferenceEntry> getReferencesAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getReferencesAtPosition", serviceKey, fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        return this.bridge.call(request, returnType);
+    }
+
+    public List<NavigateToItem> getScriptLexicalStructure(String serviceKey, String fileName) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getScriptLexicalStructure", serviceKey, fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
+        return this.bridge.call(request, returnType);
+    }
+
+    public TypeInfoEx getTypeAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getTypeAtPosition", serviceKey, fileName, position);
+        return this.bridge.call(request, TypeInfoEx.class);
+    }
+
+    public void setFileOpen(String fileName, boolean open) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "setFileOpen", fileName, open);
+        this.bridge.call(request, Void.class);
     }
 
     public void updateFiles(List<FileDelta> fileDeltas) {

@@ -24,7 +24,7 @@ module Bridge {
     export class WorkspaceLanguageEndpoint {
 
         private fileInfos: { [fileName: string]: FileInfo };
-        private languageServices: { [projectName: string]: LanguageService };
+        private languageServices: { [serviceKey: string]: LanguageService };
 
         constructor() {
             this.fileInfos = Object.create(null);
@@ -49,12 +49,76 @@ module Bridge {
             this.addFiles(files);
         }
 
-        public getAllDiagnostics(projectName: string) {
-            return this.languageServices[projectName].getAllDiagnostics();
+        public isProjectInitialized(projectName: string) {
+            return this.languageServices[projectName] !== undefined;
         }
 
-        public getEmitOutput(projectName: string, fileName: string) {
-            return this.languageServices[projectName].getEmitOutputFiles(fileName);
+        public initializeIsolatedLanguageService(serviceKey: string, fileName: string, fileContents: string) {
+            var compilationSettings = new TypeScript.CompilationSettings();
+            this.languageServices[serviceKey] = this.createLanguageService(compilationSettings, (fileName2) => fileName === fileName2);
+
+            this.fileInfos[fileName] = new FileInfo(TypeScript.ByteOrderMark.None, fileContents, null);
+        }
+
+        public closeIsolatedLanguageService(serviceKey: string, fileName: string) {
+            delete this.fileInfos[fileName];
+            delete this.languageServices[serviceKey];
+        }
+
+        public getAllDiagnostics(serviceKey: string) {
+            return this.languageServices[serviceKey].getAllDiagnostics();
+        }
+
+        public getEmitOutput(serviceKey: string, fileName: string) {
+            return this.languageServices[serviceKey].getEmitOutputFiles(fileName);
+        }
+
+        public findReferences(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getReferencesAtPositionEx(fileName, position);
+        }
+
+        public getBraceMatchingAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getBraceMatchingAtPosition(fileName, position);
+        }
+
+        public getCompletionsAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getCompletionsAtPositionEx(fileName, position);
+        }
+
+        public getDefinitionAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getDefinitionAtPosition(fileName, position);
+        }
+
+        public getFormattingEditsForRange(serviceKey: string, fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions) {
+            return this.languageServices[serviceKey].getFormattingEditsForRange(fileName, minChar, limChar, options);
+        }
+
+        public getIndentationAtPosition(serviceKey: string, fileName: string, position: number, options: TypeScript.Services.EditorOptions) {
+            return this.languageServices[serviceKey].getIndentationAtPosition(fileName, position, options);
+        }
+
+        public getNameOrDottedNameSpan(serviceKey: string, fileName: string, startPos: number, endPos: number) {
+            return this.languageServices[serviceKey].getNameOrDottedNameSpan(fileName, startPos, endPos);
+        }
+
+        public getReferencesAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
+        }
+
+        public getScriptLexicalStructure(serviceKey: string, fileName: string) {
+            return this.languageServices[serviceKey].getScriptLexicalStructure(fileName);
+        }
+
+        public getTypeAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getTypeAtPositionEx(fileName, position);
+        }
+
+        public editFile(fileName: string, offset: number, length: number, text: string) {
+            this.fileInfos[fileName].editContents(offset, length, text);
+        }
+
+        public setFileOpen(fileName: string, open: boolean) {
+            this.fileInfos[fileName].setOpen(open);
         }
 
         public setLibContents(libContents: string) {
