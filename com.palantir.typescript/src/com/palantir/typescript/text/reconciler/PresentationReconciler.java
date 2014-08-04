@@ -42,8 +42,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -63,13 +61,6 @@ import com.palantir.typescript.services.classifier.TokenClass;
  */
 public final class PresentationReconciler implements IPresentationReconciler {
 
-    private static final Supplier<Classifier> CLASSIFIER_SUPPLIER = Suppliers.memoize(new Supplier<Classifier>() {
-        @Override
-        public Classifier get() {
-            return new Classifier();
-        }
-    });
-
     private static final LoadingCache<RGB, Color> COLORS = CacheBuilder.newBuilder().build(new CacheLoader<RGB, Color>() {
         @Override
         public Color load(RGB rgb) throws Exception {
@@ -84,7 +75,7 @@ public final class PresentationReconciler implements IPresentationReconciler {
     private ITextViewer viewer;
 
     public PresentationReconciler() {
-        this.classifier = CLASSIFIER_SUPPLIER.get();
+        this.classifier = TypeScriptPlugin.getDefault().getClassifier();
         this.listener = new MyTextListener();
         this.finalLexStates = Maps.newTreeMap();
     }

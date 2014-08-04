@@ -33,6 +33,7 @@ import com.google.common.base.Splitter;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.LanguageVersion;
@@ -53,6 +54,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     private static TypeScriptPlugin PLUGIN;
 
     private LanguageEndpoint builderLanguageEndpoint;
+    private Classifier classifier;
     private LanguageEndpoint editorLanguageEndpoint;
     private LanguageEndpoint reconcilerLanguageEndpoint;
     private MyResourceChangeListener resourceChangeListener;
@@ -64,6 +66,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         PLUGIN = this;
 
         this.builderLanguageEndpoint = new LanguageEndpoint();
+        this.classifier = new Classifier();
         this.editorLanguageEndpoint = new LanguageEndpoint();
         this.reconcilerLanguageEndpoint = new LanguageEndpoint();
         this.resourceChangeListener = new MyResourceChangeListener();
@@ -76,6 +79,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
 
         this.builderLanguageEndpoint.dispose();
+        this.classifier.dispose();
         this.editorLanguageEndpoint.dispose();
         this.reconcilerLanguageEndpoint.dispose();
 
@@ -100,6 +104,10 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public LanguageEndpoint getBuilderLanguageEndpoint() {
         return this.builderLanguageEndpoint;
+    }
+
+    public Classifier getClassifier() {
+        return this.classifier;
     }
 
     public LanguageEndpoint getEditorLanguageEndpoint() {
