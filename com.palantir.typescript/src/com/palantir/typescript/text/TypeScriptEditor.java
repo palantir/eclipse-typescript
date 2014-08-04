@@ -77,7 +77,7 @@ public final class TypeScriptEditor extends TextEditor {
 
     private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
-    private EditorLanguageService languageService;
+    private FileLanguageService languageService;
 
     @Override
     public void dispose() {
@@ -119,7 +119,7 @@ public final class TypeScriptEditor extends TextEditor {
         return getFilePath(input);
     }
 
-    public EditorLanguageService getLanguageService() {
+    public FileLanguageService getLanguageService() {
         return this.languageService;
     }
 
@@ -143,7 +143,7 @@ public final class TypeScriptEditor extends TextEditor {
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                 String fileName = getFileName(input);
 
-                this.languageService = EditorLanguageService.create(project, fileName);
+                this.languageService = FileLanguageService.create(project, fileName);
             }
         }
 
@@ -151,7 +151,7 @@ public final class TypeScriptEditor extends TextEditor {
         if (this.languageService == null) {
             String documentText = this.getDocumentProvider().getDocument(input).get();
 
-            this.languageService = EditorLanguageService.create(documentText);
+            this.languageService = FileLanguageService.create(documentText);
         }
     }
 

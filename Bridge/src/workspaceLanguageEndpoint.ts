@@ -69,6 +69,10 @@ module Bridge {
             return this.languageServices[serviceKey].getAllDiagnostics();
         }
 
+        public getDiagnostics(serviceKey: string, fileName: string, semantic: boolean) {
+            return this.languageServices[serviceKey].getDiagnostics(fileName, semantic);
+        }
+
         public getEmitOutput(serviceKey: string, fileName: string) {
             return this.languageServices[serviceKey].getEmitOutputFiles(fileName);
         }
@@ -99,6 +103,10 @@ module Bridge {
 
         public getNameOrDottedNameSpan(serviceKey: string, fileName: string, startPos: number, endPos: number) {
             return this.languageServices[serviceKey].getNameOrDottedNameSpan(fileName, startPos, endPos);
+        }
+
+        public getOccurrencesAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getOccurrencesAtPosition(fileName, position);
         }
 
         public getReferencesAtPosition(serviceKey: string, fileName: string, position: number) {

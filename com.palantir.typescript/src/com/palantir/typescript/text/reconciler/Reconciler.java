@@ -28,10 +28,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.text.DocumentEvent;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IDocumentListener;
@@ -48,17 +44,14 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPathEditorInput;
 import org.eclipse.ui.editors.text.EditorsUI;
-import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.texteditor.spelling.SpellingReconcileStrategy;
 import org.eclipse.ui.texteditor.spelling.SpellingService;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.palantir.typescript.EclipseResources;
-import com.palantir.typescript.services.language.FileDelta;
-import com.palantir.typescript.services.language.LanguageService;
+import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
@@ -79,10 +72,9 @@ public final class Reconciler implements IReconciler {
     private final MyListener listener;
     private final OutlineViewReconcilingStrategy outlineViewStrategy;
     private final AtomicBoolean reconcileRequired;
-    private final MyResourceChangeListener resourceChangeListener;
     private final SpellingReconcileStrategy spellingStrategy;
 
-    private LanguageService cachedLanguageService;
+    private FileLanguageService cachedLanguageService;
     private ITextViewer cachedTextViewer;
 
     public Reconciler(TypeScriptEditor editor, ISourceViewer sourceViewer) {
@@ -98,7 +90,6 @@ public final class Reconciler implements IReconciler {
         this.executor = createExecutor();
         this.listener = new MyListener();
         this.reconcileRequired = new AtomicBoolean();
-        this.resourceChangeListener = new MyResourceChangeListener();
         this.spellingStrategy = new SpellingReconcileStrategy(sourceViewer, EditorsUI.getSpellingService());
     }
 
@@ -109,8 +100,6 @@ public final class Reconciler implements IReconciler {
 
         this.cachedTextViewer = textViewer;
         this.cachedTextViewer.addTextInputListener(this.listener);
-
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     @Override
@@ -119,16 +108,6 @@ public final class Reconciler implements IReconciler {
         control.removeCaretListener(this.caretListener);
 
         this.cachedTextViewer.removeTextInputListener(this.listener);
-
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
-
-        // dispose the language service via the executor service since it can take a few seconds
-        this.executor.execute(new Runnable() {
-            @Override
-            public void run() {
-                Reconciler.this.cachedLanguageService.dispose();
-            }
-        });
 
         // shut down the executor (remaining tasks will be allowed to complete)
         this.executor.shutdown();
@@ -139,27 +118,26 @@ public final class Reconciler implements IReconciler {
         throw new UnsupportedOperationException();
     }
 
-    private LanguageService getLanguageService() {
+    private FileLanguageService getLanguageService() {
         if (this.cachedLanguageService == null) {
             IEditorInput input = Reconciler.this.editor.getEditorInput();
-            String fileName = this.editor.getFileName();
-            String filePath = this.editor.getFilePath();
 
             if (input instanceof IPathEditorInput) {
                 IResource resource = ResourceUtil.getResource(input);
                 IProject project = resource.getProject();
 
                 if (EclipseResources.isContainedInSourceFolder(resource, project)) {
-                    this.cachedLanguageService = new LanguageService(project);
-                } else {
-                    this.cachedLanguageService = new LanguageService(fileName, filePath);
+                    String fileName = this.editor.getFileName();
+
+                    this.cachedLanguageService = FileLanguageService.create(project, fileName);
                 }
-            } else if (input instanceof FileStoreEditorInput) {
-                this.cachedLanguageService = new LanguageService(fileName, filePath);
             }
 
-            // set the file as open so that resource change events are not processed for it
-            this.cachedLanguageService.setFileOpen(fileName, true);
+            if (this.cachedLanguageService == null) {
+                String documentText = this.editor.getDocumentProvider().getDocument(input).get();
+
+                this.cachedLanguageService = FileLanguageService.create(documentText);
+            }
         }
 
         return this.cachedLanguageService;
@@ -175,22 +153,19 @@ public final class Reconciler implements IReconciler {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private void processEvents(LanguageService languageService) {
+    private void processEvents(FileLanguageService languageService) {
         DocumentEvent event;
 
         while ((event = Reconciler.this.eventQueue.poll()) != null) {
-            String fileName = Reconciler.this.editor.getFileName();
             int offset = event.getOffset();
             int length = event.getLength();
             String text = event.getText();
 
-            languageService.editFile(fileName, offset, length, text);
+            languageService.editFile(offset, length, text);
         }
     }
 
     private void reconcile() {
-        LanguageService languageService = this.getLanguageService();
-
         // check that a reconcile is still required (many tasks may be queued but only one should run at any given time)
         if (this.reconcileRequired.compareAndSet(true, false)) {
             // spelling
@@ -202,6 +177,7 @@ public final class Reconciler implements IReconciler {
             }
 
             // annotations
+            FileLanguageService languageService = this.getLanguageService();
             this.processEvents(languageService);
             this.annotationStrategy.reconcile(languageService);
             this.outlineViewStrategy.reconcile(languageService);
@@ -249,33 +225,6 @@ public final class Reconciler implements IReconciler {
                 newInput.addDocumentListener(this);
 
                 // initial reconcile
-                scheduleReconcile(0);
-            }
-        }
-    }
-
-    private final class MyResourceChangeListener implements IResourceChangeListener {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            IEditorInput input = Reconciler.this.editor.getEditorInput();
-
-            if (input instanceof IPathEditorInput) {
-                IResourceDelta delta = event.getDelta();
-                IResource resource = ResourceUtil.getResource(input);
-                IProject project = resource.getProject();
-
-                final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
-
-                // update the files on the reconciler thread
-                Reconciler.this.executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        LanguageService languageService = getLanguageService();
-
-                        languageService.updateFiles(fileDeltas);
-                    }
-                });
-
                 scheduleReconcile(0);
             }
         }

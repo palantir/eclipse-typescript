@@ -54,6 +54,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     private WorkspaceLanguageService builderLanguageService;
     private WorkspaceLanguageService editorLanguageService;
+    private WorkspaceLanguageService reconcilerLanguageService;
     private MyResourceChangeListener resourceChangeListener;
 
     @Override
@@ -64,6 +65,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
         this.builderLanguageService = new WorkspaceLanguageService();
         this.editorLanguageService = new WorkspaceLanguageService();
+        this.reconcilerLanguageService = new WorkspaceLanguageService();
         this.resourceChangeListener = new MyResourceChangeListener();
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
@@ -75,6 +77,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
         this.builderLanguageService.dispose();
         this.editorLanguageService.dispose();
+        this.reconcilerLanguageService.dispose();
 
         PLUGIN = null;
 
@@ -186,6 +189,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
             final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta);
 
             TypeScriptPlugin.this.editorLanguageService.updateFiles(fileDeltas);
+            TypeScriptPlugin.this.reconcilerLanguageService.updateFiles(fileDeltas);
         }
     }
 }

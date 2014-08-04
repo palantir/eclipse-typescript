@@ -165,6 +165,14 @@ public final class WorkspaceLanguageService {
         return this.bridge.call(request, resultType);
     }
 
+    public List<DiagnosticEx> getDiagnostics(String serviceKey, String fileName, boolean semantic) {
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getDiagnostics", serviceKey, fileName, semantic);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
+        return this.bridge.call(request, resultType);
+    }
+
     public List<TextEdit> getFormattingEditsForRange(String serviceKey, String fileName, int minChar, int limChar, FormatCodeOptions options) {
         checkNotNull(fileName);
         checkArgument(minChar >= 0);
@@ -192,6 +200,15 @@ public final class WorkspaceLanguageService {
 
         Request request = new Request(SERVICE, "getNameOrDottedNameSpan", serviceKey, fileName, startPos, endPos);
         return this.bridge.call(request, SpanInfo.class);
+    }
+
+    public List<ReferenceEntry> getOccurrencesAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getOccurrencesAtPosition", serviceKey, fileName, position);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        return this.bridge.call(request, returnType);
     }
 
     public List<ReferenceEntry> getReferencesAtPosition(String serviceKey, String fileName, int position) {

@@ -24,6 +24,7 @@ import org.eclipse.core.resources.IProject;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.CompletionInfoEx;
 import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.FormatCodeOptions;
 import com.palantir.typescript.services.language.NavigateToItem;
@@ -36,17 +37,17 @@ import com.palantir.typescript.services.language.TypeInfoEx;
 import com.palantir.typescript.services.language.WorkspaceLanguageService;
 
 /**
- * A language service specifically for use with a text editor.
+ * A language service specifically for use with a single file.
  *
  * @author dcicerone
  */
-public final class EditorLanguageService {
+public final class FileLanguageService {
 
     private final WorkspaceLanguageService languageService;
     private final String fileName;
     private final String serviceKey;
 
-    private EditorLanguageService(WorkspaceLanguageService languageService, String serviceKey, String fileName) {
+    private FileLanguageService(WorkspaceLanguageService languageService, String serviceKey, String fileName) {
         this.languageService = languageService;
         this.fileName = fileName;
         this.serviceKey = serviceKey;
@@ -81,6 +82,12 @@ public final class EditorLanguageService {
         return this.languageService.getDefinitionAtPosition(this.serviceKey, this.fileName, position);
     }
 
+    public List<DiagnosticEx> getDiagnostics() {
+        boolean semantic = !this.serviceKey.equals(this.fileName);
+
+        return this.languageService.getDiagnostics(this.serviceKey, this.fileName, semantic);
+    }
+
     public List<TextEdit> getFormattingEditsForRange(int minChar, int limChar, FormatCodeOptions options) {
         return this.languageService.getFormattingEditsForRange(this.serviceKey, this.fileName, minChar, limChar, options);
     }
@@ -91,6 +98,10 @@ public final class EditorLanguageService {
 
     public SpanInfo getNameOrDottedNameSpan(int startPos, int endPos) {
         return this.languageService.getNameOrDottedNameSpan(this.serviceKey, this.fileName, startPos, endPos);
+    }
+
+    public List<ReferenceEntry> getOccurrencesAtPosition(int position) {
+        return this.languageService.getOccurrencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public List<ReferenceEntry> getReferencesAtPosition(int position) {
@@ -105,7 +116,7 @@ public final class EditorLanguageService {
         return this.languageService.getTypeAtPosition(this.serviceKey, this.fileName, position);
     }
 
-    public static EditorLanguageService create(IProject project, String fileName) {
+    public static FileLanguageService create(IProject project, String fileName) {
         WorkspaceLanguageService languageService = TypeScriptPlugin.getDefault().getEditorLanguageService();
 
         // ensure the project is initialized
@@ -115,10 +126,10 @@ public final class EditorLanguageService {
 
         languageService.setFileOpen(fileName, true);
 
-        return new EditorLanguageService(languageService, project.getName(), fileName);
+        return new FileLanguageService(languageService, project.getName(), fileName);
     }
 
-    public static EditorLanguageService create(String documentText) {
+    public static FileLanguageService create(String documentText) {
         WorkspaceLanguageService languageService = TypeScriptPlugin.getDefault().getEditorLanguageService();
         String serviceKey = UUID.randomUUID().toString();
         String fileName = serviceKey;
@@ -126,6 +137,6 @@ public final class EditorLanguageService {
 
         languageService.setFileOpen(fileName, true);
 
-        return new EditorLanguageService(languageService, serviceKey, fileName);
+        return new FileLanguageService(languageService, serviceKey, fileName);
     }
 }
