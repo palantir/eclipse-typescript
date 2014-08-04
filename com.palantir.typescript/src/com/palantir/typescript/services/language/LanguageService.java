@@ -67,15 +67,6 @@ public final class LanguageService {
     private final MyPreferenceChangeListener preferencesListener;
     private final IProject project;
 
-    public LanguageService(String fileName, ByteOrderMark byteOrderMark, String contents) {
-        this((IProject) null);
-
-        checkNotNull(fileName);
-        checkNotNull(contents);
-
-        this.setFileContents(fileName, byteOrderMark, contents);
-    }
-
     public LanguageService(String fileName, String filePath) {
         this((IProject) null);
 

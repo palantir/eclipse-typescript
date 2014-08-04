@@ -255,7 +255,7 @@ public final class WorkspaceLanguageService {
     }
 
     private static String readLibContents() {
-        URL libUrl = LanguageService.class.getResource(LIB_FILE_NAME);
+        URL libUrl = WorkspaceLanguageService.class.getResource(LIB_FILE_NAME);
 
         try {
             return Resources.toString(libUrl, Charsets.UTF_8);
