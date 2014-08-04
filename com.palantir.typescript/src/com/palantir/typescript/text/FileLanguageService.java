@@ -16,17 +16,19 @@
 
 package com.palantir.typescript.text;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.core.resources.IProject;
 
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.CompletionInfoEx;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.FormatCodeOptions;
+import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.NavigateToItem;
 import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
@@ -34,7 +36,6 @@ import com.palantir.typescript.services.language.SpanInfo;
 import com.palantir.typescript.services.language.TextEdit;
 import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.services.language.TypeInfoEx;
-import com.palantir.typescript.services.language.WorkspaceLanguageService;
 
 /**
  * A language service specifically for use with a single file.
@@ -43,100 +44,104 @@ import com.palantir.typescript.services.language.WorkspaceLanguageService;
  */
 public final class FileLanguageService {
 
-    private final WorkspaceLanguageService languageService;
+    private final LanguageEndpoint languageEndpoint;
     private final String fileName;
     private final String serviceKey;
 
-    private FileLanguageService(WorkspaceLanguageService languageService, String serviceKey, String fileName) {
-        this.languageService = languageService;
+    private FileLanguageService(LanguageEndpoint languageEndpoint, String serviceKey, String fileName) {
+        this.languageEndpoint = languageEndpoint;
         this.fileName = fileName;
         this.serviceKey = serviceKey;
     }
 
     public void dispose() {
-        this.languageService.setFileOpen(this.fileName, false);
+        this.languageEndpoint.setFileOpen(this.fileName, false);
 
         // remove the language service if it was isolated
         if (this.serviceKey.equals(this.fileName)) {
-            this.languageService.closeIsolatedLanguageService(this.serviceKey, this.fileName);
+            this.languageEndpoint.closeIsolatedLanguageService(this.serviceKey, this.fileName);
         }
     }
 
     public void editFile(int offset, int length, String replacementText) {
-        this.languageService.editFile(this.fileName, offset, length, replacementText);
+        this.languageEndpoint.editFile(this.fileName, offset, length, replacementText);
     }
 
     public List<ReferenceEntryEx> findReferences(int position) {
-        return this.languageService.findReferences(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.findReferences(this.serviceKey, this.fileName, position);
     }
 
     public List<TextSpan> getBraceMatchingAtPosition(int position) {
-        return this.languageService.getBraceMatchingAtPosition(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.getBraceMatchingAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public CompletionInfoEx getCompletionsAtPosition(int position) {
-        return this.languageService.getCompletionsAtPosition(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.getCompletionsAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public List<DefinitionInfo> getDefinitionAtPosition(int position) {
-        return this.languageService.getDefinitionAtPosition(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.getDefinitionAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public List<DiagnosticEx> getDiagnostics() {
         boolean semantic = !this.serviceKey.equals(this.fileName);
 
-        return this.languageService.getDiagnostics(this.serviceKey, this.fileName, semantic);
+        return this.languageEndpoint.getDiagnostics(this.serviceKey, this.fileName, semantic);
     }
 
     public List<TextEdit> getFormattingEditsForRange(int minChar, int limChar, FormatCodeOptions options) {
-        return this.languageService.getFormattingEditsForRange(this.serviceKey, this.fileName, minChar, limChar, options);
+        return this.languageEndpoint.getFormattingEditsForRange(this.serviceKey, this.fileName, minChar, limChar, options);
     }
 
     public int getIndentationAtPosition(int position, EditorOptions options) {
-        return this.languageService.getIndentationAtPosition(this.serviceKey, this.fileName, position, options);
+        return this.languageEndpoint.getIndentationAtPosition(this.serviceKey, this.fileName, position, options);
     }
 
     public SpanInfo getNameOrDottedNameSpan(int startPos, int endPos) {
-        return this.languageService.getNameOrDottedNameSpan(this.serviceKey, this.fileName, startPos, endPos);
+        return this.languageEndpoint.getNameOrDottedNameSpan(this.serviceKey, this.fileName, startPos, endPos);
     }
 
     public List<ReferenceEntry> getOccurrencesAtPosition(int position) {
-        return this.languageService.getOccurrencesAtPosition(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.getOccurrencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public List<ReferenceEntry> getReferencesAtPosition(int position) {
-        return this.languageService.getReferencesAtPosition(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.getReferencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public List<NavigateToItem> getScriptLexicalStructure() {
-        return this.languageService.getScriptLexicalStructure(this.serviceKey, this.fileName);
+        return this.languageEndpoint.getScriptLexicalStructure(this.serviceKey, this.fileName);
     }
 
     public TypeInfoEx getTypeAtPosition(int position) {
-        return this.languageService.getTypeAtPosition(this.serviceKey, this.fileName, position);
+        return this.languageEndpoint.getTypeAtPosition(this.serviceKey, this.fileName, position);
     }
 
-    public static FileLanguageService create(IProject project, String fileName) {
-        WorkspaceLanguageService languageService = TypeScriptPlugin.getDefault().getEditorLanguageService();
+    public static FileLanguageService create(LanguageEndpoint languageEndpoint, IProject project, String fileName) {
+        checkNotNull(languageEndpoint);
+        checkNotNull(project);
+        checkNotNull(fileName);
 
         // ensure the project is initialized
-        if (!languageService.isProjectInitialized(project)) {
-            languageService.initializeProject(project);
+        if (!languageEndpoint.isProjectInitialized(project)) {
+            languageEndpoint.initializeProject(project);
         }
 
-        languageService.setFileOpen(fileName, true);
+        languageEndpoint.setFileOpen(fileName, true);
 
-        return new FileLanguageService(languageService, project.getName(), fileName);
+        return new FileLanguageService(languageEndpoint, project.getName(), fileName);
     }
 
-    public static FileLanguageService create(String documentText) {
-        WorkspaceLanguageService languageService = TypeScriptPlugin.getDefault().getEditorLanguageService();
+    public static FileLanguageService create(LanguageEndpoint languageEndpoint, String documentText) {
+        checkNotNull(languageEndpoint);
+        checkNotNull(documentText);
+
         String serviceKey = UUID.randomUUID().toString();
         String fileName = serviceKey;
-        languageService.initializeIsolatedLanguageService(serviceKey, fileName, documentText);
+        languageEndpoint.initializeIsolatedLanguageService(serviceKey, fileName, documentText);
 
-        languageService.setFileOpen(fileName, true);
+        languageEndpoint.setFileOpen(fileName, true);
 
-        return new FileLanguageService(languageService, serviceKey, fileName);
+        return new FileLanguageService(languageEndpoint, serviceKey, fileName);
     }
 }

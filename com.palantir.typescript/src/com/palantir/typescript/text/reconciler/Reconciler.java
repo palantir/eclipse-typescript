@@ -51,6 +51,8 @@ import org.eclipse.ui.texteditor.spelling.SpellingService;
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
@@ -121,6 +123,7 @@ public final class Reconciler implements IReconciler {
     private FileLanguageService getLanguageService() {
         if (this.cachedLanguageService == null) {
             IEditorInput input = Reconciler.this.editor.getEditorInput();
+            LanguageEndpoint languageEndpoint = TypeScriptPlugin.getDefault().getReconcilerLanguageEndpoint();
 
             if (input instanceof IPathEditorInput) {
                 IResource resource = ResourceUtil.getResource(input);
@@ -129,14 +132,14 @@ public final class Reconciler implements IReconciler {
                 if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                     String fileName = this.editor.getFileName();
 
-                    this.cachedLanguageService = FileLanguageService.create(project, fileName);
+                    this.cachedLanguageService = FileLanguageService.create(languageEndpoint, project, fileName);
                 }
             }
 
             if (this.cachedLanguageService == null) {
                 String documentText = this.editor.getDocumentProvider().getDocument(input).get();
 
-                this.cachedLanguageService = FileLanguageService.create(documentText);
+                this.cachedLanguageService = FileLanguageService.create(languageEndpoint, documentText);
             }
         }
 

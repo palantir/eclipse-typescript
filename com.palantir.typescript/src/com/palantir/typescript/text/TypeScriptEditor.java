@@ -59,6 +59,7 @@ import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
@@ -127,6 +128,7 @@ public final class TypeScriptEditor extends TextEditor {
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
 
+        LanguageEndpoint languageEndpoint = TypeScriptPlugin.getDefault().getEditorLanguageEndpoint();
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
@@ -143,7 +145,7 @@ public final class TypeScriptEditor extends TextEditor {
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
                 String fileName = getFileName(input);
 
-                this.languageService = FileLanguageService.create(project, fileName);
+                this.languageService = FileLanguageService.create(languageEndpoint, project, fileName);
             }
         }
 
@@ -151,7 +153,7 @@ public final class TypeScriptEditor extends TextEditor {
         if (this.languageService == null) {
             String documentText = this.getDocumentProvider().getDocument(input).get();
 
-            this.languageService = FileLanguageService.create(documentText);
+            this.languageService = FileLanguageService.create(languageEndpoint, documentText);
         }
     }
 

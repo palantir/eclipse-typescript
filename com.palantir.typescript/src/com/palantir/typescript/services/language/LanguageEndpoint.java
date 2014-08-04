@@ -40,18 +40,18 @@ import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
 /**
- * The workspace language service.
+ * The workspace language enpoint.
  *
  * @author dcicerone
  */
-public final class WorkspaceLanguageService {
+public final class LanguageEndpoint {
 
     private static final String LIB_FILE_NAME = "lib.d.ts";
-    private static final String SERVICE = "workspaceLanguage";
+    private static final String SERVICE = "language";
 
     private final Bridge bridge;
 
-    public WorkspaceLanguageService() {
+    public LanguageEndpoint() {
         this.bridge = new Bridge();
 
         this.setLibContents();
@@ -272,7 +272,7 @@ public final class WorkspaceLanguageService {
     }
 
     private static String readLibContents() {
-        URL libUrl = WorkspaceLanguageService.class.getResource(LIB_FILE_NAME);
+        URL libUrl = LanguageEndpoint.class.getResource(LIB_FILE_NAME);
 
         try {
             return Resources.toString(libUrl, Charsets.UTF_8);
