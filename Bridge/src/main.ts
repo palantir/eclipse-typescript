@@ -15,6 +15,7 @@
  */
 
 /// <reference path="classifierEndpoint.ts" />
+/// <reference path="languageEndpoint.ts" />
 /// <reference path="workspaceLanguageEndpoint.ts" />
 
 /**
@@ -31,6 +32,7 @@ module Bridge {
         constructor() {
             this.endpoints = Object.create(null);
             this.endpoints["classifier"] = new ClassifierEndpoint();
+            this.endpoints["language"] = new LanguageEndpoint();
             this.endpoints["workspaceLanguage"] = new WorkspaceLanguageEndpoint();
         }
 

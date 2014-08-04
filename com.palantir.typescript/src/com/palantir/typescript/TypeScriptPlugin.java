@@ -19,10 +19,6 @@ package com.palantir.typescript;
 import java.io.File;
 import java.util.List;
 
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -31,9 +27,7 @@ import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.StandardSystemProperty;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageVersion;
 import com.palantir.typescript.services.language.ModuleGenTarget;
 import com.palantir.typescript.services.language.WorkspaceLanguageService;
@@ -53,9 +47,6 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     private static TypeScriptPlugin PLUGIN;
 
     private WorkspaceLanguageService builderLanguageService;
-    private WorkspaceLanguageService editorLanguageService;
-    private WorkspaceLanguageService reconcilerLanguageService;
-    private MyResourceChangeListener resourceChangeListener;
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -64,20 +55,11 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         PLUGIN = this;
 
         this.builderLanguageService = new WorkspaceLanguageService();
-        this.editorLanguageService = new WorkspaceLanguageService();
-        this.reconcilerLanguageService = new WorkspaceLanguageService();
-        this.resourceChangeListener = new MyResourceChangeListener();
-
-        ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
     }
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
-
         this.builderLanguageService.dispose();
-        this.editorLanguageService.dispose();
-        this.reconcilerLanguageService.dispose();
 
         PLUGIN = null;
 
@@ -100,10 +82,6 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public WorkspaceLanguageService getBuilderLanguageService() {
         return this.builderLanguageService;
-    }
-
-    public WorkspaceLanguageService getEditorLanguageService() {
-        return this.editorLanguageService;
     }
 
     @Override
@@ -180,16 +158,5 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         }
 
         return "node";
-    }
-
-    private final class MyResourceChangeListener implements IResourceChangeListener {
-        @Override
-        public void resourceChanged(IResourceChangeEvent event) {
-            IResourceDelta delta = event.getDelta();
-            final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta);
-
-            TypeScriptPlugin.this.editorLanguageService.updateFiles(fileDeltas);
-            TypeScriptPlugin.this.reconcilerLanguageService.updateFiles(fileDeltas);
-        }
     }
 }

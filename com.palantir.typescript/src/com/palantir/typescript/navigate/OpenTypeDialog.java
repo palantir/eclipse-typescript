@@ -17,7 +17,11 @@
 package com.palantir.typescript.navigate;
 
 import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -28,8 +32,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 
+import com.google.common.collect.ImmutableSet;
+import com.palantir.typescript.ProjectNature;
 import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.ScriptElementKind;
 
 /**
  * The Open Type dialog.
@@ -38,10 +46,12 @@ import com.palantir.typescript.services.language.NavigateToItem;
  */
 public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
 
-//    private static final Set<ScriptElementKind> TYPE_ELEMENT_KINDS = ImmutableSet.of(
-//        ScriptElementKind.CLASS_ELEMENT,
-//        ScriptElementKind.ENUM_ELEMENT,
-//        ScriptElementKind.INTERFACE_ELEMENT);
+    private static final Set<ScriptElementKind> TYPE_ELEMENT_KINDS = ImmutableSet.of(
+        ScriptElementKind.CLASS_ELEMENT,
+        ScriptElementKind.ENUM_ELEMENT,
+        ScriptElementKind.INTERFACE_ELEMENT);
+
+    private LanguageService languageService;
 
     public OpenTypeDialog(Shell shell) {
         super(shell);
@@ -106,13 +116,22 @@ public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
             throws CoreException {
         progressMonitor.beginTask("Searching...", 1);
 
-        // HACKHACK: this is disabled for now
-//        List<NavigateToItem> navigateToItems = this.languageService.getNavigateToItems(itemsFilter.getPattern());
-//        for (NavigateToItem navigateToItem : navigateToItems) {
-//            if (TYPE_ELEMENT_KINDS.contains(navigateToItem.getKind())) {
-//                contentProvider.add(navigateToItem, itemsFilter);
-//            }
-//        }
+        // HACKHACK: just pick the first project with the TypeScript nature for now (until we support a global language service)
+        if (this.languageService == null) {
+            for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+                if (project.hasNature(ProjectNature.ID)) {
+                    this.languageService = new LanguageService(project);
+                    break;
+                }
+            }
+        }
+
+        List<NavigateToItem> navigateToItems = this.languageService.getNavigateToItems(itemsFilter.getPattern());
+        for (NavigateToItem navigateToItem : navigateToItems) {
+            if (TYPE_ELEMENT_KINDS.contains(navigateToItem.getKind())) {
+                contentProvider.add(navigateToItem, itemsFilter);
+            }
+        }
 
         progressMonitor.done();
     }

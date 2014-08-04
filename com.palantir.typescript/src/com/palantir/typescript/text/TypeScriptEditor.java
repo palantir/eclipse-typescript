@@ -25,6 +25,10 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -54,11 +58,18 @@ import org.eclipse.ui.texteditor.ChainedPreferenceStore;
 import org.eclipse.ui.texteditor.SourceViewerDecorationSupport;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
+import com.palantir.typescript.services.language.ByteOrderMark;
 import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.FileDelta;
+import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
@@ -75,13 +86,47 @@ import com.palantir.typescript.text.actions.ToggleCommentAction;
  */
 public final class TypeScriptEditor extends TextEditor {
 
+    private static final LoadingCache<IProject, LanguageService> LANGUAGE_SERVICE_CACHE = CacheBuilder.newBuilder().build(
+        new CacheLoader<IProject, LanguageService>() {
+            @Override
+            public LanguageService load(IProject project) throws Exception {
+                LanguageService languageService = new LanguageService(project);
+                MyResourceChangeListener resourceChangeListener = new MyResourceChangeListener(languageService, project);
+                ResourcesPlugin.getWorkspace().addResourceChangeListener(resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
+
+                return languageService;
+            }
+
+            final class MyResourceChangeListener implements IResourceChangeListener {
+
+                private final LanguageService languageService;
+                private final IProject project;
+
+                public MyResourceChangeListener(LanguageService languageService, IProject project) {
+                    this.languageService = languageService;
+                    this.project = project;
+                }
+
+                @Override
+                public void resourceChanged(IResourceChangeEvent event) {
+                    IResourceDelta delta = event.getDelta();
+                    final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, this.project);
+
+                    this.languageService.updateFiles(fileDeltas);
+                }
+            }
+        });
+
     private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
-    private FileLanguageService languageService;
+    private EditorLanguageService languageService;
 
     @Override
     public void dispose() {
-        this.languageService.dispose();
+        // inform the language service that the file is no longer open
+        if (this.getEditorInput() != null) {
+            this.languageService.setFileOpen(false);
+        }
 
         super.dispose();
     }
@@ -119,7 +164,7 @@ public final class TypeScriptEditor extends TextEditor {
         return getFilePath(input);
     }
 
-    public FileLanguageService getLanguageService() {
+    public EditorLanguageService getLanguageService() {
         return this.languageService;
     }
 
@@ -127,6 +172,7 @@ public final class TypeScriptEditor extends TextEditor {
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
 
+        String fileName = getFileName(input);
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
@@ -139,20 +185,25 @@ public final class TypeScriptEditor extends TextEditor {
             });
             this.setPreferenceStore(chainedPreferenceStore);
 
-            // use a project-specific language service
             if (EclipseResources.isContainedInSourceFolder(resource, project)) {
-                String fileName = getFileName(input);
+                this.languageService = new EditorLanguageService(fileName, LANGUAGE_SERVICE_CACHE.getUnchecked(project));
+            } else {
+                String filePath = getFilePath(input);
 
-                this.languageService = FileLanguageService.create(project, fileName);
+                this.languageService = new EditorLanguageService(fileName, new LanguageService(fileName, filePath));
             }
+        } else if (input instanceof FileStoreEditorInput) {
+            String filePath = getFilePath(input);
+
+            this.languageService = new EditorLanguageService(fileName, new LanguageService(fileName, filePath));
+        } else {
+            String contents = this.getDocumentProvider().getDocument(input).get();
+
+            this.languageService = new EditorLanguageService(fileName, new LanguageService(fileName, ByteOrderMark.NONE, contents));
         }
 
-        // use an isolated language service if the input wasn't a file in a project's source folder
-        if (this.languageService == null) {
-            String documentText = this.getDocumentProvider().getDocument(input).get();
-
-            this.languageService = FileLanguageService.create(documentText);
-        }
+        // inform the language service that the file is open
+        this.languageService.setFileOpen(true);
     }
 
     public static void openDefinition(DefinitionInfo definition) {

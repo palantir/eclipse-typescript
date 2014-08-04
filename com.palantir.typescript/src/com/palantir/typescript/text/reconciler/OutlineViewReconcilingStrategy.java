@@ -24,8 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
+import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.NavigateToItem;
-import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.OutlinePage;
 import com.palantir.typescript.text.TypeScriptEditor;
 
@@ -36,19 +36,22 @@ import com.palantir.typescript.text.TypeScriptEditor;
  */
 public final class OutlineViewReconcilingStrategy {
 
+    private final TypeScriptEditor editor;
     private final OutlinePage outlinePage;
 
     public OutlineViewReconcilingStrategy(TypeScriptEditor editor) {
         checkNotNull(editor);
 
+        this.editor = editor;
         this.outlinePage = (OutlinePage) editor.getAdapter(IContentOutlinePage.class);
     }
 
-    public void reconcile(FileLanguageService languageService) {
+    public void reconcile(LanguageService languageService) {
         checkNotNull(languageService);
 
         if (this.isVisible()) {
-            final List<NavigateToItem> lexicalStructure = languageService.getScriptLexicalStructure();
+            String fileName = this.editor.getFileName();
+            final List<NavigateToItem> lexicalStructure = languageService.getScriptLexicalStructure(fileName);
             Display.getDefault().asyncExec(new Runnable() {
 
                 @Override
