@@ -50,8 +50,8 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
-import com.palantir.typescript.services.language.OutputFile;
 import com.palantir.typescript.services.language.LanguageEndpoint;
+import com.palantir.typescript.services.language.OutputFile;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -222,6 +222,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                     continue;
                 }
 
+                cleanEmittedFile(removedFileName, ".d.ts", monitor);
                 cleanEmittedFile(removedFileName, ".js", monitor);
                 cleanEmittedFile(removedFileName, ".js.map", monitor);
             }
