@@ -308,16 +308,4 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         // refresh the file so that eclipse knows about it
         eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
     }
-
-    private static void deleteDirectory(File file) {
-        for (File child : file.listFiles()) {
-            if (child.isDirectory()) {
-                deleteDirectory(child);
-            } else {
-                child.delete();
-            }
-        }
-
-        file.delete();
-    }
 }
