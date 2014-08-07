@@ -40,18 +40,18 @@ import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
 /**
- * The workspace language service.
+ * The workspace language enpoint.
  *
  * @author dcicerone
  */
-public final class WorkspaceLanguageService {
+public final class LanguageEndpoint {
 
     private static final String LIB_FILE_NAME = "lib.d.ts";
-    private static final String SERVICE = "workspaceLanguage";
+    private static final String SERVICE = "language";
 
     private final Bridge bridge;
 
-    public WorkspaceLanguageService() {
+    public LanguageEndpoint() {
         this.bridge = new Bridge();
 
         this.setLibContents();
@@ -131,6 +131,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<ReferenceEntryEx> findReferences(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -140,6 +141,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<TextSpan> getBraceMatchingAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -149,6 +151,7 @@ public final class WorkspaceLanguageService {
     }
 
     public CompletionInfoEx getCompletionsAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -157,6 +160,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<DefinitionInfo> getDefinitionAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -166,6 +170,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<DiagnosticEx> getDiagnostics(String serviceKey, String fileName, boolean semantic) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getDiagnostics", serviceKey, fileName, semantic);
@@ -174,6 +179,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<TextEdit> getFormattingEditsForRange(String serviceKey, String fileName, int minChar, int limChar, FormatCodeOptions options) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(minChar >= 0);
         checkArgument(limChar >= 0);
@@ -185,6 +191,7 @@ public final class WorkspaceLanguageService {
     }
 
     public int getIndentationAtPosition(String serviceKey, String fileName, int position, EditorOptions options) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
         checkNotNull(options);
@@ -194,6 +201,7 @@ public final class WorkspaceLanguageService {
     }
 
     public SpanInfo getNameOrDottedNameSpan(String serviceKey, String fileName, int startPos, int endPos) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(startPos >= 0);
         checkArgument(endPos >= 0);
@@ -203,6 +211,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<ReferenceEntry> getOccurrencesAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -212,6 +221,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<ReferenceEntry> getReferencesAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -221,6 +231,7 @@ public final class WorkspaceLanguageService {
     }
 
     public List<NavigateToItem> getScriptLexicalStructure(String serviceKey, String fileName) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
 
         Request request = new Request(SERVICE, "getScriptLexicalStructure", serviceKey, fileName);
@@ -229,6 +240,7 @@ public final class WorkspaceLanguageService {
     }
 
     public TypeInfoEx getTypeAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
@@ -272,7 +284,7 @@ public final class WorkspaceLanguageService {
     }
 
     private static String readLibContents() {
-        URL libUrl = WorkspaceLanguageService.class.getResource(LIB_FILE_NAME);
+        URL libUrl = LanguageEndpoint.class.getResource(LIB_FILE_NAME);
 
         try {
             return Resources.toString(libUrl, Charsets.UTF_8);

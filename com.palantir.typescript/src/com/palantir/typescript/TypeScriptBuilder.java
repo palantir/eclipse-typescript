@@ -49,8 +49,8 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
+import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.OutputFile;
-import com.palantir.typescript.services.language.WorkspaceLanguageService;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -63,10 +63,10 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
 
-    private final WorkspaceLanguageService languageService;
+    private final LanguageEndpoint languageEndpoint;
 
     public TypeScriptBuilder() {
-        this.languageService = TypeScriptPlugin.getDefault().getBuilderLanguageService();
+        this.languageEndpoint = TypeScriptPlugin.getDefault().getBuilderLanguageEndpoint();
     }
 
     public static boolean isConfigured(IProject project) {
@@ -110,7 +110,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         checkNotNull(monitor);
 
         // clean the language service in case it is out-of-sync
-        this.languageService.cleanProject(this.getProject());
+        this.languageEndpoint.cleanProject(this.getProject());
 
         // clear the problem markers
         this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
@@ -120,7 +120,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void startupOnInitialize() {
         super.startupOnInitialize();
 
-        this.languageService.initializeProject(this.getProject());
+        this.languageEndpoint.initializeProject(this.getProject());
     }
 
     private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -148,7 +148,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableList<FileDelta> fileDeltas = this.getAllSourceFiles();
 
         // initialize the project in the language service to ensure it is up-to-date
-        this.languageService.initializeProject(this.getProject());
+        this.languageEndpoint.initializeProject(this.getProject());
 
         this.build(fileDeltas, monitor);
     }
@@ -159,7 +159,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
-            this.languageService.updateFiles(fileDeltas);
+            this.languageEndpoint.updateFiles(fileDeltas);
 
             // clear the problem markers
             this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
@@ -196,6 +196,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                     continue;
                 }
 
+                cleanEmittedFile(removedFileName, ".d.ts", monitor);
                 cleanEmittedFile(removedFileName, ".js", monitor);
                 cleanEmittedFile(removedFileName, ".js.map", monitor);
             }
@@ -228,7 +229,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
-        for (OutputFile outputFile : this.languageService.getEmitOutput(this.getProject(), fileName)) {
+        for (OutputFile outputFile : this.languageEndpoint.getEmitOutput(this.getProject(), fileName)) {
             String outputFileName = outputFile.getName();
             IFile eclipseFile = EclipseResources.getFile(outputFileName);
             String filePath = EclipseResources.getFilePath(eclipseFile);
@@ -248,7 +249,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<DiagnosticEx>> diagnostics = this.languageService.getAllDiagnostics(this.getProject());
+        final Map<String, List<DiagnosticEx>> diagnostics = this.languageEndpoint.getAllDiagnostics(this.getProject());
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {

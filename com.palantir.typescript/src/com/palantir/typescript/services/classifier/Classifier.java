@@ -49,4 +49,8 @@ public final class Classifier {
 
         return this.bridge.call(request, resultType);
     }
+
+    public void dispose() {
+        this.bridge.dispose();
+    }
 }

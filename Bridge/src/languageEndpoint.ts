@@ -21,7 +21,7 @@ module Bridge {
 
     var LIB_FILE_NAME = "lib.d.ts";
 
-    export class WorkspaceLanguageEndpoint {
+    export class LanguageEndpoint {
 
         private fileInfos: { [fileName: string]: FileInfo };
         private languageServices: { [serviceKey: string]: LanguageService };

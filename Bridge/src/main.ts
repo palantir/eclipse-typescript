@@ -15,7 +15,7 @@
  */
 
 /// <reference path="classifierEndpoint.ts" />
-/// <reference path="workspaceLanguageEndpoint.ts" />
+/// <reference path="languageEndpoint.ts" />
 
 /**
   * This module provides an interface between stdin, stdout and many of the TypeScript services.
@@ -31,7 +31,7 @@ module Bridge {
         constructor() {
             this.endpoints = Object.create(null);
             this.endpoints["classifier"] = new ClassifierEndpoint();
-            this.endpoints["workspaceLanguage"] = new WorkspaceLanguageEndpoint();
+            this.endpoints["language"] = new LanguageEndpoint();
         }
 
         public run() {
