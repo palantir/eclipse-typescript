@@ -33,8 +33,8 @@ import org.eclipse.swt.widgets.Display;
 
 import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.DiagnosticEx;
-import com.palantir.typescript.services.language.LanguageService;
 import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
@@ -60,15 +60,14 @@ public final class AnnotationReconcilingStrategy {
         this.sourceViewer = sourceViewer;
     }
 
-    public void reconcile(LanguageService languageService) {
+    public void reconcile(FileLanguageService languageService) {
         checkNotNull(languageService);
 
         // update the annotations
         int offset = this.getOffset();
         if (offset >= 0) {
-            String fileName = this.editor.getFileName();
-            final List<DiagnosticEx> diagnostics = languageService.getDiagnostics(fileName);
-            final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(fileName, offset);
+            final List<DiagnosticEx> diagnostics = languageService.getDiagnostics();
+            final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(offset);
 
             Display.getDefault().asyncExec(new Runnable() {
                 @Override

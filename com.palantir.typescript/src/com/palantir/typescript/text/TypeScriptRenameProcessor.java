@@ -51,11 +51,11 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
 
     private String newName;
 
-    private final EditorLanguageService languageService;
+    private final FileLanguageService languageService;
     private final int offset;
     private final String oldName;
 
-    public TypeScriptRenameProcessor(EditorLanguageService languageService, int offset, String oldName) {
+    public TypeScriptRenameProcessor(FileLanguageService languageService, int offset, String oldName) {
         checkNotNull(languageService);
         checkArgument(offset >= 0);
         checkNotNull(oldName);

@@ -80,6 +80,29 @@ public final class EclipseResources {
         return fileDeltas.build();
     }
 
+    public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta) {
+        checkNotNull(delta);
+
+        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
+        for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
+            List<IContainer> sourceFolders = getSourceFolders(project);
+
+            for (IContainer sourceFolder : sourceFolders) {
+                MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
+
+                try {
+                    delta.accept(visitor);
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+
+                fileDeltas.addAll(visitor.fileDeltas.build());
+            }
+        }
+
+        return fileDeltas.build();
+    }
+
     public static ImmutableList<IFile> getTypeScriptFiles(IProject project) {
         checkNotNull(project);
 

@@ -31,7 +31,7 @@ import org.eclipse.search.ui.ISearchResult;
 
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
-import com.palantir.typescript.text.EditorLanguageService;
+import com.palantir.typescript.text.FileLanguageService;
 
 /**
  * A TypeScript search query.
@@ -40,12 +40,12 @@ import com.palantir.typescript.text.EditorLanguageService;
  */
 public final class SearchQuery implements ISearchQuery {
 
-    private final EditorLanguageService languageService;
+    private final FileLanguageService languageService;
     private final int offset;
     private final SearchResult result;
     private final String searchString;
 
-    public SearchQuery(EditorLanguageService languageService, int offset, String searchString) {
+    public SearchQuery(FileLanguageService languageService, int offset, String searchString) {
         checkNotNull(languageService);
         checkArgument(offset >= 0);
         checkNotNull(searchString);
