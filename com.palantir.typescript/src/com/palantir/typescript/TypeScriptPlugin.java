@@ -65,10 +65,6 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
         PLUGIN = this;
 
-        this.builderLanguageEndpoint = new LanguageEndpoint();
-        this.classifier = new Classifier();
-        this.editorLanguageEndpoint = new LanguageEndpoint();
-        this.reconcilerLanguageEndpoint = new LanguageEndpoint();
         this.resourceChangeListener = new MyResourceChangeListener();
 
         ResourcesPlugin.getWorkspace().addResourceChangeListener(this.resourceChangeListener, IResourceChangeEvent.POST_CHANGE);
@@ -78,10 +74,21 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     public void stop(BundleContext context) throws Exception {
         ResourcesPlugin.getWorkspace().removeResourceChangeListener(this.resourceChangeListener);
 
-        this.builderLanguageEndpoint.dispose();
-        this.classifier.dispose();
-        this.editorLanguageEndpoint.dispose();
-        this.reconcilerLanguageEndpoint.dispose();
+        if (this.builderLanguageEndpoint != null) {
+            this.builderLanguageEndpoint.dispose();
+        }
+
+        if (this.classifier != null) {
+            this.classifier.dispose();
+        }
+
+        if (this.editorLanguageEndpoint != null) {
+            this.editorLanguageEndpoint.dispose();
+        }
+
+        if (this.reconcilerLanguageEndpoint != null) {
+            this.reconcilerLanguageEndpoint.dispose();
+        }
 
         PLUGIN = null;
 
@@ -102,19 +109,35 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         return imageDescriptorFromPlugin(TypeScriptPlugin.ID, path);
     }
 
-    public LanguageEndpoint getBuilderLanguageEndpoint() {
+    public synchronized LanguageEndpoint getBuilderLanguageEndpoint() {
+        if (this.builderLanguageEndpoint == null) {
+            this.builderLanguageEndpoint = new LanguageEndpoint();
+        }
+
         return this.builderLanguageEndpoint;
     }
 
-    public Classifier getClassifier() {
+    public synchronized Classifier getClassifier() {
+        if (this.classifier == null) {
+            this.classifier = new Classifier();
+        }
+
         return this.classifier;
     }
 
-    public LanguageEndpoint getEditorLanguageEndpoint() {
+    public synchronized LanguageEndpoint getEditorLanguageEndpoint() {
+        if (this.editorLanguageEndpoint == null) {
+            this.editorLanguageEndpoint = new LanguageEndpoint();
+        }
+
         return this.editorLanguageEndpoint;
     }
 
-    public LanguageEndpoint getReconcilerLanguageEndpoint() {
+    public synchronized LanguageEndpoint getReconcilerLanguageEndpoint() {
+        if (this.reconcilerLanguageEndpoint == null) {
+            this.reconcilerLanguageEndpoint = new LanguageEndpoint();
+        }
+
         return this.reconcilerLanguageEndpoint;
     }
 
@@ -200,8 +223,13 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
             IResourceDelta delta = event.getDelta();
             final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta);
 
-            TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(fileDeltas);
-            TypeScriptPlugin.this.reconcilerLanguageEndpoint.updateFiles(fileDeltas);
+            if (TypeScriptPlugin.this.editorLanguageEndpoint != null) {
+                TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(fileDeltas);
+            }
+
+            if (TypeScriptPlugin.this.reconcilerLanguageEndpoint != null) {
+                TypeScriptPlugin.this.reconcilerLanguageEndpoint.updateFiles(fileDeltas);
+            }
         }
     }
 }
