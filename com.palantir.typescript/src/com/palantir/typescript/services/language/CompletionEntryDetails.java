@@ -46,7 +46,6 @@ public final class CompletionEntryDetails {
         checkNotNull(name);
         checkNotNull(kind);
         checkNotNull(kindModifiers);
-        checkNotNull(fullSymbolName);
 
         this.name = name;
         this.kind = kind;
