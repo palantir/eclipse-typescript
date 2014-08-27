@@ -26,13 +26,17 @@ module Bridge {
     export class LanguageServiceHost implements TypeScript.Services.ILanguageServiceHost {
 
         private compilationSettings: TypeScript.CompilationSettings;
-        private diagnostics: TypeScript.Services.ILanguageServicesDiagnostics;
+        private fileFilter: (fileName: string) => boolean;
         private fileInfos: { [fileName: string]: FileInfo };
 
-        constructor() {
-            this.compilationSettings = new TypeScript.CompilationSettings();
-            this.diagnostics = new LanguageServicesDiagnostics();
-            this.fileInfos = Object.create(null);
+        constructor(
+                compilationSettings: TypeScript.CompilationSettings,
+                fileFilter: (fileName: string) => boolean,
+                fileInfos: { [fileName: string]: FileInfo }) {
+
+            this.compilationSettings = compilationSettings;
+            this.fileFilter = fileFilter;
+            this.fileInfos = fileInfos;
         }
 
         public addDefaultLibrary(libraryContents: string) {
@@ -123,7 +127,14 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            return Object.getOwnPropertyNames(this.fileInfos);
+            return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
+                // include the default library definition file if its enabled
+                if (fileName === LIB_FILE_NAME) {
+                    return !this.compilationSettings.noLib;
+                }
+
+                return this.fileFilter(fileName);
+            });
         }
 
         public getScriptVersion(fileName: string): number {
@@ -135,7 +146,11 @@ module Bridge {
         }
 
         public getDiagnosticsObject(): TypeScript.Services.ILanguageServicesDiagnostics {
-            return this.diagnostics;
+            return {
+                log: (message: string) => {
+                    // does nothing
+                }
+            }
         }
 
         public getLocalizedDiagnosticMessages(): any {
@@ -175,7 +190,8 @@ module Bridge {
 
             if (!isEmpty(directory)) {
                 while (path.indexOf("../") === 0) {
-                    directory = this.getParentDirectory(directory);
+                    var index = directory.lastIndexOf("/");
+                    directory = directory.substring(0, index);
                     path = path.substring(3, path.length);
                 }
 
@@ -190,7 +206,7 @@ module Bridge {
         }
 
         public directoryExists(path: string): boolean {
-            throw new Error("not implemented");
+            return false;
         }
 
         public getParentDirectory(path: string): string {
@@ -204,12 +220,5 @@ module Bridge {
         delta: string;
         fileName: string;
         filePath: string;
-    }
-
-    class LanguageServicesDiagnostics implements TypeScript.Services.ILanguageServicesDiagnostics {
-
-        public log(message: string): void {
-            // does nothing
-        }
     }
 }

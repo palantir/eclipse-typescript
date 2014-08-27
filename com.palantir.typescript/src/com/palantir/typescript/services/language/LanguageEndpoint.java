@@ -21,19 +21,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
+import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.Bridge;
@@ -70,8 +74,10 @@ public final class LanguageEndpoint {
 
         String projectName = project.getName();
         CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
-        Map<String, String> files = getFiles(project);
-        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, files);
+        List<String> referencedProjectNames = getReferencedProjectNames(project);
+        Map<String, String> files = getAllFiles(project);
+
+        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, files);
         this.bridge.call(request, Void.class);
     }
 
@@ -269,6 +275,11 @@ public final class LanguageEndpoint {
         this.bridge.dispose();
     }
 
+    /**
+     * Gets TypeScript files contained within this project.
+     * @param project
+     * @return
+     */
     private static Map<String, String> getFiles(IProject project) {
         ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
 
@@ -281,6 +292,48 @@ public final class LanguageEndpoint {
         }
 
         return files.build();
+    }
+
+    /**
+     * Gets TypeScript files contained within this project's referenced projects.
+     * @param project
+     * @return
+     */
+    private static Map<String, String> getReferencedFiles(IProject project) {
+        try {
+            ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                files.putAll(getFiles(referencedProject));
+            }
+            return files.build();
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets all TypeScript files within this project and its referenced projects.
+     * @param project
+     * @return
+     */
+    private static Map<String, String> getAllFiles(IProject project) {
+        return ImmutableMap.<String, String> builder()
+                .putAll(getFiles(project))
+                .putAll(getReferencedFiles(project))
+                .build();
+    }
+
+    private static List<String> getReferencedProjectNames(IProject project) {
+        try {
+            return Lists.transform(Arrays.asList(project.getReferencedProjects()), new Function<IProject, String>(){
+                @Override
+                public String apply(IProject _project) {
+                    return _project.getName();
+                }
+            });
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String readLibContents() {
