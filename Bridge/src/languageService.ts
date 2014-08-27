@@ -15,13 +15,38 @@
  */
 
 /// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="util.ts" />
 
 module Bridge {
 
     export class LanguageService extends TypeScript.Services.LanguageService {
 
-        constructor(host: TypeScript.Services.ILanguageServiceHost) {
-            super(host);
+        public static createFromProject(
+                projectName: string,
+                compilationSettings: TypeScript.CompilationSettings,
+                referencedProjects: string[],
+                fileInfos: { [fileName: string]: FileInfo }): LanguageService {
+
+            var fileFilter = (fileName: string) => {
+                return isProjectFile(projectName, fileName)
+                    || isReferencedProjectFile(referencedProjects, fileName);
+            }
+
+            var host = new LanguageServiceHost(compilationSettings, fileFilter, fileInfos);
+            return new LanguageService(host);
+        }
+
+        public static createIsolated(
+                compilationSettings: TypeScript.CompilationSettings,
+                fileName: string,
+                fileInfos: { [fileName: string]: FileInfo }): LanguageService {
+
+            var fileFilter = (_fileName: string) => {
+                return _fileName===fileName;
+            }
+
+            var host = new LanguageServiceHost(compilationSettings, fileFilter, fileInfos);
+            return new LanguageService(host);
         }
 
         public getAllDiagnostics() {
