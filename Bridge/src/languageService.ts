@@ -15,6 +15,7 @@
  */
 
 /// <reference path="../typescript/src/services/languageService.ts" />
+/// <reference path="util.ts" />
 
 module Bridge {
 

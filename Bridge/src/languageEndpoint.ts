@@ -16,10 +16,11 @@
 
 /// <reference path="languageService.ts" />
 /// <reference path="languageServiceHost.ts" />
+/// <reference path="util.ts" />
 
 module Bridge {
 
-    var LIB_FILE_NAME = "lib.d.ts";
+    export var LIB_FILE_NAME = "lib.d.ts";
 
     export class LanguageEndpoint {
 
@@ -270,13 +271,5 @@ module Bridge {
                 }
             });
         }
-    }
-
-    function isEmpty(str: string) {
-        return (str == null || str.length == 0);
-    }
-
-    function isProjectFile(projectName: string, fileName: string) {
-        return fileName.indexOf("eclipse:/" + projectName + "/") == 0;
     }
 }

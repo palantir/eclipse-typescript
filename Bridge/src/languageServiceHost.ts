@@ -19,6 +19,7 @@
 /// <reference path="../typescript/src/services/languageService.ts" />
 /// <reference path="fileInfo.ts" />
 /// <reference path="snapshot.ts" />
+/// <reference path="util.ts" />
 
 module Bridge {
 
@@ -36,12 +37,11 @@ module Bridge {
 
         public addDefaultLibrary(libraryContents: string) {
             var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libraryContents, null);
-
-            this.fileInfos["lib.d.ts"] = fileInfo;
+            this.fileInfos[LIB_FILE_NAME] = fileInfo;
         }
 
         public removeDefaultLibrary() {
-            delete this.fileInfos["lib.d.ts"];
+            delete this.fileInfos[LIB_FILE_NAME];
         }
 
         public addFiles(files: { [fileName: string]: string }) {
@@ -198,10 +198,6 @@ module Bridge {
 
             return path.substring(0, index);
         }
-    }
-
-    function isEmpty(str: string) {
-        return (str == null || str.length == 0);
     }
 
     export interface IFileDelta {
