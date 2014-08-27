@@ -19,8 +19,6 @@
 
 module Bridge {
 
-    var LIB_FILE_NAME = "lib.d.ts";
-
     export class LanguageEndpoint {
 
         private fileInfos: { [fileName: string]: FileInfo };
@@ -188,95 +186,18 @@ module Bridge {
         }
 
         private createLanguageService(compilationSettings: TypeScript.CompilationSettings, fileFilter: (fileName: string) => boolean) {
-            return new LanguageService({
-                getCompilationSettings: () => {
-                    return compilationSettings;
-                },
-                getScriptFileNames: () => {
-                    return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
-                        // include the default library definition file if its enabled
-                        if (fileName === LIB_FILE_NAME) {
-                            return !compilationSettings.noLib;
-                        }
-
-                        return fileFilter(fileName);
-                    });
-                },
-                getScriptVersion: (fileName: string) => {
-                    return this.fileInfos[fileName].getVersion();
-                },
-                getScriptIsOpen: (fileName: string) => {
-                    return this.fileInfos[fileName].getOpen();
-                },
-                getScriptByteOrderMark: (fileName: string) => {
-                    return this.fileInfos[fileName].getByteOrderMark();
-                },
-                getScriptSnapshot: (fileName: string) => {
-                    return this.fileInfos[fileName].getScriptSnapshot();
-                },
-                getDiagnosticsObject: () => {
-                    return {
-                        log: (message: string) => {
-                            // does nothing
-                        }
-                    }
-                },
-                getLocalizedDiagnosticMessages: () => {
-                    return <any> null;
-                },
-                information: () => {
-                    return false;
-                },
-                debug: () => {
-                    return false;
-                },
-                warning: () => {
-                    return false;
-                },
-                error: () => {
-                    return false;
-                },
-                fatal: () => {
-                    return false;
-                },
-                log: (message: string) => {
-                    // does nothing
-                },
-                resolveRelativePath: (path: string, directory: string) => {
-                    var resolvedPath = path;
-
-                    if (!isEmpty(directory)) {
-                        while (path.indexOf("../") === 0) {
-                            var index = directory.lastIndexOf("/");
-                            directory = directory.substring(0, index);
-                            path = path.substring(3, path.length);
-                        }
-
-                        resolvedPath = directory + "/" + path;
-                    }
-
-                    return resolvedPath;
-                },
-                fileExists: (path: string) => {
-                    return this.fileInfos[path] != null;
-                },
-                directoryExists: (path: string) => {
-                    return false;
-                },
-                getParentDirectory: (path: string) => {
-                    var index = path.lastIndexOf("/");
-
-                    return path.substring(0, index);
-                }
-            });
+            var host = new LanguageServiceHost(compilationSettings, fileFilter, this.fileInfos);
+            return new LanguageService(host);
         }
-    }
-
-    function isEmpty(str: string) {
-        return (str == null || str.length == 0);
     }
 
     function isProjectFile(projectName: string, fileName: string) {
         return fileName.indexOf("eclipse:/" + projectName + "/") == 0;
+    }
+
+    export interface IFileDelta {
+        delta: string;
+        fileName: string;
+        filePath: string;
     }
 }

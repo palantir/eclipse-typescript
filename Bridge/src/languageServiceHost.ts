@@ -22,92 +22,22 @@
 
 module Bridge {
 
+    export var LIB_FILE_NAME = "lib.d.ts";
+
     export class LanguageServiceHost implements TypeScript.Services.ILanguageServiceHost {
 
         private compilationSettings: TypeScript.CompilationSettings;
-        private diagnostics: TypeScript.Services.ILanguageServicesDiagnostics;
+        private fileFilter: (fileName: string) => boolean;
         private fileInfos: { [fileName: string]: FileInfo };
 
-        constructor() {
-            this.compilationSettings = new TypeScript.CompilationSettings();
-            this.diagnostics = new LanguageServicesDiagnostics();
-            this.fileInfos = Object.create(null);
-        }
+        constructor(
+                compilationSettings: TypeScript.CompilationSettings,
+                fileFilter: (fileName: string) => boolean,
+                fileInfos: { [fileName: string]: FileInfo }) {
 
-        public addDefaultLibrary(libraryContents: string) {
-            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libraryContents, null);
-
-            this.fileInfos["lib.d.ts"] = fileInfo;
-        }
-
-        public removeDefaultLibrary() {
-            delete this.fileInfos["lib.d.ts"];
-        }
-
-        public addFiles(files: { [fileName: string]: string }) {
-            for (var fileName in files) {
-                if (files.hasOwnProperty(fileName)) {
-                    var filePath = files[fileName];
-
-                    // read the file
-                    try {
-                        var fileInformation = TypeScript.IO.readFile(filePath, null);
-                    } catch (e) {
-                        // ignore failures (they are likely due to the workspace being out-of-sync)
-                        continue;
-                    }
-
-                    // cache the file
-                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
-                    this.fileInfos[fileName] = fileInfo;
-                }
-            }
-        }
-
-        public editFile(fileName: string, offset: number, length: number, text: string) {
-            this.fileInfos[fileName].editContents(offset, length, text);
-        }
-
-        public setFileContents(fileName: string, byteOrderMark: TypeScript.ByteOrderMark, contents: string) {
-            var fileInfo = new FileInfo(byteOrderMark, contents, null);
-
-            this.fileInfos[fileName] = fileInfo;
-        }
-
-        public setFileOpen(fileName: string, open: boolean) {
-            this.fileInfos[fileName].setOpen(open);
-        }
-
-        public updateFiles(deltas: IFileDelta[]) {
-            deltas.forEach((delta) => {
-                var fileName = delta.fileName;
-
-                switch (delta.delta) {
-                    case "ADDED":
-                    case "CHANGED":
-                        var fileInfo = this.fileInfos[fileName];
-
-                        if (fileInfo !== undefined) {
-                            // only update files not currently open in an editor
-                            if (!fileInfo.getOpen()) {
-                                var fileInformation = TypeScript.IO.readFile(fileInfo.getPath(), null);
-
-                                fileInfo.updateFile(fileInformation);
-                            }
-                        } else {
-                            var filePath = delta.filePath;
-                            var fileInformation = TypeScript.IO.readFile(filePath, null);
-
-                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
-
-                            this.fileInfos[fileName] = fileInfo;
-                        }
-                        break;
-                    case "REMOVED":
-                        delete this.fileInfos[fileName];
-                        break;
-                }
-            });
+            this.compilationSettings = compilationSettings;
+            this.fileFilter = fileFilter;
+            this.fileInfos = fileInfos;
         }
 
         public getCompilationSettings(): TypeScript.CompilationSettings {
@@ -123,7 +53,14 @@ module Bridge {
         }
 
         public getScriptFileNames(): string[] {
-            return Object.getOwnPropertyNames(this.fileInfos);
+            return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
+                // include the default library definition file if its enabled
+                if (fileName === LIB_FILE_NAME) {
+                    return !this.compilationSettings.noLib;
+                }
+
+                return this.fileFilter(fileName);
+            });
         }
 
         public getScriptVersion(fileName: string): number {
@@ -135,7 +72,11 @@ module Bridge {
         }
 
         public getDiagnosticsObject(): TypeScript.Services.ILanguageServicesDiagnostics {
-            return this.diagnostics;
+            return {
+                log: (message: string) => {
+                    // does nothing
+                }
+            }
         }
 
         public getLocalizedDiagnosticMessages(): any {
@@ -175,7 +116,8 @@ module Bridge {
 
             if (!isEmpty(directory)) {
                 while (path.indexOf("../") === 0) {
-                    directory = this.getParentDirectory(directory);
+                    var index = directory.lastIndexOf("/");
+                    directory = directory.substring(0, index);
                     path = path.substring(3, path.length);
                 }
 
@@ -190,7 +132,7 @@ module Bridge {
         }
 
         public directoryExists(path: string): boolean {
-            throw new Error("not implemented");
+            return false;
         }
 
         public getParentDirectory(path: string): string {
@@ -202,18 +144,5 @@ module Bridge {
 
     function isEmpty(str: string) {
         return (str == null || str.length == 0);
-    }
-
-    export interface IFileDelta {
-        delta: string;
-        fileName: string;
-        filePath: string;
-    }
-
-    class LanguageServicesDiagnostics implements TypeScript.Services.ILanguageServicesDiagnostics {
-
-        public log(message: string): void {
-            // does nothing
-        }
     }
 }
