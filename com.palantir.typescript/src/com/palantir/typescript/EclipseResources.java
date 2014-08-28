@@ -104,9 +104,17 @@ public final class EclipseResources {
     }
 
     public static ImmutableList<IFile> getTypeScriptFiles(IProject project) {
+        return getTypeScriptFiles(project, false);
+    }
+
+    public static ImmutableList<IFile> getExportedTypeScriptFiles(IProject project) {
+        return getTypeScriptFiles(project, true);
+    }
+
+    public static ImmutableList<IFile> getTypeScriptFiles(IProject project, boolean onlyExported) {
         checkNotNull(project);
 
-        List<IContainer> sourceFolders = getSourceFolders(project);
+        List<IContainer> sourceFolders = getSourceFolders(project, onlyExported);
         ImmutableList.Builder<IFile> typeScriptFiles = ImmutableList.builder();
 
         for (IContainer sourceFolder : sourceFolders) {
@@ -201,9 +209,19 @@ public final class EclipseResources {
     }
 
     private static List<IContainer> getSourceFolders(IProject project) {
+        return getSourceFolders(project, false);
+    }
+
+    private static List<IContainer> getSourceFolders(IProject project, boolean onlyExported) {
         IScopeContext projectScope = new ProjectScope(project);
         IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
-        String sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        String sourceFolderName;
+        if (onlyExported) {
+            sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_EXPORTED_SOURCE_FOLDER, "");
+        }
+        else {
+            sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        }
 
         if (!Strings.isNullOrEmpty(sourceFolderName)) {
             ImmutableList.Builder<IContainer> sourceFolders = ImmutableList.builder();

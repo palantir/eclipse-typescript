@@ -292,6 +292,21 @@ public final class LanguageEndpoint {
         return files.build();
     }
 
+    private static Map<String, String> getExportedFiles(IProject project) {
+        ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
+
+        ImmutableList<IFile> typeScriptFiles = EclipseResources.getExportedTypeScriptFiles(project);
+        for (IFile typeScriptFile : typeScriptFiles) {
+            String fileName = EclipseResources.getFileName(typeScriptFile);
+            String filePath = EclipseResources.getFilePath(typeScriptFile);
+
+            files.put(fileName, filePath);
+        }
+
+        return files.build();
+    }
+
+
     /**
      * Gets TypeScript files contained within this project's referenced projects.
      */
@@ -299,7 +314,7 @@ public final class LanguageEndpoint {
         try {
             ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
             for (IProject referencedProject : project.getReferencedProjects()) {
-                files.putAll(getFiles(referencedProject));
+                files.putAll(getExportedFiles(referencedProject));
             }
             return files.build();
         } catch (CoreException e) {

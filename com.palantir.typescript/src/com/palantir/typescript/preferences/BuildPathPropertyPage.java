@@ -61,19 +61,26 @@ public final class BuildPathPropertyPage extends PropertyPage {
     private Text outputFileField;
     private Text outputFolderField;
     private Text sourceFolderField;
+    private Text exportedSourceFolderField;
 
     @Override
     public boolean performOk() {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
         String oldSourceFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        String oldExportedSourceFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_EXPORTED_SOURCE_FOLDER, "");
         String oldOutputFile = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION, "");
         String oldOutputFolder = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, "");
         String newSourceFolder = this.sourceFolderField.getText();
+        String newExportedSourceFolder = this.exportedSourceFolderField.getText();
         String newOutputFile = this.outputFileField.getText();
         String newOutputFolder = this.outputFolderField.getText();
 
-        if (!oldSourceFolder.equals(newSourceFolder) || !oldOutputFile.equals(newOutputFile) || !oldOutputFolder.equals(newOutputFolder)) {
+        if (!oldSourceFolder.equals(newSourceFolder)
+                || !oldExportedSourceFolder.equals(newExportedSourceFolder)
+                || !oldOutputFile.equals(newOutputFile)
+                || !oldOutputFolder.equals(newOutputFolder)) {
             projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, newSourceFolder);
+            projectPreferences.put(IPreferenceConstants.BUILD_PATH_EXPORTED_SOURCE_FOLDER, newExportedSourceFolder);
             projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, newOutputFolder);
             projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION, newOutputFile);
 
@@ -100,6 +107,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
         composite.setFont(parent.getFont());
 
         this.sourceFolderField = this.createFolderField(composite, SWT.NONE, "Source folder:", IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+        this.exportedSourceFolderField = this.createFolderField(composite, SWT.NONE, "Exported folder(s):", IPreferenceConstants.BUILD_PATH_EXPORTED_SOURCE_FOLDER);
         this.outputFolderField = this.createFolderField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
         this.outputFileField = this.createFileField(composite, SWT.PUSH, "Output file name:", IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION);
 
