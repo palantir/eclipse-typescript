@@ -44,11 +44,19 @@ module.exports = function(grunt) {
         src: ['Bridge/src/main.ts'],
         dest: 'com.palantir.typescript/bin/bridge.js'
       }
+    },
+
+    watch: {
+      scripts: {
+        files: ['Bridge/src/*.ts'],
+        tasks: ['default'],
+      },
     }
   });
 
   // load NPM tasks
   grunt.loadNpmTasks('grunt-chmod');
+  grunt.loadNpmTasks('grunt-contrib-watch');
 
   // load our custom tasks
   grunt.loadTasks("tasks");

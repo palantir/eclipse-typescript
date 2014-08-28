@@ -7,6 +7,7 @@
   },
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-chmod": "~1.0.3"
+    "grunt-chmod": "~1.0.3",
+    "grunt-contrib-watch": "~0.6.1"
   }
 }
