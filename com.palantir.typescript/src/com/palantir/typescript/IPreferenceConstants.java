@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableList;
 public interface IPreferenceConstants {
 
     String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
+    String BUILD_PATH_EXPORTED_SOURCE_FOLDER = "build.path.exportedSourceFolder";
 
     String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";

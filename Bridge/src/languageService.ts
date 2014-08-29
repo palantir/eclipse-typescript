@@ -20,21 +20,21 @@ module Bridge {
 
     export class LanguageService extends TypeScript.Services.LanguageService {
 
-        constructor(host: TypeScript.Services.ILanguageServiceHost) {
+        private diagnosticFilter: (fileName: string) => boolean;
+
+        constructor(host: TypeScript.Services.ILanguageServiceHost, diagnosticFilter: (fileName: string) => boolean) {
             super(host);
+            this.diagnosticFilter = diagnosticFilter;
         }
 
         public getAllDiagnostics() {
             var diagnostics: { [fileName: string]: DiagnosticEx[] } = {};
 
-            this.host.getScriptFileNames().forEach((fileName) => {
-                if (fileName !== "lib.d.ts") {
-                    var resolvedDiagnostics = this.getDiagnostics(fileName, true);
-
-                    diagnostics[fileName] = resolvedDiagnostics;
-                }
-            });
-
+            this.host.getScriptFileNames()
+                .filter(this.diagnosticFilter)
+                .forEach((fileName: string) => {
+                    diagnostics[fileName] = this.getDiagnostics(fileName, true);
+                });
             return diagnostics;
         }
 
