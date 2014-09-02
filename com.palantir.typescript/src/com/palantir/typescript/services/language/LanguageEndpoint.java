@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.CoreException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -67,6 +68,19 @@ public final class LanguageEndpoint {
 
     public void initializeProject(IProject project) {
         checkNotNull(project);
+
+        // ensure referenced projects are initialized first
+        try {
+            for (IProject dep : project.getReferencedProjects()) {
+                // in case of cyclical project references. (even though Eclipse errors when
+                // that's the case, this method may still be called.)
+                if (!isProjectInitialized(dep)) {
+                    initializeProject(dep);
+                }
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
 
         String projectName = project.getName();
         CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
