@@ -187,7 +187,10 @@ module Bridge {
 
         private createLanguageService(compilationSettings: TypeScript.CompilationSettings, fileFilter: (fileName: string) => boolean) {
             var host = new LanguageServiceHost(compilationSettings, fileFilter, this.fileInfos);
-            return new LanguageService(host);
+            var diagnosticFilter = (fileName: string) => {
+                return !(fileName === "lib.d.ts");
+            }
+            return new LanguageService(host, diagnosticFilter);
         }
     }
 
