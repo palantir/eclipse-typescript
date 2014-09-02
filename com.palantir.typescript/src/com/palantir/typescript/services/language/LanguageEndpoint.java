@@ -52,8 +52,8 @@ public final class LanguageEndpoint {
 
     private final Bridge bridge;
 
-    public LanguageEndpoint() {
-        this.bridge = new Bridge();
+    public LanguageEndpoint(String endpointName) {
+        this.bridge = new Bridge(endpointName);
 
         this.setLibContents();
     }

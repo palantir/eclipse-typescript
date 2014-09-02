@@ -111,7 +111,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public synchronized LanguageEndpoint getBuilderLanguageEndpoint() {
         if (this.builderLanguageEndpoint == null) {
-            this.builderLanguageEndpoint = new LanguageEndpoint();
+            this.builderLanguageEndpoint = new LanguageEndpoint("LANGUAGE-BUILDER");
         }
 
         return this.builderLanguageEndpoint;
@@ -119,7 +119,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public synchronized Classifier getClassifier() {
         if (this.classifier == null) {
-            this.classifier = new Classifier();
+            this.classifier = new Classifier("CLASSIFIER");
         }
 
         return this.classifier;
@@ -127,7 +127,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public synchronized LanguageEndpoint getEditorLanguageEndpoint() {
         if (this.editorLanguageEndpoint == null) {
-            this.editorLanguageEndpoint = new LanguageEndpoint();
+            this.editorLanguageEndpoint = new LanguageEndpoint("LANGUAGE-EDITOR");
         }
 
         return this.editorLanguageEndpoint;
@@ -135,7 +135,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
     public synchronized LanguageEndpoint getReconcilerLanguageEndpoint() {
         if (this.reconcilerLanguageEndpoint == null) {
-            this.reconcilerLanguageEndpoint = new LanguageEndpoint();
+            this.reconcilerLanguageEndpoint = new LanguageEndpoint("LANGUAGE-RECONCILER");
         }
 
         return this.reconcilerLanguageEndpoint;

@@ -46,13 +46,15 @@ public final class Bridge {
     private static final String ERROR_PREFIX = "ERROR: ";
     private static final String RESULT_PREFIX = "RESULT: ";
 
+    private String endpointName;
     private Process nodeProcess;
     private BufferedReader nodeStdout;
     private PrintWriter nodeStdin;
 
     private final ObjectMapper mapper;
 
-    public Bridge() {
+    public Bridge(String endpointName) {
+        this.endpointName = endpointName;
         this.mapper = new ObjectMapper();
 
         // start the node process
@@ -130,7 +132,7 @@ public final class Bridge {
             } else if (line.startsWith(RESULT_PREFIX)) {
                 resultJson = line.substring(RESULT_PREFIX.length());
             } else { // log statement
-                System.out.println(line);
+                System.out.println(this.endpointName + ": " + line);
             }
         } while (resultJson == null);
 
