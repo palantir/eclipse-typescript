@@ -12,6 +12,7 @@ module.exports = function(grunt) {
     var options = this.options();
     var args = [];
 
+    args.push("--sourcemap");
     this.files.forEach(function(file) {
       file.src.filter(function(filepath) {
         args.push(filepath);
