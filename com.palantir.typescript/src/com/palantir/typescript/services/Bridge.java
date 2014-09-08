@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
 
@@ -32,6 +33,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 
@@ -45,6 +47,17 @@ public final class Bridge {
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final String ERROR_PREFIX = "ERROR: ";
     private static final String RESULT_PREFIX = "RESULT: ";
+
+    /*
+     * Enables using node-inspector for debugging the Eclipse plugin. Make sure you
+     * `npm install -g node-inspector` first, and set NODE_DEBUG_PATH properly
+     * (found by running `which node-debug`).
+     */
+    private static final boolean NODE_DEBUG = false;
+    private static final String NODE_DEBUG_PATH = "/usr/local/bin/node-debug";
+    private static final boolean NODE_DEBUG_BREAK_ON_START = true;
+    // not final so it can be incremented and each process can have its own port.
+    private static int NODE_DEBUG_PORT = 5858;
 
     private String endpointName;
     private Process nodeProcess;
@@ -156,8 +169,22 @@ public final class Bridge {
         File bridgeFile = new File(bundleFile, "bin/bridge.js");
         String bridgePath = bridgeFile.getAbsolutePath();
 
+        // construct the arguments
+        ImmutableList.Builder<String> argsBuilder = ImmutableList.builder();
+        argsBuilder.add(nodePath);
+        if (NODE_DEBUG) {
+            argsBuilder.add(NODE_DEBUG_PATH);
+            if (!NODE_DEBUG_BREAK_ON_START) {
+                argsBuilder.add("--no-debug-brk");
+            }
+            argsBuilder.add("--web-port=" + Integer.toString(NODE_DEBUG_PORT++));
+            argsBuilder.add("--debug-port=" + Integer.toString(NODE_DEBUG_PORT++));
+        }
+        argsBuilder.add(bridgePath);
+
         // start the node process and create a reader/writer for its stdin/stdout
-        ProcessBuilder processBuilder = new ProcessBuilder(nodePath, bridgePath);
+        List<String> args = argsBuilder.build();
+        ProcessBuilder processBuilder = new ProcessBuilder(args.toArray(new String[args.size()]));
         try {
             this.nodeProcess = processBuilder.start();
         } catch (IOException e) {
