@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -82,8 +83,10 @@ public final class LanguageEndpoint {
 
         String projectName = project.getName();
         CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
+        List<String> referencedProjectNames = getReferencedProjectNames(project);
+        List<String> exportFolderNames = getExportFolderNames(project);
         Map<String, String> files = getFiles(project);
-        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, files);
+        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportFolderNames, files);
         this.bridge.call(request, Void.class);
     }
 
@@ -293,6 +296,26 @@ public final class LanguageEndpoint {
         }
 
         return files.build();
+    }
+
+    private static List<String> getReferencedProjectNames(IProject project) {
+        ImmutableList.Builder<String> referencedProjectNames = ImmutableList.builder();
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                referencedProjectNames.add(referencedProject.getName());
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+        return referencedProjectNames.build();
+    }
+
+    private static List<String> getExportFolderNames(IProject project) {
+        ImmutableList.Builder<String> exportFolderNames = ImmutableList.builder();
+        for (IContainer exportFolder : EclipseResources.getExportFolders(project)) {
+            exportFolderNames.add(EclipseResources.getContainerName(exportFolder));
+        }
+        return exportFolderNames.build();
     }
 
     private static String readLibContents() {

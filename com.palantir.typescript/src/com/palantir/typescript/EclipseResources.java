@@ -147,16 +147,10 @@ public final class EclipseResources {
         return ECLIPSE_URI_PREFIX + file.getFullPath().toPortableString();
     }
 
-    public static String getFolderName(IFolder folder) {
-        checkNotNull(folder);
+    public static String getContainerName(IContainer container) {
+        checkNotNull(container);
 
-        return ECLIPSE_URI_PREFIX + folder.getFullPath().toPortableString() + "/";
-    }
-
-    public static String getProjectName(IProject project) {
-        checkNotNull(project);
-
-        return ECLIPSE_URI_PREFIX + project.getFullPath().toPortableString() + "/";
+        return ECLIPSE_URI_PREFIX + container.getFullPath().toPortableString() + "/";
     }
 
     public static String getFilePath(IFile file) {
@@ -201,21 +195,34 @@ public final class EclipseResources {
     }
 
     private static List<IContainer> getSourceFolders(IProject project) {
+        return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+    }
+
+    public static List<IContainer> getExportFolders(IProject project) {
+        return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORT_FOLDER);
+    }
+
+    /**
+     * Gets folders within a project, or the project itself if folders is empty or null.
+     * @param project the project containing the subfolders
+     * @param folderNames a semicolon-separated list of folders
+     * @return a list of containers: either the folders specified, or the project itself
+     */
+    private static List<IContainer> getFoldersFromPreference(IProject project, String preferenceId) {
         IScopeContext projectScope = new ProjectScope(project);
         IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
-        String sourceFolderName = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
+        String folderNames = projectPreferences.get(preferenceId, "");
+        if (!Strings.isNullOrEmpty(folderNames)) {
+            ImmutableList.Builder<IContainer> folders = ImmutableList.builder();
 
-        if (!Strings.isNullOrEmpty(sourceFolderName)) {
-            ImmutableList.Builder<IContainer> sourceFolders = ImmutableList.builder();
+            for (String folderName : PATH_SPLITTER.splitToList(folderNames)) {
+                IPath relativeFolderPath = Path.fromPortableString(folderName);
+                IFolder folder = project.getFolder(relativeFolderPath);
 
-            for (String sourceFolderName2 : PATH_SPLITTER.splitToList(sourceFolderName)) {
-                IPath relativeSourceFolderPath = Path.fromPortableString(sourceFolderName2);
-                IFolder sourceFolder = project.getFolder(relativeSourceFolderPath);
-
-                sourceFolders.add(sourceFolder);
+                folders.add(folder);
             }
 
-            return sourceFolders.build();
+            return folders.build();
         } else {
             return ImmutableList.<IContainer> of(project);
         }

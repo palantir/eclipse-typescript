@@ -235,12 +235,12 @@ public final class CompilationSettings {
         if (!Strings.isNullOrEmpty(outputDir)) {
             IFolder outputFolder = project.getFolder(outputDir);
 
-            outputFolderName = EclipseResources.getFolderName(outputFolder);
+            outputFolderName = EclipseResources.getContainerName(outputFolder);
         }
 
         if (!Strings.isNullOrEmpty(outputFile)) {
             if (outputFolderName == null) {
-                outputFolderName = EclipseResources.getProjectName(project);
+                outputFolderName = EclipseResources.getContainerName(project);
             }
 
             compilationSettings.setOutFileOption(outputFolderName + outputFile);

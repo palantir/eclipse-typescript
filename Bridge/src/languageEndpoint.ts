@@ -22,16 +22,18 @@ module Bridge {
     export class LanguageEndpoint {
 
         private fileInfos: { [fileName: string]: FileInfo };
+        private projectExportFolderNames: { [projectName: string]: string[] };
         private languageServices: { [serviceKey: string]: LanguageService };
 
         constructor() {
             this.fileInfos = Object.create(null);
+            this.projectExportFolderNames = Object.create(null);
             this.languageServices = Object.create(null);
         }
 
         public cleanProject(projectName: string) {
-            // delete the project's language service
             delete this.languageServices[projectName];
+            delete this.projectExportFolderNames[projectName];
 
             // delete the project's files
             Object.getOwnPropertyNames(this.fileInfos).forEach((fileName) => {
@@ -41,9 +43,16 @@ module Bridge {
             });
         }
 
-        public initializeProject(projectName: string, compilationSettings: TypeScript.CompilationSettings, files: { [fileName: string]: string }) {
+        public initializeProject(
+                projectName: string,
+                compilationSettings: TypeScript.CompilationSettings,
+                referencedProjectNames: string[],
+                exportFolderNames: string[],
+                files: { [fileName: string]: string }) {
+
             this.cleanProject(projectName);
-            this.languageServices[projectName] = this.createProjectLanguageService(projectName, compilationSettings);
+            this.projectExportFolderNames[projectName] = exportFolderNames;
+            this.languageServices[projectName] = this.createProjectLanguageService(projectName, compilationSettings, referencedProjectNames);
             this.addFiles(files);
         }
 
@@ -194,12 +203,16 @@ module Bridge {
             return new LanguageService(host, diagnosticFilter);
         }
 
-        private createProjectLanguageService(projectName: string, compilationSettings: TypeScript.CompilationSettings): LanguageService {
+        private createProjectLanguageService(
+                projectName: string,
+                compilationSettings: TypeScript.CompilationSettings,
+                referencedProjectNames: string[]): LanguageService {
+
             var fileFilter = (fileName: string) => {
-                return isProjectFile(projectName, fileName);
+                return isProjectFile(projectName, fileName) || this.isExportedByReferencedProject(referencedProjectNames, fileName);
             }
             var diagnosticFilter = (fileName: string) => {
-                return !(fileName === "lib.d.ts");
+                return isProjectFile(projectName, fileName);
             }
             return this.createLanguageService(compilationSettings, fileFilter, diagnosticFilter);
         }
@@ -210,10 +223,22 @@ module Bridge {
             }
             return this.createLanguageService(compilationSettings, singleFileFilter, singleFileFilter);
         }
+
+        private isExportedByReferencedProject(referencedProjectNames: string[], fileName: string): boolean {
+            return referencedProjectNames.some((referencedProjectName: string) => {
+                return this.projectExportFolderNames[referencedProjectName].some((exportFolder: string) => {
+                    return folderContains(exportFolder, fileName);
+                });
+            });
+        }
     }
 
-    function isProjectFile(projectName: string, fileName: string) {
-        return fileName.indexOf("eclipse:/" + projectName + "/") == 0;
+    function folderContains(folderPath: string, fileName: string): boolean {
+        return fileName.indexOf(folderPath) == 0;
+    }
+
+    function isProjectFile(projectName: string, fileName: string): boolean {
+        return folderContains("eclipse:/" + projectName + "/", fileName);
     }
 
     export interface IFileDelta {
