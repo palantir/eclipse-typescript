@@ -43,7 +43,7 @@ module Bridge {
 
         public initializeProject(projectName: string, compilationSettings: TypeScript.CompilationSettings, files: { [fileName: string]: string }) {
             this.cleanProject(projectName);
-            this.languageServices[projectName] = this.createLanguageService(compilationSettings, (fileName) => isProjectFile(projectName, fileName));
+            this.languageServices[projectName] = this.createProjectLanguageService(projectName, compilationSettings);
             this.addFiles(files);
         }
 
@@ -53,7 +53,7 @@ module Bridge {
 
         public initializeIsolatedLanguageService(serviceKey: string, fileName: string, fileContents: string) {
             var compilationSettings = new TypeScript.CompilationSettings();
-            this.languageServices[serviceKey] = this.createLanguageService(compilationSettings, (fileName2) => fileName === fileName2);
+            this.languageServices[serviceKey] = this.createIsolatedLanguageService(compilationSettings, fileName);
 
             this.fileInfos[fileName] = new FileInfo(TypeScript.ByteOrderMark.None, fileContents, null);
         }
@@ -185,12 +185,30 @@ module Bridge {
             }
         }
 
-        private createLanguageService(compilationSettings: TypeScript.CompilationSettings, fileFilter: (fileName: string) => boolean) {
+        private createLanguageService(
+            compilationSettings: TypeScript.CompilationSettings,
+            fileFilter: (fileName: string) => boolean,
+            diagnosticFilter: (fileName: string) => boolean): LanguageService {
+
             var host = new LanguageServiceHost(compilationSettings, fileFilter, this.fileInfos);
+            return new LanguageService(host, diagnosticFilter);
+        }
+
+        private createProjectLanguageService(projectName: string, compilationSettings: TypeScript.CompilationSettings): LanguageService {
+            var fileFilter = (fileName: string) => {
+                return isProjectFile(projectName, fileName);
+            }
             var diagnosticFilter = (fileName: string) => {
                 return !(fileName === "lib.d.ts");
             }
-            return new LanguageService(host, diagnosticFilter);
+            return this.createLanguageService(compilationSettings, fileFilter, diagnosticFilter);
+        }
+
+        private createIsolatedLanguageService(compilationSettings: TypeScript.CompilationSettings, fileName: string): LanguageService {
+            var singleFileFilter = (fileName2: string) => {
+                return fileName2 === fileName;
+            }
+            return this.createLanguageService(compilationSettings, singleFileFilter, singleFileFilter);
         }
     }
 
