@@ -89,13 +89,19 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     @Override
-    protected IProject[] build(int kind, Map args, IProgressMonitor monitor) throws CoreException {
+    protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
         switch (kind) {
             case IncrementalProjectBuilder.AUTO_BUILD:
             case IncrementalProjectBuilder.INCREMENTAL_BUILD:
                 this.incrementalBuild(monitor);
+
+                // re-create the markers for the referencing projects
+                for (IProject referencingProject : this.getProject().getReferencingProjects()) {
+                    referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+                    createMarkers(referencingProject, monitor);
+                }
                 break;
             case IncrementalProjectBuilder.FULL_BUILD:
                 this.fullBuild(monitor);
@@ -141,7 +147,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             }
         }
 
-        this.createMarkers(monitor);
+        createMarkers(this.getProject(), monitor);
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
@@ -248,8 +254,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void createMarkers(IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<DiagnosticEx>> diagnostics = this.languageEndpoint.getAllDiagnostics(this.getProject());
+    private boolean isOutputFileSpecified() {
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+
+        return !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION));
+    }
+
+    private static void createMarkers(IProject project, IProgressMonitor monitor) throws CoreException {
+        final Map<String, List<DiagnosticEx>> diagnostics = TypeScriptPlugin.getDefault().getBuilderLanguageEndpoint().getAllDiagnostics(project);
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -258,13 +270,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 createMarkers(diagnostics);
             }
         };
-        ResourcesPlugin.getWorkspace().run(runnable, this.getProject(), IWorkspace.AVOID_UPDATE, monitor);
-    }
-
-    private boolean isOutputFileSpecified() {
-        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
-
-        return !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION));
+        ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, monitor);
     }
 
     private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics) throws CoreException {
