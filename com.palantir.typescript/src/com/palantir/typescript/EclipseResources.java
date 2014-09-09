@@ -198,8 +198,8 @@ public final class EclipseResources {
         return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
     }
 
-    public static List<IContainer> getExportFolders(IProject project) {
-        return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORT_FOLDER);
+    public static List<IContainer> getExportedFolders(IProject project) {
+        return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER);
     }
 
     /**

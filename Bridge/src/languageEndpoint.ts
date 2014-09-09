@@ -21,19 +21,19 @@ module Bridge {
 
     export class LanguageEndpoint {
 
+        private exportedFolderNames: { [projectName: string]: string[] };
         private fileInfos: { [fileName: string]: FileInfo };
-        private projectExportFolderNames: { [projectName: string]: string[] };
         private languageServices: { [serviceKey: string]: LanguageService };
 
         constructor() {
+            this.exportedFolderNames = Object.create(null);
             this.fileInfos = Object.create(null);
-            this.projectExportFolderNames = Object.create(null);
             this.languageServices = Object.create(null);
         }
 
         public cleanProject(projectName: string) {
+            delete this.exportedFolderNames[projectName];
             delete this.languageServices[projectName];
-            delete this.projectExportFolderNames[projectName];
 
             // delete the project's files
             Object.getOwnPropertyNames(this.fileInfos).forEach((fileName) => {
@@ -47,11 +47,11 @@ module Bridge {
                 projectName: string,
                 compilationSettings: TypeScript.CompilationSettings,
                 referencedProjectNames: string[],
-                exportFolderNames: string[],
+                exportedFolderNames: string[],
                 files: { [fileName: string]: string }) {
 
             this.cleanProject(projectName);
-            this.projectExportFolderNames[projectName] = exportFolderNames;
+            this.exportedFolderNames[projectName] = exportedFolderNames;
             this.languageServices[projectName] = this.createProjectLanguageService(projectName, compilationSettings, referencedProjectNames);
             this.addFiles(files);
         }
@@ -226,15 +226,15 @@ module Bridge {
 
         private isExportedByReferencedProject(referencedProjectNames: string[], fileName: string): boolean {
             return referencedProjectNames.some((referencedProjectName: string) => {
-                return this.projectExportFolderNames[referencedProjectName].some((exportFolder: string) => {
-                    return folderContains(exportFolder, fileName);
+                return this.exportedFolderNames[referencedProjectName].some((exportedFolderName: string) => {
+                    return folderContains(exportedFolderName, fileName);
                 });
             });
         }
     }
 
-    function folderContains(folderPath: string, fileName: string): boolean {
-        return fileName.indexOf(folderPath) == 0;
+    function folderContains(folderName: string, fileName: string): boolean {
+        return fileName.indexOf(folderName) == 0;
     }
 
     function isProjectFile(projectName: string, fileName: string): boolean {

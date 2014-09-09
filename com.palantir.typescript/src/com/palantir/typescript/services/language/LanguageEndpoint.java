@@ -84,9 +84,9 @@ public final class LanguageEndpoint {
         String projectName = project.getName();
         CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
         List<String> referencedProjectNames = getReferencedProjectNames(project);
-        List<String> exportFolderNames = getExportFolderNames(project);
+        List<String> exportedFolderNames = getExportedFolderNames(project);
         Map<String, String> files = getFiles(project);
-        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportFolderNames, files);
+        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, files);
         this.bridge.call(request, Void.class);
     }
 
@@ -310,12 +310,14 @@ public final class LanguageEndpoint {
         return referencedProjectNames.build();
     }
 
-    private static List<String> getExportFolderNames(IProject project) {
-        ImmutableList.Builder<String> exportFolderNames = ImmutableList.builder();
-        for (IContainer exportFolder : EclipseResources.getExportFolders(project)) {
-            exportFolderNames.add(EclipseResources.getContainerName(exportFolder));
+    private static List<String> getExportedFolderNames(IProject project) {
+        ImmutableList.Builder<String> exportedFolderNames = ImmutableList.builder();
+
+        for (IContainer exportedFolder : EclipseResources.getExportedFolders(project)) {
+            exportedFolderNames.add(EclipseResources.getContainerName(exportedFolder));
         }
-        return exportFolderNames.build();
+
+        return exportedFolderNames.build();
     }
 
     private static String readLibContents() {
