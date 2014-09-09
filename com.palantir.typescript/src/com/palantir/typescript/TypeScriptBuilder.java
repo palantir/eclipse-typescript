@@ -99,6 +99,10 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
                 // re-create the markers for the referencing projects
                 for (IProject referencingProject : this.getProject().getReferencingProjects()) {
+                    if (!this.languageEndpoint.isProjectInitialized(referencingProject)) {
+                        this.languageEndpoint.initializeProject(referencingProject);
+                    }
+
                     referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
                     createMarkers(referencingProject, monitor);
                 }
