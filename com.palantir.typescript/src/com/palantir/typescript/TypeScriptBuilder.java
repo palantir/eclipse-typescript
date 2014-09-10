@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -138,6 +139,19 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            String outputFolderName = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+
+            // ensure the output directory exists and is marked as derived
+            if (!Strings.isNullOrEmpty(outputFolderName)) {
+                IFolder outputFolder = this.getProject().getFolder(outputFolderName);
+
+                EclipseResources.createParentDirs(outputFolder, monitor);
+
+                if (!outputFolder.isDerived()) {
+                    outputFolder.setDerived(true, monitor);
+                }
+            }
+
             if (isOutputFileSpecified()) {
                 // pick the first file as the one to "compile" (like a clean build)
                 if (!fileDeltas.isEmpty()) {

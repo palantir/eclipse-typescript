@@ -37,6 +37,7 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -57,6 +58,21 @@ public final class EclipseResources {
     private static final String ECLIPSE_URI_PREFIX = "eclipse:";
     private static final String FILE_URI_PREFIX = "file:";
     private static final Splitter PATH_SPLITTER = Splitter.on(';');
+
+    public static void createParentDirs(IFolder folder, IProgressMonitor monitor) throws CoreException {
+        checkNotNull(folder);
+
+        if (!folder.exists()) {
+            IContainer parent = folder.getParent();
+
+            // create the parent folder (if necessary)
+            if (parent instanceof IFolder) {
+                createParentDirs((IFolder) parent, monitor);
+            }
+
+            folder.create(true, true, monitor);
+        }
+    }
 
     public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
         checkNotNull(delta);
