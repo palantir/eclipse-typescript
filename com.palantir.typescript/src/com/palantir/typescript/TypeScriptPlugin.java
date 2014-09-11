@@ -18,6 +18,7 @@ package com.palantir.typescript;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -31,7 +32,6 @@ import org.osgi.framework.BundleContext;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.StandardSystemProperty;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
@@ -221,7 +221,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
             IResourceDelta delta = event.getDelta();
-            final ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta);
+            Set<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta);
 
             if (TypeScriptPlugin.this.editorLanguageEndpoint != null) {
                 TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(fileDeltas);

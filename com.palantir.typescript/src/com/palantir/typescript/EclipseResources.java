@@ -20,7 +20,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
@@ -45,6 +47,7 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Sets;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 
@@ -74,15 +77,15 @@ public final class EclipseResources {
         }
     }
 
-    public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
+    public static Set<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
         checkNotNull(delta);
         checkNotNull(project);
 
-        List<IContainer> sourceFolders = getSourceFolders(project);
-        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
+        Set<FileDelta> fileDeltas = Sets.newHashSet();
 
-        for (IContainer sourceFolder : sourceFolders) {
-            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
+        List<IContainer> typeScriptFolders = getTypeScriptFolders(project);
+        for (IContainer typeScriptFolder : typeScriptFolders) {
+            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(typeScriptFolder);
 
             try {
                 delta.accept(visitor);
@@ -93,18 +96,18 @@ public final class EclipseResources {
             fileDeltas.addAll(visitor.fileDeltas.build());
         }
 
-        return fileDeltas.build();
+        return Collections.unmodifiableSet(fileDeltas);
     }
 
-    public static ImmutableList<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta) {
+    public static Set<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta) {
         checkNotNull(delta);
 
-        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
+        Set<FileDelta> fileDeltas = Sets.newHashSet();
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-            List<IContainer> sourceFolders = getSourceFolders(project);
+            List<IContainer> typeScriptFolders = getTypeScriptFolders(project);
 
-            for (IContainer sourceFolder : sourceFolders) {
-                MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
+            for (IContainer typeScriptFolder : typeScriptFolders) {
+                MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(typeScriptFolder);
 
                 try {
                     delta.accept(visitor);
@@ -116,20 +119,20 @@ public final class EclipseResources {
             }
         }
 
-        return fileDeltas.build();
+        return Collections.unmodifiableSet(fileDeltas);
     }
 
-    public static ImmutableList<IFile> getTypeScriptFiles(IProject project) {
+    public static Set<IFile> getTypeScriptFiles(IProject project) {
         checkNotNull(project);
 
-        List<IContainer> sourceFolders = getSourceFolders(project);
-        ImmutableList.Builder<IFile> typeScriptFiles = ImmutableList.builder();
+        Set<IFile> typeScriptFiles = Sets.newHashSet();
 
-        for (IContainer sourceFolder : sourceFolders) {
+        List<IContainer> typeScriptFolders = getTypeScriptFolders(project);
+        for (IContainer typeScriptFolder : typeScriptFolders) {
             MyResourceVisitor visitor = new MyResourceVisitor();
 
             try {
-                sourceFolder.accept(visitor);
+                typeScriptFolder.accept(visitor);
             } catch (CoreException e) {
                 throw new RuntimeException(e);
             }
@@ -137,7 +140,7 @@ public final class EclipseResources {
             typeScriptFiles.addAll(visitor.files.build());
         }
 
-        return typeScriptFiles.build();
+        return Collections.unmodifiableSet(typeScriptFiles);
     }
 
     public static boolean isContainedInSourceFolder(IResource resource, IProject project) {
@@ -210,24 +213,34 @@ public final class EclipseResources {
         throw new IllegalStateException();
     }
 
-    private static List<IContainer> getSourceFolders(IProject project) {
-        return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+    public static List<IContainer> getSourceFolders(IProject project) {
+        List<IContainer> sourceFolders = getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+
+        if (sourceFolders.isEmpty()) {
+            sourceFolders = ImmutableList.<IContainer> of(project);
+        }
+
+        return sourceFolders;
     }
 
     public static List<IContainer> getExportedFolders(IProject project) {
         return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER);
     }
 
-    /**
-     * Gets folders within a project, or the project itself if folders is empty or null.
-     * @param project the project containing the subfolders
-     * @param folderNames a semicolon-separated list of folders
-     * @return a list of containers: either the folders specified, or the project itself
-     */
+    private static List<IContainer> getTypeScriptFolders(IProject project) {
+        ImmutableList.Builder<IContainer> typeScriptFolders = ImmutableList.builder();
+
+        typeScriptFolders.addAll(getExportedFolders(project));
+        typeScriptFolders.addAll(getSourceFolders(project));
+
+        return typeScriptFolders.build();
+    }
+
     private static List<IContainer> getFoldersFromPreference(IProject project, String preferenceId) {
         IScopeContext projectScope = new ProjectScope(project);
         IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
         String folderNames = projectPreferences.get(preferenceId, "");
+
         if (!Strings.isNullOrEmpty(folderNames)) {
             ImmutableList.Builder<IContainer> folders = ImmutableList.builder();
 
@@ -240,7 +253,7 @@ public final class EclipseResources {
 
             return folders.build();
         } else {
-            return ImmutableList.<IContainer> of(project);
+            return ImmutableList.of();
         }
     }
 

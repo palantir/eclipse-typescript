@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFile;
@@ -43,8 +44,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DiagnosticEx;
@@ -134,7 +136,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         this.languageEndpoint.initializeProject(this.getProject());
     }
 
-    private void build(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+    private void build(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
 
         // compile the source files if compile-on-save is enabled
@@ -155,7 +157,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             if (isOutputFileSpecified()) {
                 // pick the first file as the one to "compile" (like a clean build)
                 if (!fileDeltas.isEmpty()) {
-                    String fileName = fileDeltas.get(0).getFileName();
+                    String fileName = Iterables.getOnlyElement(fileDeltas).getFileName();
 
                     this.compile(fileName, monitor);
                 }
@@ -169,7 +171,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
-        ImmutableList<FileDelta> fileDeltas = this.getAllSourceFiles();
+        Set<FileDelta> fileDeltas = this.getAllSourceFiles();
 
         // initialize the project in the language service to ensure it is up-to-date
         this.languageEndpoint.initializeProject(this.getProject());
@@ -180,7 +182,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        ImmutableList<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
+        Set<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
             this.languageEndpoint.updateFiles(fileDeltas);
@@ -197,10 +199,10 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private ImmutableList<FileDelta> getAllSourceFiles() {
-        ImmutableList<IFile> files = EclipseResources.getTypeScriptFiles(this.getProject());
-        ImmutableList.Builder<FileDelta> fileDeltas = ImmutableList.builder();
+    private Set<FileDelta> getAllSourceFiles() {
+        ImmutableSet.Builder<FileDelta> fileDeltas = ImmutableSet.builder();
 
+        Set<IFile> files = EclipseResources.getTypeScriptFiles(this.getProject());
         for (IFile file : files) {
             fileDeltas.add(new FileDelta(Delta.ADDED, file));
         }
@@ -208,7 +210,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return fileDeltas.build();
     }
 
-    private void clean(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+    private void clean(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         for (FileDelta fileDelta : fileDeltas) {
             Delta delta = fileDelta.getDelta();
 
@@ -227,7 +229,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
     }
 
-    private void compile(List<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+    private void compile(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         for (FileDelta fileDelta : fileDeltas) {
             Delta delta = fileDelta.getDelta();
 

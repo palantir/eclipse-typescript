@@ -66,6 +66,24 @@ public final class FileDelta {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FileDelta) {
+            FileDelta other = (FileDelta) obj;
+
+            return this.delta.equals(other.delta) &&
+                    this.fileName.equals(other.fileName) &&
+                    this.filePath.equals(other.filePath);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.delta, this.fileName, this.filePath);
+    }
+
+    @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("delta", this.delta)

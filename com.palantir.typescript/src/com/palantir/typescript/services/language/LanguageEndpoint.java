@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -270,7 +271,7 @@ public final class LanguageEndpoint {
         this.bridge.call(request, Void.class);
     }
 
-    public void updateFiles(List<FileDelta> fileDeltas) {
+    public void updateFiles(Set<FileDelta> fileDeltas) {
         checkNotNull(fileDeltas);
 
         if (!fileDeltas.isEmpty()) {
@@ -287,7 +288,7 @@ public final class LanguageEndpoint {
     private static Map<String, String> getFiles(IProject project) {
         ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
 
-        ImmutableList<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(project);
+        Set<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(project);
         for (IFile typeScriptFile : typeScriptFiles) {
             String fileName = EclipseResources.getFileName(typeScriptFile);
             String filePath = EclipseResources.getFilePath(typeScriptFile);
