@@ -85,9 +85,10 @@ public final class LanguageEndpoint {
         String projectName = project.getName();
         CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
         List<String> referencedProjectNames = getReferencedProjectNames(project);
-        List<String> exportedFolderNames = getExportedFolderNames(project);
+        List<String> exportedFolderNames = getFolderNames(EclipseResources.getExportedFolders(project));
+        List<String> sourceFolderNames = getFolderNames(EclipseResources.getSourceFolders(project));
         Map<String, String> files = getFiles(project);
-        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, files);
+        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, sourceFolderNames, files);
         this.bridge.call(request, Void.class);
     }
 
@@ -301,6 +302,7 @@ public final class LanguageEndpoint {
 
     private static List<String> getReferencedProjectNames(IProject project) {
         ImmutableList.Builder<String> referencedProjectNames = ImmutableList.builder();
+
         try {
             for (IProject referencedProject : project.getReferencedProjects()) {
                 referencedProjectNames.add(referencedProject.getName());
@@ -308,17 +310,18 @@ public final class LanguageEndpoint {
         } catch (CoreException e) {
             throw new RuntimeException(e);
         }
+
         return referencedProjectNames.build();
     }
 
-    private static List<String> getExportedFolderNames(IProject project) {
-        ImmutableList.Builder<String> exportedFolderNames = ImmutableList.builder();
+    private static List<String> getFolderNames(List<IContainer> folders) {
+        ImmutableList.Builder<String> folderNames = ImmutableList.builder();
 
-        for (IContainer exportedFolder : EclipseResources.getExportedFolders(project)) {
-            exportedFolderNames.add(EclipseResources.getContainerName(exportedFolder));
+        for (IContainer folder : folders) {
+            folderNames.add(EclipseResources.getContainerName(folder));
         }
 
-        return exportedFolderNames.build();
+        return folderNames.build();
     }
 
     private static String readLibContents() {

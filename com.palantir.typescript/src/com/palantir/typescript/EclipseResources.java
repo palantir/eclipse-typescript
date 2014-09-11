@@ -47,6 +47,7 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
@@ -77,15 +78,15 @@ public final class EclipseResources {
         }
     }
 
-    public static Set<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta, IProject project) {
+    public static Set<FileDelta> getSourceFileDeltas(IResourceDelta delta, IProject project) {
         checkNotNull(delta);
         checkNotNull(project);
 
         Set<FileDelta> fileDeltas = Sets.newHashSet();
 
-        List<IContainer> typeScriptFolders = getTypeScriptFolders(project);
-        for (IContainer typeScriptFolder : typeScriptFolders) {
-            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(typeScriptFolder);
+        List<IContainer> sourceFolders = getSourceFolders(project);
+        for (IContainer sourceFolder : sourceFolders) {
+            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(sourceFolder);
 
             try {
                 delta.accept(visitor);
@@ -99,24 +100,13 @@ public final class EclipseResources {
         return Collections.unmodifiableSet(fileDeltas);
     }
 
-    public static Set<FileDelta> getTypeScriptFileDeltas(IResourceDelta delta) {
+    public static Set<FileDelta> getSourceFileDeltas(IResourceDelta delta) {
         checkNotNull(delta);
 
         Set<FileDelta> fileDeltas = Sets.newHashSet();
+
         for (IProject project : ResourcesPlugin.getWorkspace().getRoot().getProjects()) {
-            List<IContainer> typeScriptFolders = getTypeScriptFolders(project);
-
-            for (IContainer typeScriptFolder : typeScriptFolders) {
-                MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(typeScriptFolder);
-
-                try {
-                    delta.accept(visitor);
-                } catch (CoreException e) {
-                    throw new RuntimeException(e);
-                }
-
-                fileDeltas.addAll(visitor.fileDeltas.build());
-            }
+            fileDeltas.addAll(getSourceFileDeltas(delta, project));
         }
 
         return Collections.unmodifiableSet(fileDeltas);
@@ -127,7 +117,7 @@ public final class EclipseResources {
 
         Set<IFile> typeScriptFiles = Sets.newHashSet();
 
-        List<IContainer> typeScriptFolders = getTypeScriptFolders(project);
+        Iterable<IContainer> typeScriptFolders = Iterables.concat(getSourceFolders(project), getExportedFolders(project));
         for (IContainer typeScriptFolder : typeScriptFolders) {
             MyResourceVisitor visitor = new MyResourceVisitor();
 
@@ -225,15 +215,6 @@ public final class EclipseResources {
 
     public static List<IContainer> getExportedFolders(IProject project) {
         return getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER);
-    }
-
-    private static List<IContainer> getTypeScriptFolders(IProject project) {
-        ImmutableList.Builder<IContainer> typeScriptFolders = ImmutableList.builder();
-
-        typeScriptFolders.addAll(getExportedFolders(project));
-        typeScriptFolders.addAll(getSourceFolders(project));
-
-        return typeScriptFolders.build();
     }
 
     private static List<IContainer> getFoldersFromPreference(IProject project, String preferenceId) {

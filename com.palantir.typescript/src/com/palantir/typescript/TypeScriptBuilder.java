@@ -182,7 +182,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        Set<FileDelta> fileDeltas = EclipseResources.getTypeScriptFileDeltas(delta, project);
+        Set<FileDelta> fileDeltas = EclipseResources.getSourceFileDeltas(delta, project);
 
         if (!fileDeltas.isEmpty()) {
             this.languageEndpoint.updateFiles(fileDeltas);
@@ -202,9 +202,12 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private Set<FileDelta> getAllSourceFiles() {
         ImmutableSet.Builder<FileDelta> fileDeltas = ImmutableSet.builder();
 
-        Set<IFile> files = EclipseResources.getTypeScriptFiles(this.getProject());
+        IProject project = this.getProject();
+        Set<IFile> files = EclipseResources.getTypeScriptFiles(project);
         for (IFile file : files) {
-            fileDeltas.add(new FileDelta(Delta.ADDED, file));
+            if (EclipseResources.isContainedInSourceFolder(file, project)) {
+                fileDeltas.add(new FileDelta(Delta.ADDED, file));
+            }
         }
 
         return fileDeltas.build();
@@ -281,7 +284,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private static void createMarkers(IProject project, IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<DiagnosticEx>> diagnostics = TypeScriptPlugin.getDefault().getBuilderLanguageEndpoint().getAllDiagnostics(project);
+        final Map<String, List<DiagnosticEx>> diagnostics = TypeScriptPlugin.getDefault().getBuilderLanguageEndpoint()
+            .getAllDiagnostics(project);
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
