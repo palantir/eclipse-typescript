@@ -74,7 +74,7 @@ public final class LanguageEndpoint {
         // ensure referenced projects are initialized first
         try {
             for (IProject referencedProject : project.getReferencedProjects()) {
-                if (!isProjectInitialized(referencedProject)) {
+                if (!isProjectInitialized(referencedProject) && !project.getName().equals(referencedProject.getName())) {
                     this.initializeProject(referencedProject);
                 }
             }
