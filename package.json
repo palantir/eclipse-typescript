@@ -6,8 +6,7 @@
     "url": "https://github.com/palantir/eclipse-typescript.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-chmod": "~1.0.3",
-    "grunt-contrib-watch": "~0.6.1"
+    "gulp": "~3.8.8",
+    "gulp-tsc": "~0.9.2"
   }
 }
