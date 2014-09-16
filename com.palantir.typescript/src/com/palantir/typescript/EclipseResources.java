@@ -119,15 +119,17 @@ public final class EclipseResources {
 
         Iterable<IContainer> typeScriptFolders = Iterables.concat(getSourceFolders(project), getExportedFolders(project));
         for (IContainer typeScriptFolder : typeScriptFolders) {
-            MyResourceVisitor visitor = new MyResourceVisitor();
+            if (typeScriptFolder.exists()) {
+                MyResourceVisitor visitor = new MyResourceVisitor();
 
-            try {
-                typeScriptFolder.accept(visitor);
-            } catch (CoreException e) {
-                throw new RuntimeException(e);
+                try {
+                    typeScriptFolder.accept(visitor);
+                } catch (CoreException e) {
+                    throw new RuntimeException(e);
+                }
+
+                typeScriptFiles.addAll(visitor.files.build());
             }
-
-            typeScriptFiles.addAll(visitor.files.build());
         }
 
         return Collections.unmodifiableSet(typeScriptFiles);
