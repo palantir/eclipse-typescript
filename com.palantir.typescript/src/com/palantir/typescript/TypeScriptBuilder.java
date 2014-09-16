@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -47,6 +48,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DiagnosticEx;
@@ -258,6 +260,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
+        Set<FileDelta> emittedOutputToSend = Sets.newHashSet();
+
         for (OutputFile outputFile : this.languageEndpoint.getEmitOutput(this.getProject(), fileName)) {
             String outputFileName = outputFile.getName();
             IFile eclipseFile = EclipseResources.getFile(outputFileName);
@@ -274,7 +278,21 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
             // refresh the file so that eclipse knows about it
             eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
+
+            // if this output file is going to be referenced by anything, the LanguageEndpoint needs
+            // to know about it. we send it back over the bridge because the node side doesn't
+            // know the filesystem path of the file and so can't create the FileInfo without this call.
+            if (this.getProject().getReferencingProjects().length > 0) {
+                for (IContainer exportFolder : EclipseResources.getExportedFolders(this.getProject())) {
+                    if (exportFolder.getFullPath().isPrefixOf(eclipseFile.getFullPath())
+                            && EclipseResources.isTypeScriptDefinitionFile(eclipseFile)) {
+                        emittedOutputToSend.add(new FileDelta(Delta.ADDED, eclipseFile));
+                    }
+                }
+            }
         }
+
+        this.languageEndpoint.updateFiles(emittedOutputToSend);
     }
 
     private boolean isOutputFileSpecified() {

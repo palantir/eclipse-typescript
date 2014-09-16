@@ -254,6 +254,10 @@ public final class EclipseResources {
         return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
     }
 
+    public static boolean isTypeScriptDefinitionFile(IResource resource) {
+        return resource.getType() == IResource.FILE && resource.getName().endsWith(".d.ts");
+    }
+
     private static final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
 
         /*
