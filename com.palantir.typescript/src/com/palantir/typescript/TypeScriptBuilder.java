@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.ICommand;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -50,6 +49,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.FileDelta;
@@ -184,7 +184,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        Set<FileDelta> fileDeltas = EclipseResources.getSourceFileDeltas(delta, project);
+        Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(project, Folders.SOURCE, delta);
 
         if (!fileDeltas.isEmpty()) {
             this.languageEndpoint.updateFiles(fileDeltas);
@@ -205,11 +205,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         ImmutableSet.Builder<FileDelta> fileDeltas = ImmutableSet.builder();
 
         IProject project = this.getProject();
-        Set<IFile> files = EclipseResources.getTypeScriptFiles(project);
+        Set<IFile> files = TypeScriptProjects.getFiles(project, Folders.SOURCE);
         for (IFile file : files) {
-            if (EclipseResources.isContainedInSourceFolder(file, project)) {
-                fileDeltas.add(new FileDelta(Delta.ADDED, file));
-            }
+            fileDeltas.add(new FileDelta(Delta.ADDED, file));
         }
 
         return fileDeltas.build();
@@ -260,9 +258,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void compile(String fileName, IProgressMonitor monitor) throws CoreException {
-        Set<FileDelta> emittedOutputToSend = Sets.newHashSet();
+        IProject project = this.getProject();
+        boolean isProjectReferenced = project.getReferencingProjects().length > 0;
 
-        for (OutputFile outputFile : this.languageEndpoint.getEmitOutput(this.getProject(), fileName)) {
+        Set<FileDelta> emittedOutputToSend = Sets.newHashSet();
+        for (OutputFile outputFile : this.languageEndpoint.getEmitOutput(project, fileName)) {
             String outputFileName = outputFile.getName();
             IFile eclipseFile = EclipseResources.getFile(outputFileName);
             String filePath = EclipseResources.getFilePath(eclipseFile);
@@ -282,13 +282,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             // if this output file is going to be referenced by anything, the LanguageEndpoint needs
             // to know about it. we send it back over the bridge because the node side doesn't
             // know the filesystem path of the file and so can't create the FileInfo without this call.
-            if (this.getProject().getReferencingProjects().length > 0) {
-                for (IContainer exportFolder : EclipseResources.getExportedFolders(this.getProject())) {
-                    if (exportFolder.getFullPath().isPrefixOf(eclipseFile.getFullPath())
-                            && EclipseResources.isTypeScriptDefinitionFile(eclipseFile)) {
-                        emittedOutputToSend.add(new FileDelta(Delta.ADDED, eclipseFile));
-                    }
-                }
+            if (isProjectReferenced && TypeScriptProjects.isContainedInFolders(project, Folders.EXPORTED, eclipseFile)
+                    && outputFileName.endsWith(".d.ts")) {
+                emittedOutputToSend.add(new FileDelta(Delta.ADDED, eclipseFile));
             }
         }
 

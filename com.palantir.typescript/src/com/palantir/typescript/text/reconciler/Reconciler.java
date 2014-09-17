@@ -50,7 +50,8 @@ import org.eclipse.ui.texteditor.spelling.SpellingService;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.TypeScriptProjects;
+import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.text.FileLanguageService;
@@ -129,7 +130,7 @@ public final class Reconciler implements IReconciler {
                 IResource resource = ResourceUtil.getResource(input);
                 IProject project = resource.getProject();
 
-                if (EclipseResources.isContainedInSourceFolder(resource, project)) {
+                if (TypeScriptProjects.isContainedInFolders(project, Folders.SOURCE, resource)) {
                     String fileName = this.editor.getFileName();
 
                     this.cachedLanguageService = FileLanguageService.create(languageEndpoint, project, fileName);

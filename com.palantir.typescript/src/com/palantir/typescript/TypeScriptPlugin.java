@@ -33,6 +33,7 @@ import org.osgi.framework.BundleContext;
 import com.google.common.base.Splitter;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
+import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageEndpoint;
@@ -221,7 +222,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
             IResourceDelta delta = event.getDelta();
-            Set<FileDelta> fileDeltas = EclipseResources.getSourceFileDeltas(delta);
+            Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(Folders.SOURCE, delta);
 
             if (TypeScriptPlugin.this.editorLanguageEndpoint != null) {
                 TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(fileDeltas);

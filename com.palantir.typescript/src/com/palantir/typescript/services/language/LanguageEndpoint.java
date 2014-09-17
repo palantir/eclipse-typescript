@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -39,6 +38,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.TypeScriptProjects;
+import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
@@ -85,8 +86,8 @@ public final class LanguageEndpoint {
         String projectName = project.getName();
         CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
         List<String> referencedProjectNames = getReferencedProjectNames(project);
-        List<String> exportedFolderNames = getFolderNames(EclipseResources.getExportedFolders(project));
-        List<String> sourceFolderNames = getFolderNames(EclipseResources.getSourceFolders(project));
+        List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
+        List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
         Map<String, String> files = getFiles(project);
         Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, sourceFolderNames, files);
         this.bridge.call(request, Void.class);
@@ -289,7 +290,7 @@ public final class LanguageEndpoint {
     private static Map<String, String> getFiles(IProject project) {
         ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
 
-        Set<IFile> typeScriptFiles = EclipseResources.getTypeScriptFiles(project);
+        Set<IFile> typeScriptFiles = TypeScriptProjects.getFiles(project, Folders.ALL);
         for (IFile typeScriptFile : typeScriptFiles) {
             String fileName = EclipseResources.getFileName(typeScriptFile);
             String filePath = EclipseResources.getFilePath(typeScriptFile);
@@ -312,16 +313,6 @@ public final class LanguageEndpoint {
         }
 
         return referencedProjectNames.build();
-    }
-
-    private static List<String> getFolderNames(List<IContainer> folders) {
-        ImmutableList.Builder<String> folderNames = ImmutableList.builder();
-
-        for (IContainer folder : folders) {
-            folderNames.add(EclipseResources.getContainerName(folder));
-        }
-
-        return folderNames.build();
     }
 
     private static String readLibContents() {
