@@ -222,7 +222,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
             IResourceDelta delta = event.getDelta();
-            Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(Folders.SOURCE, delta);
+            Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(Folders.ALL, delta);
 
             if (TypeScriptPlugin.this.editorLanguageEndpoint != null) {
                 TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(fileDeltas);
