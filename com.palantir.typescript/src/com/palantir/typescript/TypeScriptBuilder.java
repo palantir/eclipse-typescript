@@ -46,7 +46,6 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.palantir.typescript.TypeScriptProjects.Folders;
@@ -159,7 +158,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             if (isOutputFileSpecified()) {
                 // pick the first file as the one to "compile" (like a clean build)
                 if (!fileDeltas.isEmpty()) {
-                    String fileName = Iterables.getOnlyElement(fileDeltas).getFileName();
+                    String fileName = fileDeltas.iterator().next().getFileName();
 
                     this.compile(fileName, monitor);
                 }
