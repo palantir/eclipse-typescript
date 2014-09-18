@@ -41,6 +41,7 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
@@ -55,9 +56,9 @@ public final class TypeScriptProjects {
     private static final Splitter PATH_SPLITTER = Splitter.on(';');
 
     public enum Folders {
-        ALL,
         EXPORTED,
-        SOURCE
+        SOURCE,
+        SOURCE_AND_EXPORTED
     }
 
     public static Set<IFile> getFiles(IProject project, Folders folders) {
@@ -134,6 +135,34 @@ public final class TypeScriptProjects {
         return folderNames.build();
     }
 
+    public static IContainer getOutputFolder(IProject project) {
+        checkNotNull(project);
+
+        return Iterables.getFirst(getFoldersFromPreference(project, IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION), null);
+    }
+
+    // see Bridge/typescript/src/compiler/emitter.ts, EmitOptions.determineCommonDirectoryPath
+    public static IPath getCommonSourcePath(IProject project) {
+        checkNotNull(project);
+
+        // the same set of files that are passed to the builder language endpoint
+        Set<IFile> sourceFiles = getFiles(project, Folders.SOURCE);
+
+        IPath commonDirectoryPath = null;
+        for (IFile sourceFile : sourceFiles) {
+            if (!sourceFile.getName().endsWith(".d.ts")) {
+                if (commonDirectoryPath == null) {
+                    commonDirectoryPath = sourceFile.getFullPath().removeLastSegments(1);
+                } else {
+                    int numCommonSegments = commonDirectoryPath.matchingFirstSegments(sourceFile.getFullPath());
+                    commonDirectoryPath = commonDirectoryPath.uptoSegment(numCommonSegments);
+                }
+            }
+        }
+
+        return commonDirectoryPath;
+    }
+
     public static boolean isContainedInFolders(IProject project, Folders folders, IResource resource) {
         checkNotNull(folders);
         checkNotNull(project);
@@ -158,8 +187,14 @@ public final class TypeScriptProjects {
 
         ImmutableList.Builder<IContainer> containers = ImmutableList.builder();
 
-        // add the source folders
-        if (folders != Folders.EXPORTED) {
+        boolean addExported = (folders == Folders.EXPORTED || folders == Folders.SOURCE_AND_EXPORTED);
+        boolean addSource = (folders == Folders.SOURCE || folders == Folders.SOURCE_AND_EXPORTED);
+
+        if (addExported) {
+            containers.addAll(getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER));
+        }
+
+        if (addSource) {
             List<IContainer> sourceFolders = getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
 
             // if no source folders are explicitly set, return the entire project
@@ -168,11 +203,6 @@ public final class TypeScriptProjects {
             }
 
             containers.addAll(sourceFolders);
-        }
-
-        // add the exported folders
-        if (folders != Folders.SOURCE) {
-            containers.addAll(getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER));
         }
 
         return containers.build();

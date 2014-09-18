@@ -290,7 +290,7 @@ public final class LanguageEndpoint {
     private static Map<String, String> getFiles(IProject project) {
         ImmutableMap.Builder<String, String> files = ImmutableMap.builder();
 
-        Set<IFile> typeScriptFiles = TypeScriptProjects.getFiles(project, Folders.ALL);
+        Set<IFile> typeScriptFiles = TypeScriptProjects.getFiles(project, Folders.SOURCE_AND_EXPORTED);
         for (IFile typeScriptFile : typeScriptFiles) {
             String fileName = EclipseResources.getFileName(typeScriptFile);
             String filePath = EclipseResources.getFilePath(typeScriptFile);

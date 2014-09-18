@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.resources.ICommand;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IMarker;
@@ -37,6 +38,7 @@ import org.eclipse.core.resources.IWorkspaceRunnable;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -123,6 +125,12 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
+        // delete the build output
+        Set<FileDelta> fileDeltas = getAllSourceFiles(Delta.REMOVED);
+        if (!isOutputFileSpecified()) {
+            clean(fileDeltas, monitor);
+        }
+
         // clean the language service in case it is out-of-sync
         this.languageEndpoint.cleanProject(this.getProject());
 
@@ -172,7 +180,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
-        Set<FileDelta> fileDeltas = this.getAllSourceFiles();
+        Set<FileDelta> fileDeltas = this.getAllSourceFiles(Delta.ADDED);
 
         // initialize the project in the language service to ensure it is up-to-date
         this.languageEndpoint.initializeProject(this.getProject());
@@ -193,42 +201,53 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
             // replace the file deltas with all the source files if an output file is specified
             if (isOutputFileSpecified()) {
-                fileDeltas = this.getAllSourceFiles();
+                fileDeltas = this.getAllSourceFiles(Delta.ADDED);
             }
 
             this.build(fileDeltas, monitor);
         }
     }
 
-    private Set<FileDelta> getAllSourceFiles() {
+    private Set<FileDelta> getAllSourceFiles(Delta withDelta) {
         ImmutableSet.Builder<FileDelta> fileDeltas = ImmutableSet.builder();
 
         IProject project = this.getProject();
         Set<IFile> files = TypeScriptProjects.getFiles(project, Folders.SOURCE);
         for (IFile file : files) {
-            fileDeltas.add(new FileDelta(Delta.ADDED, file));
+            fileDeltas.add(new FileDelta(withDelta, file));
         }
 
         return fileDeltas.build();
     }
 
-    private void clean(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+    private void clean(Set<FileDelta> fileDeltas, IProgressMonitor monitor) {
+        IPath commonSourcePath = TypeScriptProjects.getCommonSourcePath(this.getProject());
+        IContainer outputFolder = TypeScriptProjects.getOutputFolder(this.getProject());
+
+        Set<FileDelta> deletedEmittedOutputToSend = Sets.newHashSet();
         for (FileDelta fileDelta : fileDeltas) {
             Delta delta = fileDelta.getDelta();
 
             if (delta == Delta.REMOVED) {
                 String removedFileName = fileDelta.getFileName();
+                IPath removedFilePath = EclipseResources.getFile(removedFileName).getFullPath();
 
                 // skip ambient declaration files
                 if (removedFileName.endsWith(".d.ts")) {
                     continue;
                 }
 
-                cleanEmittedFile(removedFileName, ".d.ts", monitor);
-                cleanEmittedFile(removedFileName, ".js", monitor);
-                cleanEmittedFile(removedFileName, ".js.map", monitor);
+                IFile definitionFile = deleteEmittedFile(removedFilePath, "d.ts", commonSourcePath, outputFolder, monitor);
+                deleteEmittedFile(removedFilePath, "js", commonSourcePath, outputFolder, monitor);
+                deleteEmittedFile(removedFilePath, "js.map", commonSourcePath, outputFolder, monitor);
+
+                if (definitionFile != null) {
+                    deletedEmittedOutputToSend.add(new FileDelta(Delta.REMOVED, definitionFile));
+                }
             }
         }
+
+        this.languageEndpoint.updateFiles(deletedEmittedOutputToSend);
     }
 
     private void compile(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -339,16 +358,31 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return attributes.build();
     }
 
-    private static void cleanEmittedFile(String removedFileName, String extension, IProgressMonitor monitor) throws CoreException {
-        String fileName = removedFileName.substring(0, removedFileName.length() - 3) + extension;
-        IFile eclipseFile = EclipseResources.getFile(fileName);
-        String filePath = EclipseResources.getFilePath(eclipseFile);
-        File file = new File(filePath);
+    private static IFile deleteEmittedFile(
+            IPath sourceFilePath,
+            String extension,
+            IPath commonSourcePath,
+            IContainer outputFolder,
+            IProgressMonitor monitor) {
 
-        // delete the file
-        file.delete();
+        IPath emittedPath = null;
+        if (outputFolder == null || commonSourcePath == null) {
+            emittedPath = sourceFilePath.removeFileExtension().addFileExtension(extension);
+        } else {
+            emittedPath = outputFolder.getFullPath().append(
+                sourceFilePath
+                    .makeRelativeTo(commonSourcePath)
+                    .removeFileExtension()
+                    .addFileExtension(extension));
+        }
 
-        // refresh the file so that eclipse knows about it
-        eclipseFile.refreshLocal(IResource.DEPTH_ZERO, monitor);
+        IFile emittedFile = ResourcesPlugin.getWorkspace().getRoot().getFile(emittedPath);
+        try {
+            emittedFile.delete(true, monitor);
+        } catch (CoreException e) {
+            // indicate that nothing was deleted
+            return null;
+        }
+        return emittedFile;
     }
 }
