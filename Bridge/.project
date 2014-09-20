@@ -27,7 +27,7 @@
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/bin</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/bin</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -36,7 +36,7 @@
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/doc</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/doc</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -45,7 +45,7 @@
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/samples</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/samples</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -54,7 +54,7 @@
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/src/compiler/symbols</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/src/compiler/symbols</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -63,7 +63,7 @@
 			<type>30</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/src/harness</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/src/harness</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -72,7 +72,7 @@
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/tests</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/tests</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -81,7 +81,7 @@
 			<type>26</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-projectRelativePath-matches-false-false-typescript/typings</arguments>
+				<arguments>1.0-projectRelativePath-matches-false-false-TypeScript/typings</arguments>
 			</matcher>
 		</filter>
 		<filter>

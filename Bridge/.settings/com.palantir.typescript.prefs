@@ -1,5 +1,6 @@
 compiler.codeGenTarget=ECMASCRIPT5
 compiler.compileOnSave=false
+compiler.generateDeclarationFiles=false
 compiler.mapSourceFiles=false
 compiler.moduleGenTarget=SYNCHRONOUS
 compiler.noImplicitAny=true
