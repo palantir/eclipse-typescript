@@ -1,0 +1,3 @@
+[submodule "Bridge/TypeScript"]
+	path = Bridge/TypeScript
+	url = git@github.com:Microsoft/TypeScript.git
