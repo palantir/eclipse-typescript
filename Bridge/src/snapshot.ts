@@ -42,10 +42,10 @@ module Bridge {
             return this.lineStartPositions;
         }
 
-        public getChangeRange(oldSnapshot: TypeScript.IScriptSnapshot) {
+        public getChangeRange(oldSnapshot: TypeScript.IScriptSnapshot): TypeScript.TextChangeRange {
             var oldSnapshot2 = <ScriptSnapshot> oldSnapshot;
 
-            if (this === oldSnapshot) {
+            if (this.version === oldSnapshot2.version) {
                 return TypeScript.TextChangeRange.unchanged;
             } else if (this.version - oldSnapshot2.version <= this.changes.length) {
                 var start = this.changes.length - (this.version - oldSnapshot2.version);
