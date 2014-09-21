@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,48 +29,39 @@ import com.google.common.base.Objects;
 public final class ReferenceEntry {
 
     private final String fileName;
-    private final int minChar;
-    private final int limChar;
-    private final boolean writeAccess;
+    private final boolean isWriteAccess;
+    private final TextSpan textSpan;
 
     public ReferenceEntry(
             @JsonProperty("fileName") String fileName,
-            @JsonProperty("minChar") int minChar,
-            @JsonProperty("limChar") int limChar,
-            @JsonProperty("isWriteAccess") boolean writeAccess) {
+            @JsonProperty("isWriteAccess") boolean isWriteAccess,
+            @JsonProperty("textSpan") TextSpan textSpan) {
         checkNotNull(fileName);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
+        checkNotNull(textSpan);
 
         this.fileName = fileName;
-        this.minChar = minChar;
-        this.limChar = limChar;
-        this.writeAccess = writeAccess;
+        this.isWriteAccess = isWriteAccess;
+        this.textSpan = textSpan;
     }
 
     public String getFileName() {
         return this.fileName;
     }
 
-    public int getMinChar() {
-        return this.minChar;
-    }
-
-    public int getLimChar() {
-        return this.limChar;
-    }
-
     public boolean isWriteAccess() {
-        return this.writeAccess;
+        return this.isWriteAccess;
+    }
+
+    public TextSpan getTextSpan() {
+        return this.textSpan;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("fileName", this.fileName)
-            .add("minChar", this.minChar)
-            .add("limChar", this.limChar)
-            .add("isWriteAccess", this.writeAccess)
+            .add("isWriteAccess", this.isWriteAccess)
+            .add("textSpan", this.textSpan)
             .toString();
     }
 }

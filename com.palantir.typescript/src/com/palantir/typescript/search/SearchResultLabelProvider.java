@@ -32,6 +32,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import com.google.common.base.CharMatcher;
 import com.palantir.typescript.Resources;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
+import com.palantir.typescript.services.language.TextSpan;
 
 /**
  * The label provider for a search result.
@@ -107,10 +108,9 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
         string.append(line.substring(trimStart, trimEnd));
         for (FindReferenceMatch match : lineResult.getMatches()) {
             ReferenceEntryEx reference = match.getReference();
-            int minChar = reference.getMinChar();
-            int limChar = reference.getLimChar();
-            int offset = minChar + lineNumberString.length() - trimStart - lineStart;
-            int length = limChar - minChar;
+            TextSpan textSpan = reference.getTextSpan();
+            int offset = textSpan.getStart() + lineNumberString.length() - trimStart - lineStart;
+            int length = textSpan.getLength();
 
             // highlight the match if its present in the line (note: the line may have been truncated earlier)
             if (offset + length <= string.length()) {

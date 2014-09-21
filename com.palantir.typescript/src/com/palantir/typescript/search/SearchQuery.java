@@ -31,6 +31,7 @@ import org.eclipse.search.ui.ISearchResult;
 
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
+import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.FileLanguageService;
 
 /**
@@ -64,9 +65,8 @@ public final class SearchQuery implements ISearchQuery {
         for (ReferenceEntryEx reference : references) {
             String referenceFileName = reference.getFileName();
             IFile file = EclipseResources.getFile(referenceFileName);
-            int minChar = reference.getMinChar();
-            int limChar = reference.getLimChar();
-            FindReferenceMatch match = new FindReferenceMatch(file, minChar, limChar - minChar, reference);
+            TextSpan textSpan = reference.getTextSpan();
+            FindReferenceMatch match = new FindReferenceMatch(file, textSpan.getStart(), textSpan.getLength(), reference);
 
             this.result.addMatch(match);
         }

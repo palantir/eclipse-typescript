@@ -39,7 +39,8 @@ import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.navigate.NavigateToItemLabelProvider;
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.NavigationBarItem;
+import com.palantir.typescript.services.language.TextSpan;
 
 /**
  * The outline view.
@@ -62,16 +63,16 @@ public final class OutlinePage extends ContentOutlinePage {
     public void createControl(Composite parent) {
         super.createControl(parent);
 
-        List<NavigateToItem> lexicalStructure = this.editor.getLanguageService().getScriptLexicalStructure();
+        List<NavigationBarItem> navigationBarItems = this.editor.getLanguageService().getNavigationBarItems();
 
         TreeViewer treeViewer = this.getTreeViewer();
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());
         treeViewer.setContentProvider(new ContentProvider());
         treeViewer.setLabelProvider(new NavigateToItemLabelProvider());
-        treeViewer.setInput(lexicalStructure);
+        treeViewer.setInput(navigationBarItems);
 
         // expand all the nodes if there aren't too many of them
-        if (lexicalStructure.size() < 500) {
+        if (navigationBarItems.size() < 500) {
             treeViewer.expandAll();
         }
 
@@ -92,18 +93,18 @@ public final class OutlinePage extends ContentOutlinePage {
     }
 
     public void refreshInput() {
-        List<NavigateToItem> lexicalStructure = this.editor.getLanguageService().getScriptLexicalStructure();
+        List<NavigationBarItem> navigationBarItems = this.editor.getLanguageService().getNavigationBarItems();
 
-        this.setInput(lexicalStructure);
+        this.setInput(navigationBarItems);
     }
 
-    public void setInput(List<NavigateToItem> lexicalStructure) {
-        checkNotNull(lexicalStructure);
+    public void setInput(List<NavigationBarItem> navigateToItems) {
+        checkNotNull(navigateToItems);
 
-        if (!lexicalStructure.equals(this.getTreeViewer().getInput())) {
-            List<TreePath> newExpandedTreePaths = mapTreePaths(lexicalStructure);
+        if (!navigateToItems.equals(this.getTreeViewer().getInput())) {
+            List<TreePath> newExpandedTreePaths = mapTreePaths(navigateToItems);
 
-            this.getTreeViewer().setInput(lexicalStructure);
+            this.getTreeViewer().setInput(navigateToItems);
             this.getTreeViewer().setExpandedTreePaths(newExpandedTreePaths.toArray(new TreePath[0]));
         }
     }
@@ -113,9 +114,9 @@ public final class OutlinePage extends ContentOutlinePage {
         return SWT.SINGLE | SWT.H_SCROLL | SWT.V_SCROLL;
     }
 
-    private NavigateToItem mapSegment(List<NavigateToItem> lexicalStructure, NavigateToItem segment) {
-        for (NavigateToItem item : lexicalStructure) {
-            if (segment.getName().equals(item.getName()) && segment.getContainerName().equals(item.getContainerName())) {
+    private NavigationBarItem mapSegment(List<NavigationBarItem> lexicalStructure, NavigationBarItem segment) {
+        for (NavigationBarItem item : lexicalStructure) {
+            if (segment.getText().equals(item.getText())) {
                 return item;
             }
         }
@@ -123,15 +124,15 @@ public final class OutlinePage extends ContentOutlinePage {
         return null;
     }
 
-    private List<TreePath> mapTreePaths(List<NavigateToItem> lexicalStructure) {
+    private List<TreePath> mapTreePaths(List<NavigationBarItem> lexicalStructure) {
         ImmutableList.Builder<TreePath> treePaths = ImmutableList.builder();
 
         for (TreePath treePath : this.getTreeViewer().getExpandedTreePaths()) {
             TreePath newTreePath = TreePath.EMPTY;
 
             for (int i = 0; i < treePath.getSegmentCount(); i++) {
-                NavigateToItem segment = (NavigateToItem) treePath.getSegment(i);
-                NavigateToItem newSegment = mapSegment(lexicalStructure, segment);
+                NavigationBarItem segment = (NavigationBarItem) treePath.getSegment(i);
+                NavigationBarItem newSegment = mapSegment(lexicalStructure, segment);
                 if (newSegment != null) {
                     newTreePath = newTreePath.createChildPath(newSegment);
                 }
@@ -149,13 +150,12 @@ public final class OutlinePage extends ContentOutlinePage {
             // only respond to the selection change if the Tree is focused
             if (Display.getCurrent().getFocusControl() instanceof Tree) {
                 TreeSelection selection = (TreeSelection) event.getSelection();
-                NavigateToItem item = (NavigateToItem) selection.getFirstElement();
+                NavigationBarItem item = (NavigationBarItem) selection.getFirstElement();
 
                 if (item != null) {
-                    int minChar = item.getMinChar();
-                    int limChar = item.getLimChar();
+                    TextSpan textSpan = item.getSpans().get(0);
 
-                    OutlinePage.this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
+                    OutlinePage.this.editor.selectAndReveal(textSpan.getStart(), textSpan.getLength(), item.getText());
                 }
             }
         }
@@ -179,13 +179,14 @@ public final class OutlinePage extends ContentOutlinePage {
             boolean selected = false;
 
             for (TreeItem treeItem : treeItems) {
-                NavigateToItem navigateToItem = (NavigateToItem) treeItem.getData();
+                NavigationBarItem navigateToItem = (NavigationBarItem) treeItem.getData();
 
                 if (navigateToItem == null) {
                     continue;
                 }
 
-                if (navigateToItem.getMinChar() <= offset && offset <= navigateToItem.getLimChar()) {
+                TextSpan textSpan = navigateToItem.getSpans().get(0);
+                if (textSpan.getStart() <= offset && offset <= textSpan.getStart() + textSpan.getLength()) {
                     TreeItem[] childTreeItems = treeItem.getItems();
 
                     // check for a better match in one of the children items

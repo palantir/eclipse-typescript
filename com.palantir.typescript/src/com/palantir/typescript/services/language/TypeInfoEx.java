@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -33,29 +32,25 @@ public final class TypeInfoEx {
     private final String docComment;
     private final String fullSymbolName;
     private final ScriptElementKind kind;
-    private final int minChar;
-    private final int limChar;
+    private final TextSpan textSpan;
 
     public TypeInfoEx(
             @JsonProperty("memberName") String memberName,
             @JsonProperty("docComment") String docComment,
             @JsonProperty("fullSymbolName") String fullSymbolName,
             @JsonProperty("kind") ScriptElementKind kind,
-            @JsonProperty("minChar") int minChar,
-            @JsonProperty("limChar") int limChar) {
+            @JsonProperty("textSpan") TextSpan textSpan) {
         checkNotNull(memberName);
         checkNotNull(docComment);
         checkNotNull(fullSymbolName);
         checkNotNull(kind);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
+        checkNotNull(textSpan);
 
         this.memberName = memberName;
         this.docComment = docComment;
         this.fullSymbolName = fullSymbolName;
         this.kind = kind;
-        this.minChar = minChar;
-        this.limChar = limChar;
+        this.textSpan = textSpan;
     }
 
     public String getMemberName() {
@@ -74,12 +69,8 @@ public final class TypeInfoEx {
         return this.kind;
     }
 
-    public int getMinChar() {
-        return this.minChar;
-    }
-
-    public int getLimChar() {
-        return this.limChar;
+    public TextSpan getTextSpan() {
+        return this.textSpan;
     }
 
     @Override
@@ -89,8 +80,7 @@ public final class TypeInfoEx {
             .add("docComment", this.docComment)
             .add("fullSymbolName", this.fullSymbolName)
             .add("kind", this.kind)
-            .add("minChar", this.minChar)
-            .add("limChar", this.limChar)
+            .add("textSpan", this.textSpan)
             .toString();
     }
 }

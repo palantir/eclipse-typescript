@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/// <reference path="../typescript/src/compiler/io.ts" />
-/// <reference path="../typescript/src/compiler/precompile.ts" />
-/// <reference path="../typescript/src/services/languageService.ts" />
 /// <reference path="fileInfo.ts" />
 /// <reference path="snapshot.ts" />
 
@@ -24,14 +21,14 @@ module Bridge {
 
     export var LIB_FILE_NAME = "lib.d.ts";
 
-    export class LanguageServiceHost implements TypeScript.Services.ILanguageServiceHost {
+    export class LanguageServiceHost implements ts.LanguageServiceHost {
 
-        private compilationSettings: TypeScript.CompilationSettings;
+        private compilationSettings: ts.CompilerOptions;
         private fileFilter: (fileName: string) => boolean;
         private fileInfos: { [fileName: string]: FileInfo };
 
         constructor(
-                compilationSettings: TypeScript.CompilationSettings,
+                compilationSettings: ts.CompilerOptions,
                 fileFilter: (fileName: string) => boolean,
                 fileInfos: { [fileName: string]: FileInfo }) {
 
@@ -40,19 +37,11 @@ module Bridge {
             this.fileInfos = fileInfos;
         }
 
-        public getCompilationSettings(): TypeScript.CompilationSettings {
+        public getCompilationSettings() {
             return this.compilationSettings;
         }
 
-        public setCompilationSettings(compilationSettings: TypeScript.CompilationSettings) {
-            this.compilationSettings = compilationSettings;
-        }
-
-        public getScriptByteOrderMark(fileName: string): TypeScript.ByteOrderMark {
-            return this.fileInfos[fileName].getByteOrderMark();
-        }
-
-        public getScriptFileNames(): string[] {
+        public getScriptFileNames() {
             return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
                 // include the default library definition file if its enabled
                 if (fileName === LIB_FILE_NAME) {
@@ -63,86 +52,38 @@ module Bridge {
             });
         }
 
-        public getScriptVersion(fileName: string): number {
+        public getScriptVersion(fileName: string) {
             return this.fileInfos[fileName].getVersion();
         }
 
-        public getScriptIsOpen(fileName: string): boolean {
+        public getScriptIsOpen(fileName: string) {
             return this.fileInfos[fileName].getOpen();
         }
 
-        public getDiagnosticsObject(): TypeScript.Services.ILanguageServicesDiagnostics {
-            return {
-                log: (message: string) => {
-                    // does nothing
-                }
-            }
+        public getScriptSnapshot(fileName: string) {
+            return this.fileInfos[fileName].getSnapshot();
         }
 
         public getLocalizedDiagnosticMessages(): any {
             return null;
         }
 
-        public information(): boolean {
-            return false;
+        public getCancellationToken() {
+            return {
+                isCancellationRequested: () => false
+            };
         }
 
-        public debug(): boolean {
-            return false;
+        public getCurrentDirectory() {
+            return "";
         }
 
-        public warning(): boolean {
-            return false;
+        public getDefaultLibFilename() {
+            return LIB_FILE_NAME;
         }
 
-        public error(): boolean {
-            return false;
+        public log(s: string) {
+            console.log(s);
         }
-
-        public fatal(): boolean {
-            return false;
-        }
-
-        public log(message: string): void {
-            // does nothing
-        }
-
-        public getScriptSnapshot(fileName: string): TypeScript.IScriptSnapshot {
-            return this.fileInfos[fileName].getScriptSnapshot();
-        }
-
-        public resolveRelativePath(path: string, directory: string): string {
-            var resolvedPath = path;
-
-            if (!isEmpty(directory)) {
-                while (path.indexOf("../") === 0) {
-                    var index = directory.lastIndexOf("/");
-                    directory = directory.substring(0, index);
-                    path = path.substring(3, path.length);
-                }
-
-                resolvedPath = directory + "/" + path;
-            }
-
-            return resolvedPath;
-        }
-
-        public fileExists(path: string): boolean {
-            return this.fileInfos[path] != null;
-        }
-
-        public directoryExists(path: string): boolean {
-            return false;
-        }
-
-        public getParentDirectory(path: string): string {
-            var index = path.lastIndexOf("/");
-
-            return path.substring(0, index);
-        }
-    }
-
-    function isEmpty(str: string) {
-        return (str == null || str.length == 0);
     }
 }

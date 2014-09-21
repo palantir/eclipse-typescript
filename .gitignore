@@ -1,3 +1,5 @@
+.tscache/
+Bridge/build/
 bin/
 ecbuild/
 node_modules/

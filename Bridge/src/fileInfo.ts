@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+/// <reference path="snapshot.ts" />
+
 module Bridge {
 
     export class FileInfo {
 
-        private byteOrderMark: TypeScript.ByteOrderMark;
         private changes: TypeScript.TextChangeRange[];
         private contents: string;
         private open: boolean;
         private path: string;
 
-        constructor(byteOrderMark: TypeScript.ByteOrderMark, contents: string, path: string) {
-            this.byteOrderMark = byteOrderMark;
+        constructor(contents: string, path: string) {
             this.changes = [];
             this.contents = contents;
             this.open = false;
@@ -44,10 +44,6 @@ module Bridge {
             this.changes.push(change);
         }
 
-        public getByteOrderMark(): TypeScript.ByteOrderMark {
-            return this.byteOrderMark;
-        }
-
         public getOpen(): boolean {
             return this.open;
         }
@@ -60,21 +56,19 @@ module Bridge {
             return this.path;
         }
 
-        public getScriptSnapshot(): TypeScript.IScriptSnapshot {
-            return new ScriptSnapshot(this.changes.slice(0), this.contents, this.getVersion());
+        public getSnapshot() {
+            return new ScriptSnapshot(this.changes.slice(0), this.contents, this.changes.length);
         }
 
-        public getVersion(): number {
-            return this.changes.length;
+        public getVersion() {
+            return this.changes.length.toString(10);
         }
 
-        public updateFile(fileInformation: TypeScript.FileInformation) {
-            var newContents = fileInformation.contents;
+        public updateFile(contents: string) {
             var span = new TypeScript.TextSpan(0, this.contents.length);
-            var change = new TypeScript.TextChangeRange(span, newContents.length);
+            var change = new TypeScript.TextChangeRange(span, contents.length);
 
-            this.byteOrderMark = fileInformation.byteOrderMark;
-            this.contents = newContents;
+            this.contents = contents;
 
             this.changes.push(change);
         }

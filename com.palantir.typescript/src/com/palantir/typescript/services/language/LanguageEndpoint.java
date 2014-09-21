@@ -84,7 +84,7 @@ public final class LanguageEndpoint {
         }
 
         String projectName = project.getName();
-        CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
+        CompilerOptions compilationSettings = CompilerOptions.fromProject(project);
         List<String> referencedProjectNames = getReferencedProjectNames(project);
         List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
         List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
@@ -196,15 +196,15 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, resultType);
     }
 
-    public List<TextEdit> getFormattingEditsForRange(String serviceKey, String fileName, int minChar, int limChar, FormatCodeOptions options) {
+    public List<TextChange> getFormattingEditsForRange(String serviceKey, String fileName, int start, int end, FormatCodeOptions options) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
+        checkArgument(start >= 0);
+        checkArgument(end >= 0);
         checkNotNull(options);
 
-        Request request = new Request(SERVICE, "getFormattingEditsForRange", serviceKey, fileName, minChar, limChar, options);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
+        Request request = new Request(SERVICE, "getFormattingEditsForRange", serviceKey, fileName, start, end, options);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextChange.class);
         return this.bridge.call(request, resultType);
     }
 
@@ -218,14 +218,23 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, Integer.class);
     }
 
-    public SpanInfo getNameOrDottedNameSpan(String serviceKey, String fileName, int startPos, int endPos) {
+    public TextSpan getNameOrDottedNameSpan(String serviceKey, String fileName, int startPos, int endPos) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(startPos >= 0);
         checkArgument(endPos >= 0);
 
         Request request = new Request(SERVICE, "getNameOrDottedNameSpan", serviceKey, fileName, startPos, endPos);
-        return this.bridge.call(request, SpanInfo.class);
+        return this.bridge.call(request, TextSpan.class);
+    }
+
+    public List<NavigationBarItem> getNavigationBarItems(String serviceKey, String fileName) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getNavigationBarItems", serviceKey, fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigationBarItem.class);
+        return this.bridge.call(request, returnType);
     }
 
     public List<ReferenceEntry> getOccurrencesAtPosition(String serviceKey, String fileName, int position) {
@@ -245,15 +254,6 @@ public final class LanguageEndpoint {
 
         Request request = new Request(SERVICE, "getReferencesAtPosition", serviceKey, fileName, position);
         CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public List<NavigateToItem> getScriptLexicalStructure(String serviceKey, String fileName) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getScriptLexicalStructure", serviceKey, fileName);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
         return this.bridge.call(request, returnType);
     }
 

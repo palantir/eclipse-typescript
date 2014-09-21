@@ -53,7 +53,8 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import com.google.common.collect.Lists;
 import com.palantir.typescript.navigate.NavigateToItemLabelProvider;
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.NavigationBarItem;
+import com.palantir.typescript.services.language.TextSpan;
 
 /**
  * Information control for a TypeScript based quick outline.
@@ -144,7 +145,7 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
         this.treeViewer.setSelection(this.getSearchSelection());
 
         // expand all the nodes if there aren't too many of them
-        List<NavigateToItem> items = (List) input;
+        List<NavigationBarItem> items = (List) input;
         if (items.size() < 500) {
             this.treeViewer.expandAll();
         }
@@ -261,7 +262,7 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
 
         Object itemData = item.getData();
         segments.add(itemData);
-        while (item.getItemCount() > 0 && !this.matchesSearchString((NavigateToItem) itemData)) {
+        while (item.getItemCount() > 0 && !this.matchesSearchString((NavigationBarItem) itemData)) {
             item = item.getItem(0);
             itemData = item.getData();
 
@@ -276,21 +277,20 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
 
     private void goToSelectedElement() {
         TreeSelection selection = (TreeSelection) this.treeViewer.getSelection();
-        NavigateToItem item = (NavigateToItem) selection.getFirstElement();
+        NavigationBarItem item = (NavigationBarItem) selection.getFirstElement();
 
         if (item != null) {
-            int minChar = item.getMinChar();
-            int limChar = item.getLimChar();
+            TextSpan textSpan = item.getSpans().get(0);
 
-            this.editor.selectAndReveal(minChar, limChar - minChar, item.getName());
+            this.editor.selectAndReveal(textSpan.getStart(), textSpan.getLength(), item.getText());
         }
         dispose();
     }
 
-    private boolean matchesSearchString(NavigateToItem item) {
+    private boolean matchesSearchString(NavigationBarItem item) {
         checkNotNull(item);
 
-        return matchesSearchString(item.getName());
+        return matchesSearchString(item.getText());
     }
 
     private boolean matchesSearchString(String rawString) {

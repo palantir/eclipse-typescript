@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-/// <reference path="../typescript/src/services/classifier.ts" />
-
 module Bridge {
 
     export class ClassifierEndpoint {
 
-        private classifier: TypeScript.Services.Classifier;
+        private classifier: ts.Classifier;
 
         constructor() {
-            this.classifier = new TypeScript.Services.Classifier(new TypeScript.NullLogger());
+            this.classifier = ts.createClassifier({
+                log: (message) => console.log(message)
+            });
         }
 
-        public getClassificationsForLines(lines: string[], lexState: TypeScript.Services.EndOfLineState) {
+        public getClassificationsForLines(lines: string[], lexState: ts.EndOfLineState) {
             var lastLexState = lexState;
-            var results: TypeScript.Services.ClassificationResult[] = [];
+            var results: ts.ClassificationResult[] = [];
 
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];

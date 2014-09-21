@@ -29,11 +29,10 @@ import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.FormatCodeOptions;
 import com.palantir.typescript.services.language.LanguageEndpoint;
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
-import com.palantir.typescript.services.language.SpanInfo;
-import com.palantir.typescript.services.language.TextEdit;
+import com.palantir.typescript.services.language.TextChange;
 import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.services.language.TypeInfoEx;
 
@@ -89,16 +88,20 @@ public final class FileLanguageService {
         return this.languageEndpoint.getDiagnostics(this.serviceKey, this.fileName, semantic);
     }
 
-    public List<TextEdit> getFormattingEditsForRange(int minChar, int limChar, FormatCodeOptions options) {
-        return this.languageEndpoint.getFormattingEditsForRange(this.serviceKey, this.fileName, minChar, limChar, options);
+    public List<TextChange> getFormattingEditsForRange(int start, int end, FormatCodeOptions options) {
+        return this.languageEndpoint.getFormattingEditsForRange(this.serviceKey, this.fileName, start, end, options);
     }
 
     public int getIndentationAtPosition(int position, EditorOptions options) {
         return this.languageEndpoint.getIndentationAtPosition(this.serviceKey, this.fileName, position, options);
     }
 
-    public SpanInfo getNameOrDottedNameSpan(int startPos, int endPos) {
+    public TextSpan getNameOrDottedNameSpan(int startPos, int endPos) {
         return this.languageEndpoint.getNameOrDottedNameSpan(this.serviceKey, this.fileName, startPos, endPos);
+    }
+
+    public List<NavigationBarItem> getNavigationBarItems() {
+        return this.languageEndpoint.getNavigationBarItems(this.serviceKey, this.fileName);
     }
 
     public List<ReferenceEntry> getOccurrencesAtPosition(int position) {
@@ -107,10 +110,6 @@ public final class FileLanguageService {
 
     public List<ReferenceEntry> getReferencesAtPosition(int position) {
         return this.languageEndpoint.getReferencesAtPosition(this.serviceKey, this.fileName, position);
-    }
-
-    public List<NavigateToItem> getScriptLexicalStructure() {
-        return this.languageEndpoint.getScriptLexicalStructure(this.serviceKey, this.fileName);
     }
 
     public TypeInfoEx getTypeAtPosition(int position) {

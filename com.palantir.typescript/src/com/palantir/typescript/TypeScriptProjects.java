@@ -138,7 +138,7 @@ public final class TypeScriptProjects {
     public static IContainer getOutputFolder(IProject project) {
         checkNotNull(project);
 
-        return Iterables.getFirst(getFoldersFromPreference(project, IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION), null);
+        return Iterables.getFirst(getFoldersFromPreference(project, IPreferenceConstants.COMPILER_OUT_DIR), null);
     }
 
     // see Bridge/typescript/src/compiler/emitter.ts, EmitOptions.determineCommonDirectoryPath

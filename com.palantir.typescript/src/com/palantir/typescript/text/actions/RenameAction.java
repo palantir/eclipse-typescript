@@ -24,7 +24,7 @@ import org.eclipse.ltk.ui.refactoring.RefactoringWizardOpenOperation;
 import org.eclipse.swt.widgets.Shell;
 
 import com.palantir.typescript.EclipseResources;
-import com.palantir.typescript.services.language.SpanInfo;
+import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.RenameRefactoringWizard;
 import com.palantir.typescript.text.TypeScriptEditor;
 import com.palantir.typescript.text.TypeScriptRenameProcessor;
@@ -73,12 +73,10 @@ public final class RenameAction extends TypeScriptEditorAction {
 
     private String getOldName(int offset) {
         TypeScriptEditor editor = this.getTextEditor();
-        SpanInfo spanInfo = editor.getLanguageService().getNameOrDottedNameSpan(offset, offset);
-        int minChar = spanInfo.getMinChar();
-        int limChar = spanInfo.getLimChar();
+        TextSpan span = editor.getLanguageService().getNameOrDottedNameSpan(offset, offset);
 
         try {
-            String oldName = editor.getDocument().get(minChar, limChar - minChar);
+            String oldName = editor.getDocument().get(span.getStart(), span.getLength());
 
             int lastPeriod = oldName.lastIndexOf('.');
             if (lastPeriod >= 0) {

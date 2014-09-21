@@ -41,6 +41,7 @@ import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.services.language.TextSpan;
 
 /**
  * The TypeScript rename processor.
@@ -116,9 +117,8 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
             change.setTextType("ts");
 
             for (ReferenceEntry reference : fileReferences) {
-                int minChar = reference.getMinChar();
-                int limChar = reference.getLimChar();
-                ReplaceEdit edit = new ReplaceEdit(minChar, limChar - minChar, this.newName);
+                TextSpan textSpan = reference.getTextSpan();
+                ReplaceEdit edit = new ReplaceEdit(textSpan.getStart(), textSpan.getLength(), this.newName);
 
                 change.addEdit(edit);
             }

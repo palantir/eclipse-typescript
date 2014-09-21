@@ -68,8 +68,8 @@ public final class BuildPathPropertyPage extends PropertyPage {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
         String oldSourceFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
         String oldExportedFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER, "");
-        String oldOutputFile = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION, "");
-        String oldOutputFolder = projectPreferences.get(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, "");
+        String oldOutputFile = projectPreferences.get(IPreferenceConstants.COMPILER_OUT_FILE, "");
+        String oldOutputFolder = projectPreferences.get(IPreferenceConstants.COMPILER_OUT_DIR, "");
         String newExportedFolder = this.exportFolderField.getText();
         String newSourceFolder = this.sourceFolderField.getText();
         String newOutputFile = this.outputFileField.getText();
@@ -81,8 +81,8 @@ public final class BuildPathPropertyPage extends PropertyPage {
                 || !oldOutputFolder.equals(newOutputFolder)) {
             projectPreferences.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, newSourceFolder);
             projectPreferences.put(IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER, newExportedFolder);
-            projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION, newOutputFolder);
-            projectPreferences.put(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION, newOutputFile);
+            projectPreferences.put(IPreferenceConstants.COMPILER_OUT_DIR, newOutputFolder);
+            projectPreferences.put(IPreferenceConstants.COMPILER_OUT_FILE, newOutputFile);
 
             // save the preferences
             try {
@@ -108,8 +108,8 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
         this.sourceFolderField = this.createFolderField(composite, SWT.NONE, "Source folder(s):", IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
         this.exportFolderField = this.createFolderField(composite, SWT.NONE, "Exported folder(s):", IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER);
-        this.outputFolderField = this.createFolderField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
-        this.outputFileField = this.createFileField(composite, SWT.PUSH, "Output file name:", IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION);
+        this.outputFolderField = this.createFolderField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUT_DIR);
+        this.outputFileField = this.createFileField(composite, SWT.PUSH, "Output file name:", IPreferenceConstants.COMPILER_OUT_FILE);
 
         return composite;
     }

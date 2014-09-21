@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.OutlinePage;
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -48,12 +48,12 @@ public final class OutlineViewReconcilingStrategy {
         checkNotNull(languageService);
 
         if (this.isVisible()) {
-            final List<NavigateToItem> lexicalStructure = languageService.getScriptLexicalStructure();
+            final List<NavigationBarItem> navigationBarItems = languageService.getNavigationBarItems();
             Display.getDefault().asyncExec(new Runnable() {
 
                 @Override
                 public void run() {
-                    OutlineViewReconcilingStrategy.this.outlinePage.setInput(lexicalStructure);
+                    OutlineViewReconcilingStrategy.this.outlinePage.setInput(navigationBarItems);
                 }
             });
         }

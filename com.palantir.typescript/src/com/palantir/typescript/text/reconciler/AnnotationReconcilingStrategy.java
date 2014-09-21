@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Display;
 import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
@@ -124,13 +125,14 @@ public final class AnnotationReconcilingStrategy {
             }
 
             // add the occurrences
-            for (ReferenceEntry occurrence : occurrences) {
-                Annotation annotation = new Annotation(OCCURRENCES_TYPE, false, null);
-                int minChar = occurrence.getMinChar();
-                int limChar = occurrence.getLimChar();
-                Position position = new Position(minChar, limChar - minChar);
+            if (occurrences != null) {
+                for (ReferenceEntry occurrence : occurrences) {
+                    Annotation annotation = new Annotation(OCCURRENCES_TYPE, false, null);
+                    TextSpan textSpan = occurrence.getTextSpan();
+                    Position position = new Position(textSpan.getStart(), textSpan.getLength());
 
-                annotationsToAdd.put(annotation, position);
+                    annotationsToAdd.put(annotation, position);
+                }
             }
 
             annotationModel.replaceAnnotations(this.lastAnnotations, annotationsToAdd);

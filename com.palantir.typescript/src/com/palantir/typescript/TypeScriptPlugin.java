@@ -37,8 +37,8 @@ import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.LanguageEndpoint;
-import com.palantir.typescript.services.language.LanguageVersion;
-import com.palantir.typescript.services.language.ModuleGenTarget;
+import com.palantir.typescript.services.language.ModuleKind;
+import com.palantir.typescript.services.language.ScriptTarget;
 
 /**
  * The TypeScript plug-in for the Eclipse platform.
@@ -146,11 +146,11 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     protected void initializeDefaultPluginPreferences() {
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
 
-        store.setDefault(IPreferenceConstants.COMPILER_CODE_GEN_TARGET, LanguageVersion.ECMASCRIPT3.toString());
+        store.setDefault(IPreferenceConstants.COMPILER_TARGET, ScriptTarget.ECMASCRIPT3.toString());
         store.setDefault(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, false);
-        store.setDefault(IPreferenceConstants.COMPILER_GENERATE_DECLARATION_FILES, false);
-        store.setDefault(IPreferenceConstants.COMPILER_MAP_SOURCE_FILES, false);
-        store.setDefault(IPreferenceConstants.COMPILER_MODULE_GEN_TARGET, ModuleGenTarget.UNSPECIFIED.toString());
+        store.setDefault(IPreferenceConstants.COMPILER_DECLARATION, false);
+        store.setDefault(IPreferenceConstants.COMPILER_SOURCE_MAP, false);
+        store.setDefault(IPreferenceConstants.COMPILER_MODULE, ModuleKind.UNSPECIFIED.toString());
         store.setDefault(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, false);
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);

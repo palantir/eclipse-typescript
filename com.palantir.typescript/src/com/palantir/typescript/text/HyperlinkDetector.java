@@ -28,7 +28,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 
 import com.palantir.typescript.services.language.DefinitionInfo;
-import com.palantir.typescript.services.language.SpanInfo;
+import com.palantir.typescript.services.language.TextSpan;
 
 /**
  * The hyperlink detector adds links when the user holds down ctrl.
@@ -48,7 +48,7 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
     @Override
     public IHyperlink[] detectHyperlinks(ITextViewer textViewer, IRegion region, boolean canShowMultipleHyperlinks) {
         int offset = region.getOffset();
-        SpanInfo span = this.editor.getLanguageService().getNameOrDottedNameSpan(offset, offset);
+        TextSpan span = this.editor.getLanguageService().getNameOrDottedNameSpan(offset, offset);
 
         if (span != null) {
             List<DefinitionInfo> definitions = this.editor.getLanguageService().getDefinitionAtPosition(offset);
@@ -56,7 +56,8 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
             if (definitions != null && !definitions.isEmpty()) {
                 int spanOffset = getUndottedNameOffset(textViewer, span);
                 DefinitionInfo definition = definitions.get(0);
-                IRegion hyperlinkRegion = new Region(spanOffset, span.getLimChar() - spanOffset);
+                int endOffset = span.getStart() + span.getLength();
+                IRegion hyperlinkRegion = new Region(spanOffset, endOffset - spanOffset);
 
                 // don't follow references to the built-in default library
                 if (definition.getFileName().equals("lib.d.ts")) {
@@ -70,13 +71,13 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
         return null;
     }
 
-    private static int getUndottedNameOffset(ITextViewer textViewer, SpanInfo span) {
-        int minChar = span.getMinChar();
+    private static int getUndottedNameOffset(ITextViewer textViewer, TextSpan span) {
+        int start = span.getStart();
 
         try {
-            for (int i = span.getLimChar() - 1; i >= minChar; i--) {
+            for (int i = span.getStart() + span.getLength() - 1; i >= start; i--) {
                 if (textViewer.getDocument().getChar(i) == '.') {
-                    minChar = i + 1;
+                    start = i + 1;
                     break;
                 }
             }
@@ -84,7 +85,7 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
             throw new RuntimeException(e);
         }
 
-        return minChar;
+        return start;
     }
 
     private static final class MyHyperlink implements IHyperlink {

@@ -31,7 +31,8 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.services.language.FormatCodeOptions;
-import com.palantir.typescript.services.language.TextEdit;
+import com.palantir.typescript.services.language.TextChange;
+import com.palantir.typescript.services.language.TextSpan;
 
 /**
  * The TypeScript formatter.
@@ -53,19 +54,18 @@ public final class ContentFormatter implements IContentFormatter {
 
     @Override
     public void format(IDocument document, IRegion region) {
-        int minChar = region.getOffset();
-        int limChar = minChar + region.getLength();
+        int start = region.getOffset();
+        int end = start + region.getLength();
         FormatCodeOptions options = createFormatCodeOptions();
-        List<TextEdit> edits = this.editor.getLanguageService().getFormattingEditsForRange(minChar, limChar, options);
+        List<TextChange> edits = this.editor.getLanguageService().getFormattingEditsForRange(start, end, options);
 
         // apply the edits
         try {
-            for (TextEdit edit : Lists.reverse(edits)) {
-                int offset = edit.getMinChar();
-                int length = edit.getLimChar() - offset;
-                String text = edit.getText();
+            for (TextChange edit : Lists.reverse(edits)) {
+                TextSpan span = edit.getSpan();
+                String newText = edit.getNewText();
 
-                document.replace(offset, length, text);
+                document.replace(span.getStart(), span.getLength(), newText);
             }
         } catch (BadLocationException e) {
             throw new RuntimeException(e);

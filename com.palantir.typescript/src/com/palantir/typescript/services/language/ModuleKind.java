@@ -19,14 +19,15 @@ package com.palantir.typescript.services.language;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Corresponds to the enum with the same name in compiler/syntax/languageVersion.ts.
+ * Corresponds to the enum with the same name in TypeScript.
  *
  * @author tyleradams
  */
-public enum LanguageVersion {
+public enum ModuleKind {
 
-    ECMASCRIPT3,
-    ECMASCRIPT5;
+    UNSPECIFIED,
+    SYNCHRONOUS,
+    ASYNCHRONOUS;
 
     @JsonValue
     public int getValue() {
