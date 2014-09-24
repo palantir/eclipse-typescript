@@ -30,11 +30,11 @@ import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.FormatCodeOptions;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.NavigationBarItem;
+import com.palantir.typescript.services.language.QuickInfo;
 import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
 import com.palantir.typescript.services.language.TextChange;
 import com.palantir.typescript.services.language.TextSpan;
-import com.palantir.typescript.services.language.TypeInfoEx;
 
 /**
  * A language service specifically for use with a single file.
@@ -108,12 +108,12 @@ public final class FileLanguageService {
         return this.languageEndpoint.getOccurrencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
-    public List<ReferenceEntry> getReferencesAtPosition(int position) {
-        return this.languageEndpoint.getReferencesAtPosition(this.serviceKey, this.fileName, position);
+    public QuickInfo getQuickInfoAtPosition(int position) {
+        return this.languageEndpoint.getQuickInfoAtPosition(this.serviceKey, this.fileName, position);
     }
 
-    public TypeInfoEx getTypeAtPosition(int position) {
-        return this.languageEndpoint.getTypeAtPosition(this.serviceKey, this.fileName, position);
+    public List<ReferenceEntry> getReferencesAtPosition(int position) {
+        return this.languageEndpoint.getReferencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public static FileLanguageService create(LanguageEndpoint languageEndpoint, IProject project, String fileName) {

@@ -194,24 +194,12 @@ module Bridge {
             return this.languageServices[serviceKey].getOccurrencesAtPosition(fileName, position);
         }
 
-        public getReferencesAtPosition(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
+        public getQuickInfoAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getQuickInfoAtPosition(fileName, position);
         }
 
-        public getTypeAtPosition(serviceKey: string, fileName: string, position: number) {
-            var type = this.languageServices[serviceKey].getTypeAtPosition(fileName, position);
-
-            if (type != null) {
-                return {
-                    memberName: type.memberName.toString(),
-                    docComment: type.docComment,
-                    fullSymbolName: type.fullSymbolName,
-                    kind: type.kind,
-                    textSpan: type.textSpan,
-                };
-            }
-
-            return null;
+        public getReferencesAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {

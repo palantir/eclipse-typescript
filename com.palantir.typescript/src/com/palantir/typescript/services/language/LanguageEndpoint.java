@@ -247,6 +247,15 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
+    public QuickInfo getQuickInfoAtPosition(String serviceKey, String fileName, int position) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "getQuickInfoAtPosition", serviceKey, fileName, position);
+        return this.bridge.call(request, QuickInfo.class);
+    }
+
     public List<ReferenceEntry> getReferencesAtPosition(String serviceKey, String fileName, int position) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
@@ -255,15 +264,6 @@ public final class LanguageEndpoint {
         Request request = new Request(SERVICE, "getReferencesAtPosition", serviceKey, fileName, position);
         CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
         return this.bridge.call(request, returnType);
-    }
-
-    public TypeInfoEx getTypeAtPosition(String serviceKey, String fileName, int position) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-        checkArgument(position >= 0);
-
-        Request request = new Request(SERVICE, "getTypeAtPosition", serviceKey, fileName, position);
-        return this.bridge.call(request, TypeInfoEx.class);
     }
 
     public void setFileOpen(String fileName, boolean open) {

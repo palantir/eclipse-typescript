@@ -2036,8 +2036,8 @@ declare module ts {
     function isLineBreak(ch: number): boolean;
     function isOctalDigit(ch: number): boolean;
     function skipTrivia(text: string, pos: number, stopAfterLineBreak?: boolean): number;
-    function getLeadingComments(text: string, pos: number): Comment[];
-    function getTrailingComments(text: string, pos: number): Comment[];
+    function getLeadingCommentRanges(text: string, pos: number): CommentRange[];
+    function getTrailingCommentRanges(text: string, pos: number): CommentRange[];
     function isIdentifierStart(ch: number, languageVersion: ScriptTarget): boolean;
     function isIdentifierPart(ch: number, languageVersion: ScriptTarget): boolean;
     function createScanner(languageVersion: ScriptTarget, skipTrivia: boolean, text?: string, onError?: ErrorCallback, onComment?: CommentCallback): Scanner;
@@ -2486,7 +2486,7 @@ declare module ts {
     interface FileReference extends TextRange {
         filename: string;
     }
-    interface Comment extends TextRange {
+    interface CommentRange extends TextRange {
         hasTrailingNewLine?: boolean;
     }
     interface SourceFile extends Block {
@@ -2562,6 +2562,7 @@ declare module ts {
         JSGeneratedWithSemanticErrors = 2,
         DeclarationGenerationSkipped = 3,
         EmitErrorsEncountered = 4,
+        CompilerOptionsErrors = 5,
     }
     interface EmitResult {
         emitResultStatus: EmitReturnStatus;
@@ -2591,14 +2592,17 @@ declare module ts {
         getApparentType(type: Type): ApparentType;
         typeToString(type: Type, enclosingDeclaration?: Node, flags?: TypeFormatFlags): string;
         symbolToString(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): string;
+        typeToDisplayParts(type: Type, enclosingDeclaration?: Node, flags?: TypeFormatFlags): SymbolDisplayPart[];
+        symbolToDisplayParts(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): SymbolDisplayPart[];
         getFullyQualifiedName(symbol: Symbol): string;
         getAugmentedPropertiesOfApparentType(type: Type): Symbol[];
         getRootSymbol(symbol: Symbol): Symbol;
         getContextualType(node: Node): Type;
+        getEnumMemberValue(node: EnumMember): number;
     }
     interface TextWriter {
         write(s: string): void;
-        writeSymbol(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): void;
+        trackSymbol(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): void;
         writeLine(): void;
         increaseIndent(): void;
         decreaseIndent(): void;
@@ -2625,7 +2629,6 @@ declare module ts {
         getProgram(): Program;
         getLocalNameOfContainer(container: Declaration): string;
         getExpressionNamePrefix(node: Identifier): string;
-        getPropertyAccessSubstitution(node: PropertyAccess): string;
         getExportAssignmentName(node: SourceFile): string;
         isReferencedImportDeclaration(node: ImportDeclaration): boolean;
         isTopLevelValueImportedViaEntityName(node: ImportDeclaration): boolean;
@@ -2636,9 +2639,9 @@ declare module ts {
         isImplementationOfOverload(node: FunctionDeclaration): boolean;
         writeTypeAtLocation(location: Node, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: TextWriter): void;
         writeReturnTypeOfSignatureDeclaration(signatureDeclaration: SignatureDeclaration, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: TextWriter): void;
-        writeSymbol(symbol: Symbol, enclosingDeclaration: Node, meaning: SymbolFlags, writer: TextWriter): void;
         isSymbolAccessible(symbol: Symbol, enclosingDeclaration: Node, meaning: SymbolFlags): SymbolAccessiblityResult;
         isImportDeclarationEntityNameReferenceDeclarationVisibile(entityName: EntityName): SymbolAccessiblityResult;
+        getConstantValue(node: PropertyAccess): number;
     }
     enum SymbolFlags {
         Variable = 1,
@@ -2731,6 +2734,7 @@ declare module ts {
         SuperInstance = 16,
         SuperStatic = 32,
         ContextChecked = 64,
+        EnumValuesComputed = 128,
     }
     interface NodeLinks {
         resolvedType?: Type;
@@ -3043,6 +3047,43 @@ declare module ts {
         tab = 9,
         verticalTab = 11,
     }
+    class SymbolDisplayPart {
+        text: string;
+        kind: SymbolDisplayPartKind;
+        symbol: Symbol;
+        constructor(text: string, kind: SymbolDisplayPartKind, symbol: Symbol);
+        toJSON(): {
+            text: string;
+            kind: string;
+        };
+    }
+    enum SymbolDisplayPartKind {
+        aliasName = 0,
+        className = 1,
+        enumName = 2,
+        fieldName = 3,
+        interfaceName = 4,
+        keyword = 5,
+        labelName = 6,
+        lineBreak = 7,
+        numericLiteral = 8,
+        stringLiteral = 9,
+        localName = 10,
+        methodName = 11,
+        moduleName = 12,
+        namespaceName = 13,
+        operator = 14,
+        parameterName = 15,
+        propertyName = 16,
+        punctuation = 17,
+        space = 18,
+        anonymousTypeIndicator = 19,
+        text = 20,
+        typeParameterName = 21,
+        enumMemberName = 22,
+        functionName = 23,
+        regularExpressionLiteral = 24,
+    }
     interface CancellationToken {
         isCancellationRequested(): boolean;
     }
@@ -3149,8 +3190,8 @@ declare module ts {
     function getErrorSpanForNode(node: Node): Node;
     function isExternalModule(file: SourceFile): boolean;
     function isPrologueDirective(node: Node): boolean;
-    function getLeadingCommentsOfNode(node: Node, sourceFileOfNode: SourceFile): Comment[];
-    function getJsDocComments(node: Declaration, sourceFileOfNode: SourceFile): Comment[];
+    function getLeadingCommentRangesOfNode(node: Node, sourceFileOfNode?: SourceFile): CommentRange[];
+    function getJsDocComments(node: Declaration, sourceFileOfNode: SourceFile): CommentRange[];
     var fullTripleSlashReferencePathRegEx: RegExp;
     function forEachChild<T>(node: Node, cbNode: (node: Node) => T, cbNodes?: (nodes: Node[]) => T): T;
     function forEachReturnStatement<T>(body: Block, visitor: (stmt: ReturnStatement) => T): T;
@@ -6266,12 +6307,6 @@ declare module TypeScript.Services {
         private createIterfaceItem(node);
     }
 }
-declare module TypeScript.Services {
-    class BraceMatcher {
-        static getMatchSpans(syntaxTree: SyntaxTree, position: number): TextSpan[];
-        private static getMatchingTokenKind(token);
-    }
-}
 declare module TypeScript.Services.Breakpoints {
     function getBreakpointLocation(syntaxTree: SyntaxTree, askedPos: number): TextSpan;
 }
@@ -6938,6 +6973,7 @@ declare module ts {
         getFlags(): SymbolFlags;
         getName(): string;
         getDeclarations(): Declaration[];
+        getDocumentationComment(): string;
     }
     interface Type {
         getFlags(): TypeFlags;
@@ -6987,6 +7023,7 @@ declare module ts {
         getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): CompletionInfo;
         getCompletionEntryDetails(fileName: string, position: number, entryName: string): CompletionEntryDetails;
         getTypeAtPosition(fileName: string, position: number): TypeInfo;
+        getQuickInfoAtPosition(fileName: string, position: number): QuickInfo;
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): TypeScript.TextSpan;
         getBreakpointStatementAtPosition(fileName: string, position: number): TypeScript.TextSpan;
         getSignatureHelpItems(fileName: string, position: number): SignatureHelpItems;
@@ -7105,6 +7142,14 @@ declare module ts {
         prefix: string;
         suffix: string;
         text: string;
+    }
+    class QuickInfo {
+        kind: string;
+        kindModifiers: string;
+        textSpan: TypeScript.TextSpan;
+        displayParts: SymbolDisplayPart[];
+        documentation: SymbolDisplayPart[];
+        constructor(kind: string, kindModifiers: string, textSpan: TypeScript.TextSpan, displayParts: SymbolDisplayPart[], documentation: SymbolDisplayPart[]);
     }
     class TypeInfo {
         memberName: TypeScript.MemberName;
@@ -7326,6 +7371,7 @@ declare module ts {
         getSyntacticClassifications(fileName: string, start: number, length: number): string;
         getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): string;
         getCompletionEntryDetails(fileName: string, position: number, entryName: string): string;
+        getQuickInfoAtPosition(fileName: string, position: number): string;
         getTypeAtPosition(fileName: string, position: number): string;
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): string;
         getBreakpointStatementAtPosition(fileName: string, position: number): string;
