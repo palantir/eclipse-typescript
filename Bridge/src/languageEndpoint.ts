@@ -207,7 +207,12 @@ module Bridge {
         }
 
         public setFileOpen(fileName: string, open: boolean) {
-            this.fileInfos[fileName].setOpen(open);
+            var fileInfo = this.fileInfos[fileName];
+
+            // the file may have been deleted previously, so only process this call if the file exists
+            if (fileInfo != null) {
+                fileInfo.setOpen(open);
+            }
         }
 
         public setLibContents(libContents: string) {
