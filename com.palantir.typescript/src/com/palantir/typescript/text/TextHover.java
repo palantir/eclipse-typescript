@@ -76,7 +76,7 @@ public final class TextHover extends DefaultTextHover implements ITextHoverExten
         return new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(Shell parent) {
-                return new QuickInfoInformationControl(parent, true, false);
+                return new HoverInformationControl(parent, false);
             }
         };
     }

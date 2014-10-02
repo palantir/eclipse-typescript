@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import com.palantir.typescript.Images;
 import com.palantir.typescript.services.language.QuickInfo;
@@ -42,24 +43,20 @@ import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.services.language.ScriptElementModifierKind;
 
 /**
- * An information control for displaying quick info.
+ * An information control for displaying hover information.
  *
  * @author dcicerone
  */
-public final class QuickInfoInformationControl extends AbstractInformationControl implements IInformationControlExtension2 {
+public final class HoverInformationControl extends AbstractInformationControl implements IInformationControlExtension2 {
 
     private Composite composite;
     private StyledText documentationText;
-    private Label displayLabel;
+    private Text displayText;
     private Label kindIconLabel;
     private ScrolledComposite scrolled;
 
-    private final boolean scrollable;
-
-    public QuickInfoInformationControl(Shell parentShell, boolean isResizable, boolean scrollable) {
+    public HoverInformationControl(Shell parentShell, boolean isResizable) {
         super(parentShell, isResizable);
-
-        this.scrollable = scrollable;
 
         this.create();
     }
@@ -71,7 +68,7 @@ public final class QuickInfoInformationControl extends AbstractInformationContro
 
     @Override
     protected void createContent(Composite parent) {
-        if (this.scrollable) {
+        if (this.isResizable()) {
             this.scrolled = new ScrolledComposite(parent, SWT.H_SCROLL | SWT.V_SCROLL);
             this.scrolled.setBackground(parent.getBackground());
             this.scrolled.setForeground(parent.getForeground());
@@ -93,11 +90,13 @@ public final class QuickInfoInformationControl extends AbstractInformationContro
         this.kindIconLabel.setLayoutData(new GridData(GridData.BEGINNING, SWT.BEGINNING, false, false));
 
         // display
-        this.displayLabel = new Label(this.composite, SWT.NONE);
+        this.displayText = new Text(this.composite, SWT.NONE);
+        this.displayText.setBackground(parent.getBackground());
+        this.displayText.setForeground(parent.getForeground());
         FontData fontData = parent.getFont().getFontData()[0];
         Font boldFont = new Font(Display.getCurrent(), new FontData(fontData.getName(), fontData.getHeight(), SWT.BOLD));
-        this.displayLabel.setFont(boldFont);
-        this.displayLabel.setLayoutData(new GridData(GridData.BEGINNING, SWT.BEGINNING, true, false));
+        this.displayText.setFont(boldFont);
+        this.displayText.setLayoutData(new GridData(GridData.BEGINNING, SWT.BEGINNING, true, false));
 
         // documentation
         this.documentationText = new StyledText(this.composite, SWT.NONE);
@@ -133,16 +132,20 @@ public final class QuickInfoInformationControl extends AbstractInformationContro
             this.kindIconLabel.setImage(image);
 
             // display
-            this.displayLabel.setText(quickInfo.getDisplayText());
+            this.displayText.setText(quickInfo.getDisplayText());
 
             // documentation
             this.documentationText.setText(quickInfo.getDocumentationText());
+        } else if (input instanceof String) {
+            this.displayText.setText((String) input);
+        }
 
-            if (this.scrollable) {
-                int widthHint = Math.max(this.getSizeConstraints().x, this.displayLabel.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 40);
+        this.displayText.setSelection(0);
 
-                this.composite.setSize(this.composite.computeSize(widthHint, SWT.DEFAULT));
-            }
+        if (this.isResizable()) {
+            int widthHint = Math.max(this.getSizeConstraints().x, this.displayText.computeSize(SWT.DEFAULT, SWT.DEFAULT).x + 40);
+
+            this.composite.setSize(this.composite.computeSize(widthHint, SWT.DEFAULT));
         }
     }
 
@@ -151,7 +154,7 @@ public final class QuickInfoInformationControl extends AbstractInformationContro
         return new IInformationControlCreator() {
             @Override
             public IInformationControl createInformationControl(Shell parent) {
-                return new QuickInfoInformationControl(parent, true, true);
+                return new HoverInformationControl(parent, true);
             }
         };
     }
