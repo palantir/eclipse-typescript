@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-Localization: plugin
+Bundle-ManifestVersion: 2
+Bundle-Name: TypeScript
+Bundle-SymbolicName: com.palantir.typescript.tests
+Bundle-Version: 1.1.0.qualifier
+Bundle-Vendor: Palantir Technologies
+Fragment-Host: com.palantir.typescript
+Eclipse-BundleShape: dir
+Require-Bundle: org.junit
