@@ -1,5 +1,8 @@
 before_install:
   - git fetch --unshallow
+  - npm install -g grunt-cli
+  - npm install
 language: java
 script:
+  - grunt
   - mvn integration-test
