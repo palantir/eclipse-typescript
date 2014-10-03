@@ -26,18 +26,38 @@ module.exports = function(grunt) {
         src: ['Bridge/lib/typescriptServices.js', 'Bridge/build/bridge.js'],
         dest: 'com.palantir.typescript/bin/bridge.js'
       },
+      test: {
+        src: ['Bridge/lib/typescriptServices.js', 'Bridge/build/bridge.js', 'Bridge/build/test/*.js'],
+        dest: 'Bridge/build/test-concat.js'
+      }
+    },
+
+    mochaTest: {
+      test: {
+        src: 'Bridge/build/test-concat.js'
+      }
     },
 
     ts: {
       compile: {
         src: ['Bridge/src/main.ts', 'Bridge/typings/*.d.ts'],
-        out: 'Bridge/build/bridge.js'
+        out: 'Bridge/build/bridge.js',
+        options: {
+          declaration: true
+        }
+      },
+      test: {
+        src: ['Bridge/test/mainTests.ts', 'Bridge/build/bridge.d.ts', 'Bridge/typings/*.d.ts'],
+        outDir: 'Bridge/build',
+        options: {
+          module: 'commonjs'
+        }
       }
     },
 
     watch: {
       scripts: {
-        files: ['Bridge/src/*.ts', 'Bridge/typings/*.d.ts'],
+        files: ['Bridge/src/*.ts', 'Bridge/test/*.ts', 'Bridge/typings/*.d.ts'],
         tasks: ['default'],
       },
     }
@@ -46,8 +66,9 @@ module.exports = function(grunt) {
   // load NPM tasks
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('grunt-ts');
 
   // other tasks
-  grunt.registerTask('default', ['ts', 'concat']);
+  grunt.registerTask('default', ['ts:compile', 'ts:test', 'concat', 'mochaTest']);
 };
