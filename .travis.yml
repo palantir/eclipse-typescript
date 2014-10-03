@@ -1,0 +1,5 @@
+before_install:
+  - git fetch --unshallow
+language: java
+script:
+  - mvn integration-test
