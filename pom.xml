@@ -26,6 +26,7 @@
     <module>com.palantir.typescript</module>
     <module>com.palantir.typescript.feature</module>
     <module>com.palantir.typescript.p2updatesite</module>
+    <module>com.palantir.typescript.tests</module>
   </modules>
 
   <properties>
