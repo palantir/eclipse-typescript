@@ -136,7 +136,8 @@ module Bridge {
         }
 
         public findRenameLocations(serviceKey: string, fileName: string, position: number, findInStrings: boolean, findInComments: boolean) {
-            return this.languageServices[serviceKey].findRenameLocations(fileName, position, findInStrings, findInComments);
+            // TODO: switch this call back to findRenameLocations once the bug in TypeScript is fixed
+            return this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
         }
 
         public getBraceMatchingAtPosition(serviceKey: string, fileName: string, position: number) {
