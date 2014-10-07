@@ -33,6 +33,7 @@ import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.QuickInfo;
 import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
+import com.palantir.typescript.services.language.RenameLocation;
 import com.palantir.typescript.services.language.TextChange;
 import com.palantir.typescript.services.language.TextSpan;
 
@@ -68,6 +69,10 @@ public final class FileLanguageService {
 
     public List<ReferenceEntryEx> findReferences(int position) {
         return this.languageEndpoint.findReferences(this.serviceKey, this.fileName, position);
+    }
+
+    public List<RenameLocation> findRenameLocations(int position, boolean findInStrings, boolean findInComments) {
+        return this.languageEndpoint.findRenameLocations(this.serviceKey, this.fileName, position, findInStrings, findInComments);
     }
 
     public List<TextSpan> getBraceMatchingAtPosition(int position) {
@@ -110,10 +115,6 @@ public final class FileLanguageService {
 
     public QuickInfo getQuickInfoAtPosition(int position) {
         return this.languageEndpoint.getQuickInfoAtPosition(this.serviceKey, this.fileName, position);
-    }
-
-    public List<ReferenceEntry> getReferencesAtPosition(int position) {
-        return this.languageEndpoint.getReferencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public static FileLanguageService create(LanguageEndpoint languageEndpoint, IProject project, String fileName) {

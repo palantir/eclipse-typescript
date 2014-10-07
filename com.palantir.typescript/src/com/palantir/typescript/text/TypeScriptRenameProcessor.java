@@ -40,7 +40,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.EclipseResources;
-import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.services.language.RenameLocation;
 import com.palantir.typescript.services.language.TextSpan;
 
 /**
@@ -99,25 +99,25 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
 
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        List<ReferenceEntry> references = this.languageService.getReferencesAtPosition(this.offset);
+        List<RenameLocation> renameLocations = this.languageService.findRenameLocations(this.offset, true, true);
 
         // group the references by file name
-        ListMultimap<String, ReferenceEntry> referencesByFileName = ArrayListMultimap.create();
-        for (ReferenceEntry reference : references) {
-            referencesByFileName.put(reference.getFileName(), reference);
+        ListMultimap<String, RenameLocation> renamesByFileName = ArrayListMultimap.create();
+        for (RenameLocation renameLocation : renameLocations) {
+            renamesByFileName.put(renameLocation.getFileName(), renameLocation);
         }
 
         // create the file changes
         List<Change> fileChanges = Lists.newArrayList();
-        for (String referenceFileName : referencesByFileName.keySet()) {
-            List<ReferenceEntry> fileReferences = referencesByFileName.get(referenceFileName);
-            IFile file = EclipseResources.getFile(referenceFileName);
+        for (String fileName : renamesByFileName.keySet()) {
+            List<RenameLocation> fileRenameLocations = renamesByFileName.get(fileName);
+            IFile file = EclipseResources.getFile(fileName);
             TextFileChange change = new TextFileChange(file.getName(), file);
             change.setEdit(new MultiTextEdit());
             change.setTextType("ts");
 
-            for (ReferenceEntry reference : fileReferences) {
-                TextSpan textSpan = reference.getTextSpan();
+            for (RenameLocation renameLocation : fileRenameLocations) {
+                TextSpan textSpan = renameLocation.getTextSpan();
                 ReplaceEdit edit = new ReplaceEdit(textSpan.getStart(), textSpan.getLength(), this.newName);
 
                 change.addEdit(edit);

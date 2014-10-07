@@ -22,11 +22,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 /**
- * Corresponds to the class with the same name in languageService.ts.
+ * Corresponds to the class with the same name in TypeScript.
  *
  * @author dcicerone
  */
-public final class ReferenceEntry {
+public final class ReferenceEntry implements RenameLocation {
 
     private final String fileName;
     private final boolean isWriteAccess;
@@ -44,6 +44,7 @@ public final class ReferenceEntry {
         this.textSpan = textSpan;
     }
 
+    @Override
     public String getFileName() {
         return this.fileName;
     }
@@ -52,6 +53,7 @@ public final class ReferenceEntry {
         return this.isWriteAccess;
     }
 
+    @Override
     public TextSpan getTextSpan() {
         return this.textSpan;
     }

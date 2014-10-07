@@ -158,6 +158,16 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
+    public List<RenameLocation> findRenameLocations(String serviceKey, String fileName, int position, boolean findInStrings, boolean findInComments) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "findRenameLocations", serviceKey, fileName, position, findInStrings, findInComments);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public List<TextSpan> getBraceMatchingAtPosition(String serviceKey, String fileName, int position) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
@@ -254,16 +264,6 @@ public final class LanguageEndpoint {
 
         Request request = new Request(SERVICE, "getQuickInfoAtPosition", serviceKey, fileName, position);
         return this.bridge.call(request, QuickInfo.class);
-    }
-
-    public List<ReferenceEntry> getReferencesAtPosition(String serviceKey, String fileName, int position) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-        checkArgument(position >= 0);
-
-        Request request = new Request(SERVICE, "getReferencesAtPosition", serviceKey, fileName, position);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
-        return this.bridge.call(request, returnType);
     }
 
     public void setFileOpen(String fileName, boolean open) {

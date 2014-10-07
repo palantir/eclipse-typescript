@@ -114,7 +114,7 @@ module Bridge {
         }
 
         public findReferences(serviceKey: string, fileName: string, position: number) {
-            var references = this.getReferencesAtPosition(serviceKey, fileName, position);
+            var references = this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
 
             return references.map((reference) => {
                 var snapshot = this.fileInfos[reference.fileName].getSnapshot();
@@ -133,6 +133,10 @@ module Bridge {
                     textSpan: reference.textSpan
                 };
             });
+        }
+
+        public findRenameLocations(serviceKey: string, fileName: string, position: number, findInStrings: boolean, findInComments: boolean) {
+            return this.languageServices[serviceKey].findRenameLocations(fileName, position, findInStrings, findInComments);
         }
 
         public getBraceMatchingAtPosition(serviceKey: string, fileName: string, position: number) {
@@ -196,10 +200,6 @@ module Bridge {
 
         public getQuickInfoAtPosition(serviceKey: string, fileName: string, position: number) {
             return this.languageServices[serviceKey].getQuickInfoAtPosition(fileName, position);
-        }
-
-        public getReferencesAtPosition(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
