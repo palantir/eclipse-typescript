@@ -34,7 +34,7 @@ import com.palantir.typescript.services.language.ScriptElementModifierKind;
  *
  * @author dcicerone
  */
-public final class NavigateToItemLabelProvider extends BaseLabelProvider implements ILabelProvider {
+public final class NavigationBarItemLabelProvider extends BaseLabelProvider implements ILabelProvider {
 
     @Override
     public Image getImage(Object element) {

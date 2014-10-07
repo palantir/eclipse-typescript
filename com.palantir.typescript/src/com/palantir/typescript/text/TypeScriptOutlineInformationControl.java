@@ -52,7 +52,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import com.google.common.collect.Lists;
-import com.palantir.typescript.navigate.NavigateToItemLabelProvider;
+import com.palantir.typescript.navigate.NavigationBarItemLabelProvider;
 import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.TextSpan;
 
@@ -193,7 +193,7 @@ public final class TypeScriptOutlineInformationControl extends PopupDialog imple
         this.treeViewer = new TreeViewer(tree);
         this.treeViewer.addFilter(new MyViewerFilter());
         this.treeViewer.setContentProvider(new ContentProvider());
-        this.treeViewer.setLabelProvider(new NavigateToItemLabelProvider());
+        this.treeViewer.setLabelProvider(new NavigationBarItemLabelProvider());
 
         // set up the text box
         this.textBox.setText("");

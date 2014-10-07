@@ -46,8 +46,8 @@ public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
     public OpenTypeDialog(Shell shell) {
         super(shell);
 
-        this.setDetailsLabelProvider(new NavigateToItemLabelProvider());
-        this.setListLabelProvider(new NavigateToItemLabelProvider());
+        this.setDetailsLabelProvider(new NavigationBarItemLabelProvider());
+        this.setListLabelProvider(new NavigationBarItemLabelProvider());
         this.setTitle("Open TypeScript Type");
     }
 

@@ -38,7 +38,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
-import com.palantir.typescript.navigate.NavigateToItemLabelProvider;
+import com.palantir.typescript.navigate.NavigationBarItemLabelProvider;
 import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.TextSpan;
 
@@ -68,7 +68,7 @@ public final class OutlinePage extends ContentOutlinePage {
         TreeViewer treeViewer = this.getTreeViewer();
         treeViewer.addSelectionChangedListener(new MySelectionChangedListener());
         treeViewer.setContentProvider(new ContentProvider());
-        treeViewer.setLabelProvider(new NavigateToItemLabelProvider());
+        treeViewer.setLabelProvider(new NavigationBarItemLabelProvider());
         treeViewer.setInput(navigationBarItems);
 
         // expand all the nodes if there aren't too many of them
