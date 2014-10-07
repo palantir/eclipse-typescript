@@ -1,3 +1,5 @@
+build.path.exportedFolder=
+build.path.sourceFolder=src;test;typings
 compiler.codeGenTarget=ECMASCRIPT5
 compiler.compileOnSave=false
 compiler.generateDeclarationFiles=false
@@ -5,6 +7,8 @@ compiler.mapSourceFiles=false
 compiler.moduleGenTarget=SYNCHRONOUS
 compiler.noImplicitAny=true
 compiler.noLib=false
+compiler.outputDirOption=
+compiler.outputFileOption=
 compiler.removeComments=false
 eclipse.preferences.version=1
 editor.indentSize=4
