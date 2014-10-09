@@ -15,6 +15,11 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
+        A_file_cannot_have_a_reference_to_itself: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
         Trailing_comma_not_allowed: {
             code: number;
             category: DiagnosticCategory;
@@ -1290,6 +1295,11 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
+        The_0_operator_is_not_allowed_for_boolean_types_Consider_using_1_instead: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
         Import_declaration_0_is_using_private_name_1: {
             code: number;
             category: DiagnosticCategory;
@@ -2248,6 +2258,8 @@ declare module ts {
         LastPunctuation,
         FirstToken,
         LastToken,
+        FirstTriviaToken,
+        LastTriviaToken,
     }
     enum NodeFlags {
         Export = 1,
@@ -2275,6 +2287,7 @@ declare module ts {
         localSymbol?: Symbol;
     }
     interface NodeArray<T> extends Array<T>, TextRange {
+        hasTrailingComma?: boolean;
     }
     interface Identifier extends Node {
         text: string;
@@ -2598,7 +2611,10 @@ declare module ts {
         getAugmentedPropertiesOfApparentType(type: Type): Symbol[];
         getRootSymbol(symbol: Symbol): Symbol;
         getContextualType(node: Node): Type;
+        getResolvedSignature(node: CallExpression, candidatesOutArray?: Signature[]): Signature;
         getEnumMemberValue(node: EnumMember): number;
+        isValidPropertyAccess(node: PropertyAccess, propertyName: string): boolean;
+        getAliasedSymbol(symbol: Symbol): Symbol;
     }
     interface TextWriter {
         write(s: string): void;
@@ -3056,6 +3072,7 @@ declare module ts {
             text: string;
             kind: string;
         };
+        static toString(parts: SymbolDisplayPart[]): string;
     }
     enum SymbolDisplayPartKind {
         aliasName = 0,
@@ -3107,6 +3124,7 @@ declare module ts {
     function forEach<T, U>(array: T[], callback: (element: T) => U): U;
     function contains<T>(array: T[], value: T): boolean;
     function indexOf<T>(array: T[], value: T): number;
+    function countWhere<T>(array: T[], predicate: (x: T) => boolean): number;
     function filter<T>(array: T[], f: (x: T) => boolean): T[];
     function map<T, U>(array: T[], f: (x: T) => U): U[];
     function concatenate<T>(array1: T[], array2: T[]): T[];
@@ -3150,10 +3168,14 @@ declare module ts {
     function isRootedDiskPath(path: string): boolean;
     function getNormalizedPathComponents(path: string, currentDirectory: string): string[];
     function getNormalizedPathFromPathComponents(pathComponents: string[]): string;
-    function getRelativePathToDirectoryOrUrl(directoryPathOrUrl: string, relativeOrAbsolutePath: string, currentDirectory: string, isAbsolutePathAnUrl: boolean): string;
+    function getRelativePathToDirectoryOrUrl(directoryPathOrUrl: string, relativeOrAbsolutePath: string, currentDirectory: string, getCanonicalFileName: (fileName: string) => string, isAbsolutePathAnUrl: boolean): string;
     function getBaseFilename(path: string): string;
     function combinePaths(path1: string, path2: string): string;
     function fileExtensionIs(path: string, extension: string): boolean;
+    function removeFileExtension(path: string): string;
+    /** NOTE: This *does not* support the full escape characters, it only supports the subset that can be used in file names
+      * or string literals. If the information encoded in the map changes, this needs to be revisited. */
+    function escapeString(s: string): string;
     interface ObjectAllocator {
         getNodeConstructor(kind: SyntaxKind): new () => Node;
         getSymbolConstructor(): new (flags: SymbolFlags, name: string) => Symbol;
@@ -3175,13 +3197,12 @@ declare module ts {
 }
 declare module ts {
     function getNodeConstructor(kind: SyntaxKind): new () => Node;
-    function getModuleNameFromFilename(filename: string): string;
     function getSourceFileOfNode(node: Node): SourceFile;
     function nodePosToString(node: Node): string;
     function getStartPosOfNode(node: Node): number;
     function getTokenPosOfNode(node: Node, sourceFile?: SourceFile): number;
-    function getSourceTextOfNodeFromSourceText(sourceText: string, node: Node): string;
-    function getSourceTextOfNode(node: Node): string;
+    function getTextOfNodeFromSourceText(sourceText: string, node: Node): string;
+    function getTextOfNode(node: Node): string;
     function escapeIdentifier(identifier: string): string;
     function unescapeIdentifier(identifier: string): string;
     function identifierToString(identifier: Identifier): string;
@@ -3196,6 +3217,17 @@ declare module ts {
     function forEachChild<T>(node: Node, cbNode: (node: Node) => T, cbNodes?: (nodes: Node[]) => T): T;
     function forEachReturnStatement<T>(body: Block, visitor: (stmt: ReturnStatement) => T): T;
     function isAnyFunction(node: Node): boolean;
+    /**
+     * Note: this function only works when given a node with valid parent pointers.
+     */
+    function isTypeNode(node: Node): boolean;
+    /**
+     * Note: this function only works when given a node with valid parent pointers.
+     *
+     * returns true if the given identifier is the name of a type declaration node (class, interface, enum, type parameter, etc)
+     */
+    function isTypeDeclarationName(name: Node): boolean;
+    function isTypeDeclaration(node: Node): boolean;
     function getContainingFunction(node: Node): SignatureDeclaration;
     function getThisContainer(node: Node, includeArrowFunctions: boolean): Node;
     function getSuperContainer(node: Node): Node;
@@ -3206,6 +3238,7 @@ declare module ts {
     function isDeclarationOrFunctionExpressionOrCatchVariableName(name: Node): boolean;
     function getAncestor(node: Node, kind: SyntaxKind): Node;
     function isKeyword(token: SyntaxKind): boolean;
+    function isTrivia(token: SyntaxKind): boolean;
     function isModifier(token: SyntaxKind): boolean;
     function createSourceFile(filename: string, sourceText: string, languageVersion: ScriptTarget, version: string, isOpen?: boolean): SourceFile;
     function createProgram(rootNames: string[], options: CompilerOptions, host: CompilerHost): Program;
@@ -3222,6 +3255,12 @@ declare module ts {
 declare module ts {
     function getDeclarationOfKind(symbol: Symbol, kind: SyntaxKind): Declaration;
     function createTypeChecker(program: Program, fullTypeCheck: boolean): TypeChecker;
+    function spacePart(): SymbolDisplayPart;
+    function keywordPart(kind: SyntaxKind): SymbolDisplayPart;
+    function punctuationPart(kind: SyntaxKind): SymbolDisplayPart;
+    function operatorPart(kind: SyntaxKind): SymbolDisplayPart;
+    function textPart(text: string): SymbolDisplayPart;
+    function symbolPart(text: string, symbol: Symbol): SymbolDisplayPart;
 }
 declare module TypeScript {
     var DiagnosticCode: {
@@ -3714,7 +3753,6 @@ declare module TypeScript {
     }
 }
 declare module TypeScript {
-    var LocalizedDiagnosticMessages: ts.Map<any>;
     class Location {
         private _fileName;
         private _lineMap;
@@ -3951,10 +3989,29 @@ declare module TypeScript {
     }
 }
 declare module TypeScript {
+    /**
+     * Represents an immutable snapshot of a script at a specified time.Once acquired, the
+     * snapshot is observably immutable. i.e. the same calls with the same parameters will return
+     * the same values.
+     */
     interface IScriptSnapshot {
+        /** Gets a portion of the script snapshot specified by [start, end). */
         getText(start: number, end: number): string;
+        /** Gets the length of this script snapshot. */
         getLength(): number;
+        /**
+         * This call returns the array containing the start position of every line.
+         * i.e."[0, 10, 55]".  TODO: consider making this optional.  The language service could
+         * always determine this (albeit in a more expensive manner).
+         */
         getLineStartPositions(): number[];
+        /**
+         * Gets the TextChangeRange that describe how the text changed between this text and
+         * an older version.  This information is used by the incremental parser to determine
+         * what sections of the script need to be re-parsed.  'undefined' can be returned if the
+         * change range cannot be determined.  However, in that case, incremental parsing will
+         * not happen and the entire document will be re - parsed.
+         */
         getChangeRange(oldSnapshot: IScriptSnapshot): TextChangeRange;
     }
     module ScriptSnapshot {
@@ -6283,29 +6340,8 @@ declare module ts {
         function collectElements(sourceFile: SourceFile): OutliningSpan[];
     }
 }
-declare module TypeScript.Services {
-    class NavigationBarItemGetter {
-        private hasGlobalNode;
-        private getIndent(node);
-        private getKindModifiers(modifiers);
-        getItems(node: SourceUnitSyntax): ts.NavigationBarItem[];
-        private getChildNodes(nodes);
-        private getTopLevelNodes(node);
-        private addTopLevelNodes(nodes, topLevelNodes);
-        isTopLevelFunctionDeclaration(functionDeclaration: FunctionDeclarationSyntax): boolean;
-        private getItemsWorker(getNodes, createItem);
-        private merge(target, source);
-        private createChildItem(node);
-        private createTopLevelItem(node);
-        private getModuleNames(node);
-        private getModuleNamesHelper(name, result);
-        private createModuleItem(node);
-        private createFunctionItem(node);
-        private createSourceUnitItem(node);
-        private createClassItem(node);
-        private createEnumItem(node);
-        private createIterfaceItem(node);
-    }
+declare module ts.NavigationBar {
+    function getNavigationBarItems(sourceFile: SourceFile): NavigationBarItem[];
 }
 declare module TypeScript.Services.Breakpoints {
     function getBreakpointLocation(syntaxTree: SyntaxTree, askedPos: number): TextSpan;
@@ -6317,6 +6353,40 @@ declare module TypeScript.Indentation {
     function columnForPositionInString(input: string, position: number, options: FormattingOptions): number;
     function indentationString(column: number, options: FormattingOptions): string;
     function firstNonWhitespacePosition(value: string): number;
+}
+declare module ts.SignatureHelp {
+    function getSignatureHelpItems(sourceFile: SourceFile, position: number, typeInfoResolver: TypeChecker, cancellationToken: CancellationTokenObject): SignatureHelpItems;
+}
+declare module ts {
+    interface ListItemInfo {
+        listItemIndex: number;
+        list: Node;
+    }
+    function findListItemInfo(node: Node): ListItemInfo;
+    function findChildOfKind(n: Node, kind: SyntaxKind, sourceFile?: SourceFile): Node;
+    function findContainingList(node: Node): Node;
+    /**
+     * Includes the start position of each child, but excludes the end.
+     */
+    function findListItemIndexContainingPosition(list: Node, position: number): number;
+    function getTouchingWord(sourceFile: SourceFile, position: number): Node;
+    function getTouchingPropertyName(sourceFile: SourceFile, position: number): Node;
+    /** Returns the token if position is in [start, end) or if position === end and includeItemAtEndPosition(token) === true */
+    function getTouchingToken(sourceFile: SourceFile, position: number, includeItemAtEndPosition?: (n: Node) => boolean): Node;
+    /** Returns a token if position is in [start-of-leading-trivia, end) */
+    function getTokenAtPosition(sourceFile: SourceFile, position: number): Node;
+    /**
+      * The token on the left of the position is the token that strictly includes the position
+      * or sits to the left of the cursor if it is on a boundary. For example
+      *
+      *   fo|o               -> will return foo
+      *   foo <comment> |bar -> will return foo
+      *
+      */
+    function findTokenOnLeftOfPosition(file: SourceFile, position: number): Node;
+    function findNextToken(previousToken: Node, parent: Node): Node;
+    function findPrecedingToken(position: number, sourceFile: SourceFile, startNode?: Node): Node;
+    function isToken(n: Node): boolean;
 }
 declare module TypeScript.Services.Formatting {
     interface ITextSnapshot {
@@ -7022,13 +7092,14 @@ declare module ts {
         getSemanticClassifications(fileName: string, span: TypeScript.TextSpan): ClassifiedSpan[];
         getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): CompletionInfo;
         getCompletionEntryDetails(fileName: string, position: number, entryName: string): CompletionEntryDetails;
-        getTypeAtPosition(fileName: string, position: number): TypeInfo;
         getQuickInfoAtPosition(fileName: string, position: number): QuickInfo;
+        getTypeAtPosition(fileName: string, position: number): TypeInfo;
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): TypeScript.TextSpan;
         getBreakpointStatementAtPosition(fileName: string, position: number): TypeScript.TextSpan;
         getSignatureHelpItems(fileName: string, position: number): SignatureHelpItems;
-        getSignatureHelpCurrentArgumentState(fileName: string, position: number, applicableSpanStart: number): SignatureHelpState;
+        getSignatureAtPosition(fileName: string, position: number): SignatureInfo;
         getRenameInfo(fileName: string, position: number): RenameInfo;
+        findRenameLocations(fileName: string, position: number, findInStrings: boolean, findInComments: boolean): RenameLocation[];
         getDefinitionAtPosition(fileName: string, position: number): DefinitionInfo[];
         getReferencesAtPosition(fileName: string, position: number): ReferenceEntry[];
         getOccurrencesAtPosition(fileName: string, position: number): ReferenceEntry[];
@@ -7045,28 +7116,41 @@ declare module ts {
         getEmitOutput(fileName: string): EmitOutput;
         dispose(): void;
     }
-    class ClassificationTypeNames {
-        static comment: string;
-        static identifier: string;
-        static keyword: string;
-        static numericLiteral: string;
-        static operator: string;
-        static stringLiteral: string;
-        static whiteSpace: string;
-        static text: string;
-        static punctuation: string;
-        static className: string;
-        static enumName: string;
-        static interfaceName: string;
-        static moduleName: string;
-        static typeParameterName: string;
+    interface SignatureInfo {
+        actual: ActualSignatureInfo;
+        formal: FormalSignatureItemInfo[];
+        activeFormal: number;
     }
-    class ClassifiedSpan {
+    interface FormalSignatureItemInfo {
+        signatureInfo: string;
+        typeParameters: FormalTypeParameterInfo[];
+        parameters: FormalParameterInfo[];
+        docComment: string;
+    }
+    interface FormalTypeParameterInfo {
+        name: string;
+        docComment: string;
+        minChar: number;
+        limChar: number;
+    }
+    interface FormalParameterInfo {
+        name: string;
+        isVariable: boolean;
+        docComment: string;
+        minChar: number;
+        limChar: number;
+    }
+    interface ActualSignatureInfo {
+        parameterMinChar: number;
+        parameterLimChar: number;
+        currentParameterIsTypeParameter: boolean;
+        currentParameter: number;
+    }
+    interface ClassifiedSpan {
         textSpan: TypeScript.TextSpan;
         classificationType: string;
-        constructor(textSpan: TypeScript.TextSpan, classificationType: string);
     }
-    class NavigationBarItem {
+    interface NavigationBarItem {
         text: string;
         kind: string;
         kindModifiers: string;
@@ -7075,34 +7159,30 @@ declare module ts {
         indent: number;
         bolded: boolean;
         grayed: boolean;
-        constructor(text: string, kind: string, kindModifiers: string, spans: TypeScript.TextSpan[], childItems?: NavigationBarItem[], indent?: number, bolded?: boolean, grayed?: boolean);
     }
-    class TodoCommentDescriptor {
+    interface TodoCommentDescriptor {
         text: string;
         priority: number;
-        constructor(text: string, priority: number);
     }
-    class TodoComment {
+    interface TodoComment {
         descriptor: TodoCommentDescriptor;
         message: string;
         position: number;
-        constructor(descriptor: TodoCommentDescriptor, message: string, position: number);
     }
     class TextChange {
         span: TypeScript.TextSpan;
         newText: string;
-        constructor(span: TypeScript.TextSpan, newText: string);
-        static createInsert(pos: number, newText: string): TextChange;
-        static createDelete(start: number, end: number): TextChange;
-        static createReplace(start: number, end: number, newText: string): TextChange;
     }
-    class ReferenceEntry {
-        fileName: string;
+    interface RenameLocation {
         textSpan: TypeScript.TextSpan;
-        isWriteAccess: boolean;
-        constructor(fileName: string, textSpan: TypeScript.TextSpan, isWriteAccess: boolean);
+        fileName: string;
     }
-    class NavigateToItem {
+    interface ReferenceEntry {
+        textSpan: TypeScript.TextSpan;
+        fileName: string;
+        isWriteAccess: boolean;
+    }
+    interface NavigateToItem {
         name: string;
         kind: string;
         kindModifiers: string;
@@ -7111,7 +7191,6 @@ declare module ts {
         textSpan: TypeScript.TextSpan;
         containerName: string;
         containerKind: string;
-        constructor(name: string, kind: string, kindModifiers: string, matchKind: string, fileName: string, textSpan: TypeScript.TextSpan, containerName: string, containerKind: string);
     }
     interface EditorOptions {
         IndentSize: number;
@@ -7129,37 +7208,34 @@ declare module ts {
         PlaceOpenBraceOnNewLineForFunctions: boolean;
         PlaceOpenBraceOnNewLineForControlBlocks: boolean;
     }
-    class DefinitionInfo {
+    interface DefinitionInfo {
         fileName: string;
         textSpan: TypeScript.TextSpan;
         kind: string;
         name: string;
         containerKind: string;
         containerName: string;
-        constructor(fileName: string, textSpan: TypeScript.TextSpan, kind: string, name: string, containerKind: string, containerName: string);
     }
     interface MemberName {
         prefix: string;
         suffix: string;
         text: string;
     }
-    class QuickInfo {
+    interface QuickInfo {
         kind: string;
         kindModifiers: string;
         textSpan: TypeScript.TextSpan;
         displayParts: SymbolDisplayPart[];
         documentation: SymbolDisplayPart[];
-        constructor(kind: string, kindModifiers: string, textSpan: TypeScript.TextSpan, displayParts: SymbolDisplayPart[], documentation: SymbolDisplayPart[]);
     }
-    class TypeInfo {
+    interface TypeInfo {
         memberName: TypeScript.MemberName;
         docComment: string;
         fullSymbolName: string;
         kind: string;
         textSpan: TypeScript.TextSpan;
-        constructor(memberName: TypeScript.MemberName, docComment: string, fullSymbolName: string, kind: string, textSpan: TypeScript.TextSpan);
     }
-    class RenameInfo {
+    interface RenameInfo {
         canRename: boolean;
         localizedErrorMessage: string;
         displayName: string;
@@ -7167,16 +7243,12 @@ declare module ts {
         kind: string;
         kindModifiers: string;
         triggerSpan: TypeScript.TextSpan;
-        constructor(canRename: boolean, localizedErrorMessage: string, displayName: string, fullDisplayName: string, kind: string, kindModifiers: string, triggerSpan: TypeScript.TextSpan);
-        static CreateError(localizedErrorMessage: string): RenameInfo;
-        static Create(displayName: string, fullDisplayName: string, kind: string, kindModifiers: string, triggerSpan: TypeScript.TextSpan): RenameInfo;
     }
-    class SignatureHelpParameter {
+    interface SignatureHelpParameter {
         name: string;
-        documentation: string;
-        display: string;
+        documentation: SymbolDisplayPart[];
+        displayParts: SymbolDisplayPart[];
         isOptional: boolean;
-        constructor(name: string, documentation: string, display: string, isOptional: boolean);
     }
     /**
      * Represents a single signature to show in signature help.
@@ -7185,28 +7257,23 @@ declare module ts {
      * an edit has happened, while signature help is still active, the host can ask important
      * questions like 'what parameter is the user currently contained within?'.
      */
-    class SignatureHelpItem {
+    interface SignatureHelpItem {
         isVariadic: boolean;
-        prefix: string;
-        suffix: string;
-        separator: string;
+        prefixDisplayParts: SymbolDisplayPart[];
+        suffixDisplayParts: SymbolDisplayPart[];
+        separatorDisplayParts: SymbolDisplayPart[];
         parameters: SignatureHelpParameter[];
-        documentation: string;
-        constructor(isVariadic: boolean, prefix: string, suffix: string, separator: string, parameters: SignatureHelpParameter[], documentation: string);
+        documentation: SymbolDisplayPart[];
     }
     /**
      * Represents a set of signature help items, and the preferred item that should be selected.
      */
-    class SignatureHelpItems {
+    interface SignatureHelpItems {
         items: SignatureHelpItem[];
         applicableSpan: TypeScript.TextSpan;
         selectedItemIndex: number;
-        constructor(items: SignatureHelpItem[], applicableSpan: TypeScript.TextSpan, selectedItemIndex: number);
-    }
-    class SignatureHelpState {
         argumentIndex: number;
         argumentCount: number;
-        constructor(argumentIndex: number, argumentCount: number);
     }
     interface CompletionInfo {
         isMemberCompletion: boolean;
@@ -7296,20 +7363,47 @@ declare module ts {
         static typeParameterElement: string;
         static primitiveType: string;
         static label: string;
+        static alias: string;
     }
     class ScriptElementKindModifier {
         static none: string;
         static publicMemberModifier: string;
         static privateMemberModifier: string;
+        static protectedMemberModifier: string;
         static exportedModifier: string;
         static ambientModifier: string;
         static staticModifier: string;
+    }
+    class ClassificationTypeNames {
+        static comment: string;
+        static identifier: string;
+        static keyword: string;
+        static numericLiteral: string;
+        static operator: string;
+        static stringLiteral: string;
+        static whiteSpace: string;
+        static text: string;
+        static punctuation: string;
+        static className: string;
+        static enumName: string;
+        static interfaceName: string;
+        static moduleName: string;
+        static typeParameterName: string;
     }
     function getDefaultCompilerOptions(): CompilerOptions;
     function compareDataObjects(dst: any, src: any): boolean;
     class OperationCanceledException {
     }
+    class CancellationTokenObject {
+        private cancellationToken;
+        static None: CancellationTokenObject;
+        constructor(cancellationToken: CancellationToken);
+        isCancellationRequested(): boolean;
+        throwIfCancellationRequested(): void;
+    }
     function createDocumentRegistry(): DocumentRegistry;
+    function getNodeModifiers(node: Node): string;
+    function getSymbolDocumentationDisplayParts(symbol: Symbol): SymbolDisplayPart[];
     function createLanguageService(host: LanguageServiceHost, documentRegistry: DocumentRegistry): LanguageService;
     function createClassifier(host: Logger): Classifier;
 }
@@ -7337,13 +7431,24 @@ declare module TypeScript {
 declare var debugObjectHost: any;
 declare module ts {
     interface ScriptSnapshotShim {
+        /** Gets a portion of the script snapshot specified by [start, end). */
         getText(start: number, end: number): string;
+        /** Gets the length of this script snapshot. */
         getLength(): number;
+        /** This call returns the JSON-encoded array of the type: number[] */
         getLineStartPositions(): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         *   { span: { start: number; length: number }; newLength: number }
+         *
+         * Or undefined value if there was no change.
+         */
         getChangeRange(oldSnapshot: ScriptSnapshotShim): string;
     }
+    /** Public interface of the host of a language service shim instance.*/
     interface LanguageServiceShimHost extends Logger {
         getCompilationSettings(): string;
+        /** Returns a JSON-encoded value of the type: string[] */
         getScriptFileNames(): string;
         getScriptVersion(fileName: string): string;
         getScriptIsOpen(fileName: string): boolean;
@@ -7353,6 +7458,7 @@ declare module ts {
         getCurrentDirectory(): string;
         getDefaultLibFilename(): string;
     }
+    /** Public interface of a language service instance shim. */
     interface ShimFactory {
         registerShim(shim: Shim): void;
         unregisterShim(shim: Shim): void;
@@ -7376,14 +7482,53 @@ declare module ts {
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): string;
         getBreakpointStatementAtPosition(fileName: string, position: number): string;
         getSignatureHelpItems(fileName: string, position: number): string;
-        getSignatureHelpCurrentArgumentState(fileName: string, position: number, applicableSpanStart: number): string;
+        getSignatureAtPosition(fileName: string, position: number): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { canRename: boolean, localizedErrorMessage: string, displayName: string, fullDisplayName: string, kind: string, kindModifiers: string, triggerSpan: { start; length } }
+         */
         getRenameInfo(fileName: string, position: number): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { fileName: string, textSpan: { start: number, length: number } }[]
+         */
+        findRenameLocations(fileName: string, position: number, findInStrings: boolean, findInComments: boolean): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { fileName: string; textSpan: { start: number; length: number}; kind: string; name: string; containerKind: string; containerName: string }
+         *
+         * Or undefined value if no definition can be found.
+         */
         getDefinitionAtPosition(fileName: string, position: number): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { fileName: string; textSpan: { start: number; length: number}; isWriteAccess: boolean }[]
+         */
         getReferencesAtPosition(fileName: string, position: number): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { fileName: string; textSpan: { start: number; length: number}; isWriteAccess: boolean }[]
+         */
         getOccurrencesAtPosition(fileName: string, position: number): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { fileName: string; textSpan: { start: number; length: number}; isWriteAccess: boolean }[]
+         */
         getImplementorsAtPosition(fileName: string, position: number): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { name: string; kind: string; kindModifiers: string; containerName: string; containerKind: string; matchKind: string; fileName: string; textSpan: { start: number; length: number}; } [] = [];
+         */
         getNavigateToItems(searchValue: string): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { text: string; kind: string; kindModifiers: string; bolded: boolean; grayed: boolean; indent: number; spans: { start: number; length: number; }[]; childItems: <recursive use of this type>[] } [] = [];
+         */
         getNavigationBarItems(fileName: string): string;
+        /**
+         * Returns a JSON-encoded value of the type:
+         * { textSpan: { start: number, length: number }; hintSpan: { start: number, length: number }; bannerText: string; autoCollapse: boolean } [] = [];
+         */
         getOutliningSpans(fileName: string): string;
         getTodoComments(fileName: string, todoCommentDescriptors: string): string;
         getBraceMatchingAtPosition(fileName: string, position: number): string;
