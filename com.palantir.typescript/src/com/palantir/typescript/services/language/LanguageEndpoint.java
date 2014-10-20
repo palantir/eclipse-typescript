@@ -72,17 +72,6 @@ public final class LanguageEndpoint {
     public void initializeProject(IProject project) {
         checkNotNull(project);
 
-        // ensure referenced projects are initialized first
-        try {
-            for (IProject referencedProject : project.getReferencedProjects()) {
-                if (!isProjectInitialized(referencedProject) && !project.getName().equals(referencedProject.getName())) {
-                    this.initializeProject(referencedProject);
-                }
-            }
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-
         String projectName = project.getName();
         CompilerOptions compilationSettings = CompilerOptions.fromProject(project);
         List<String> referencedProjectNames = getReferencedProjectNames(project);
@@ -91,6 +80,17 @@ public final class LanguageEndpoint {
         Map<String, String> files = getFiles(project);
         Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, sourceFolderNames, files);
         this.bridge.call(request, Void.class);
+
+        // initialize referenced projects afterwards to avoid problems with circular references
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                if (!isProjectInitialized(referencedProject)) {
+                    this.initializeProject(referencedProject);
+                }
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isProjectInitialized(IProject project) {
