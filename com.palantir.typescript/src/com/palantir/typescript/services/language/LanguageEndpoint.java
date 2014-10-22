@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.TypeScriptProjects;
@@ -72,25 +73,7 @@ public final class LanguageEndpoint {
     public void initializeProject(IProject project) {
         checkNotNull(project);
 
-        String projectName = project.getName();
-        CompilerOptions compilationSettings = CompilerOptions.fromProject(project);
-        List<String> referencedProjectNames = getReferencedProjectNames(project);
-        List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
-        List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
-        Map<String, String> files = getFiles(project);
-        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, sourceFolderNames, files);
-        this.bridge.call(request, Void.class);
-
-        // initialize referenced projects afterwards to avoid problems with circular references
-        try {
-            for (IProject referencedProject : project.getReferencedProjects()) {
-                if (!isProjectInitialized(referencedProject)) {
-                    this.initializeProject(referencedProject);
-                }
-            }
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
+        this.initializeProjectTree(project, Sets.<IProject> newHashSet());
     }
 
     public boolean isProjectInitialized(IProject project) {
@@ -158,7 +141,8 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
-    public List<RenameLocation> findRenameLocations(String serviceKey, String fileName, int position, boolean findInStrings, boolean findInComments) {
+    public List<RenameLocation> findRenameLocations(String serviceKey, String fileName, int position, boolean findInStrings,
+            boolean findInComments) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
@@ -285,6 +269,32 @@ public final class LanguageEndpoint {
 
     public void dispose() {
         this.bridge.dispose();
+    }
+
+    private void initializeProjectTree(IProject project, Set<IProject> initializedProjects) {
+        // initialize referenced projects first (unless there is a circular dependency)
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                if (initializedProjects.add(referencedProject)) {
+                    this.initializeProjectTree(referencedProject, initializedProjects);
+                }
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        // initialize the project if it has not already been initialized
+        if (!isProjectInitialized(project)) {
+            String projectName = project.getName();
+            CompilerOptions compilationSettings = CompilerOptions.fromProject(project);
+            List<String> referencedProjectNames = getReferencedProjectNames(project);
+            List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
+            List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
+            Map<String, String> files = getFiles(project);
+            Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames,
+                exportedFolderNames, sourceFolderNames, files);
+            this.bridge.call(request, Void.class);
+        }
     }
 
     private static Map<String, String> getFiles(IProject project) {
