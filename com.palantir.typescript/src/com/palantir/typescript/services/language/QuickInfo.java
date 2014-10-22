@@ -32,10 +32,10 @@ import com.google.common.collect.ImmutableList;
 public final class QuickInfo {
 
     private final ScriptElementKind kind;
-    private final List<ScriptElementModifierKind> kindModifiers;
+    private final ImmutableList<ScriptElementModifierKind> kindModifiers;
     private final TextSpan textSpan;
-    private final List<SymbolDisplayPart> displayParts;
-    private final List<SymbolDisplayPart> documentation;
+    private final ImmutableList<SymbolDisplayPart> displayParts;
+    private final ImmutableList<SymbolDisplayPart> documentation;
 
     public QuickInfo(
             @JsonProperty("kind") ScriptElementKind kind,
@@ -73,7 +73,7 @@ public final class QuickInfo {
     }
 
     public String getDisplayText() {
-        return getText(this.displayParts);
+        return SymbolDisplayPart.getText(this.displayParts);
     }
 
     public List<SymbolDisplayPart> getDocumentation() {
@@ -81,7 +81,7 @@ public final class QuickInfo {
     }
 
     public String getDocumentationText() {
-        return getText(this.documentation);
+        return SymbolDisplayPart.getText(this.documentation);
     }
 
     @Override
@@ -93,15 +93,5 @@ public final class QuickInfo {
             .add("displayParts", this.displayParts)
             .add("documentation", this.documentation)
             .toString();
-    }
-
-    private static String getText(List<SymbolDisplayPart> parts) {
-        StringBuilder displayText = new StringBuilder();
-
-        for (SymbolDisplayPart part : parts) {
-            displayText.append(part.getText());
-        }
-
-        return displayText.toString();
     }
 }

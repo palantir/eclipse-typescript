@@ -560,6 +560,11 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
+        An_enum_member_cannot_have_a_numeric_name: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
         Duplicate_identifier_0: {
             code: number;
             category: DiagnosticCategory;
@@ -2535,38 +2540,22 @@ declare module ts {
         getCommonSourceDirectory(): string;
     }
     interface SourceMapSpan {
-        /** Line number in the js file*/
         emittedLine: number;
-        /** Column number in the js file */
         emittedColumn: number;
-        /** Line number in the ts file */
         sourceLine: number;
-        /** Column number in the ts file */
         sourceColumn: number;
-        /** Optional name (index into names array) associated with this span */
         nameIndex?: number;
-        /** ts file (index into sources array) associated with this span*/
         sourceIndex: number;
     }
     interface SourceMapData {
-        /** Where the sourcemap file is written */
         sourceMapFilePath: string;
-        /** source map URL written in the js file */
         jsSourceMappingURL: string;
-        /** Source map's file field - js file name*/
         sourceMapFile: string;
-        /** Source map's sourceRoot field - location where the sources will be present if not "" */
         sourceMapSourceRoot: string;
-        /** Source map's sources field - list of sources that can be indexed in this source map*/
         sourceMapSources: string[];
-        /** input source file (which one can use on program to get the file)
-            this is one to one mapping with the sourceMapSources list*/
         inputSourceFileNames: string[];
-        /** Source map's names field - list of names that can be indexed in this source map*/
         sourceMapNames?: string[];
-        /** Source map's mapping field - encoded source map spans*/
         sourceMapMappings: string;
-        /** Raw source map spans that were encoded into the sourceMapMappings*/
         sourceMapDecodedMappings: SourceMapSpan[];
     }
     enum EmitReturnStatus {
@@ -2585,6 +2574,7 @@ declare module ts {
     interface TypeChecker {
         getProgram(): Program;
         getDiagnostics(sourceFile?: SourceFile): Diagnostic[];
+        getDeclarationDiagnostics(sourceFile: SourceFile): Diagnostic[];
         getGlobalDiagnostics(): Diagnostic[];
         getNodeCount(): number;
         getIdentifierCount(): number;
@@ -2604,31 +2594,47 @@ declare module ts {
         getTypeOfNode(node: Node): Type;
         getApparentType(type: Type): ApparentType;
         typeToString(type: Type, enclosingDeclaration?: Node, flags?: TypeFormatFlags): string;
+        writeType(type: Type, writer: SymbolWriter, enclosingDeclaration?: Node, flags?: TypeFormatFlags): void;
         symbolToString(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): string;
-        typeToDisplayParts(type: Type, enclosingDeclaration?: Node, flags?: TypeFormatFlags): SymbolDisplayPart[];
-        symbolToDisplayParts(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): SymbolDisplayPart[];
+        writeSymbol(symbol: Symbol, writer: SymbolWriter, enclosingDeclaration?: Node, meaning?: SymbolFlags, flags?: SymbolFormatFlags): void;
         getFullyQualifiedName(symbol: Symbol): string;
         getAugmentedPropertiesOfApparentType(type: Type): Symbol[];
         getRootSymbol(symbol: Symbol): Symbol;
         getContextualType(node: Node): Type;
         getResolvedSignature(node: CallExpression, candidatesOutArray?: Signature[]): Signature;
+        getSignatureFromDeclaration(declaration: SignatureDeclaration): Signature;
+        writeSignature(signatures: Signature, writer: SymbolWriter, enclosingDeclaration?: Node, flags?: TypeFormatFlags): void;
+        writeTypeParameter(tp: TypeParameter, writer: SymbolWriter, enclosingDeclaration?: Node, flags?: TypeFormatFlags): void;
+        writeTypeParametersOfSymbol(symbol: Symbol, writer: SymbolWriter, enclosingDeclaraiton?: Node, flags?: TypeFormatFlags): void;
+        isImplementationOfOverload(node: FunctionDeclaration): boolean;
+        isUndefinedSymbol(symbol: Symbol): boolean;
+        isArgumentsSymbol(symbol: Symbol): boolean;
         getEnumMemberValue(node: EnumMember): number;
         isValidPropertyAccess(node: PropertyAccess, propertyName: string): boolean;
         getAliasedSymbol(symbol: Symbol): Symbol;
     }
-    interface TextWriter {
-        write(s: string): void;
-        trackSymbol(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): void;
+    interface SymbolWriter {
+        writeKind(text: string, kind: SymbolDisplayPartKind): void;
+        writeSymbol(text: string, symbol: Symbol): void;
         writeLine(): void;
         increaseIndent(): void;
         decreaseIndent(): void;
-        getText(): string;
+        clear(): void;
+        trackSymbol(symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags): void;
     }
     enum TypeFormatFlags {
         None = 0,
         WriteArrayAsGenericType = 1,
         UseTypeOfFunction = 2,
         NoTruncation = 4,
+        WriteArrowStyleSignature = 8,
+        WriteOwnNameForAnyLike = 16,
+        WriteTypeArgumentsOfSignature = 32,
+    }
+    enum SymbolFormatFlags {
+        None = 0,
+        WriteTypeParametersOrArguments = 1,
+        UseOnlyExternalAliasing = 2,
     }
     enum SymbolAccessibility {
         Accessible = 0,
@@ -2653,10 +2659,10 @@ declare module ts {
         hasSemanticErrors(): boolean;
         isDeclarationVisible(node: Declaration): boolean;
         isImplementationOfOverload(node: FunctionDeclaration): boolean;
-        writeTypeAtLocation(location: Node, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: TextWriter): void;
-        writeReturnTypeOfSignatureDeclaration(signatureDeclaration: SignatureDeclaration, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: TextWriter): void;
+        writeTypeAtLocation(location: Node, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: SymbolWriter): void;
+        writeReturnTypeOfSignatureDeclaration(signatureDeclaration: SignatureDeclaration, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: SymbolWriter): void;
         isSymbolAccessible(symbol: Symbol, enclosingDeclaration: Node, meaning: SymbolFlags): SymbolAccessiblityResult;
-        isImportDeclarationEntityNameReferenceDeclarationVisibile(entityName: EntityName): SymbolAccessiblityResult;
+        isImportDeclarationEntityNameReferenceDeclarationVisible(entityName: EntityName): SymbolAccessiblityResult;
         getConstantValue(node: PropertyAccess): number;
     }
     enum SymbolFlags {
@@ -3063,17 +3069,6 @@ declare module ts {
         tab = 9,
         verticalTab = 11,
     }
-    class SymbolDisplayPart {
-        text: string;
-        kind: SymbolDisplayPartKind;
-        symbol: Symbol;
-        constructor(text: string, kind: SymbolDisplayPartKind, symbol: Symbol);
-        toJSON(): {
-            text: string;
-            kind: string;
-        };
-        static toString(parts: SymbolDisplayPart[]): string;
-    }
     enum SymbolDisplayPartKind {
         aliasName = 0,
         className = 1,
@@ -3081,25 +3076,22 @@ declare module ts {
         fieldName = 3,
         interfaceName = 4,
         keyword = 5,
-        labelName = 6,
-        lineBreak = 7,
-        numericLiteral = 8,
-        stringLiteral = 9,
-        localName = 10,
-        methodName = 11,
-        moduleName = 12,
-        namespaceName = 13,
-        operator = 14,
-        parameterName = 15,
-        propertyName = 16,
-        punctuation = 17,
-        space = 18,
-        anonymousTypeIndicator = 19,
-        text = 20,
-        typeParameterName = 21,
-        enumMemberName = 22,
-        functionName = 23,
-        regularExpressionLiteral = 24,
+        lineBreak = 6,
+        numericLiteral = 7,
+        stringLiteral = 8,
+        localName = 9,
+        methodName = 10,
+        moduleName = 11,
+        operator = 12,
+        parameterName = 13,
+        propertyName = 14,
+        punctuation = 15,
+        space = 16,
+        text = 17,
+        typeParameterName = 18,
+        enumMemberName = 19,
+        functionName = 20,
+        regularExpressionLiteral = 21,
     }
     interface CancellationToken {
         isCancellationRequested(): boolean;
@@ -3139,16 +3131,6 @@ declare module ts {
     function forEachKey<T, U>(map: Map<T>, callback: (key: string) => U): U;
     function lookUp<T>(map: Map<T>, key: string): T;
     function mapToArray<T>(map: Map<T>): T[];
-    /**
-     * Creates a map from the elements of an array.
-     *
-     * @param array the array of input elements.
-     * @param makeKey a function that produces a key for a given element.
-     *
-     * This function makes no effort to avoid collisions; if any two elements produce
-     * the same key with the given 'makeKey' function, then the element with the higher
-     * index in the array will be the one associated with the produced key.
-     */
     function arrayToMap<T>(array: T[], makeKey: (value: T) => string): Map<T>;
     var localizedDiagnosticMessages: Map<string>;
     function getLocaleSpecificMessage(message: string): string;
@@ -3173,8 +3155,6 @@ declare module ts {
     function combinePaths(path1: string, path2: string): string;
     function fileExtensionIs(path: string, extension: string): boolean;
     function removeFileExtension(path: string): string;
-    /** NOTE: This *does not* support the full escape characters, it only supports the subset that can be used in file names
-      * or string literals. If the information encoded in the map changes, this needs to be revisited. */
     function escapeString(s: string): string;
     interface ObjectAllocator {
         getNodeConstructor(kind: SyntaxKind): new () => Node;
@@ -3210,6 +3190,7 @@ declare module ts {
     function createDiagnosticForNodeFromMessageChain(node: Node, messageChain: DiagnosticMessageChain, newLine: string): Diagnostic;
     function getErrorSpanForNode(node: Node): Node;
     function isExternalModule(file: SourceFile): boolean;
+    function isDeclarationFile(file: SourceFile): boolean;
     function isPrologueDirective(node: Node): boolean;
     function getLeadingCommentRangesOfNode(node: Node, sourceFileOfNode?: SourceFile): CommentRange[];
     function getJsDocComments(node: Declaration, sourceFileOfNode: SourceFile): CommentRange[];
@@ -3217,17 +3198,6 @@ declare module ts {
     function forEachChild<T>(node: Node, cbNode: (node: Node) => T, cbNodes?: (nodes: Node[]) => T): T;
     function forEachReturnStatement<T>(body: Block, visitor: (stmt: ReturnStatement) => T): T;
     function isAnyFunction(node: Node): boolean;
-    /**
-     * Note: this function only works when given a node with valid parent pointers.
-     */
-    function isTypeNode(node: Node): boolean;
-    /**
-     * Note: this function only works when given a node with valid parent pointers.
-     *
-     * returns true if the given identifier is the name of a type declaration node (class, interface, enum, type parameter, etc)
-     */
-    function isTypeDeclarationName(name: Node): boolean;
-    function isTypeDeclaration(node: Node): boolean;
     function getContainingFunction(node: Node): SignatureDeclaration;
     function getThisContainer(node: Node, includeArrowFunctions: boolean): Node;
     function getSuperContainer(node: Node): Node;
@@ -3248,19 +3218,19 @@ declare module ts {
     function bindSourceFile(file: SourceFile): void;
 }
 declare module ts {
+    function getIndentString(level: number): string;
     function shouldEmitToOwnFile(sourceFile: SourceFile, compilerOptions: CompilerOptions): boolean;
     function isExternalModuleOrDeclarationFile(sourceFile: SourceFile): boolean;
+    function getDeclarationDiagnostics(program: Program, resolver: EmitResolver, targetSourceFile: SourceFile): Diagnostic[];
     function emitFiles(resolver: EmitResolver, targetSourceFile?: SourceFile): EmitResult;
 }
 declare module ts {
     function getDeclarationOfKind(symbol: Symbol, kind: SyntaxKind): Declaration;
+    interface StringSymbolWriter extends SymbolWriter {
+        string(): string;
+    }
+    function getSingleLineStringWriter(): StringSymbolWriter;
     function createTypeChecker(program: Program, fullTypeCheck: boolean): TypeChecker;
-    function spacePart(): SymbolDisplayPart;
-    function keywordPart(kind: SyntaxKind): SymbolDisplayPart;
-    function punctuationPart(kind: SyntaxKind): SymbolDisplayPart;
-    function operatorPart(kind: SyntaxKind): SymbolDisplayPart;
-    function textPart(text: string): SymbolDisplayPart;
-    function symbolPart(text: string, symbol: Symbol): SymbolDisplayPart;
 }
 declare module TypeScript {
     var DiagnosticCode: {
@@ -3775,19 +3745,8 @@ declare module TypeScript {
         toJSON(key: any): any;
         diagnosticKey(): string;
         arguments(): any[];
-        /**
-         * Get the text of the message in the given language.
-         */
         text(): string;
-        /**
-         * Get the text of the message including the error code in the given language.
-         */
         message(): string;
-        /**
-         * If a derived class has additional information about other referenced symbols, it can
-         * expose the locations of those symbols in a general way, so they can be reported along
-         * with the error.
-         */
         additionalLocations(): Location[];
         static equals(diagnostic1: Diagnostic, diagnostic2: Diagnostic): boolean;
         info(): DiagnosticInfo;
@@ -3846,11 +3805,6 @@ declare module TypeScript {
     class LineAndCharacter {
         private _line;
         private _character;
-        /**
-         * Initializes a new instance of a LinePosition with the given line and character. ArgumentOutOfRangeException if "line" or "character" is less than zero.
-         * @param line The line of the line position. The first line in a file is defined as line 0 (zero based line numbering).
-         * @param character The character position in the line.
-         */
         constructor(line: number, character: number);
         line(): number;
         character(): number;
@@ -3989,46 +3943,18 @@ declare module TypeScript {
     }
 }
 declare module TypeScript {
-    /**
-     * Represents an immutable snapshot of a script at a specified time.Once acquired, the
-     * snapshot is observably immutable. i.e. the same calls with the same parameters will return
-     * the same values.
-     */
     interface IScriptSnapshot {
-        /** Gets a portion of the script snapshot specified by [start, end). */
         getText(start: number, end: number): string;
-        /** Gets the length of this script snapshot. */
         getLength(): number;
-        /**
-         * This call returns the array containing the start position of every line.
-         * i.e."[0, 10, 55]".  TODO: consider making this optional.  The language service could
-         * always determine this (albeit in a more expensive manner).
-         */
         getLineStartPositions(): number[];
-        /**
-         * Gets the TextChangeRange that describe how the text changed between this text and
-         * an older version.  This information is used by the incremental parser to determine
-         * what sections of the script need to be re-parsed.  'undefined' can be returned if the
-         * change range cannot be determined.  However, in that case, incremental parsing will
-         * not happen and the entire document will be re - parsed.
-         */
         getChangeRange(oldSnapshot: IScriptSnapshot): TextChangeRange;
     }
     module ScriptSnapshot {
         function fromString(text: string): IScriptSnapshot;
     }
 }
-/**
- * Represents an immutable snapshot of text.
- */
 declare module TypeScript {
-    /**
-     * Represents an immutable snapshot of text.
-     */
     interface ISimpleText {
-        /**
-         * Total number of characters in the text source.
-         */
         length(): number;
         substr(start: number, length: number): string;
         charCodeAt(index: number): number;
@@ -4064,63 +3990,20 @@ declare module TypeScript {
     class TextSpan implements ISpan {
         private _start;
         private _length;
-        /**
-         * Creates a TextSpan instance beginning with the position Start and having the Length
-         * specified with length.
-         */
         constructor(start: number, length: number);
         toJSON(key: any): any;
         start(): number;
         length(): number;
         end(): number;
         isEmpty(): boolean;
-        /**
-         * Determines whether the position lies within the span. Returns true if the position is greater than or equal to Start and strictly less
-         * than End, otherwise false.
-         * @param position The position to check.
-         */
         containsPosition(position: number): boolean;
-        /**
-         * Determines whether span falls completely within this span. Returns true if the specified span falls completely within this span, otherwise false.
-         * @param span The span to check.
-         */
         containsTextSpan(span: TextSpan): boolean;
-        /**
-         * Determines whether the given span overlaps this span. Two spans are considered to overlap
-         * if they have positions in common and neither is empty. Empty spans do not overlap with any
-         * other span. Returns true if the spans overlap, false otherwise.
-         * @param span The span to check.
-         */
         overlapsWith(span: TextSpan): boolean;
-        /**
-         * Returns the overlap with the given span, or null if there is no overlap.
-         * @param span The span to check.
-         */
         overlap(span: TextSpan): TextSpan;
-        /**
-         * Determines whether span intersects this span. Two spans are considered to
-         * intersect if they have positions in common or the end of one span
-         * coincides with the start of the other span. Returns true if the spans intersect, false otherwise.
-         * @param The span to check.
-         */
         intersectsWithTextSpan(span: TextSpan): boolean;
         intersectsWith(start: number, length: number): boolean;
-        /**
-         * Determines whether the given position intersects this span.
-         * A position is considered to intersect if it is between the start and
-         * end positions (inclusive) of this span. Returns true if the position intersects, false otherwise.
-         * @param position The position to check.
-         */
         intersectsWithPosition(position: number): boolean;
-        /**
-         * Returns the intersection with the given span, or null if there is no intersection.
-         * @param span The span to check.
-         */
         intersection(span: TextSpan): TextSpan;
-        /**
-         * Creates a new TextSpan from the given start and end positions
-         * as opposed to a position and length.
-         */
         static fromBounds(start: number, end: number): TextSpan;
     }
 }
@@ -4129,28 +4012,11 @@ declare module TypeScript {
         static unchanged: TextChangeRange;
         private _span;
         private _newLength;
-        /**
-         * Initializes a new instance of TextChangeRange.
-         */
         constructor(span: TextSpan, newLength: number);
-        /**
-         * The span of text before the edit which is being changed
-         */
         span(): TextSpan;
-        /**
-         * Width of the span after the edit.  A 0 here would represent a delete
-         */
         newLength(): number;
         newSpan(): TextSpan;
         isUnchanged(): boolean;
-        /**
-         * Called to merge all the changes that occurred across several versions of a script snapshot
-         * into a single change.  i.e. if a user keeps making successive edits to a script we will
-         * have a text change from V1 to V2, V2 to V3, ..., Vn.
-         *
-         * This function will then merge those changes into a single change range valid between V1 and
-         * Vn.
-         */
         static collapseChangesAcrossMultipleVersions(changes: TextChangeRange[]): TextChangeRange;
     }
 }
@@ -4546,19 +4412,6 @@ declare module TypeScript {
     function syntaxTree(element: ISyntaxElement): SyntaxTree;
     function parsedInStrictMode(node: ISyntaxNode): boolean;
     function previousToken(token: ISyntaxToken, includeSkippedTokens?: boolean): ISyntaxToken;
-    /**
-     * Finds a token according to the following rules:
-     * 1) If position matches the End of the node/s FullSpan and the node is SourceUnitSyntax,
-     *    then the EOF token is returned.
-     *
-     *  2) If node.FullSpan.Contains(position) then the token that contains given position is
-     *     returned.
-     *
-     *  3) Otherwise an ArgumentOutOfRangeException is thrown
-     *
-     * Note: findToken will always return a non-missing token with width greater than or equal to
-     * 1 (except for EOF).  Empty tokens synthesized by the parser are never returned.
-     */
     function findToken(element: ISyntaxElement, position: number, includeSkippedTokens?: boolean): ISyntaxToken;
     function findSkippedTokenInPositionedToken(positionedToken: ISyntaxToken, position: number): ISyntaxToken;
     function findSkippedTokenInLeadingTriviaList(positionedToken: ISyntaxToken, position: number): ISyntaxToken;
@@ -6323,14 +6176,6 @@ declare module TypeScript.IncrementalParser {
 }
 declare module ts {
     interface OutliningSpan {
-        /**
-         * @param textSpan The span of the document to actually collapse.
-         * @param hintSpan The span of the document to display when the user hovers over the
-         *       collapsed span.
-         * @param bannerText The text to display in the editor for the collapsed region.
-         * @param autoCollapse Whether or not this region should be automatically collapsed when
-         *        the 'Collapse to Definitions' command is invoked.
-         */
         textSpan: TypeScript.TextSpan;
         hintSpan: TypeScript.TextSpan;
         bannerText: string;
@@ -6365,24 +6210,11 @@ declare module ts {
     function findListItemInfo(node: Node): ListItemInfo;
     function findChildOfKind(n: Node, kind: SyntaxKind, sourceFile?: SourceFile): Node;
     function findContainingList(node: Node): Node;
-    /**
-     * Includes the start position of each child, but excludes the end.
-     */
     function findListItemIndexContainingPosition(list: Node, position: number): number;
     function getTouchingWord(sourceFile: SourceFile, position: number): Node;
     function getTouchingPropertyName(sourceFile: SourceFile, position: number): Node;
-    /** Returns the token if position is in [start, end) or if position === end and includeItemAtEndPosition(token) === true */
     function getTouchingToken(sourceFile: SourceFile, position: number, includeItemAtEndPosition?: (n: Node) => boolean): Node;
-    /** Returns a token if position is in [start-of-leading-trivia, end) */
     function getTokenAtPosition(sourceFile: SourceFile, position: number): Node;
-    /**
-      * The token on the left of the position is the token that strictly includes the position
-      * or sits to the left of the cursor if it is on a boundary. For example
-      *
-      *   fo|o               -> will return foo
-      *   foo <comment> |bar -> will return foo
-      *
-      */
     function findTokenOnLeftOfPosition(file: SourceFile, position: number): Node;
     function findNextToken(previousToken: Node, parent: Node): Node;
     function findPrecedingToken(position: number, sourceFile: SourceFile, startNode?: Node): Node;
@@ -6975,32 +6807,6 @@ declare module TypeScript.ASTHelpers {
     function getModuleNames(name: ISyntaxElement, result?: ISyntaxToken[]): ISyntaxToken[];
 }
 declare module TypeScript {
-    class MemberName {
-        prefix: string;
-        suffix: string;
-        isString(): boolean;
-        isArray(): boolean;
-        isMarker(): boolean;
-        toString(): string;
-        static memberNameToString(memberName: MemberName, markerInfo?: number[], markerBaseLength?: number): string;
-        static create(text: string): MemberName;
-        static create(entry: MemberName, prefix: string, suffix: string): MemberName;
-    }
-    class MemberNameString extends MemberName {
-        text: string;
-        constructor(text: string);
-        isString(): boolean;
-    }
-    class MemberNameArray extends MemberName {
-        delim: string;
-        entries: MemberName[];
-        isArray(): boolean;
-        add(entry: MemberName): void;
-        addAll(entries: MemberName[]): void;
-        constructor();
-    }
-}
-declare module TypeScript {
     function stripStartAndEndQuotes(str: string): string;
     function isSingleQuoted(str: string): boolean;
     function isDoubleQuoted(str: string): boolean;
@@ -7043,7 +6849,7 @@ declare module ts {
         getFlags(): SymbolFlags;
         getName(): string;
         getDeclarations(): Declaration[];
-        getDocumentationComment(): string;
+        getDocumentationComment(): SymbolDisplayPart[];
     }
     interface Type {
         getFlags(): TypeFlags;
@@ -7061,6 +6867,7 @@ declare module ts {
         getTypeParameters(): Type[];
         getParameters(): Symbol[];
         getReturnType(): Type;
+        getDocumentationComment(): SymbolDisplayPart[];
     }
     interface SourceFile {
         getSourceUnit(): TypeScript.SourceUnitSyntax;
@@ -7093,7 +6900,6 @@ declare module ts {
         getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): CompletionInfo;
         getCompletionEntryDetails(fileName: string, position: number, entryName: string): CompletionEntryDetails;
         getQuickInfoAtPosition(fileName: string, position: number): QuickInfo;
-        getTypeAtPosition(fileName: string, position: number): TypeInfo;
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): TypeScript.TextSpan;
         getBreakpointStatementAtPosition(fileName: string, position: number): TypeScript.TextSpan;
         getSignatureHelpItems(fileName: string, position: number): SignatureHelpItems;
@@ -7216,10 +7022,9 @@ declare module ts {
         containerKind: string;
         containerName: string;
     }
-    interface MemberName {
-        prefix: string;
-        suffix: string;
+    interface SymbolDisplayPart {
         text: string;
+        kind: string;
     }
     interface QuickInfo {
         kind: string;
@@ -7227,13 +7032,6 @@ declare module ts {
         textSpan: TypeScript.TextSpan;
         displayParts: SymbolDisplayPart[];
         documentation: SymbolDisplayPart[];
-    }
-    interface TypeInfo {
-        memberName: TypeScript.MemberName;
-        docComment: string;
-        fullSymbolName: string;
-        kind: string;
-        textSpan: TypeScript.TextSpan;
     }
     interface RenameInfo {
         canRename: boolean;
@@ -7250,13 +7048,6 @@ declare module ts {
         displayParts: SymbolDisplayPart[];
         isOptional: boolean;
     }
-    /**
-     * Represents a single signature to show in signature help.
-     * The id is used for subsequent calls into the language service to ask questions about the
-     * signature help item in the context of any documents that have been updated.  i.e. after
-     * an edit has happened, while signature help is still active, the host can ask important
-     * questions like 'what parameter is the user currently contained within?'.
-     */
     interface SignatureHelpItem {
         isVariadic: boolean;
         prefixDisplayParts: SymbolDisplayPart[];
@@ -7265,9 +7056,6 @@ declare module ts {
         parameters: SignatureHelpParameter[];
         documentation: SymbolDisplayPart[];
     }
-    /**
-     * Represents a set of signature help items, and the preferred item that should be selected.
-     */
     interface SignatureHelpItems {
         items: SignatureHelpItem[];
         applicableSpan: TypeScript.TextSpan;
@@ -7288,9 +7076,8 @@ declare module ts {
         name: string;
         kind: string;
         kindModifiers: string;
-        type: string;
-        fullSymbolName: string;
-        docComment: string;
+        displayParts: SymbolDisplayPart[];
+        documentation: SymbolDisplayPart[];
     }
     interface EmitOutput {
         outputFiles: OutputFile[];
@@ -7390,6 +7177,16 @@ declare module ts {
         static moduleName: string;
         static typeParameterName: string;
     }
+    function displayPartsToString(displayParts: SymbolDisplayPart[]): string;
+    function spacePart(): SymbolDisplayPart;
+    function keywordPart(kind: SyntaxKind): SymbolDisplayPart;
+    function punctuationPart(kind: SyntaxKind): SymbolDisplayPart;
+    function operatorPart(kind: SyntaxKind): SymbolDisplayPart;
+    function textPart(text: string): SymbolDisplayPart;
+    function lineBreakPart(): SymbolDisplayPart;
+    function symbolPart(text: string, symbol: Symbol): SymbolDisplayPart;
+    function typeToDisplayParts(typechecker: TypeChecker, type: Type, enclosingDeclaration?: Node, flags?: TypeFormatFlags): SymbolDisplayPart[];
+    function symbolToDisplayParts(typeChecker: TypeChecker, symbol: Symbol, enclosingDeclaration?: Node, meaning?: SymbolFlags, flags?: SymbolFormatFlags): SymbolDisplayPart[];
     function getDefaultCompilerOptions(): CompilerOptions;
     function compareDataObjects(dst: any, src: any): boolean;
     class OperationCanceledException {
@@ -7403,7 +7200,6 @@ declare module ts {
     }
     function createDocumentRegistry(): DocumentRegistry;
     function getNodeModifiers(node: Node): string;
-    function getSymbolDocumentationDisplayParts(symbol: Symbol): SymbolDisplayPart[];
     function createLanguageService(host: LanguageServiceHost, documentRegistry: DocumentRegistry): LanguageService;
     function createClassifier(host: Logger): Classifier;
 }
@@ -7431,24 +7227,13 @@ declare module TypeScript {
 declare var debugObjectHost: any;
 declare module ts {
     interface ScriptSnapshotShim {
-        /** Gets a portion of the script snapshot specified by [start, end). */
         getText(start: number, end: number): string;
-        /** Gets the length of this script snapshot. */
         getLength(): number;
-        /** This call returns the JSON-encoded array of the type: number[] */
         getLineStartPositions(): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         *   { span: { start: number; length: number }; newLength: number }
-         *
-         * Or undefined value if there was no change.
-         */
         getChangeRange(oldSnapshot: ScriptSnapshotShim): string;
     }
-    /** Public interface of the host of a language service shim instance.*/
     interface LanguageServiceShimHost extends Logger {
         getCompilationSettings(): string;
-        /** Returns a JSON-encoded value of the type: string[] */
         getScriptFileNames(): string;
         getScriptVersion(fileName: string): string;
         getScriptIsOpen(fileName: string): boolean;
@@ -7458,7 +7243,6 @@ declare module ts {
         getCurrentDirectory(): string;
         getDefaultLibFilename(): string;
     }
-    /** Public interface of a language service instance shim. */
     interface ShimFactory {
         registerShim(shim: Shim): void;
         unregisterShim(shim: Shim): void;
@@ -7478,57 +7262,18 @@ declare module ts {
         getCompletionsAtPosition(fileName: string, position: number, isMemberCompletion: boolean): string;
         getCompletionEntryDetails(fileName: string, position: number, entryName: string): string;
         getQuickInfoAtPosition(fileName: string, position: number): string;
-        getTypeAtPosition(fileName: string, position: number): string;
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): string;
         getBreakpointStatementAtPosition(fileName: string, position: number): string;
         getSignatureHelpItems(fileName: string, position: number): string;
         getSignatureAtPosition(fileName: string, position: number): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { canRename: boolean, localizedErrorMessage: string, displayName: string, fullDisplayName: string, kind: string, kindModifiers: string, triggerSpan: { start; length } }
-         */
         getRenameInfo(fileName: string, position: number): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { fileName: string, textSpan: { start: number, length: number } }[]
-         */
         findRenameLocations(fileName: string, position: number, findInStrings: boolean, findInComments: boolean): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { fileName: string; textSpan: { start: number; length: number}; kind: string; name: string; containerKind: string; containerName: string }
-         *
-         * Or undefined value if no definition can be found.
-         */
         getDefinitionAtPosition(fileName: string, position: number): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { fileName: string; textSpan: { start: number; length: number}; isWriteAccess: boolean }[]
-         */
         getReferencesAtPosition(fileName: string, position: number): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { fileName: string; textSpan: { start: number; length: number}; isWriteAccess: boolean }[]
-         */
         getOccurrencesAtPosition(fileName: string, position: number): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { fileName: string; textSpan: { start: number; length: number}; isWriteAccess: boolean }[]
-         */
         getImplementorsAtPosition(fileName: string, position: number): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { name: string; kind: string; kindModifiers: string; containerName: string; containerKind: string; matchKind: string; fileName: string; textSpan: { start: number; length: number}; } [] = [];
-         */
         getNavigateToItems(searchValue: string): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { text: string; kind: string; kindModifiers: string; bolded: boolean; grayed: boolean; indent: number; spans: { start: number; length: number; }[]; childItems: <recursive use of this type>[] } [] = [];
-         */
         getNavigationBarItems(fileName: string): string;
-        /**
-         * Returns a JSON-encoded value of the type:
-         * { textSpan: { start: number, length: number }; hintSpan: { start: number, length: number }; bannerText: string; autoCollapse: boolean } [] = [];
-         */
         getOutliningSpans(fileName: string): string;
         getTodoComments(fileName: string, todoCommentDescriptors: string): string;
         getBraceMatchingAtPosition(fileName: string, position: number): string;

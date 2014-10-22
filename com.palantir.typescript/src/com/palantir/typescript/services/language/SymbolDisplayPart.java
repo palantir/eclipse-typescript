@@ -18,6 +18,8 @@ package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
@@ -55,5 +57,17 @@ public final class SymbolDisplayPart {
             .add("kind", this.kind)
             .add("text", this.text)
             .toString();
+    }
+
+    public static String getText(List<SymbolDisplayPart> parts) {
+        checkNotNull(parts);
+
+        StringBuilder displayText = new StringBuilder();
+
+        for (SymbolDisplayPart part : parts) {
+            displayText.append(part.getText());
+        }
+
+        return displayText.toString();
     }
 }
