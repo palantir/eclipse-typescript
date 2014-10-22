@@ -99,7 +99,7 @@ public final class TypeScriptRenameProcessor extends RenameProcessor {
 
     @Override
     public Change createChange(IProgressMonitor pm) throws CoreException, OperationCanceledException {
-        List<RenameLocation> renameLocations = this.languageService.findRenameLocations(this.offset, true, true);
+        List<RenameLocation> renameLocations = this.languageService.findRenameLocations(this.offset, false, false);
 
         // group the references by file name
         ListMultimap<String, RenameLocation> renamesByFileName = ArrayListMultimap.create();
