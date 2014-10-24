@@ -125,10 +125,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        // delete the build output
-        Set<FileDelta> fileDeltas = getAllSourceFiles(Delta.REMOVED);
-        if (!isOutputFileSpecified()) {
-            clean(fileDeltas, monitor);
+        // delete built files if compile-on-save is enabled
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            Set<FileDelta> fileDeltas = getAllSourceFiles(Delta.REMOVED);
+
+            if (!isOutputFileSpecified()) {
+                clean(fileDeltas, monitor);
+            }
         }
 
         // clean the language service in case it is out-of-sync
