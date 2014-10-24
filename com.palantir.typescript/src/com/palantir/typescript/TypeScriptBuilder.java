@@ -156,13 +156,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
             String outputFolderName = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
 
-            // ensure the output directory exists and is marked as derived
+            // ensure the output directory exists if it was specified
             if (!Strings.isNullOrEmpty(outputFolderName)) {
                 IFolder outputFolder = this.getProject().getFolder(outputFolderName);
 
-                EclipseResources.createParentDirs(outputFolder, monitor);
+                if (!outputFolder.exists()) {
+                    EclipseResources.createParentDirs(outputFolder, monitor);
 
-                if (!outputFolder.isDerived()) {
+                    // mark the folder as derived so built resources don't show up in file searches
                     outputFolder.setDerived(true, monitor);
                 }
             }
