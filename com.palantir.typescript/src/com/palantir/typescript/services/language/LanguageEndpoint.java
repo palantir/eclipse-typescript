@@ -45,7 +45,7 @@ import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
 /**
- * The workspace language enpoint.
+ * The workspace language endpoint.
  *
  * @author dcicerone
  */
