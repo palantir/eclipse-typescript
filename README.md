@@ -26,7 +26,6 @@ An Eclipse plug-in for developing in the TypeScript language.
 * toggle comments
 
 ## Additional Information
-* Eclipse Kepler (4.3) is currently the only supported version
-    * if this is a problem for your project, please let us know and we'll look into supporting older versions as well
+* Eclipse Kepler (4.3) and Luna (4.4) are supported
 * Eclipse must be running via Java 6+
 * [Wiki](https://github.com/palantir/eclipse-typescript/wiki) (contains information about developing the plug-in)
