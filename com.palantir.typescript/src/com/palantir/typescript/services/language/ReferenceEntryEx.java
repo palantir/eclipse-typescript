@@ -30,44 +30,32 @@ import com.google.common.base.Objects;
 public final class ReferenceEntryEx {
 
     private final String fileName;
-    private final int minChar;
-    private final int limChar;
     private final String line;
     private final int lineNumber;
     private final int lineStart;
+    private final TextSpan textSpan;
 
     public ReferenceEntryEx(
             @JsonProperty("fileName") String fileName,
-            @JsonProperty("minChar") int minChar,
-            @JsonProperty("limChar") int limChar,
             @JsonProperty("line") String line,
             @JsonProperty("lineNumber") int lineNumber,
-            @JsonProperty("lineStart") int lineStart) {
+            @JsonProperty("lineStart") int lineStart,
+            @JsonProperty("textSpan") TextSpan textSpan) {
         checkNotNull(fileName);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
         checkNotNull(line);
         checkArgument(lineNumber >= 0);
         checkArgument(lineStart >= 0);
+        checkNotNull(textSpan);
 
         this.fileName = fileName;
-        this.minChar = minChar;
-        this.limChar = limChar;
         this.line = line;
         this.lineNumber = lineNumber;
         this.lineStart = lineStart;
+        this.textSpan = textSpan;
     }
 
     public String getFileName() {
         return this.fileName;
-    }
-
-    public int getMinChar() {
-        return this.minChar;
-    }
-
-    public int getLimChar() {
-        return this.limChar;
     }
 
     public String getLine() {
@@ -82,15 +70,18 @@ public final class ReferenceEntryEx {
         return this.lineStart;
     }
 
+    public TextSpan getTextSpan() {
+        return this.textSpan;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("fileName", this.fileName)
-            .add("minChar", this.minChar)
-            .add("limChar", this.limChar)
             .add("line", this.line)
             .add("lineNumber", this.lineNumber)
             .add("lineStart", this.lineStart)
+            .add("textSpan", this.textSpan)
             .toString();
     }
 }

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/// <reference path="../typescript/src/services/languageService.ts" />
-
 module Bridge {
 
     export class ScriptSnapshot implements TypeScript.IScriptSnapshot {
@@ -32,23 +30,25 @@ module Bridge {
             this.version = version;
         }
 
-        public getText(start: number, end: number): string {
+        public getText(start: number, end: number) {
             return this.contents.substring(start, end);
         }
 
-        public getLength(): number {
+        public getLength() {
             return this.contents.length;
         }
 
-        public getLineStartPositions(): number[] {
+        public getLineStartPositions() {
             return this.lineStartPositions;
         }
 
-        public getTextChangeRangeSinceVersion(version: number): TypeScript.TextChangeRange {
-            if (this.version === version) {
+        public getChangeRange(oldSnapshot: TypeScript.IScriptSnapshot): TypeScript.TextChangeRange {
+            var oldSnapshot2 = <ScriptSnapshot> oldSnapshot;
+
+            if (this.version === oldSnapshot2.version) {
                 return TypeScript.TextChangeRange.unchanged;
-            } else if (this.version - version <= this.changes.length) {
-                var start = this.changes.length - (this.version - version);
+            } else if (this.version - oldSnapshot2.version <= this.changes.length) {
+                var start = this.changes.length - (this.version - oldSnapshot2.version);
                 var changes = this.changes.slice(start);
 
                 return TypeScript.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);

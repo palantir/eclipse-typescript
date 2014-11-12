@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -30,8 +29,7 @@ import com.google.common.base.Objects;
 public final class DefinitionInfo {
 
     private final String fileName;
-    private final int minChar;
-    private final int limChar;
+    private final TextSpan textSpan;
     private final ScriptElementKind kind;
     private final String name;
     private final ScriptElementKind containerKind;
@@ -39,23 +37,18 @@ public final class DefinitionInfo {
 
     public DefinitionInfo(
             @JsonProperty("fileName") String fileName,
-            @JsonProperty("minChar") int minChar,
-            @JsonProperty("limChar") int limChar,
+            @JsonProperty("textSpan") TextSpan textSpan,
             @JsonProperty("kind") ScriptElementKind kind,
             @JsonProperty("name") String name,
             @JsonProperty("containerKind") ScriptElementKind containerKind,
             @JsonProperty("containerName") String containerName) {
         checkNotNull(fileName);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
+        checkNotNull(textSpan);
         checkNotNull(kind);
         checkNotNull(name);
-        checkNotNull(containerKind);
-        checkNotNull(containerName);
 
         this.fileName = fileName;
-        this.minChar = minChar;
-        this.limChar = limChar;
+        this.textSpan = textSpan;
         this.kind = kind;
         this.name = name;
         this.containerKind = containerKind;
@@ -66,12 +59,8 @@ public final class DefinitionInfo {
         return this.fileName;
     }
 
-    public int getMinChar() {
-        return this.minChar;
-    }
-
-    public int getLimChar() {
-        return this.limChar;
+    public TextSpan getTextSpan() {
+        return this.textSpan;
     }
 
     public ScriptElementKind getKind() {
@@ -94,8 +83,7 @@ public final class DefinitionInfo {
     public String toString() {
         return Objects.toStringHelper(this)
             .add("fileName", this.fileName)
-            .add("minChar", this.minChar)
-            .add("limChar", this.limChar)
+            .add("textSpan", this.textSpan)
             .add("kind", this.kind)
             .add("name", this.name)
             .add("containerKind", this.containerKind)

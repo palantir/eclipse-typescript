@@ -53,8 +53,6 @@ public final class Images {
         switch (kind) {
             case CLASS_ELEMENT:
                 return "class";
-            case CONSTRUCTOR_IMPLEMENTATION_ELEMENT:
-                return "memberFunctionPublic";
             case ENUM_ELEMENT:
                 return "enum";
             case LOCAL_FUNCTION_ELEMENT:
@@ -63,6 +61,8 @@ public final class Images {
             case INTERFACE_ELEMENT:
                 return "interface";
             case CALL_SIGNATURE_ELEMENT:
+            case CONSTRUCT_SIGNATURE_ELEMENT:
+            case CONSTRUCTOR_IMPLEMENTATION_ELEMENT:
             case INDEX_SIGNATURE_ELEMENT:
             case MEMBER_FUNCTION_ELEMENT:
             case MEMBER_GET_ACCESSOR_ELEMENT:

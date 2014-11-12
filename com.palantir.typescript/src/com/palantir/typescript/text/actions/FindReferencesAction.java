@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.texteditor.IEditorStatusLine;
 
 import com.palantir.typescript.search.SearchQuery;
-import com.palantir.typescript.services.language.SpanInfo;
+import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
@@ -63,16 +63,13 @@ public final class FindReferencesAction extends TypeScriptEditorAction {
     }
 
     private static String getSearchString(TypeScriptEditor editor, FileLanguageService languageService, int offset) {
-        SpanInfo spanInfo = languageService.getNameOrDottedNameSpan(offset, offset);
-        if (spanInfo == null) {
+        TextSpan textSpan = languageService.getNameOrDottedNameSpan(offset, offset);
+        if (textSpan == null) {
             return null;
         }
 
-        int minChar = spanInfo.getMinChar();
-        int limChar = spanInfo.getLimChar();
-
         try {
-            String searchString = editor.getDocument().get(minChar, limChar - minChar);
+            String searchString = editor.getDocument().get(textSpan.getStart(), textSpan.getLength());
 
             int lastPeriod = searchString.lastIndexOf('.');
             if (lastPeriod >= 0) {

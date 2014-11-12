@@ -21,47 +21,54 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    chmod: {
-      execute: {
-        options: {
-          mode: '744'
-        },
-        src: ['Bridge/typescript/bin/tsc']
+    concat: {
+      dist: {
+        src: ['Bridge/lib/typescriptServices.js', 'Bridge/build/bridge.js'],
+        dest: 'com.palantir.typescript/bin/bridge.js'
       },
-      noexecute: {
-        options: {
-          mode: '644'
-        },
-        src: ['Bridge/typescript/bin/tsc']
+      test: {
+        src: ['Bridge/lib/typescriptServices.js', 'Bridge/build/bridge.js', 'Bridge/build/test/*.js'],
+        dest: 'Bridge/build/test-concat.js'
       }
     },
 
-    tsc: {
+    mochaTest: {
+      test: {
+        src: 'Bridge/build/test-concat.js'
+      }
+    },
+
+    ts: {
       compile: {
+        src: ['Bridge/src/main.ts', 'Bridge/typings/*.d.ts'],
+        out: 'Bridge/build/bridge.js',
         options: {
-          bin: 'Bridge/typescript/bin/tsc'
-        },
-        src: ['Bridge/src/main.ts'],
-        dest: 'com.palantir.typescript/bin/bridge.js'
+          declaration: true
+        }
+      },
+      test: {
+        src: ['Bridge/test/mainTests.ts', 'Bridge/build/bridge.d.ts', 'Bridge/typings/*.d.ts'],
+        outDir: 'Bridge/build',
+        options: {
+          module: 'commonjs'
+        }
       }
     },
 
     watch: {
       scripts: {
-        files: ['Bridge/src/*.ts'],
+        files: ['Bridge/src/*.ts', 'Bridge/test/*.ts', 'Bridge/typings/*.d.ts'],
         tasks: ['default'],
       },
     }
   });
 
   // load NPM tasks
-  grunt.loadNpmTasks('grunt-chmod');
+  grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-watch');
-
-  // load our custom tasks
-  grunt.loadTasks("tasks");
+  grunt.loadNpmTasks('grunt-mocha-test');
+  grunt.loadNpmTasks('grunt-ts');
 
   // other tasks
-  grunt.registerTask('default', ['chmod:execute', 'tsc', 'chmod:noexecute']);
-  grunt.registerTask('travis', ['default']);
+  grunt.registerTask('default', ['ts:compile', 'ts:test', 'concat', 'mochaTest']);
 };

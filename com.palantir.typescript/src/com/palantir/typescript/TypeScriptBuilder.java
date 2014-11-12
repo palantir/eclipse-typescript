@@ -110,7 +110,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                     }
 
                     referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-                    createMarkers(referencingProject, monitor);
+                    this.createMarkers(referencingProject, monitor);
                 }
                 break;
             case IncrementalProjectBuilder.FULL_BUILD:
@@ -125,10 +125,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected void clean(IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
-        // delete the build output
-        Set<FileDelta> fileDeltas = getAllSourceFiles(Delta.REMOVED);
-        if (!isOutputFileSpecified()) {
-            clean(fileDeltas, monitor);
+        // delete built files if compile-on-save is enabled
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            Set<FileDelta> fileDeltas = getAllSourceFiles(Delta.REMOVED);
+
+            if (!isOutputFileSpecified()) {
+                clean(fileDeltas, monitor);
+            }
         }
 
         // clean the language service in case it is out-of-sync
@@ -150,15 +154,16 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            String outputFolderName = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_DIR_OPTION);
+            String outputFolderName = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
 
-            // ensure the output directory exists and is marked as derived
+            // ensure the output directory exists if it was specified
             if (!Strings.isNullOrEmpty(outputFolderName)) {
                 IFolder outputFolder = this.getProject().getFolder(outputFolderName);
 
-                EclipseResources.createParentDirs(outputFolder, monitor);
+                if (!outputFolder.exists()) {
+                    EclipseResources.createParentDirs(outputFolder, monitor);
 
-                if (!outputFolder.isDerived()) {
+                    // mark the folder as derived so built resources don't show up in file searches
                     outputFolder.setDerived(true, monitor);
                 }
             }
@@ -171,12 +176,12 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                     this.compile(fileName, monitor);
                 }
             } else {
-                clean(fileDeltas, monitor);
-                compile(fileDeltas, monitor);
+                this.clean(fileDeltas, monitor);
+                this.compile(fileDeltas, monitor);
             }
         }
 
-        createMarkers(this.getProject(), monitor);
+        this.createMarkers(this.getProject(), monitor);
     }
 
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
@@ -312,12 +317,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private boolean isOutputFileSpecified() {
         IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
 
-        return !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUTPUT_FILE_OPTION));
+        return !Strings.isNullOrEmpty(projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUT_FILE));
     }
 
-    private static void createMarkers(IProject project, IProgressMonitor monitor) throws CoreException {
-        final Map<String, List<DiagnosticEx>> diagnostics = TypeScriptPlugin.getDefault().getBuilderLanguageEndpoint()
-            .getAllDiagnostics(project);
+    private void createMarkers(IProject project, IProgressMonitor monitor) throws CoreException {
+        final Map<String, List<DiagnosticEx>> diagnostics = this.languageEndpoint.getAllDiagnostics(project);
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {

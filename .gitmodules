@@ -1,3 +1,3 @@
-[submodule "Bridge/typescript"]
-	path = Bridge/typescript
-	url = https://git01.codeplex.com/typescript
+[submodule "Bridge/TypeScript"]
+	path = Bridge/TypeScript
+	url = git@github.com:Microsoft/TypeScript.git

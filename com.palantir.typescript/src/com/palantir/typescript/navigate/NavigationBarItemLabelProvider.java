@@ -18,38 +18,41 @@ package com.palantir.typescript.navigate;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.BaseLabelProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.graphics.Image;
 
-import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.Images;
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.services.language.ScriptElementModifierKind;
 
 /**
- * A label provider which provides labels for the container of a {@link NavigateToItem}.
+ * A label provider which provides labels for a {@link NavigationBarItem}.
  *
  * @author dcicerone
  */
-public final class NavigateToItemContainerLabelProvider extends BaseLabelProvider implements ILabelProvider {
+public final class NavigationBarItemLabelProvider extends BaseLabelProvider implements ILabelProvider {
 
     @Override
     public Image getImage(Object element) {
         checkNotNull(element);
 
-        NavigateToItem item = (NavigateToItem) element;
-        ScriptElementKind kind = item.getContainerKind();
+        NavigationBarItem item = (NavigationBarItem) element;
+        ScriptElementKind kind = item.getKind();
+        List<ScriptElementModifierKind> kindModifiers = item.getKindModifiers();
 
-        return Images.getImage(kind, ImmutableList.<ScriptElementModifierKind> of());
+        return Images.getImage(kind, kindModifiers);
     }
 
     @Override
     public String getText(Object element) {
         checkNotNull(element);
 
-        NavigateToItem item = (NavigateToItem) element;
-        return item.getContainerName();
+        NavigationBarItem item = (NavigationBarItem) element;
+
+        return item.getText();
     }
 }

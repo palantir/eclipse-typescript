@@ -16,7 +16,6 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -24,45 +23,39 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 /**
- * Corresponds to the class with the same name in languageService.ts.
+ * Corresponds to the class with the same name in TypeScript.
  *
  * @author dcicerone
  */
-public final class TextEdit {
+public final class TextChange {
 
-    private final int minChar;
-    private final int limChar;
-    private final String text;
+    private final TextSpan span;
+    private final String newText;
 
     @JsonCreator
-    public TextEdit(@JsonProperty("minChar") int minChar, @JsonProperty("limChar") int limChar, @JsonProperty("text") String text) {
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
-        checkNotNull(text);
+    public TextChange(
+            @JsonProperty("span") TextSpan span,
+            @JsonProperty("newText") String newText) {
+        checkNotNull(span);
+        checkNotNull(newText);
 
-        this.minChar = minChar;
-        this.limChar = limChar;
-        this.text = text;
+        this.span = span;
+        this.newText = newText;
     }
 
-    public int getMinChar() {
-        return this.minChar;
+    public TextSpan getSpan() {
+        return this.span;
     }
 
-    public int getLimChar() {
-        return this.limChar;
-    }
-
-    public String getText() {
-        return this.text;
+    public String getNewText() {
+        return this.newText;
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(TextEdit.class)
-            .add("minChar", this.minChar)
-            .add("limChar", this.limChar)
-            .add("text", this.text)
+        return Objects.toStringHelper(TextChange.class)
+            .add("span", this.span)
+            .add("newText", this.newText)
             .toString();
     }
 }

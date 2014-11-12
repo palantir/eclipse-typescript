@@ -17,6 +17,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 * find references
 * format code
 * highlight matching brace
+* hover for JSDoc
 * mark occurrences
 * open definition
 * outline view

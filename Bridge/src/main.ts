@@ -35,9 +35,8 @@ module Bridge {
         }
 
         public run() {
-            var myProcess: any = process;
             var readline = require("readline");
-            var rl = readline.createInterface(myProcess.stdin, myProcess.stdout);
+            var rl = readline.createInterface(process.stdin, process.stdout);
 
             // process incoming requests from stdin
             rl.on("line", (line: string) => {
@@ -46,7 +45,7 @@ module Bridge {
 
             // exit when stdin is closed
             rl.on("close", () => {
-                myProcess.exit(0);
+                process.exit(0);
             });
         }
 

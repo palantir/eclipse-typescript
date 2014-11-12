@@ -18,6 +18,8 @@ package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
@@ -32,17 +34,15 @@ public final class CompletionEntryDetails {
     private String name;
     private ScriptElementKind kind;
     private ImmutableList<ScriptElementModifierKind> kindModifiers;
-    private String type;
-    private String fullSymbolName;
-    private String docComment;
+    private ImmutableList<SymbolDisplayPart> displayParts;
+    private ImmutableList<SymbolDisplayPart> documentation;
 
     public CompletionEntryDetails(
             @JsonProperty("name") String name,
             @JsonProperty("kind") ScriptElementKind kind,
             @JsonProperty("kindModifiers") String kindModifiers,
-            @JsonProperty("type") String type,
-            @JsonProperty("fullSymbolName") String fullSymbolName,
-            @JsonProperty("docComment") String docComment) {
+            @JsonProperty("displayParts") List<SymbolDisplayPart> displayParts,
+            @JsonProperty("documentation") List<SymbolDisplayPart> documentation) {
         checkNotNull(name);
         checkNotNull(kind);
         checkNotNull(kindModifiers);
@@ -50,9 +50,8 @@ public final class CompletionEntryDetails {
         this.name = name;
         this.kind = kind;
         this.kindModifiers = ScriptElementModifierKind.parseList(kindModifiers);
-        this.type = type;
-        this.fullSymbolName = fullSymbolName;
-        this.docComment = docComment;
+        this.displayParts = ImmutableList.copyOf(displayParts);
+        this.documentation = ImmutableList.copyOf(documentation);
     }
 
     public String getName() {
@@ -67,16 +66,12 @@ public final class CompletionEntryDetails {
         return this.kindModifiers;
     }
 
-    public String getType() {
-        return this.type;
+    public String getDisplayParts() {
+        return SymbolDisplayPart.getText(this.displayParts);
     }
 
-    public String getFullSymbolName() {
-        return this.fullSymbolName;
-    }
-
-    public String getDocComment() {
-        return this.docComment;
+    public String getDocumentation() {
+        return SymbolDisplayPart.getText(this.documentation);
     }
 
     @Override
@@ -85,9 +80,8 @@ public final class CompletionEntryDetails {
             .add("name", this.name)
             .add("kind", this.kind)
             .add("kindModifiers", this.kindModifiers)
-            .add("type", this.type)
-            .add("fullSymbolName", this.fullSymbolName)
-            .add("docComment", this.docComment)
+            .add("displayParts", this.displayParts)
+            .add("documentation", this.documentation)
             .toString();
     }
 }

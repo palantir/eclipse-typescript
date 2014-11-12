@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.TypeScriptProjects;
@@ -44,7 +45,7 @@ import com.palantir.typescript.services.Bridge;
 import com.palantir.typescript.services.Request;
 
 /**
- * The workspace language enpoint.
+ * The workspace language endpoint.
  *
  * @author dcicerone
  */
@@ -72,25 +73,7 @@ public final class LanguageEndpoint {
     public void initializeProject(IProject project) {
         checkNotNull(project);
 
-        // ensure referenced projects are initialized first
-        try {
-            for (IProject referencedProject : project.getReferencedProjects()) {
-                if (!isProjectInitialized(referencedProject) && !project.getName().equals(referencedProject.getName())) {
-                    this.initializeProject(referencedProject);
-                }
-            }
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        String projectName = project.getName();
-        CompilationSettings compilationSettings = CompilationSettings.fromProject(project);
-        List<String> referencedProjectNames = getReferencedProjectNames(project);
-        List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
-        List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
-        Map<String, String> files = getFiles(project);
-        Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames, exportedFolderNames, sourceFolderNames, files);
-        this.bridge.call(request, Void.class);
+        this.initializeProjectTree(project, Sets.<IProject> newHashSet());
     }
 
     public boolean isProjectInitialized(IProject project) {
@@ -158,6 +141,17 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
+    public List<RenameLocation> findRenameLocations(String serviceKey, String fileName, int position, boolean findInStrings,
+            boolean findInComments) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+
+        Request request = new Request(SERVICE, "findRenameLocations", serviceKey, fileName, position, findInStrings, findInComments);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        return this.bridge.call(request, returnType);
+    }
+
     public List<TextSpan> getBraceMatchingAtPosition(String serviceKey, String fileName, int position) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
@@ -196,15 +190,15 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, resultType);
     }
 
-    public List<TextEdit> getFormattingEditsForRange(String serviceKey, String fileName, int minChar, int limChar, FormatCodeOptions options) {
+    public List<TextChange> getFormattingEditsForRange(String serviceKey, String fileName, int start, int end, FormatCodeOptions options) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
+        checkArgument(start >= 0);
+        checkArgument(end >= 0);
         checkNotNull(options);
 
-        Request request = new Request(SERVICE, "getFormattingEditsForRange", serviceKey, fileName, minChar, limChar, options);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextEdit.class);
+        Request request = new Request(SERVICE, "getFormattingEditsForRange", serviceKey, fileName, start, end, options);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TextChange.class);
         return this.bridge.call(request, resultType);
     }
 
@@ -218,14 +212,23 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, Integer.class);
     }
 
-    public SpanInfo getNameOrDottedNameSpan(String serviceKey, String fileName, int startPos, int endPos) {
+    public TextSpan getNameOrDottedNameSpan(String serviceKey, String fileName, int startPos, int endPos) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(startPos >= 0);
         checkArgument(endPos >= 0);
 
         Request request = new Request(SERVICE, "getNameOrDottedNameSpan", serviceKey, fileName, startPos, endPos);
-        return this.bridge.call(request, SpanInfo.class);
+        return this.bridge.call(request, TextSpan.class);
+    }
+
+    public List<NavigationBarItem> getNavigationBarItems(String serviceKey, String fileName) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getNavigationBarItems", serviceKey, fileName);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigationBarItem.class);
+        return this.bridge.call(request, returnType);
     }
 
     public List<ReferenceEntry> getOccurrencesAtPosition(String serviceKey, String fileName, int position) {
@@ -238,32 +241,13 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
-    public List<ReferenceEntry> getReferencesAtPosition(String serviceKey, String fileName, int position) {
+    public QuickInfo getQuickInfoAtPosition(String serviceKey, String fileName, int position) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
         checkArgument(position >= 0);
 
-        Request request = new Request(SERVICE, "getReferencesAtPosition", serviceKey, fileName, position);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public List<NavigateToItem> getScriptLexicalStructure(String serviceKey, String fileName) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getScriptLexicalStructure", serviceKey, fileName);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, NavigateToItem.class);
-        return this.bridge.call(request, returnType);
-    }
-
-    public TypeInfoEx getTypeAtPosition(String serviceKey, String fileName, int position) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-        checkArgument(position >= 0);
-
-        Request request = new Request(SERVICE, "getTypeAtPosition", serviceKey, fileName, position);
-        return this.bridge.call(request, TypeInfoEx.class);
+        Request request = new Request(SERVICE, "getQuickInfoAtPosition", serviceKey, fileName, position);
+        return this.bridge.call(request, QuickInfo.class);
     }
 
     public void setFileOpen(String fileName, boolean open) {
@@ -285,6 +269,32 @@ public final class LanguageEndpoint {
 
     public void dispose() {
         this.bridge.dispose();
+    }
+
+    private void initializeProjectTree(IProject project, Set<IProject> initializedProjects) {
+        // initialize referenced projects first (unless there is a circular dependency)
+        try {
+            for (IProject referencedProject : project.getReferencedProjects()) {
+                if (initializedProjects.add(referencedProject)) {
+                    this.initializeProjectTree(referencedProject, initializedProjects);
+                }
+            }
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        // initialize the project if it has not already been initialized
+        if (!isProjectInitialized(project)) {
+            String projectName = project.getName();
+            CompilerOptions compilationSettings = CompilerOptions.fromProject(project);
+            List<String> referencedProjectNames = getReferencedProjectNames(project);
+            List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
+            List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
+            Map<String, String> files = getFiles(project);
+            Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames,
+                exportedFolderNames, sourceFolderNames, files);
+            this.bridge.call(request, Void.class);
+        }
     }
 
     private static Map<String, String> getFiles(IProject project) {

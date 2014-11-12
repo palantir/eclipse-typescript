@@ -29,7 +29,7 @@ public final class TextSpan {
     private final int start;
     private final int length;
 
-    public TextSpan(@JsonProperty("_start") int start, @JsonProperty("_length") int length) {
+    public TextSpan(@JsonProperty("start") int start, @JsonProperty("length") int length) {
         this.start = start;
         this.length = length;
     }

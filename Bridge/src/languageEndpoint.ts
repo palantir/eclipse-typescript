@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-/// <reference path="languageService.ts" />
 /// <reference path="languageServiceHost.ts" />
+
 
 module Bridge {
 
     export class LanguageEndpoint {
 
+        private documentRegistry: ts.DocumentRegistry;
         private exportedFolderNames: { [projectName: string]: string[] };
         private fileInfos: { [fileName: string]: FileInfo };
-        private languageServices: { [serviceKey: string]: LanguageService };
+        private languageServices: { [serviceKey: string]: ts.LanguageService };
         private sourceFolderNames: { [projectName: string]: string[] };
 
         constructor() {
+            this.documentRegistry = ts.createDocumentRegistry();
             this.exportedFolderNames = Object.create(null);
             this.fileInfos = Object.create(null);
             this.languageServices = Object.create(null);
@@ -50,7 +52,7 @@ module Bridge {
 
         public initializeProject(
                 projectName: string,
-                compilationSettings: TypeScript.CompilationSettings,
+                compilationSettings: ts.CompilerOptions,
                 referencedProjectNames: string[],
                 exportedFolderNames: string[],
                 sourceFolderNames: string[],
@@ -68,10 +70,9 @@ module Bridge {
         }
 
         public initializeIsolatedLanguageService(serviceKey: string, fileName: string, fileContents: string) {
-            var compilationSettings = new TypeScript.CompilationSettings();
-            this.languageServices[serviceKey] = this.createIsolatedLanguageService(compilationSettings, fileName);
+            this.languageServices[serviceKey] = this.createIsolatedLanguageService(fileName);
 
-            this.fileInfos[fileName] = new FileInfo(TypeScript.ByteOrderMark.None, fileContents, null);
+            this.fileInfos[fileName] = new FileInfo(fileContents, null);
         }
 
         public closeIsolatedLanguageService(serviceKey: string, fileName: string) {
@@ -79,20 +80,63 @@ module Bridge {
             delete this.languageServices[serviceKey];
         }
 
-        public getAllDiagnostics(serviceKey: string) {
-            return this.languageServices[serviceKey].getAllDiagnostics();
+        public getAllDiagnostics(projectName: string) {
+            var diagnostics: { [fileName: string]: DiagnosticEx[] } = {};
+
+            Object.keys(this.fileInfos)
+                .filter((fileName) => this.isSourceFile(projectName, fileName))
+                .forEach((fileName) => {
+                    diagnostics[fileName] = this.getDiagnostics(projectName, fileName, true);
+                });
+
+            return diagnostics;
         }
 
-        public getDiagnostics(serviceKey: string, fileName: string, semantic: boolean) {
-            return this.languageServices[serviceKey].getDiagnostics(fileName, semantic);
+        public getDiagnostics(serviceKey: string, fileName: string, semantic: boolean): DiagnosticEx[] {
+            var diagnostics = this.languageServices[serviceKey].getSyntacticDiagnostics(fileName);
+
+            if (semantic && diagnostics.length === 0) {
+                diagnostics = this.languageServices[serviceKey].getSemanticDiagnostics(fileName);
+            }
+
+            return diagnostics.map((diagnostic) => {
+                return {
+                    start: diagnostic.start,
+                    length: diagnostic.length,
+                    line: diagnostic.file.getLineAndCharacterFromPosition(diagnostic.start).line,
+                    text: diagnostic.messageText
+                };
+            });
         }
 
         public getEmitOutput(serviceKey: string, fileName: string) {
-            return this.languageServices[serviceKey].getEmitOutputFiles(fileName);
+            return this.languageServices[serviceKey].getEmitOutput(fileName).outputFiles;
         }
 
         public findReferences(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getReferencesAtPositionEx(fileName, position);
+            var references = this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
+
+            return references.map((reference) => {
+                var snapshot = this.fileInfos[reference.fileName].getSnapshot();
+                var lineStarts = snapshot.getLineStartPositions();
+                var lineMap = new TypeScript.LineMap(() => lineStarts, snapshot.getLength());
+                var lineNumber = lineMap.getLineNumberFromPosition(reference.textSpan.start());
+                var lineStart = lineMap.getLineStartPosition(lineNumber);
+                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
+                var line = snapshot.getText(lineStart, lineEnd);
+
+                return {
+                    fileName: reference.fileName,
+                    line: line,
+                    lineNumber: lineNumber,
+                    lineStart: lineStart,
+                    textSpan: reference.textSpan
+                };
+            });
+        }
+
+        public findRenameLocations(serviceKey: string, fileName: string, position: number, findInStrings: boolean, findInComments: boolean) {
+            return this.languageServices[serviceKey].findRenameLocations(fileName, position, findInStrings, findInComments);
         }
 
         public getBraceMatchingAtPosition(serviceKey: string, fileName: string, position: number) {
@@ -100,18 +144,45 @@ module Bridge {
         }
 
         public getCompletionsAtPosition(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getCompletionsAtPositionEx(fileName, position);
+            var completions = this.languageServices[serviceKey].getCompletionsAtPosition(fileName, position, true);
+
+            if (completions != null) {
+                // filter out the keyword & primitive entries
+                var filteredEntries = completions.entries.filter((entry) => {
+                    if (entry.kind === ts.ScriptElementKind.keyword
+                        || entry.kind === ts.ScriptElementKind.primitiveType) {
+                        return false;
+                    }
+
+                    return true;
+                });
+
+                // get the details for each entry
+                var detailEntries = filteredEntries.map((entry) => {
+                    return this.languageServices[serviceKey].getCompletionEntryDetails(fileName, position, entry.name);
+                });
+
+                // remove null entries
+                detailEntries = detailEntries.filter((detailEntry) => detailEntry != null);
+
+                return {
+                    entries: detailEntries,
+                    memberCompletion: completions.isMemberCompletion
+                };
+            }
+
+            return null;
         }
 
         public getDefinitionAtPosition(serviceKey: string, fileName: string, position: number) {
             return this.languageServices[serviceKey].getDefinitionAtPosition(fileName, position);
         }
 
-        public getFormattingEditsForRange(serviceKey: string, fileName: string, minChar: number, limChar: number, options: TypeScript.Services.FormatCodeOptions) {
-            return this.languageServices[serviceKey].getFormattingEditsForRange(fileName, minChar, limChar, options);
+        public getFormattingEditsForRange(serviceKey: string, fileName: string, start: number, end: number, options: ts.FormatCodeOptions) {
+            return this.languageServices[serviceKey].getFormattingEditsForRange(fileName, start, end, options);
         }
 
-        public getIndentationAtPosition(serviceKey: string, fileName: string, position: number, options: TypeScript.Services.EditorOptions) {
+        public getIndentationAtPosition(serviceKey: string, fileName: string, position: number, options: ts.EditorOptions) {
             return this.languageServices[serviceKey].getIndentationAtPosition(fileName, position, options);
         }
 
@@ -119,20 +190,16 @@ module Bridge {
             return this.languageServices[serviceKey].getNameOrDottedNameSpan(fileName, startPos, endPos);
         }
 
+        public getNavigationBarItems(serviceKey: string, fileName: string) {
+            return this.languageServices[serviceKey].getNavigationBarItems(fileName);
+        }
+
         public getOccurrencesAtPosition(serviceKey: string, fileName: string, position: number) {
             return this.languageServices[serviceKey].getOccurrencesAtPosition(fileName, position);
         }
 
-        public getReferencesAtPosition(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
-        }
-
-        public getScriptLexicalStructure(serviceKey: string, fileName: string) {
-            return this.languageServices[serviceKey].getScriptLexicalStructure(fileName);
-        }
-
-        public getTypeAtPosition(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getTypeAtPositionEx(fileName, position);
+        public getQuickInfoAtPosition(serviceKey: string, fileName: string, position: number) {
+            return this.languageServices[serviceKey].getQuickInfoAtPosition(fileName, position);
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
@@ -140,11 +207,16 @@ module Bridge {
         }
 
         public setFileOpen(fileName: string, open: boolean) {
-            this.fileInfos[fileName].setOpen(open);
+            var fileInfo = this.fileInfos[fileName];
+
+            // the file may have been deleted previously, so only process this call if the file exists
+            if (fileInfo != null) {
+                fileInfo.setOpen(open);
+            }
         }
 
         public setLibContents(libContents: string) {
-            var fileInfo = new FileInfo(TypeScript.ByteOrderMark.None, libContents, null);
+            var fileInfo = new FileInfo(libContents, null);
 
             this.fileInfos[LIB_FILE_NAME] = fileInfo;
         }
@@ -161,15 +233,15 @@ module Bridge {
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
                             if (!fileInfo.getOpen()) {
-                                var fileInformation = TypeScript.IO.readFile(fileInfo.getPath(), null);
+                                var contents = readFileContents(fileInfo.getPath());
 
-                                fileInfo.updateFile(fileInformation);
+                                fileInfo.updateFile(contents);
                             }
                         } else {
                             var filePath = delta.filePath;
-                            var fileInformation = TypeScript.IO.readFile(filePath, null);
+                            var contents = readFileContents(filePath);
 
-                            fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
+                            fileInfo = new FileInfo(contents, filePath);
 
                             this.fileInfos[fileName] = fileInfo;
                         }
@@ -188,46 +260,40 @@ module Bridge {
 
                     // read the file
                     try {
-                        var fileInformation = TypeScript.IO.readFile(filePath, null);
+                        var contents = readFileContents(filePath);
                     } catch (e) {
                         // ignore failures (they are likely due to the workspace being out-of-sync)
                         continue;
                     }
 
                     // cache the file
-                    var fileInfo = new FileInfo(fileInformation.byteOrderMark, fileInformation.contents, filePath);
+                    var fileInfo = new FileInfo(contents, filePath);
                     this.fileInfos[fileName] = fileInfo;
                 }
             }
         }
 
-        private createLanguageService(
-                compilationSettings: TypeScript.CompilationSettings,
-                fileFilter: (fileName: string) => boolean,
-                diagnosticFilter: (fileName: string) => boolean) {
-
+        private createLanguageService(compilationSettings: ts.CompilerOptions, fileFilter: (fileName: string) => boolean) {
             var host = new LanguageServiceHost(compilationSettings, fileFilter, this.fileInfos);
-            return new LanguageService(host, diagnosticFilter);
+
+            return ts.createLanguageService(host, this.documentRegistry);
         }
 
-        private createProjectLanguageService(projectName: string, compilationSettings: TypeScript.CompilationSettings, referencedProjectNames: string[]) {
-
+        private createProjectLanguageService(projectName: string, compilationSettings: ts.CompilerOptions, referencedProjectNames: string[]) {
             var fileFilter = (fileName: string) => {
                 return this.isSourceFile(projectName, fileName) || this.isReferencedFile(referencedProjectNames, fileName);
             }
-            var diagnosticFilter = (fileName: string) => {
-                return this.isSourceFile(projectName, fileName);
-            }
 
-            return this.createLanguageService(compilationSettings, fileFilter, diagnosticFilter);
+            return this.createLanguageService(compilationSettings, fileFilter);
         }
 
-        private createIsolatedLanguageService(compilationSettings: TypeScript.CompilationSettings, fileName: string) {
+        private createIsolatedLanguageService(fileName: string) {
+            var compilationSettings: ts.CompilerOptions = {};
             var singleFileFilter = (fileName2: string) => {
                 return fileName2 === fileName;
             }
 
-            return this.createLanguageService(compilationSettings, singleFileFilter, singleFileFilter);
+            return this.createLanguageService(compilationSettings, singleFileFilter);
         }
 
         private isReferencedFile(referencedProjectNames: string[], fileName: string) {
@@ -251,6 +317,20 @@ module Bridge {
 
     function folderContains(folderName: string, fileName: string) {
         return fileName.indexOf(folderName) == 0;
+    }
+
+    function readFileContents(fileName: string) {
+        var fs = require("fs");
+        var options = { encoding: "utf8" };
+
+        return fs.readFileSync(fileName, options);
+    }
+
+    export interface DiagnosticEx {
+        length: number;
+        line: number;
+        start: number;
+        text: string;
     }
 
     export interface IFileDelta {

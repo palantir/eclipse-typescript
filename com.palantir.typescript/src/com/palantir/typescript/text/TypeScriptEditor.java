@@ -56,13 +56,14 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.TypeScriptProjects;
 import com.palantir.typescript.TypeScriptProjects.Folders;
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.ScriptElementKind;
+import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.actions.FindReferencesAction;
 import com.palantir.typescript.text.actions.FormatAction;
 import com.palantir.typescript.text.actions.GoToMatchingBracketAction;
@@ -170,16 +171,22 @@ public final class TypeScriptEditor extends TextEditor {
             // open the editor and select the text
             try {
                 TypeScriptEditor definitionEditor = (TypeScriptEditor) IDE.openEditorOnFileStore(activePage, fileStore);
-                int minChar = definition.getMinChar();
-                int limChar = definition.getLimChar();
+                TextSpan textSpan = definition.getTextSpan();
                 String name = definition.getName();
 
                 // constructors don't use the name from the defintion so they require special handling
-                if (definition.getKind() == ScriptElementKind.CONSTRUCTOR_IMPLEMENTATION_ELEMENT){
+                if (definition.getKind() == ScriptElementKind.CONSTRUCTOR_IMPLEMENTATION_ELEMENT) {
                     name = "constructor";
+                } else {
+                    int lastPeriod = name.lastIndexOf('.');
+
+                    // only use the last part of the name when opening the definition
+                    if (lastPeriod >= 0) {
+                        name = name.substring(lastPeriod + 1);
+                    }
                 }
 
-                definitionEditor.selectAndReveal(minChar, limChar - minChar, name);
+                definitionEditor.selectAndReveal(textSpan.getStart(), textSpan.getLength(), name);
             } catch (PartInitException e) {
                 throw new RuntimeException(e);
             }

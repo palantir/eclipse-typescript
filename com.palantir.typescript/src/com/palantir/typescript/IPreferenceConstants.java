@@ -28,26 +28,26 @@ public interface IPreferenceConstants {
     String BUILD_PATH_EXPORTED_FOLDER = "build.path.exportedFolder";
     String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
 
-    String COMPILER_CODE_GEN_TARGET = "compiler.codeGenTarget";
+    String COMPILER_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
-    String COMPILER_GENERATE_DECLARATION_FILES = "compiler.generateDeclarationFiles";
-    String COMPILER_MAP_SOURCE_FILES = "compiler.mapSourceFiles";
-    String COMPILER_MODULE_GEN_TARGET = "compiler.moduleGenTarget";
+    String COMPILER_DECLARATION = "compiler.generateDeclarationFiles";
+    String COMPILER_SOURCE_MAP = "compiler.mapSourceFiles";
+    String COMPILER_MODULE = "compiler.moduleGenTarget";
     String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
     String COMPILER_NO_LIB = "compiler.noLib";
-    String COMPILER_OUTPUT_DIR_OPTION = "compiler.outputDirOption";
-    String COMPILER_OUTPUT_FILE_OPTION = "compiler.outputFileOption";
+    String COMPILER_OUT_DIR = "compiler.outputDirOption";
+    String COMPILER_OUT_FILE = "compiler.outputFileOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
     ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
-        COMPILER_CODE_GEN_TARGET,
         COMPILER_COMPILE_ON_SAVE,
-        COMPILER_GENERATE_DECLARATION_FILES,
-        COMPILER_MAP_SOURCE_FILES,
-        COMPILER_MODULE_GEN_TARGET,
+        COMPILER_DECLARATION,
+        COMPILER_MODULE,
         COMPILER_NO_LIB,
-        COMPILER_OUTPUT_DIR_OPTION,
-        COMPILER_OUTPUT_FILE_OPTION,
-        COMPILER_REMOVE_COMMENTS);
+        COMPILER_OUT_DIR,
+        COMPILER_OUT_FILE,
+        COMPILER_REMOVE_COMMENTS,
+        COMPILER_SOURCE_MAP,
+        COMPILER_TARGET);
 
     String CONTENT_ASSIST_AUTO_ACTIVATION_DELAY = "contentAssist.autoActivationDelay";
     String CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED = "contentAssist.autoActivationEnabled";

@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.FilteredItemsSelectionDialog;
 
 import com.palantir.typescript.TypeScriptPlugin;
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.palantir.typescript.services.language.NavigationBarItem;
 
 /**
  * The Open Type dialog.
@@ -46,8 +46,8 @@ public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
     public OpenTypeDialog(Shell shell) {
         super(shell);
 
-        this.setDetailsLabelProvider(new NavigateToItemContainerLabelProvider());
-        this.setListLabelProvider(new NavigateToItemLabelProvider());
+        this.setDetailsLabelProvider(new NavigationBarItemLabelProvider());
+        this.setListLabelProvider(new NavigationBarItemLabelProvider());
         this.setTitle("Open TypeScript Type");
     }
 
@@ -79,9 +79,9 @@ public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
         return new ItemsFilter() {
             @Override
             public boolean matchItem(Object item) {
-                NavigateToItem navigateToItem = (NavigateToItem) item;
+                NavigationBarItem navigateToItem = (NavigationBarItem) item;
 
-                return matches(navigateToItem.getName());
+                return matches(navigateToItem.getText());
             }
 
             @Override
@@ -93,10 +93,10 @@ public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
 
     @Override
     protected Comparator getItemsComparator() {
-        return new Comparator<NavigateToItem>() {
+        return new Comparator<NavigationBarItem>() {
             @Override
-            public int compare(NavigateToItem o1, NavigateToItem o2) {
-                return o1.getName().compareTo(o2.getName());
+            public int compare(NavigationBarItem o1, NavigationBarItem o2) {
+                return o1.getText().compareTo(o2.getText());
             }
         };
     }
@@ -119,8 +119,8 @@ public final class OpenTypeDialog extends FilteredItemsSelectionDialog {
 
     @Override
     public String getElementName(Object item) {
-        NavigateToItem navigateToItem = (NavigateToItem) item;
+        NavigationBarItem navigateToItem = (NavigationBarItem) item;
 
-        return navigateToItem.getName();
+        return navigateToItem.getText();
     }
 }

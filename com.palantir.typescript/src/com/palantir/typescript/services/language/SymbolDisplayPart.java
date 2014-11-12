@@ -16,37 +16,35 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
 /**
- * Corresponds to the class with the same name in languageService.ts.
+ * Corresponds to the class with the same name in TypeScript.
  *
  * @author dcicerone
  */
-public final class SpanInfo {
+public final class SymbolDisplayPart {
 
-    private final int minChar;
-    private final int limChar;
+    private final SymbolDisplayPartKind kind;
     private final String text;
 
-    public SpanInfo(@JsonProperty("minChar") int minChar, @JsonProperty("limChar") int limChar, @JsonProperty("text") String text) {
-        checkArgument(minChar >= 0);
-        checkArgument(limChar >= 0);
+    public SymbolDisplayPart(
+            @JsonProperty("kind") SymbolDisplayPartKind kind,
+            @JsonProperty("text") String text) {
+        checkNotNull(kind);
+        checkNotNull(text);
 
-        this.minChar = minChar;
-        this.limChar = limChar;
+        this.kind = kind;
         this.text = text;
     }
 
-    public int getMinChar() {
-        return this.minChar;
-    }
-
-    public int getLimChar() {
-        return this.limChar;
+    public SymbolDisplayPartKind getKind() {
+        return this.kind;
     }
 
     public String getText() {
@@ -56,9 +54,20 @@ public final class SpanInfo {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-            .add("minChar", this.minChar)
-            .add("limChar", this.limChar)
+            .add("kind", this.kind)
             .add("text", this.text)
             .toString();
+    }
+
+    public static String getText(List<SymbolDisplayPart> parts) {
+        checkNotNull(parts);
+
+        StringBuilder displayText = new StringBuilder();
+
+        for (SymbolDisplayPart part : parts) {
+            displayText.append(part.getText());
+        }
+
+        return displayText.toString();
     }
 }

@@ -25,8 +25,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.widgets.Tree;
 
-import com.google.common.collect.Lists;
-import com.palantir.typescript.services.language.NavigateToItem;
+import com.google.common.collect.ImmutableList;
+import com.palantir.typescript.services.language.NavigationBarItem;
 
 /**
  * Provides content for the {@link Tree} in a {@link TreeViewer}.
@@ -35,7 +35,7 @@ import com.palantir.typescript.services.language.NavigateToItem;
  */
 public final class ContentProvider implements ITreeContentProvider {
 
-    private List<NavigateToItem> lexicalStructure;
+    private List<NavigationBarItem> navigationBarItems;
 
     @Override
     public void dispose() {
@@ -45,46 +45,25 @@ public final class ContentProvider implements ITreeContentProvider {
     public Object[] getChildren(Object parentElement) {
         checkNotNull(parentElement);
 
-        List<NavigateToItem> elements = Lists.newArrayList();
-        NavigateToItem parentItem = (NavigateToItem) parentElement;
-        String qualifiedName = this.getQualifiedName(parentItem);
+        NavigationBarItem parentItem = (NavigationBarItem) parentElement;
 
-        for (NavigateToItem item : this.lexicalStructure) {
-            if (item.getContainerName().equals(qualifiedName)) {
-                elements.add(item);
-            }
-        }
-
-        return elements.toArray();
+        return parentItem.getChildItems().toArray();
     }
 
     @Override
     public Object[] getElements(Object inputElement) {
-        List<NavigateToItem> elements = Lists.newArrayList();
-
-        for (NavigateToItem item : this.lexicalStructure) {
-            if (item.getContainerName().isEmpty()) {
-                elements.add(item);
-            }
-        }
-
-        return elements.toArray();
+        return this.navigationBarItems.toArray();
     }
 
     @Override
     public Object getParent(Object childElement) {
         checkNotNull(childElement);
 
-        NavigateToItem childItem = (NavigateToItem) childElement;
-        String containerName = childItem.getContainerName();
-        if (containerName.isEmpty()) {
-            return null;
-        }
+        for (NavigationBarItem item : this.navigationBarItems) {
+            Object parent = getParent(item, childElement);
 
-        for (NavigateToItem item : this.lexicalStructure) {
-            String itemName = this.getQualifiedName(item);
-            if (containerName.equals(itemName)) {
-                return item;
+            if (parent != null) {
+                return parent;
             }
         }
 
@@ -99,21 +78,27 @@ public final class ContentProvider implements ITreeContentProvider {
     @Override
     public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
         if (newInput instanceof List) {
-            this.lexicalStructure = (List<NavigateToItem>) newInput;
+            this.navigationBarItems = (List<NavigationBarItem>) newInput;
         } else if (newInput == null) {
-            this.lexicalStructure = Lists.newArrayList();
+            this.navigationBarItems = ImmutableList.<NavigationBarItem> of();
         } else {
             throw new RuntimeException("Invalid input for the content provider.");
         }
     }
 
-    private String getQualifiedName(NavigateToItem item) {
-        checkNotNull(item);
+    private static Object getParent(NavigationBarItem item, Object childElement) {
+        for (NavigationBarItem childItem : item.getChildItems()) {
+            if (childItem.equals(childElement)) {
+                return item;
+            } else {
+                Object parent = getParent(childItem, childElement);
 
-        if (item.getContainerName().isEmpty()) {
-            return item.getName();
-        } else {
-            return item.getContainerName() + "." + item.getName();
+                if (parent != null) {
+                    return parent;
+                }
+            }
         }
+
+        return null;
     }
 }

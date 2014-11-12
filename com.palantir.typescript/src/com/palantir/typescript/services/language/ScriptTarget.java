@@ -19,15 +19,14 @@ package com.palantir.typescript.services.language;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Corresponds to the enum with the same name in compiler/flags.ts.
+ * Corresponds to the enum with the same name in TypeScript.
  *
  * @author tyleradams
  */
-public enum ModuleGenTarget {
+public enum ScriptTarget {
 
-    UNSPECIFIED,
-    SYNCHRONOUS,
-    ASYNCHRONOUS;
+    ECMASCRIPT3,
+    ECMASCRIPT5;
 
     @JsonValue
     public int getValue() {

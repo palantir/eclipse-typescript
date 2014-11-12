@@ -1,13 +1,17 @@
 {
   "name": "eclipse-typescript",
-  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/palantir/eclipse-typescript.git"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-chmod": "~1.0.3",
-    "grunt-contrib-watch": "~0.6.1"
+    "chai": "1.9.2",
+    "grunt": "0.4.1",
+    "grunt-contrib-concat": "0.5.0",
+    "grunt-contrib-watch": "0.6.1",
+    "grunt-mocha-test": "0.12.1",
+    "grunt-ts": "1.11.13",
+    "mocha": "1.21.4",
+    "typescript": "1.1.0-1"
   }
 }

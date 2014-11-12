@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript.services.language;
+package com.palantir.typescript;
 
-import com.fasterxml.jackson.annotation.JsonValue;
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 /**
- * Corresponds to the enum with the same name in compiler/syntax/languageVersion.ts.
+ * Placeholder tests to show that the test project works.
  *
- * @author tyleradams
+ * @author pbiswal
  */
-public enum LanguageVersion {
-
-    ECMASCRIPT3,
-    ECMASCRIPT5;
-
-    @JsonValue
-    public int getValue() {
-        return this.ordinal();
+public class PlaceholderTest {
+    @Test
+    public void testPass() {
+        assertEquals("hello", "hello");
     }
 }

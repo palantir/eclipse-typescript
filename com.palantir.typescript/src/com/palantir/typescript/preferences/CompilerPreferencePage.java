@@ -36,8 +36,8 @@ import com.palantir.typescript.Builders;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.Resources;
 import com.palantir.typescript.TypeScriptPlugin;
-import com.palantir.typescript.services.language.LanguageVersion;
-import com.palantir.typescript.services.language.ModuleGenTarget;
+import com.palantir.typescript.services.language.ModuleKind;
+import com.palantir.typescript.services.language.ScriptTarget;
 
 /**
  * The compiler preference page.
@@ -48,14 +48,14 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     private boolean compilerPreferencesModified;
 
-    private ComboFieldEditor codeGenTargetField;
     private BooleanFieldEditor compileOnSaveField;
-    private BooleanFieldEditor generateDeclarationFilesField;
-    private ComboFieldEditor moduleGenTargetField;
+    private BooleanFieldEditor declarationField;
+    private ComboFieldEditor moduleField;
     private BooleanFieldEditor noImplicitAnyField;
     private BooleanFieldEditor noLibField;
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
+    private ComboFieldEditor targetField;
 
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
@@ -113,33 +113,33 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.updateFieldEditors();
         }
 
-        if (source.equals(this.codeGenTargetField)
-                || source.equals(this.compileOnSaveField)
-                || source.equals(this.generateDeclarationFilesField)
-                || source.equals(this.moduleGenTargetField)
+        if (source.equals(this.compileOnSaveField)
+                || source.equals(this.declarationField)
+                || source.equals(this.moduleField)
                 || source.equals(this.noImplicitAnyField)
                 || source.equals(this.noLibField)
                 || source.equals(this.removeCommentsField)
-                || source.equals(this.sourceMapField)) {
+                || source.equals(this.sourceMapField)
+                || source.equals(this.targetField)) {
             this.compilerPreferencesModified = true;
         }
     }
 
     @Override
     protected void createFieldEditors() {
-        this.codeGenTargetField = new ComboFieldEditor(
-            IPreferenceConstants.COMPILER_CODE_GEN_TARGET,
-            getResource("code.gen.target"),
-            this.createComboFieldValues(LanguageVersion.values()),
+        this.targetField = new ComboFieldEditor(
+            IPreferenceConstants.COMPILER_TARGET,
+            getResource("target"),
+            this.createComboFieldValues(ScriptTarget.values()),
             this.getFieldEditorParent());
-        this.addField(this.codeGenTargetField);
+        this.addField(this.targetField);
 
-        this.moduleGenTargetField = new ComboFieldEditor(
-            IPreferenceConstants.COMPILER_MODULE_GEN_TARGET,
-            getResource("module.gen.target"),
-            this.createComboFieldValues(ModuleGenTarget.values()),
+        this.moduleField = new ComboFieldEditor(
+            IPreferenceConstants.COMPILER_MODULE,
+            getResource("module"),
+            this.createComboFieldValues(ModuleKind.values()),
             this.getFieldEditorParent());
-        this.addField(this.moduleGenTargetField);
+        this.addField(this.moduleField);
 
         this.noImplicitAnyField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY,
@@ -160,16 +160,16 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         this.addField(this.compileOnSaveField);
 
         this.sourceMapField = new BooleanFieldEditor(
-            IPreferenceConstants.COMPILER_MAP_SOURCE_FILES,
-            getResource("map.source.files"),
+            IPreferenceConstants.COMPILER_SOURCE_MAP,
+            getResource("source.map"),
             this.getFieldEditorParent());
         this.addField(this.sourceMapField);
 
-        this.generateDeclarationFilesField = new BooleanFieldEditor(
-            IPreferenceConstants.COMPILER_GENERATE_DECLARATION_FILES,
-            getResource("generate.declaration.files"),
+        this.declarationField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_DECLARATION,
+            getResource("declaration"),
             this.getFieldEditorParent());
-        this.addField(this.generateDeclarationFilesField);
+        this.addField(this.declarationField);
 
         this.removeCommentsField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_REMOVE_COMMENTS,
@@ -190,7 +190,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     @Override
     protected String getSentinelPropertyName() {
-        return IPreferenceConstants.COMPILER_CODE_GEN_TARGET;
+        return IPreferenceConstants.COMPILER_TARGET;
     }
 
     @Override
@@ -214,7 +214,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         boolean enabled = this.compileOnSaveField.getBooleanValue() && this.isPageEnabled();
         Composite parent = this.getFieldEditorParent();
 
-        this.generateDeclarationFilesField.setEnabled(enabled, parent);
+        this.declarationField.setEnabled(enabled, parent);
         this.removeCommentsField.setEnabled(enabled, parent);
         this.sourceMapField.setEnabled(enabled, parent);
     }

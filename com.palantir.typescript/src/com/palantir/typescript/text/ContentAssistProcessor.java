@@ -42,7 +42,6 @@ import com.palantir.typescript.Images;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.CompletionEntryDetails;
 import com.palantir.typescript.services.language.CompletionInfoEx;
-import com.palantir.typescript.services.language.ScriptElementKind;
 
 /**
  * This class deals with making auto completions.
@@ -116,9 +115,9 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     int replacementLength = offset - this.currentOffset;
                     int cursorPosition = replacementString.length();
                     Image image = Images.getImage(entry.getKind(), entry.getKindModifiers());
-                    String displayString = getDisplayString(entry);
+                    String displayString = entry.getName() + " " + entry.getDisplayParts();
                     IContextInformation contextInformation = null;
-                    String additionalProposalInfo = entry.getDocComment();
+                    String additionalProposalInfo = entry.getDocumentation();
                     CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
                         cursorPosition, image, displayString, contextInformation, additionalProposalInfo);
 
@@ -165,23 +164,6 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
     public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
     }
 
-    private static String getDisplayString(CompletionEntryDetails completion) {
-        String displayString = completion.getName();
-        String type = completion.getType();
-
-        if (type != null) {
-            ScriptElementKind kind = completion.getKind();
-
-            if (isFunction(kind)) {
-                displayString += type;
-            } else if (isVariable(kind)) {
-                displayString += ": " + type;
-            }
-        }
-
-        return displayString;
-    }
-
     private int getOffset(int offset) {
         if (this.currentCompletionInfo != null) {
             boolean memberCompletion = this.currentCompletionInfo.isMemberCompletion();
@@ -201,17 +183,5 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
         }
 
         return 0;
-    }
-
-    private static boolean isFunction(ScriptElementKind kind) {
-        return kind == ScriptElementKind.LOCAL_FUNCTION_ELEMENT
-                || kind == ScriptElementKind.MEMBER_FUNCTION_ELEMENT
-                || kind == ScriptElementKind.FUNCTION_ELEMENT;
-    }
-
-    private static boolean isVariable(ScriptElementKind kind) {
-        return kind == ScriptElementKind.LOCAL_VARIABLE_ELEMENT
-                || kind == ScriptElementKind.MEMBER_VARIABLE_ELEMENT
-                || kind == ScriptElementKind.VARIABLE_ELEMENT;
     }
 }

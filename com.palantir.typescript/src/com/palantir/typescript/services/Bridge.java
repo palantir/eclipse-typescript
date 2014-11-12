@@ -55,7 +55,7 @@ public final class Bridge {
      */
     private static final boolean NODE_DEBUG = false;
     private static final String NODE_DEBUG_PATH = "/usr/local/bin/node-debug";
-    private static final boolean NODE_DEBUG_BREAK_ON_START = true;
+    private static final boolean NODE_DEBUG_BREAK_ON_START = false;
     // not final so it can be incremented and each process can have its own port.
     private static int NODE_DEBUG_PORT = 5858;
 

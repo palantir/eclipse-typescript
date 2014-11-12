@@ -90,15 +90,19 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private void adjustIndentation(IDocument document, DocumentCommand command) throws BadLocationException {
         int offset = command.offset;
 
-        // add additional whitespace to maintain the proper indentation
+        // calculate the proper indentation
         int indentation = this.getIndentationAtPosition(offset);
-        command.text += this.createIndentationText(indentation);
+        if (offset > 0 && document.getChar(offset - 1) == '{') {
+            indentation += this.indentSize;
+        }
 
         // remove existing whitespace characters at the beginning of the line to put the caret at the beginning of the line
         int line = document.getLineOfOffset(offset);
         String lineText = getLineText(document, line);
         String indentationText = getIndentationText(lineText);
         int lineOffset = document.getLineOffset(line);
+
+        command.text += this.createIndentationText(indentation);
         command.length = Math.max(0, indentationText.length() - (offset - lineOffset));
     }
 
@@ -107,15 +111,8 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
 
         if (this.closeBraces && offset > 0 && document.getChar(offset - 1) == '{' && !this.isBraceClosed(offset)) {
             int indentation = this.getIndentationAtPosition(offset);
-
-            // workaround for a TypeScript language service bug that returns 0 when a file is relatively empty
-            // TODO: remove this workaround if the bug is fixed in v1.0.0
-            if (indentation == 0) {
-                indentation = this.indentSize;
-            }
-
-            String caretIndentationText = this.createIndentationText(indentation);
-            String closingBraceIndentationText = this.createIndentationText(indentation - this.indentSize);
+            String caretIndentationText = this.createIndentationText(indentation + this.indentSize);
+            String closingBraceIndentationText = this.createIndentationText(indentation);
 
             command.caretOffset = offset + caretIndentationText.length() + 1;
             command.shiftsCaret = false;
@@ -199,8 +196,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         }
 
         // get the indentation of the opening brace
-        int openingBraceOffset = braceMatching.get(0).getStart();
-        int openingBraceIndentation = this.getIndentationAtPosition(openingBraceOffset) - this.indentSize;
+        int openingBraceIndentation = this.getIndentationAtPosition(offset);
 
         // get the indentation of the closing brace
         int closingBraceOffset = braceMatching.get(1).getStart();

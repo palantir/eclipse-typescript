@@ -19,20 +19,22 @@ package com.palantir.typescript.text;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.jface.text.DefaultTextHover;
+import org.eclipse.jface.text.IInformationControl;
+import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.IRegion;
+import org.eclipse.jface.text.ITextHoverExtension;
 import org.eclipse.jface.text.ITextHoverExtension2;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.jface.text.source.ISourceViewer;
-
-import com.palantir.typescript.services.language.TypeInfoEx;
+import org.eclipse.swt.widgets.Shell;
 
 /**
  * Determines what to display when hovering over the text.
  *
  * @author dcicerone
  */
-public final class TextHover extends DefaultTextHover implements ITextHoverExtension2 {
+public final class TextHover extends DefaultTextHover implements ITextHoverExtension, ITextHoverExtension2 {
 
     private final TypeScriptEditor editor;
 
@@ -59,25 +61,23 @@ public final class TextHover extends DefaultTextHover implements ITextHoverExten
     public Object getHoverInfo2(ITextViewer textViewer, IRegion hoverRegion) {
         String hoverInfo = super.getHoverInfo(textViewer, hoverRegion);
 
-        // get the type information
+        // get the quick info
         if (hoverInfo == null) {
             int offset = hoverRegion.getOffset();
-            TypeInfoEx type = this.editor.getLanguageService().getTypeAtPosition(offset);
 
-            if (type != null) {
-                switch (type.getKind()) {
-                    case LOCAL_FUNCTION_ELEMENT:
-                    case FUNCTION_ELEMENT:
-                    case MEMBER_FUNCTION_ELEMENT:
-                        hoverInfo = type.getFullSymbolName() + type.getMemberName();
-                        break;
-                    default:
-                        hoverInfo = type.getMemberName();
-                        break;
-                }
-            }
+            return this.editor.getLanguageService().getQuickInfoAtPosition(offset);
         }
 
         return hoverInfo;
+    }
+
+    @Override
+    public IInformationControlCreator getHoverControlCreator() {
+        return new IInformationControlCreator() {
+            @Override
+            public IInformationControl createInformationControl(Shell parent) {
+                return new HoverInformationControl(parent, false);
+            }
+        };
     }
 }
