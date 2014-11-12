@@ -84,4 +84,5 @@ public final class CompletionEntryDetails {
             .add("documentation", this.documentation)
             .toString();
     }
+
 }
