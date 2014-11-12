@@ -11,7 +11,6 @@
     "grunt-contrib-watch": "0.6.1",
     "grunt-mocha-test": "0.12.1",
     "grunt-ts": "1.11.13",
-    "mocha": "1.21.4",
-    "typescript": "1.1.0-1"
+    "mocha": "1.21.4"
   }
 }
