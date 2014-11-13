@@ -83,6 +83,9 @@ public final class CompilerOptions {
     @JsonProperty("outDir")
     private String outDir;
 
+    @JsonProperty("preserveConstEnums")
+    private Boolean preserveConstEnums;
+
     @JsonProperty("removeComments")
     private Boolean removeComments;
 
