@@ -16,17 +16,17 @@
 
 module Bridge {
 
-    export class ScriptSnapshot implements TypeScript.IScriptSnapshot {
+    export class ScriptSnapshot implements ts.IScriptSnapshot {
 
-        private changes: TypeScript.TextChangeRange[];
+        private changes: ts.TextChangeRange[];
         private contents: string;
         private lineStartPositions: number[];
         private version: number;
 
-        constructor(changes: TypeScript.TextChangeRange[], contents: string, version: number) {
+        constructor(changes: ts.TextChangeRange[], contents: string, version: number) {
             this.changes = changes;
             this.contents = contents;
-            this.lineStartPositions = TypeScript.TextUtilities.parseLineStarts(this.contents);
+            this.lineStartPositions = ts.computeLineStarts(this.contents);
             this.version = version;
         }
 
@@ -42,16 +42,16 @@ module Bridge {
             return this.lineStartPositions;
         }
 
-        public getChangeRange(oldSnapshot: TypeScript.IScriptSnapshot): TypeScript.TextChangeRange {
+        public getChangeRange(oldSnapshot: ts.IScriptSnapshot): ts.TextChangeRange {
             var oldSnapshot2 = <ScriptSnapshot> oldSnapshot;
 
             if (this.version === oldSnapshot2.version) {
-                return TypeScript.TextChangeRange.unchanged;
+                return ts.TextChangeRange.unchanged;
             } else if (this.version - oldSnapshot2.version <= this.changes.length) {
                 var start = this.changes.length - (this.version - oldSnapshot2.version);
                 var changes = this.changes.slice(start);
 
-                return TypeScript.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
+                return ts.TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
             } else {
                 return null;
             }
