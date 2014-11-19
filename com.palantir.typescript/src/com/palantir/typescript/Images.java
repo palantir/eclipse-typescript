@@ -29,7 +29,7 @@ import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 
 import com.palantir.typescript.services.language.ScriptElementKind;
-import com.palantir.typescript.services.language.ScriptElementModifierKind;
+import com.palantir.typescript.services.language.ScriptElementKindModifier;
 
 /**
  * Provides access to all of the images.
@@ -40,7 +40,7 @@ public final class Images {
 
     private static final ImageRegistry REGISTRY = new ImageRegistry();
 
-    public static Image getImage(ScriptElementKind kind, List<ScriptElementModifierKind> kindModifiers) {
+    public static Image getImage(ScriptElementKind kind, List<ScriptElementKindModifier> kindModifiers) {
         checkNotNull(kind);
         checkNotNull(kindModifiers);
 
@@ -49,7 +49,7 @@ public final class Images {
         return getImage("$nl$/icons/elements/" + imageName + ".png");
     }
 
-    private static String getImageName(ScriptElementKind kind, List<ScriptElementModifierKind> kindModifiers) {
+    private static String getImageName(ScriptElementKind kind, List<ScriptElementKindModifier> kindModifiers) {
         switch (kind) {
             case CLASS_ELEMENT:
                 return "class";
@@ -67,13 +67,13 @@ public final class Images {
             case MEMBER_FUNCTION_ELEMENT:
             case MEMBER_GET_ACCESSOR_ELEMENT:
             case MEMBER_SET_ACCESSOR_ELEMENT:
-                if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
+                if (kindModifiers.contains(ScriptElementKindModifier.PRIVATE_MEMBER_MODIFIER)) {
                     return "memberFunctionPrivate";
                 } else { // public
                     return "memberFunctionPublic";
                 }
             case MEMBER_VARIABLE_ELEMENT:
-                if (kindModifiers.contains(ScriptElementModifierKind.PRIVATE_MEMBER_MODIFIER)) {
+                if (kindModifiers.contains(ScriptElementKindModifier.PRIVATE_MEMBER_MODIFIER)) {
                     return "memberVariablePrivate";
                 } else { // public
                     return "memberVariablePublic";

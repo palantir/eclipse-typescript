@@ -40,7 +40,7 @@ import org.eclipse.swt.widgets.Text;
 import com.palantir.typescript.Images;
 import com.palantir.typescript.services.language.QuickInfo;
 import com.palantir.typescript.services.language.ScriptElementKind;
-import com.palantir.typescript.services.language.ScriptElementModifierKind;
+import com.palantir.typescript.services.language.ScriptElementKindModifier;
 
 /**
  * An information control for displaying hover information.
@@ -127,7 +127,7 @@ public final class HoverInformationControl extends AbstractInformationControl im
 
             // kind
             ScriptElementKind kind = quickInfo.getKind();
-            List<ScriptElementModifierKind> kindModifiers = quickInfo.getKindModifiers();
+            List<ScriptElementKindModifier> kindModifiers = quickInfo.getKindModifiers();
             Image image = Images.getImage(kind, kindModifiers);
             this.kindIconLabel.setImage(image);
 

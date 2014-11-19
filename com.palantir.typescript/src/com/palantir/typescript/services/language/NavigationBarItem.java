@@ -35,7 +35,7 @@ public final class NavigationBarItem {
 
     private final String text;
     private final ScriptElementKind kind;
-    private final List<ScriptElementModifierKind> kindModifiers;
+    private final List<ScriptElementKindModifier> kindModifiers;
     private final List<TextSpan> spans;
     private final List<NavigationBarItem> childItems;
     private final int indent;
@@ -60,7 +60,7 @@ public final class NavigationBarItem {
 
         this.text = text;
         this.kind = kind;
-        this.kindModifiers = ScriptElementModifierKind.parseList(kindModifiers);
+        this.kindModifiers = ScriptElementKindModifier.parseList(kindModifiers);
         this.spans = ImmutableList.copyOf(spans);
         this.childItems = (childItems != null ? ImmutableList.copyOf(childItems) : ImmutableList.<NavigationBarItem> of());
         this.indent = indent;
@@ -76,7 +76,7 @@ public final class NavigationBarItem {
         return this.kind;
     }
 
-    public List<ScriptElementModifierKind> getKindModifiers() {
+    public List<ScriptElementKindModifier> getKindModifiers() {
         return this.kindModifiers;
     }
 
