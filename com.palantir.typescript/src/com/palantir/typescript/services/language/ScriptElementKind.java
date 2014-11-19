@@ -87,7 +87,11 @@ public enum ScriptElementKind {
 
     TYPE_PARAMETER_ELEMENT("type parameter"),
 
-    PRIMITIVE_TYPE("primitive type");
+    PRIMITIVE_TYPE("primitive type"),
+
+    LABEL("label"),
+
+    ALIAS("alias");
 
     private final String value;
 
