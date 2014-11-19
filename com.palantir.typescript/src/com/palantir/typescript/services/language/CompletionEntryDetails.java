@@ -33,7 +33,7 @@ public final class CompletionEntryDetails {
 
     private String name;
     private ScriptElementKind kind;
-    private ImmutableList<ScriptElementModifierKind> kindModifiers;
+    private ImmutableList<ScriptElementKindModifier> kindModifiers;
     private ImmutableList<SymbolDisplayPart> displayParts;
     private ImmutableList<SymbolDisplayPart> documentation;
 
@@ -49,7 +49,7 @@ public final class CompletionEntryDetails {
 
         this.name = name;
         this.kind = kind;
-        this.kindModifiers = ScriptElementModifierKind.parseList(kindModifiers);
+        this.kindModifiers = ScriptElementKindModifier.parseList(kindModifiers);
         this.displayParts = ImmutableList.copyOf(displayParts);
         this.documentation = ImmutableList.copyOf(documentation);
     }
@@ -62,7 +62,7 @@ public final class CompletionEntryDetails {
         return this.kind;
     }
 
-    public ImmutableList<ScriptElementModifierKind> getKindModifiers() {
+    public ImmutableList<ScriptElementKindModifier> getKindModifiers() {
         return this.kindModifiers;
     }
 

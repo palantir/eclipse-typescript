@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.Image;
 import com.palantir.typescript.Images;
 import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.ScriptElementKind;
-import com.palantir.typescript.services.language.ScriptElementModifierKind;
+import com.palantir.typescript.services.language.ScriptElementKindModifier;
 
 /**
  * A label provider which provides labels for a {@link NavigationBarItem}.
@@ -42,7 +42,7 @@ public final class NavigationBarItemLabelProvider extends BaseLabelProvider impl
 
         NavigationBarItem item = (NavigationBarItem) element;
         ScriptElementKind kind = item.getKind();
-        List<ScriptElementModifierKind> kindModifiers = item.getKindModifiers();
+        List<ScriptElementKindModifier> kindModifiers = item.getKindModifiers();
 
         return Images.getImage(kind, kindModifiers);
     }

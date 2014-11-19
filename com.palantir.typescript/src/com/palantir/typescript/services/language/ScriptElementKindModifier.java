@@ -23,21 +23,22 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Corresponds to the class with the same name in languageService.ts.
+ * Corresponds to the class with the same name in the TypeScript language services.
  *
  * @author dcicerone
  */
-public enum ScriptElementModifierKind {
+public enum ScriptElementKindModifier {
 
     PUBLIC_MEMBER_MODIFIER("public"),
     PRIVATE_MEMBER_MODIFIER("private"),
+    PROTECTED_MEMBER_MODIFIER("protected"),
     EXPORTED_MODIFIER("export"),
     AMBIENT_MODIFIER("declare"),
     STATIC_MODIFIER("static");
 
     private final String value;
 
-    private ScriptElementModifierKind(String value) {
+    private ScriptElementKindModifier(String value) {
         this.value = value;
     }
 
@@ -46,8 +47,8 @@ public enum ScriptElementModifierKind {
         return this.value;
     }
 
-    public static ImmutableList<ScriptElementModifierKind> parseList(String kindModifiers) {
-        ImmutableList.Builder<ScriptElementModifierKind> kindModifiersBuilder = ImmutableList.builder();
+    public static ImmutableList<ScriptElementKindModifier> parseList(String kindModifiers) {
+        ImmutableList.Builder<ScriptElementKindModifier> kindModifiersBuilder = ImmutableList.builder();
 
         if (kindModifiers.length() > 0) {
             for (String kindModifier : Splitter.on(',').split(kindModifiers)) {
@@ -58,10 +59,10 @@ public enum ScriptElementModifierKind {
         return kindModifiersBuilder.build();
     }
 
-    private static ScriptElementModifierKind fromString(String modifierKind) {
+    private static ScriptElementKindModifier fromString(String modifierKind) {
         checkNotNull(modifierKind);
 
-        for (ScriptElementModifierKind kind : ScriptElementModifierKind.values()) {
+        for (ScriptElementKindModifier kind : ScriptElementKindModifier.values()) {
             if (kind.value.equals(modifierKind)) {
                 return kind;
             }

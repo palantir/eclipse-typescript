@@ -32,7 +32,7 @@ import com.google.common.collect.ImmutableList;
 public final class QuickInfo {
 
     private final ScriptElementKind kind;
-    private final ImmutableList<ScriptElementModifierKind> kindModifiers;
+    private final ImmutableList<ScriptElementKindModifier> kindModifiers;
     private final TextSpan textSpan;
     private final ImmutableList<SymbolDisplayPart> displayParts;
     private final ImmutableList<SymbolDisplayPart> documentation;
@@ -50,7 +50,7 @@ public final class QuickInfo {
         checkNotNull(documentation);
 
         this.kind = kind;
-        this.kindModifiers = ScriptElementModifierKind.parseList(kindModifiers);
+        this.kindModifiers = ScriptElementKindModifier.parseList(kindModifiers);
         this.textSpan = textSpan;
         this.displayParts = ImmutableList.copyOf(displayParts);
         this.documentation = ImmutableList.copyOf(documentation);
@@ -60,7 +60,7 @@ public final class QuickInfo {
         return this.kind;
     }
 
-    public List<ScriptElementModifierKind> getKindModifiers() {
+    public List<ScriptElementKindModifier> getKindModifiers() {
         return this.kindModifiers;
     }
 

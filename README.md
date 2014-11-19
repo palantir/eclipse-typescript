@@ -12,6 +12,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 ## Features
 * code completion
 * compile-on-save
+* cross-project compilation
 * error annotations/markers
 * find references
 * format code
