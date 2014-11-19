@@ -105,7 +105,7 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
         String line = firstReference.getLine();
         int trimStart = NON_WHITESPACE_MATCHER.indexIn(line);
         int trimEnd = NON_WHITESPACE_MATCHER.lastIndexIn(line);
-        string.append(line.substring(trimStart, trimEnd));
+        string.append(line.substring(trimStart, trimEnd + 1));
         for (FindReferenceMatch match : lineResult.getMatches()) {
             ReferenceEntryEx reference = match.getReference();
             TextSpan textSpan = reference.getTextSpan();
