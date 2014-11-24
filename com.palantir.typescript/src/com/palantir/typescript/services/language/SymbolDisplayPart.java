@@ -22,6 +22,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.google.common.base.StandardSystemProperty;
 
 /**
  * Corresponds to the class with the same name in TypeScript.
@@ -65,7 +66,11 @@ public final class SymbolDisplayPart {
         StringBuilder displayText = new StringBuilder();
 
         for (SymbolDisplayPart part : parts) {
-            displayText.append(part.getText());
+            if (part.getKind().equals(SymbolDisplayPartKind.LINE_BREAK)) {
+                displayText.append(StandardSystemProperty.LINE_SEPARATOR.value());
+            } else {
+                displayText.append(part.getText());
+            }
         }
 
         return displayText.toString();

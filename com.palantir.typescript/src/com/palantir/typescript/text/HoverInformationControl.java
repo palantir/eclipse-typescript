@@ -90,7 +90,7 @@ public final class HoverInformationControl extends AbstractInformationControl im
         this.kindIconLabel.setLayoutData(new GridData(GridData.BEGINNING, SWT.BEGINNING, false, false));
 
         // display
-        this.displayText = new Text(this.composite, SWT.NONE);
+        this.displayText = new Text(this.composite, SWT.MULTI);
         this.displayText.setBackground(parent.getBackground());
         this.displayText.setForeground(parent.getForeground());
         FontData fontData = parent.getFont().getFontData()[0];
