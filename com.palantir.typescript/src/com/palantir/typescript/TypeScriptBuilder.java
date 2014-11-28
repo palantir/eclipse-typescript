@@ -101,6 +101,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         switch (kind) {
             case IncrementalProjectBuilder.AUTO_BUILD:
             case IncrementalProjectBuilder.INCREMENTAL_BUILD:
+                this.updateFiles();
                 this.incrementalBuild(monitor);
 
                 // re-create the markers for the referencing projects
@@ -253,6 +254,17 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         }
 
         this.languageEndpoint.updateFiles(deletedEmittedOutputToSend);
+    }
+
+    private void updateFiles() {
+        IProject project = this.getProject();
+        IResourceDelta delta = this.getDelta(project);
+
+        // update all source and exported files in the language service
+        Set<FileDelta> allFileDeltas = TypeScriptProjects.getFileDeltas(project, Folders.SOURCE_AND_EXPORTED, delta);
+        if (!allFileDeltas.isEmpty()) {
+            this.languageEndpoint.updateFiles(allFileDeltas);
+        }
     }
 
     private void compile(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
