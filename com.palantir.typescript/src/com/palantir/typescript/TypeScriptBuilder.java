@@ -98,24 +98,25 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
 
+        // incremental or full build
         switch (kind) {
             case IncrementalProjectBuilder.AUTO_BUILD:
             case IncrementalProjectBuilder.INCREMENTAL_BUILD:
                 this.incrementalBuild(monitor);
-
-                // re-create the markers for the referencing projects
-                for (IProject referencingProject : this.getProject().getReferencingProjects()) {
-                    if (!this.languageEndpoint.isProjectInitialized(referencingProject)) {
-                        this.languageEndpoint.initializeProject(referencingProject);
-                    }
-
-                    referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-                    this.createMarkers(referencingProject, monitor);
-                }
                 break;
             case IncrementalProjectBuilder.FULL_BUILD:
                 this.fullBuild(monitor);
                 break;
+        }
+
+        // re-create the markers for projects which reference this one
+        for (IProject referencingProject : this.getProject().getReferencingProjects()) {
+            if (!this.languageEndpoint.isProjectInitialized(referencingProject)) {
+                this.languageEndpoint.initializeProject(referencingProject);
+            }
+
+            referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+            this.createMarkers(referencingProject, monitor);
         }
 
         return null;
@@ -127,12 +128,10 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // delete built files if compile-on-save is enabled
         IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
-        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE) && !isOutputFileSpecified()) {
             Set<FileDelta> fileDeltas = getAllSourceFiles(Delta.REMOVED);
 
-            if (!isOutputFileSpecified()) {
-                clean(fileDeltas, monitor);
-            }
+            this.clean(fileDeltas, monitor);
         }
 
         // clean the language service in case it is out-of-sync
@@ -149,41 +148,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         this.languageEndpoint.initializeProject(this.getProject());
     }
 
-    private void build(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
-
-        // compile the source files if compile-on-save is enabled
-        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            String outputFolderName = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
-
-            // ensure the output directory exists if it was specified
-            if (!Strings.isNullOrEmpty(outputFolderName)) {
-                IFolder outputFolder = this.getProject().getFolder(outputFolderName);
-
-                if (!outputFolder.exists()) {
-                    EclipseResources.createParentDirs(outputFolder, monitor);
-
-                    // mark the folder as derived so built resources don't show up in file searches
-                    outputFolder.setDerived(true, monitor);
-                }
-            }
-
-            if (isOutputFileSpecified()) {
-                // pick the first file as the one to "compile" (like a clean build)
-                if (!fileDeltas.isEmpty()) {
-                    String fileName = fileDeltas.iterator().next().getFileName();
-
-                    this.compile(fileName, monitor);
-                }
-            } else {
-                this.clean(fileDeltas, monitor);
-                this.compile(fileDeltas, monitor);
-            }
-        }
-
-        this.createMarkers(this.getProject(), monitor);
-    }
-
     private void fullBuild(IProgressMonitor monitor) throws CoreException {
         Set<FileDelta> fileDeltas = this.getAllSourceFiles(Delta.ADDED);
 
@@ -196,20 +160,66 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void incrementalBuild(IProgressMonitor monitor) throws CoreException {
         IProject project = this.getProject();
         IResourceDelta delta = this.getDelta(project);
-        Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(project, Folders.SOURCE, delta);
 
-        if (!fileDeltas.isEmpty()) {
-            this.languageEndpoint.updateFiles(fileDeltas);
+        // update all source and exported files in the language service
+        Set<FileDelta> allFileDeltas = TypeScriptProjects.getFileDeltas(project, Folders.SOURCE_AND_EXPORTED, delta);
+        if (!allFileDeltas.isEmpty()) {
+            this.languageEndpoint.updateFiles(allFileDeltas);
+        }
 
-            // clear the problem markers
-            this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-
+        // build the modified source files
+        Set<FileDelta> sourceFileDeltas = TypeScriptProjects.getFileDeltas(project, Folders.SOURCE, delta);
+        if (!sourceFileDeltas.isEmpty()) {
             // replace the file deltas with all the source files if an output file is specified
-            if (isOutputFileSpecified()) {
-                fileDeltas = this.getAllSourceFiles(Delta.ADDED);
+            if (this.isOutputFileSpecified()) {
+                sourceFileDeltas = this.getAllSourceFiles(Delta.ADDED);
             }
 
-            this.build(fileDeltas, monitor);
+            this.build(sourceFileDeltas, monitor);
+        }
+    }
+
+    private void build(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+
+        // clear the problem markers
+        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+
+        // compile the source files if compile-on-save is enabled
+        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+            this.ensureOutputFolderExists(monitor);
+
+            if (isOutputFileSpecified()) {
+                // pick the first file as the one to "compile" (like a full build)
+                if (!fileDeltas.isEmpty()) {
+                    String fileName = fileDeltas.iterator().next().getFileName();
+
+                    this.compile(fileName, monitor);
+                }
+            } else {
+                this.clean(fileDeltas, monitor);
+                this.compile(fileDeltas, monitor);
+            }
+        }
+
+        // create the problem markers
+        this.createMarkers(this.getProject(), monitor);
+    }
+
+    private void ensureOutputFolderExists(IProgressMonitor monitor) throws CoreException {
+        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+
+        // ensure the output directory exists if it was specified
+        String outputFolderName = projectPreferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
+        if (!Strings.isNullOrEmpty(outputFolderName)) {
+            IFolder outputFolder = this.getProject().getFolder(outputFolderName);
+
+            if (!outputFolder.exists()) {
+                EclipseResources.createParentDirs(outputFolder, monitor);
+
+                // mark the folder as derived so built resources don't show up in file searches
+                outputFolder.setDerived(true, monitor);
+            }
         }
     }
 

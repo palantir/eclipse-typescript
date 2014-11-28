@@ -50,9 +50,9 @@ import org.eclipse.ui.texteditor.spelling.SpellingService;
 
 import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.TypeScriptProjects;
 import com.palantir.typescript.TypeScriptProjects.Folders;
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
@@ -111,6 +111,11 @@ public final class Reconciler implements IReconciler {
         control.removeCaretListener(this.caretListener);
 
         this.cachedTextViewer.removeTextInputListener(this.listener);
+
+        if (this.cachedLanguageService != null) {
+            this.cachedLanguageService.dispose();
+            this.cachedLanguageService = null;
+        }
 
         // shut down the executor (remaining tasks will be allowed to complete)
         this.executor.shutdown();
@@ -216,17 +221,24 @@ public final class Reconciler implements IReconciler {
 
         @Override
         public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
-            if (oldInput != null) {
-                oldInput.removeDocumentListener(this);
-            }
         }
 
         @Override
         public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
-            Reconciler.this.spellingStrategy.setDocument(newInput);
+            if (oldInput != null) {
+                oldInput.removeDocumentListener(this);
+
+                // clear the cached language service (it will be re-created lazily)
+                if (cachedLanguageService != null) {
+                    cachedLanguageService.dispose();
+                    cachedLanguageService = null;
+                }
+            }
 
             if (newInput != null) {
                 newInput.addDocumentListener(this);
+
+                spellingStrategy.setDocument(newInput);
 
                 // initial reconcile
                 scheduleReconcile(0);
