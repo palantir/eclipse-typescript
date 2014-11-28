@@ -81,11 +81,14 @@ public final class TypeScriptEditor extends TextEditor {
 
     private ICharacterPairMatcher characterPairMatcher;
     private OutlinePage contentOutlinePage;
-    private FileLanguageService languageService;
+    private FileLanguageService cachedLanguageService;
 
     @Override
     public void dispose() {
-        this.languageService.dispose();
+        if (this.cachedLanguageService != null) {
+            this.cachedLanguageService.dispose();
+            this.cachedLanguageService = null;
+        }
 
         super.dispose();
     }
@@ -124,14 +127,37 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     public FileLanguageService getLanguageService() {
-        return this.languageService;
+        if (this.cachedLanguageService == null) {
+            LanguageEndpoint languageEndpoint = TypeScriptPlugin.getDefault().getEditorLanguageEndpoint();
+            IEditorInput input = this.getEditorInput();
+
+            if (input instanceof IPathEditorInput) {
+                IResource resource = ResourceUtil.getResource(input);
+                IProject project = resource.getProject();
+
+                // use a project-specific language service
+                if (TypeScriptProjects.isContainedInFolders(project, Folders.SOURCE, resource)) {
+                    String fileName = getFileName(input);
+
+                    this.cachedLanguageService = FileLanguageService.create(languageEndpoint, project, fileName);
+                }
+            }
+
+            // use an isolated language service if the input wasn't a file in a project's source folder
+            if (this.cachedLanguageService == null) {
+                String documentText = this.getDocumentProvider().getDocument(input).get();
+
+                this.cachedLanguageService = FileLanguageService.create(languageEndpoint, documentText);
+            }
+        }
+
+        return this.cachedLanguageService;
     }
 
     @Override
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
 
-        LanguageEndpoint languageEndpoint = TypeScriptPlugin.getDefault().getEditorLanguageEndpoint();
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
@@ -143,20 +169,6 @@ public final class TypeScriptEditor extends TextEditor {
                     PlatformUI.getPreferenceStore()
             });
             this.setPreferenceStore(chainedPreferenceStore);
-
-            // use a project-specific language service
-            if (TypeScriptProjects.isContainedInFolders(project, Folders.SOURCE, resource)) {
-                String fileName = getFileName(input);
-
-                this.languageService = FileLanguageService.create(languageEndpoint, project, fileName);
-            }
-        }
-
-        // use an isolated language service if the input wasn't a file in a project's source folder
-        if (this.languageService == null) {
-            String documentText = this.getDocumentProvider().getDocument(input).get();
-
-            this.languageService = FileLanguageService.create(languageEndpoint, documentText);
         }
     }
 
@@ -362,18 +374,25 @@ public final class TypeScriptEditor extends TextEditor {
             int length = event.getLength();
             String text = event.getText();
 
-            TypeScriptEditor.this.languageService.editFile(offset, length, text);
+            getLanguageService().editFile(offset, length, text);
         }
 
         @Override
         public void inputDocumentAboutToBeChanged(IDocument oldInput, IDocument newInput) {
-            if (oldInput != null) {
-                oldInput.removeDocumentListener(this);
-            }
         }
 
         @Override
         public void inputDocumentChanged(IDocument oldInput, IDocument newInput) {
+            if (oldInput != null) {
+                oldInput.removeDocumentListener(this);
+
+                // clear the cached language service (it will be re-created lazily)
+                if (cachedLanguageService != null) {
+                    cachedLanguageService.dispose();
+                    cachedLanguageService = null;
+                }
+            }
+
             if (newInput != null) {
                 newInput.addDocumentListener(this);
             }
