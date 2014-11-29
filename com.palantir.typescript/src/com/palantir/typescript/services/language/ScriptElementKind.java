@@ -93,7 +93,9 @@ public enum ScriptElementKind {
 
     ALIAS("alias"),
 
-    CONSTANT_ELEMENT("constant");
+    CONST_ELEMENT("const"),
+
+    LET_ELEMENT("let");
 
     private final String value;
 

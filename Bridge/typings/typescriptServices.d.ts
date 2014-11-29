@@ -126,84 +126,86 @@ declare module ts {
         TypeKeyword = 119,
         Missing = 120,
         QualifiedName = 121,
-        TypeParameter = 122,
-        Parameter = 123,
-        Property = 124,
-        Method = 125,
-        Constructor = 126,
-        GetAccessor = 127,
-        SetAccessor = 128,
-        CallSignature = 129,
-        ConstructSignature = 130,
-        IndexSignature = 131,
-        TypeReference = 132,
-        FunctionType = 133,
-        ConstructorType = 134,
-        TypeQuery = 135,
-        TypeLiteral = 136,
-        ArrayType = 137,
-        TupleType = 138,
-        UnionType = 139,
-        ParenType = 140,
-        ArrayLiteral = 141,
-        ObjectLiteral = 142,
-        PropertyAssignment = 143,
-        ShorthandPropertyAssignment = 144,
-        PropertyAccess = 145,
-        IndexedAccess = 146,
-        CallExpression = 147,
-        NewExpression = 148,
-        TaggedTemplateExpression = 149,
-        TypeAssertion = 150,
-        ParenExpression = 151,
-        FunctionExpression = 152,
-        ArrowFunction = 153,
-        PrefixOperator = 154,
-        PostfixOperator = 155,
-        BinaryExpression = 156,
-        ConditionalExpression = 157,
-        TemplateExpression = 158,
-        TemplateSpan = 159,
-        OmittedExpression = 160,
-        Block = 161,
-        VariableStatement = 162,
-        EmptyStatement = 163,
-        ExpressionStatement = 164,
-        IfStatement = 165,
-        DoStatement = 166,
-        WhileStatement = 167,
-        ForStatement = 168,
-        ForInStatement = 169,
-        ContinueStatement = 170,
-        BreakStatement = 171,
-        ReturnStatement = 172,
-        WithStatement = 173,
-        SwitchStatement = 174,
-        CaseClause = 175,
-        DefaultClause = 176,
-        LabeledStatement = 177,
-        ThrowStatement = 178,
-        TryStatement = 179,
-        TryBlock = 180,
-        CatchBlock = 181,
-        FinallyBlock = 182,
-        DebuggerStatement = 183,
-        VariableDeclaration = 184,
-        FunctionDeclaration = 185,
-        FunctionBlock = 186,
-        ClassDeclaration = 187,
-        InterfaceDeclaration = 188,
-        TypeAliasDeclaration = 189,
-        EnumDeclaration = 190,
-        ModuleDeclaration = 191,
-        ModuleBlock = 192,
-        ImportDeclaration = 193,
-        ExportAssignment = 194,
-        EnumMember = 195,
-        SourceFile = 196,
-        Program = 197,
-        SyntaxList = 198,
-        Count = 199,
+        ComputedPropertyName = 122,
+        TypeParameter = 123,
+        Parameter = 124,
+        Property = 125,
+        Method = 126,
+        Constructor = 127,
+        GetAccessor = 128,
+        SetAccessor = 129,
+        CallSignature = 130,
+        ConstructSignature = 131,
+        IndexSignature = 132,
+        TypeReference = 133,
+        FunctionType = 134,
+        ConstructorType = 135,
+        TypeQuery = 136,
+        TypeLiteral = 137,
+        ArrayType = 138,
+        TupleType = 139,
+        UnionType = 140,
+        ParenType = 141,
+        ArrayLiteral = 142,
+        ObjectLiteral = 143,
+        PropertyAssignment = 144,
+        ShorthandPropertyAssignment = 145,
+        PropertyAccess = 146,
+        IndexedAccess = 147,
+        CallExpression = 148,
+        NewExpression = 149,
+        TaggedTemplateExpression = 150,
+        TypeAssertion = 151,
+        ParenExpression = 152,
+        FunctionExpression = 153,
+        ArrowFunction = 154,
+        PrefixOperator = 155,
+        PostfixOperator = 156,
+        BinaryExpression = 157,
+        ConditionalExpression = 158,
+        TemplateExpression = 159,
+        TemplateSpan = 160,
+        YieldExpression = 161,
+        OmittedExpression = 162,
+        Block = 163,
+        VariableStatement = 164,
+        EmptyStatement = 165,
+        ExpressionStatement = 166,
+        IfStatement = 167,
+        DoStatement = 168,
+        WhileStatement = 169,
+        ForStatement = 170,
+        ForInStatement = 171,
+        ContinueStatement = 172,
+        BreakStatement = 173,
+        ReturnStatement = 174,
+        WithStatement = 175,
+        SwitchStatement = 176,
+        CaseClause = 177,
+        DefaultClause = 178,
+        LabeledStatement = 179,
+        ThrowStatement = 180,
+        TryStatement = 181,
+        TryBlock = 182,
+        CatchBlock = 183,
+        FinallyBlock = 184,
+        DebuggerStatement = 185,
+        VariableDeclaration = 186,
+        FunctionDeclaration = 187,
+        FunctionBlock = 188,
+        ClassDeclaration = 189,
+        InterfaceDeclaration = 190,
+        TypeAliasDeclaration = 191,
+        EnumDeclaration = 192,
+        ModuleDeclaration = 193,
+        ModuleBlock = 194,
+        ImportDeclaration = 195,
+        ExportAssignment = 196,
+        EnumMember = 197,
+        SourceFile = 198,
+        Program = 199,
+        SyntaxList = 200,
+        Count = 201,
         FirstAssignment = 51,
         LastAssignment = 62,
         FirstReservedWord = 64,
@@ -212,8 +214,8 @@ declare module ts {
         LastKeyword = 119,
         FirstFutureReservedWord = 100,
         LastFutureReservedWord = 108,
-        FirstTypeNode = 132,
-        LastTypeNode = 140,
+        FirstTypeNode = 133,
+        LastTypeNode = 141,
         FirstPunctuation = 13,
         LastPunctuation = 62,
         FirstToken = 1,
@@ -243,28 +245,40 @@ declare module ts {
         DeclarationFile = 1024,
         Let = 2048,
         Const = 4096,
+        OctalLiteral = 8192,
         Modifier = 243,
         AccessibilityModifier = 112,
         BlockScoped = 6144,
     }
+    const enum ParserContextFlags {
+        StrictMode = 1,
+        DisallowIn = 2,
+        Yield = 4,
+        GeneratorParameter = 8,
+    }
     interface Node extends TextRange {
         kind: SyntaxKind;
         flags: NodeFlags;
+        parserContextFlags?: ParserContextFlags;
         id?: number;
         parent?: Node;
         symbol?: Symbol;
         locals?: SymbolTable;
         nextContainer?: Node;
         localSymbol?: Symbol;
+        modifiers?: ModifiersArray;
     }
     interface NodeArray<T> extends Array<T>, TextRange {
         hasTrailingComma?: boolean;
+    }
+    interface ModifiersArray extends Array<Node> {
+        flags: number;
     }
     interface Identifier extends Node {
         text: string;
     }
     interface QualifiedName extends Node {
-        left: Identifier | QualifiedName;
+        left: EntityName;
         right: Identifier;
     }
     type EntityName = Identifier | QualifiedName;
@@ -275,7 +289,7 @@ declare module ts {
     }
     type DeclarationName = Identifier | LiteralExpression | ComputedPropertyName;
     interface Declaration extends Node {
-        name?: Identifier | LiteralExpression | ComputedPropertyName;
+        name?: DeclarationName;
     }
     interface ComputedPropertyName extends Node {
         expression: Expression;
@@ -283,6 +297,7 @@ declare module ts {
     interface TypeParameterDeclaration extends Declaration {
         name: Identifier;
         constraint?: TypeNode;
+        expression?: Expression;
     }
     interface SignatureDeclaration extends Declaration, ParsedSignature {
     }
@@ -300,8 +315,9 @@ declare module ts {
     }
     interface ParameterDeclaration extends VariableDeclaration {
     }
-    interface FunctionLikeDeclaration extends Declaration, ParsedSignature {
-        body?: Expression | Block;
+    interface FunctionLikeDeclaration extends SignatureDeclaration {
+        asteriskToken?: Node;
+        body?: Block | Expression;
     }
     interface FunctionDeclaration extends FunctionLikeDeclaration {
         name: Identifier;
@@ -310,7 +326,7 @@ declare module ts {
     interface MethodDeclaration extends FunctionLikeDeclaration {
         body?: Block;
     }
-    interface ConstructorDeclaration extends FunctionLikeDeclaration {
+    interface ConstructorDeclaration extends Node, ParsedSignature {
         body?: Block;
     }
     interface AccessorDeclaration extends FunctionLikeDeclaration {
@@ -319,11 +335,11 @@ declare module ts {
     interface TypeNode extends Node {
     }
     interface TypeReferenceNode extends TypeNode {
-        typeName: Identifier | QualifiedName;
+        typeName: EntityName;
         typeArguments?: NodeArray<TypeNode>;
     }
     interface TypeQueryNode extends TypeNode {
-        exprName: Identifier | QualifiedName;
+        exprName: EntityName;
     }
     interface TypeLiteralNode extends TypeNode {
         members: NodeArray<Node>;
@@ -350,6 +366,10 @@ declare module ts {
         operator: SyntaxKind;
         operand: Expression;
     }
+    interface YieldExpression extends Expression {
+        asteriskToken?: Node;
+        expression: Expression;
+    }
     interface BinaryExpression extends Expression {
         left: Expression;
         operator: SyntaxKind;
@@ -362,7 +382,7 @@ declare module ts {
     }
     interface FunctionExpression extends Expression, FunctionLikeDeclaration {
         name?: Identifier;
-        body: Expression | Block;
+        body: Block | Expression;
     }
     interface LiteralExpression extends Expression {
         text: string;
@@ -440,7 +460,7 @@ declare module ts {
         iterator?: Expression;
     }
     interface ForInStatement extends IterationStatement {
-        declaration?: VariableDeclaration;
+        declarations?: NodeArray<VariableDeclaration>;
         variable?: Expression;
         expression: Expression;
     }
@@ -476,6 +496,7 @@ declare module ts {
     }
     interface CatchBlock extends Block {
         variable: Identifier;
+        type?: TypeNode;
     }
     interface ClassDeclaration extends Declaration {
         name: Identifier;
@@ -495,7 +516,7 @@ declare module ts {
         type: TypeNode;
     }
     interface EnumMember extends Declaration {
-        name: Identifier | LiteralExpression;
+        name: DeclarationName;
         initializer?: Expression;
     }
     interface EnumDeclaration extends Declaration {
@@ -508,7 +529,7 @@ declare module ts {
     }
     interface ImportDeclaration extends Declaration {
         name: Identifier;
-        entityName?: Identifier | QualifiedName;
+        entityName?: EntityName;
         externalModuleName?: LiteralExpression;
     }
     interface ExportAssignment extends Statement {
@@ -529,8 +550,10 @@ declare module ts {
         amdDependencies: string[];
         amdModuleName: string;
         referencedFiles: FileReference[];
-        syntacticErrors: Diagnostic[];
-        semanticErrors: Diagnostic[];
+        semanticDiagnostics: Diagnostic[];
+        parseDiagnostics: Diagnostic[];
+        grammarDiagnostics: Diagnostic[];
+        getSyntacticDiagnostics(): Diagnostic[];
         hasNoDefaultLib: boolean;
         externalModuleIndicator: Node;
         nodeCount: number;
@@ -580,12 +603,13 @@ declare module ts {
     }
     interface EmitResult {
         emitResultStatus: EmitReturnStatus;
-        errors: Diagnostic[];
+        diagnostics: Diagnostic[];
         sourceMaps: SourceMapData[];
     }
     interface TypeChecker {
         getProgram(): Program;
         getDiagnostics(sourceFile?: SourceFile): Diagnostic[];
+        getDeclarationDiagnostics(sourceFile: SourceFile): Diagnostic[];
         getGlobalDiagnostics(): Diagnostic[];
         getNodeCount(): number;
         getIdentifierCount(): number;
@@ -612,7 +636,7 @@ declare module ts {
         getAugmentedPropertiesOfType(type: Type): Symbol[];
         getRootSymbols(symbol: Symbol): Symbol[];
         getContextualType(node: Node): Type;
-        getResolvedSignature(node: CallExpression, candidatesOutArray?: Signature[]): Signature;
+        getResolvedSignature(node: CallLikeExpression, candidatesOutArray?: Signature[]): Signature;
         getSignatureFromDeclaration(declaration: SignatureDeclaration): Signature;
         isImplementationOfOverload(node: FunctionLikeDeclaration): boolean;
         isUndefinedSymbol(symbol: Symbol): boolean;
@@ -667,15 +691,18 @@ declare module ts {
         NotAccessible = 1,
         CannotBeNamed = 2,
     }
-    interface SymbolAccessiblityResult {
+    interface SymbolVisibilityResult {
         accessibility: SymbolAccessibility;
-        errorSymbolName?: string;
-        errorModuleName?: string;
         aliasesToMakeVisible?: ImportDeclaration[];
+        errorSymbolName?: string;
+        errorNode?: Node;
+    }
+    interface SymbolAccessiblityResult extends SymbolVisibilityResult {
+        errorModuleName?: string;
     }
     interface EmitResolver {
         getProgram(): Program;
-        getLocalNameOfContainer(container: EnumDeclaration | ModuleDeclaration): string;
+        getLocalNameOfContainer(container: ModuleDeclaration | EnumDeclaration): string;
         getExpressionNamePrefix(node: Identifier): string;
         getExportAssignmentName(node: SourceFile): string;
         isReferencedImportDeclaration(node: ImportDeclaration): boolean;
@@ -688,7 +715,7 @@ declare module ts {
         writeTypeAtLocation(location: Node, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: SymbolWriter): void;
         writeReturnTypeOfSignatureDeclaration(signatureDeclaration: SignatureDeclaration, enclosingDeclaration: Node, flags: TypeFormatFlags, writer: SymbolWriter): void;
         isSymbolAccessible(symbol: Symbol, enclosingDeclaration: Node, meaning: SymbolFlags): SymbolAccessiblityResult;
-        isImportDeclarationEntityNameReferenceDeclarationVisibile(entityName: Identifier | QualifiedName): SymbolAccessiblityResult;
+        isEntityNameVisible(entityName: EntityName, enclosingDeclaration: Node): SymbolVisibilityResult;
         getConstantValue(node: PropertyAccess | IndexedAccess): number;
         isEmitBlocked(sourceFile?: SourceFile): boolean;
     }
@@ -1194,6 +1221,7 @@ declare module ts {
     function isUrl(path: string): boolean;
     function isRootedDiskPath(path: string): boolean;
     function getNormalizedPathComponents(path: string, currentDirectory: string): string[];
+    function getNormalizedAbsolutePath(filename: string, currentDirectory: string): string;
     function getNormalizedPathFromPathComponents(pathComponents: string[]): string;
     function getRelativePathToDirectoryOrUrl(directoryPathOrUrl: string, relativeOrAbsolutePath: string, currentDirectory: string, getCanonicalFileName: (fileName: string) => string, isAbsolutePathAnUrl: boolean): string;
     function getBaseFilename(path: string): string;
@@ -1832,7 +1860,52 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
-        A_object_member_cannot_be_declared_optional: {
+        An_object_member_cannot_be_declared_optional: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        yield_expression_must_be_contained_within_a_generator_declaration: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_not_allowed_in_enums: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_not_allowed_in_an_ambient_context: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_not_allowed_in_class_property_declarations: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_only_available_when_targeting_ECMAScript_6_and_higher: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_not_allowed_in_method_overloads: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_not_allowed_in_interfaces: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        Computed_property_names_are_not_allowed_in_type_literals: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        A_comma_expression_is_not_allowed_in_a_computed_property_name: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -2591,17 +2664,7 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
-        Type_parameter_0_of_exported_class_has_or_is_using_name_1_from_private_module_2: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
         Type_parameter_0_of_exported_class_has_or_is_using_private_name_1: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Type_parameter_0_of_exported_interface_has_or_is_using_name_1_from_private_module_2: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -2611,17 +2674,7 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
-        Type_parameter_0_of_constructor_signature_from_exported_interface_has_or_is_using_name_1_from_private_module_2: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
         Type_parameter_0_of_constructor_signature_from_exported_interface_has_or_is_using_private_name_1: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Type_parameter_0_of_call_signature_from_exported_interface_has_or_is_using_name_1_from_private_module_2: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -2631,17 +2684,7 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
-        Type_parameter_0_of_public_static_method_from_exported_class_has_or_is_using_name_1_from_private_module_2: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
         Type_parameter_0_of_public_static_method_from_exported_class_has_or_is_using_private_name_1: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Type_parameter_0_of_public_method_from_exported_class_has_or_is_using_name_1_from_private_module_2: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -2651,32 +2694,12 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
-        Type_parameter_0_of_method_from_exported_interface_has_or_is_using_name_1_from_private_module_2: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
         Type_parameter_0_of_method_from_exported_interface_has_or_is_using_private_name_1: {
             code: number;
             category: DiagnosticCategory;
             key: string;
         };
-        Type_parameter_0_of_exported_function_has_or_is_using_name_1_from_private_module_2: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
         Type_parameter_0_of_exported_function_has_or_is_using_private_name_1: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Implements_clause_of_exported_class_0_has_or_is_using_name_1_from_private_module_2: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Extends_clause_of_exported_class_0_has_or_is_using_name_1_from_private_module_2: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -2687,11 +2710,6 @@ declare module ts {
             key: string;
         };
         Extends_clause_of_exported_class_0_has_or_is_using_private_name_1: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Extends_clause_of_exported_interface_0_has_or_is_using_name_1_from_private_module_2: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -2977,16 +2995,6 @@ declare module ts {
             key: string;
         };
         Parameter_0_of_exported_function_has_or_is_using_private_name_1: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Exported_type_alias_0_has_or_is_using_name_1_from_external_module_2_but_cannot_be_named: {
-            code: number;
-            category: DiagnosticCategory;
-            key: string;
-        };
-        Exported_type_alias_0_has_or_is_using_name_1_from_private_module_2: {
             code: number;
             category: DiagnosticCategory;
             key: string;
@@ -3347,6 +3355,16 @@ declare module ts {
             category: DiagnosticCategory;
             key: string;
         };
+        yield_expressions_are_not_currently_supported: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
+        generators_are_not_currently_supported: {
+            code: number;
+            category: DiagnosticCategory;
+            key: string;
+        };
     };
 }
 declare module ts {
@@ -3401,17 +3419,20 @@ declare module ts {
     function nodePosToString(node: Node): string;
     function getStartPosOfNode(node: Node): number;
     function getTokenPosOfNode(node: Node, sourceFile?: SourceFile): number;
+    function getSourceTextOfNodeFromSourceFile(sourceFile: SourceFile, node: Node): string;
     function getTextOfNodeFromSourceText(sourceText: string, node: Node): string;
     function getTextOfNode(node: Node): string;
     function escapeIdentifier(identifier: string): string;
     function unescapeIdentifier(identifier: string): string;
-    function declarationNameToString(name: Identifier | LiteralExpression | ComputedPropertyName): string;
+    function declarationNameToString(name: DeclarationName): string;
     function createDiagnosticForNode(node: Node, message: DiagnosticMessage, arg0?: any, arg1?: any, arg2?: any): Diagnostic;
     function createDiagnosticForNodeFromMessageChain(node: Node, messageChain: DiagnosticMessageChain, newLine: string): Diagnostic;
     function getErrorSpanForNode(node: Node): Node;
     function isExternalModule(file: SourceFile): boolean;
     function isDeclarationFile(file: SourceFile): boolean;
-    function isConstEnumDeclaration(node: EnumDeclaration): boolean;
+    function isConstEnumDeclaration(node: Declaration): boolean;
+    function isConst(node: Declaration): boolean;
+    function isLet(node: Declaration): boolean;
     function isPrologueDirective(node: Node): boolean;
     function getLeadingCommentRangesOfNode(node: Node, sourceFileOfNode?: SourceFile): CommentRange[];
     function getJsDocComments(node: Declaration, sourceFileOfNode: SourceFile): CommentRange[];
@@ -3422,6 +3443,7 @@ declare module ts {
     function getContainingFunction(node: Node): SignatureDeclaration;
     function getThisContainer(node: Node, includeArrowFunctions: boolean): Node;
     function getSuperContainer(node: Node): Node;
+    function getInvokedExpression(node: CallLikeExpression): Expression;
     function isExpression(node: Node): boolean;
     function hasRestParameters(s: SignatureDeclaration): boolean;
     function isLiteralKind(kind: SyntaxKind): boolean;
@@ -3431,6 +3453,7 @@ declare module ts {
     function isDeclaration(node: Node): boolean;
     function isStatement(n: Node): boolean;
     function isDeclarationOrFunctionExpressionOrCatchVariableName(name: Node): boolean;
+    function tryResolveScriptReference(program: Program, sourceFile: SourceFile, reference: FileReference): SourceFile;
     function getAncestor(node: Node, kind: SyntaxKind): Node;
     interface ReferencePathMatchResult {
         fileReference?: FileReference;
@@ -3452,12 +3475,14 @@ declare module ts {
         ConstEnumOnly = 2,
     }
     function getModuleInstanceState(node: Node): ModuleInstanceState;
+    function hasComputedNameButNotSymbol(declaration: Declaration): boolean;
     function bindSourceFile(file: SourceFile): void;
 }
 declare module ts {
     function getIndentString(level: number): string;
     function shouldEmitToOwnFile(sourceFile: SourceFile, compilerOptions: CompilerOptions): boolean;
     function isExternalModuleOrDeclarationFile(sourceFile: SourceFile): boolean;
+    function getDeclarationDiagnostics(program: Program, resolver: EmitResolver, targetSourceFile: SourceFile): Diagnostic[];
     function emitFiles(resolver: EmitResolver, targetSourceFile?: SourceFile): EmitResult;
 }
 declare module ts {
@@ -3512,7 +3537,7 @@ declare module ts {
     }
 }
 declare module ts.NavigationBar {
-    function getNavigationBarItems(sourceFile: SourceFile): NavigationBarItem[];
+    function getNavigationBarItems(sourceFile: SourceFile): ts.NavigationBarItem[];
 }
 declare module ts.SignatureHelp {
     function getSignatureHelpItems(sourceFile: SourceFile, position: number, typeInfoResolver: TypeChecker, cancellationToken: CancellationTokenObject): SignatureHelpItems;
@@ -3545,6 +3570,7 @@ declare module ts {
     function isToken(n: Node): boolean;
     function isComment(kind: SyntaxKind): boolean;
     function isPunctuation(kind: SyntaxKind): boolean;
+    function isInsideTemplateLiteral(node: LiteralExpression, position: number): boolean;
 }
 declare module ts.formatting {
     module SmartIndenter {
@@ -3650,7 +3676,9 @@ declare module ts.formatting {
 declare module ts.formatting {
     class RuleOperationContext {
         private customContextChecks;
-        constructor(...funcs: ((context: FormattingContext) => boolean)[]);
+        constructor(...funcs: {
+            (context: FormattingContext): boolean;
+        }[]);
         static Any: RuleOperationContext;
         IsAny(): boolean;
         InContext(context: FormattingContext): boolean;
@@ -3885,7 +3913,7 @@ declare module ts.formatting {
         getRuleName(rule: Rule): string;
         getRuleByName(name: string): Rule;
         getRulesMap(): RulesMap;
-        ensureUpToDate(options: FormatCodeOptions): void;
+        ensureUpToDate(options: ts.FormatCodeOptions): void;
         private createActiveRules(options);
     }
 }
@@ -3991,13 +4019,11 @@ declare module ts {
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): TextSpan;
         getBreakpointStatementAtPosition(fileName: string, position: number): TextSpan;
         getSignatureHelpItems(fileName: string, position: number): SignatureHelpItems;
-        getSignatureAtPosition(fileName: string, position: number): SignatureInfo;
         getRenameInfo(fileName: string, position: number): RenameInfo;
         findRenameLocations(fileName: string, position: number, findInStrings: boolean, findInComments: boolean): RenameLocation[];
         getDefinitionAtPosition(fileName: string, position: number): DefinitionInfo[];
         getReferencesAtPosition(fileName: string, position: number): ReferenceEntry[];
         getOccurrencesAtPosition(fileName: string, position: number): ReferenceEntry[];
-        getImplementorsAtPosition(fileName: string, position: number): ReferenceEntry[];
         getNavigateToItems(searchValue: string): NavigateToItem[];
         getNavigationBarItems(fileName: string): NavigationBarItem[];
         getOutliningSpans(fileName: string): OutliningSpan[];
@@ -4008,37 +4034,8 @@ declare module ts {
         getFormattingEditsForDocument(fileName: string, options: FormatCodeOptions): TextChange[];
         getFormattingEditsAfterKeystroke(fileName: string, position: number, key: string, options: FormatCodeOptions): TextChange[];
         getEmitOutput(fileName: string): EmitOutput;
+        getSourceFile(filename: string): SourceFile;
         dispose(): void;
-    }
-    interface SignatureInfo {
-        actual: ActualSignatureInfo;
-        formal: FormalSignatureItemInfo[];
-        activeFormal: number;
-    }
-    interface FormalSignatureItemInfo {
-        signatureInfo: string;
-        typeParameters: FormalTypeParameterInfo[];
-        parameters: FormalParameterInfo[];
-        docComment: string;
-    }
-    interface FormalTypeParameterInfo {
-        name: string;
-        docComment: string;
-        minChar: number;
-        limChar: number;
-    }
-    interface FormalParameterInfo {
-        name: string;
-        isVariable: boolean;
-        docComment: string;
-        minChar: number;
-        limChar: number;
-    }
-    interface ActualSignatureInfo {
-        parameterMinChar: number;
-        parameterLimChar: number;
-        currentParameterIsTypeParameter: boolean;
-        currentParameter: number;
     }
     interface ClassifiedSpan {
         textSpan: TextSpan;
@@ -4231,7 +4228,7 @@ declare module ts {
         classification: TokenClass;
     }
     interface Classifier {
-        getClassificationsForLine(text: string, lexState: EndOfLineState): ClassificationResult;
+        getClassificationsForLine(text: string, lexState: EndOfLineState, classifyKeywordsInGenerics?: boolean): ClassificationResult;
     }
     interface DocumentRegistry {
         acquireDocument(filename: string, compilationSettings: CompilerOptions, scriptSnapshot: IScriptSnapshot, version: string, isOpen: boolean): SourceFile;
@@ -4264,7 +4261,8 @@ declare module ts {
         static primitiveType: string;
         static label: string;
         static alias: string;
-        static constantElement: string;
+        static constElement: string;
+        static letElement: string;
     }
     class ScriptElementKindModifier {
         static none: string;
@@ -4371,13 +4369,11 @@ declare module ts {
         getNameOrDottedNameSpan(fileName: string, startPos: number, endPos: number): string;
         getBreakpointStatementAtPosition(fileName: string, position: number): string;
         getSignatureHelpItems(fileName: string, position: number): string;
-        getSignatureAtPosition(fileName: string, position: number): string;
         getRenameInfo(fileName: string, position: number): string;
         findRenameLocations(fileName: string, position: number, findInStrings: boolean, findInComments: boolean): string;
         getDefinitionAtPosition(fileName: string, position: number): string;
         getReferencesAtPosition(fileName: string, position: number): string;
         getOccurrencesAtPosition(fileName: string, position: number): string;
-        getImplementorsAtPosition(fileName: string, position: number): string;
         getNavigateToItems(searchValue: string): string;
         getNavigationBarItems(fileName: string): string;
         getOutliningSpans(fileName: string): string;
@@ -4390,7 +4386,7 @@ declare module ts {
         getEmitOutput(fileName: string): string;
     }
     interface ClassifierShim extends Shim {
-        getClassificationsForLine(text: string, lexState: EndOfLineState): string;
+        getClassificationsForLine(text: string, lexState: EndOfLineState, classifyKeywordsInGenerics?: boolean): string;
     }
     interface CoreServicesShim extends Shim {
         getPreProcessedFileInfo(fileName: string, sourceText: IScriptSnapshot): string;
