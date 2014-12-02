@@ -32,7 +32,7 @@ module Bridge {
 
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];
-                var classificationResult = this.classifier.getClassificationsForLine(line, lastLexState);
+                var classificationResult = this.classifier.getClassificationsForLine(line, lastLexState, true);
 
                 results.push(classificationResult);
 

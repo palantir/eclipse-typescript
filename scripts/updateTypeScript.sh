@@ -8,7 +8,7 @@ set -e
   git checkout master
   git pull
   rm -rf built/local
-  jake declaration local
+  jake local
 )
 
 # copy the bin directory
