@@ -35,6 +35,9 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
  */
 public final class CompilerOptions {
 
+    @JsonProperty("allowNonTsExtensions")
+    private Boolean allowNonTsExtensions;
+
     @JsonProperty("charset")
     private String charset;
 

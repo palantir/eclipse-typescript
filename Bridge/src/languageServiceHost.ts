@@ -78,7 +78,7 @@ module Bridge {
             return "";
         }
 
-        public getDefaultLibFilename() {
+        public getDefaultLibFilename(options: ts.CompilerOptions) {
             return LIB_FILE_NAME;
         }
 
