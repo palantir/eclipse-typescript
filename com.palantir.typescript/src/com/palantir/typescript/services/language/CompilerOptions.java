@@ -62,6 +62,9 @@ public final class CompilerOptions {
     @JsonProperty("module")
     private ModuleKind module;
 
+    @JsonProperty("noEmitOnError")
+    private Boolean noEmitOnError;
+
     @JsonProperty("noErrorTruncation")
     private Boolean noErrorTruncation;
 
@@ -116,6 +119,7 @@ public final class CompilerOptions {
         CompilerOptions compilationSettings = new CompilerOptions();
         compilationSettings.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
         compilationSettings.module = ModuleKind.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
+        compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
         compilationSettings.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
         compilationSettings.removeComments = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS);

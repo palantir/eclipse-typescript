@@ -16,7 +16,6 @@
 
 package com.palantir.typescript;
 
-import com.google.common.collect.ImmutableList;
 
 /**
  * The preference constants used for handling preferences.
@@ -33,21 +32,12 @@ public interface IPreferenceConstants {
     String COMPILER_DECLARATION = "compiler.generateDeclarationFiles";
     String COMPILER_SOURCE_MAP = "compiler.mapSourceFiles";
     String COMPILER_MODULE = "compiler.moduleGenTarget";
+    String COMPILER_NO_EMIT_ON_ERROR = "compiler.noEmitOnError";
     String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
     String COMPILER_NO_LIB = "compiler.noLib";
     String COMPILER_OUT_DIR = "compiler.outputDirOption";
     String COMPILER_OUT_FILE = "compiler.outputFileOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
-    ImmutableList<String> COMPILER_PREFERENCES = ImmutableList.of(
-        COMPILER_COMPILE_ON_SAVE,
-        COMPILER_DECLARATION,
-        COMPILER_MODULE,
-        COMPILER_NO_LIB,
-        COMPILER_OUT_DIR,
-        COMPILER_OUT_FILE,
-        COMPILER_REMOVE_COMMENTS,
-        COMPILER_SOURCE_MAP,
-        COMPILER_TARGET);
 
     String CONTENT_ASSIST_AUTO_ACTIVATION_DELAY = "contentAssist.autoActivationDelay";
     String CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED = "contentAssist.autoActivationEnabled";

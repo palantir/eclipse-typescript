@@ -51,6 +51,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
     private ComboFieldEditor moduleField;
+    private BooleanFieldEditor noEmitOnErrorField;
     private BooleanFieldEditor noImplicitAnyField;
     private BooleanFieldEditor noLibField;
     private BooleanFieldEditor removeCommentsField;
@@ -116,6 +117,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.declarationField)
                 || source.equals(this.moduleField)
+                || source.equals(this.noEmitOnErrorField)
                 || source.equals(this.noImplicitAnyField)
                 || source.equals(this.noLibField)
                 || source.equals(this.removeCommentsField)
@@ -140,6 +142,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.createComboFieldValues(ModuleKind.values()),
             this.getFieldEditorParent());
         this.addField(this.moduleField);
+
+        this.noEmitOnErrorField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR,
+            getResource("no.emit.on.error"),
+            this.getFieldEditorParent());
+        this.addField(this.noEmitOnErrorField);
 
         this.noImplicitAnyField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY,
