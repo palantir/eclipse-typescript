@@ -109,16 +109,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 break;
         }
 
-        // re-create the markers for projects which reference this one
-        for (IProject referencingProject : this.getProject().getReferencingProjects()) {
-            if (!this.languageEndpoint.isProjectInitialized(referencingProject)) {
-                this.languageEndpoint.initializeProject(referencingProject);
-            }
-
-            referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-            this.createMarkers(referencingProject, monitor);
-        }
-
         return null;
     }
 
@@ -176,6 +166,16 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             }
 
             this.build(sourceFileDeltas, monitor);
+        }
+
+        // re-create the markers for projects which reference this one
+        for (IProject referencingProject : this.getProject().getReferencingProjects()) {
+            if (!this.languageEndpoint.isProjectInitialized(referencingProject)) {
+                this.languageEndpoint.initializeProject(referencingProject);
+            }
+
+            referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+            this.createMarkers(referencingProject, monitor);
         }
     }
 
