@@ -75,25 +75,6 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         this.languageEndpoint = TypeScriptPlugin.getDefault().getBuilderLanguageEndpoint();
     }
 
-    public static boolean isConfigured(IProject project) {
-        checkNotNull(project);
-
-        IProjectDescription description;
-        try {
-            description = project.getDescription();
-        } catch (CoreException e) {
-            throw new RuntimeException(e);
-        }
-
-        for (ICommand command : description.getBuildSpec()) {
-            if (command.getBuilderName().equals(TypeScriptBuilder.ID)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     @Override
     protected IProject[] build(int kind, Map<String, String> args, IProgressMonitor monitor) throws CoreException {
         checkNotNull(monitor);
@@ -341,6 +322,25 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             }
         };
         ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, monitor);
+    }
+
+    public static boolean isConfigured(IProject project) {
+        checkNotNull(project);
+
+        IProjectDescription description;
+        try {
+            description = project.getDescription();
+        } catch (CoreException e) {
+            throw new RuntimeException(e);
+        }
+
+        for (ICommand command : description.getBuildSpec()) {
+            if (command.getBuilderName().equals(TypeScriptBuilder.ID)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics) throws CoreException {
