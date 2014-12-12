@@ -144,7 +144,7 @@ module Bridge {
         }
 
         public getCompletionsAtPosition(serviceKey: string, fileName: string, position: number) {
-            var completions = this.languageServices[serviceKey].getCompletionsAtPosition(fileName, position, true);
+            var completions = this.languageServices[serviceKey].getCompletionsAtPosition(fileName, position);
 
             if (completions != null) {
                 // filter out the keyword & primitive entries

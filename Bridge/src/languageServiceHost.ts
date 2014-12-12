@@ -64,16 +64,6 @@ module Bridge {
             return this.fileInfos[fileName].getSnapshot();
         }
 
-        public getLocalizedDiagnosticMessages(): any {
-            return null;
-        }
-
-        public getCancellationToken() {
-            return {
-                isCancellationRequested: () => false
-            };
-        }
-
         public getCurrentDirectory() {
             return "";
         }

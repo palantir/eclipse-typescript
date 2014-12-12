@@ -101,6 +101,9 @@ public final class CompilerOptions {
     @JsonProperty("sourceRoot")
     private String sourceRoot;
 
+    @JsonProperty("suppressImplicitAnyIndexErrors")
+    private Boolean suppressImplicitAnyIndexErrors;
+
     @JsonProperty("target")
     private ScriptTarget target;
 
