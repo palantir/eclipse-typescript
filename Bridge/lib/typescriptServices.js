@@ -5127,16 +5127,16 @@ var ts;
         }
         function parsePrimaryExpression() {
             switch (token) {
+                case 6 /* NumericLiteral */:
+                case 7 /* StringLiteral */:
+                case 9 /* NoSubstitutionTemplateLiteral */:
+                    return parseLiteralNode();
                 case 91 /* ThisKeyword */:
                 case 89 /* SuperKeyword */:
                 case 87 /* NullKeyword */:
                 case 93 /* TrueKeyword */:
                 case 78 /* FalseKeyword */:
                     return parseTokenNode();
-                case 6 /* NumericLiteral */:
-                case 7 /* StringLiteral */:
-                case 9 /* NoSubstitutionTemplateLiteral */:
-                    return parseLiteralNode();
                 case 15 /* OpenParenToken */:
                     return parseParenthesizedExpression();
                 case 17 /* OpenBracketToken */:
@@ -14906,12 +14906,18 @@ var ts;
             }
             return undefined;
         }
-        function getContextualTypeForArgument(node) {
-            var callExpression = node.parent;
-            var argIndex = ts.indexOf(callExpression.arguments, node);
+        function getContextualTypeForArgument(callTarget, arg) {
+            var args = getEffectiveCallArguments(callTarget);
+            var argIndex = ts.indexOf(args, arg);
             if (argIndex >= 0) {
-                var signature = getResolvedSignature(callExpression);
+                var signature = getResolvedSignature(callTarget);
                 return getTypeAtPosition(signature, argIndex);
+            }
+            return undefined;
+        }
+        function getContextualTypeForSubstitutionExpression(template, substitutionExpression) {
+            if (template.parent.kind === 147 /* TaggedTemplateExpression */) {
+                return getContextualTypeForArgument(template.parent, substitutionExpression);
             }
             return undefined;
         }
@@ -15017,7 +15023,7 @@ var ts;
                     return getContextualTypeForReturnExpression(node);
                 case 145 /* CallExpression */:
                 case 146 /* NewExpression */:
-                    return getContextualTypeForArgument(node);
+                    return getContextualTypeForArgument(parent, node);
                 case 148 /* TypeAssertionExpression */:
                     return getTypeFromTypeNode(parent.type);
                 case 157 /* BinaryExpression */:
@@ -15028,6 +15034,9 @@ var ts;
                     return getContextualTypeForElementExpression(node);
                 case 158 /* ConditionalExpression */:
                     return getContextualTypeForConditionalOperand(node);
+                case 162 /* TemplateSpan */:
+                    ts.Debug.assert(parent.parent.kind === 159 /* TemplateExpression */);
+                    return getContextualTypeForSubstitutionExpression(parent.parent, node);
             }
             return undefined;
         }
@@ -17705,6 +17714,8 @@ var ts;
                 case 145 /* CallExpression */:
                 case 146 /* NewExpression */:
                 case 147 /* TaggedTemplateExpression */:
+                case 159 /* TemplateExpression */:
+                case 162 /* TemplateSpan */:
                 case 148 /* TypeAssertionExpression */:
                 case 149 /* ParenthesizedExpression */:
                 case 153 /* TypeOfExpression */:
@@ -18131,8 +18142,17 @@ var ts;
         }
         function isUniqueLocalName(name, container) {
             for (var node = container; isNodeDescendentOf(node, container); node = node.nextContainer) {
-                if (node.locals && ts.hasProperty(node.locals, name) && node.locals[name].flags & (107455 /* Value */ | 4194304 /* ExportValue */)) {
-                    return false;
+                if (node.locals && ts.hasProperty(node.locals, name)) {
+                    var symbolWithRelevantName = node.locals[name];
+                    if (symbolWithRelevantName.flags & (107455 /* Value */ | 4194304 /* ExportValue */)) {
+                        return false;
+                    }
+                    if (symbolWithRelevantName.flags & 33554432 /* Import */) {
+                        var importDeclarationWithRelevantName = ts.getDeclarationOfKind(symbolWithRelevantName, 191 /* ImportDeclaration */);
+                        if (isReferencedImportDeclaration(importDeclarationWithRelevantName)) {
+                            return false;
+                        }
+                    }
                 }
             }
             return true;
@@ -20768,13 +20788,19 @@ var ts;
                     var isTokenInRange = ts.rangeContainsRange(originalRange, currentTokenInfo.token);
                     var tokenStart = sourceFile.getLineAndCharacterFromPosition(currentTokenInfo.token.pos);
                     if (isTokenInRange) {
+                        var rangeHasError = rangeContainsError(currentTokenInfo.token);
                         var prevStartLine = previousRangeStartLine;
                         lineAdded = processRange(currentTokenInfo.token, tokenStart, parent, childContextNode, dynamicIndentation);
-                        if (lineAdded !== undefined) {
-                            indentToken = lineAdded;
+                        if (rangeHasError) {
+                            indentToken = false;
                         }
                         else {
-                            indentToken = lastTriviaWasNewLine && tokenStart.line !== prevStartLine;
+                            if (lineAdded !== undefined) {
+                                indentToken = lineAdded;
+                            }
+                            else {
+                                indentToken = lastTriviaWasNewLine && tokenStart.line !== prevStartLine;
+                            }
                         }
                     }
                     if (currentTokenInfo.trailingTrivia) {
@@ -21330,6 +21356,7 @@ var ts;
                     case 183 /* VariableDeclaration */:
                     case 192 /* ExportAssignment */:
                     case 174 /* ReturnStatement */:
+                    case 158 /* ConditionalExpression */:
                         return true;
                 }
                 return false;
