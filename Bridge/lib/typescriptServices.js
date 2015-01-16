@@ -7159,7 +7159,10 @@ var ts;
                 }
             }
             else {
-                if (!(findSourceFile(filename + ".ts", isDefaultLib, refFile, refPos, refEnd) || findSourceFile(filename + ".d.ts", isDefaultLib, refFile, refPos, refEnd))) {
+                if (options.allowNonTsExtensions && !findSourceFile(filename, isDefaultLib, refFile, refPos, refEnd)) {
+                    diagnostic = ts.Diagnostics.File_0_not_found;
+                }
+                else if (!findSourceFile(filename + ".ts", isDefaultLib, refFile, refPos, refEnd) && !findSourceFile(filename + ".d.ts", isDefaultLib, refFile, refPos, refEnd)) {
                     diagnostic = ts.Diagnostics.File_0_not_found;
                     filename += ".ts";
                 }
@@ -20440,7 +20443,9 @@ var ts;
         })(Constants || (Constants = {}));
         function formatOnEnter(position, sourceFile, rulesProvider, options) {
             var line = sourceFile.getLineAndCharacterFromPosition(position).line;
-            ts.Debug.assert(line >= 2);
+            if (line === 1) {
+                return [];
+            }
             var span = {
                 pos: ts.getStartPositionOfLine(line - 1, sourceFile),
                 end: ts.getEndLinePosition(line, sourceFile) + 1
@@ -20771,7 +20776,7 @@ var ts;
                     if (listEndToken !== 0 /* Unknown */) {
                         if (formattingScanner.isOnToken()) {
                             var tokenInfo = formattingScanner.readTokenInfo(parent);
-                            if (tokenInfo.token.kind === listEndToken) {
+                            if (tokenInfo.token.kind === listEndToken && ts.rangeContainsRange(parent, tokenInfo.token)) {
                                 consumeTokenAndAdvanceScanner(tokenInfo, parent, listDynamicIndentation);
                             }
                         }
