@@ -118,11 +118,11 @@ module Bridge {
 
             return references.map((reference) => {
                 var snapshot = this.fileInfos[reference.fileName].getSnapshot();
+
                 var lineStarts = snapshot.getLineStartPositions();
-                var lineMap = new TypeScript.LineMap(() => lineStarts, snapshot.getLength());
-                var lineNumber = lineMap.getLineNumberFromPosition(reference.textSpan.start());
-                var lineStart = lineMap.getLineStartPosition(lineNumber);
-                var lineEnd = lineMap.getLineStartPosition(lineNumber + 1) - 1;
+                var lineNumber = ts.getLineAndCharacterOfPosition(lineStarts, reference.textSpan.start()).line;
+                var lineStart = ts.getPositionFromLineAndCharacter(lineStarts, lineNumber, 0);
+                var lineEnd = ts.getPositionFromLineAndCharacter(lineStarts, lineNumber + 1, 0) - 1;
                 var line = snapshot.getText(lineStart, lineEnd);
 
                 return {
@@ -144,7 +144,7 @@ module Bridge {
         }
 
         public getCompletionsAtPosition(serviceKey: string, fileName: string, position: number) {
-            var completions = this.languageServices[serviceKey].getCompletionsAtPosition(fileName, position, true);
+            var completions = this.languageServices[serviceKey].getCompletionsAtPosition(fileName, position);
 
             if (completions != null) {
                 // filter out the keyword & primitive entries

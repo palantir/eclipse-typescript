@@ -1,6 +1,7 @@
 .tscache/
-Bridge/build/
-bin/
 ecbuild/
 node_modules/
 target/
+
+/Bridge/build/
+/com.palantir.typescript/bin/

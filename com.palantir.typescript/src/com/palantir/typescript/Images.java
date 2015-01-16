@@ -69,12 +69,16 @@ public final class Images {
             case MEMBER_SET_ACCESSOR_ELEMENT:
                 if (kindModifiers.contains(ScriptElementKindModifier.PRIVATE_MEMBER_MODIFIER)) {
                     return "memberFunctionPrivate";
+                } else if (kindModifiers.contains(ScriptElementKindModifier.PROTECTED_MEMBER_MODIFIER)) {
+                    return "memberFunctionProtected";
                 } else { // public
                     return "memberFunctionPublic";
                 }
             case MEMBER_VARIABLE_ELEMENT:
                 if (kindModifiers.contains(ScriptElementKindModifier.PRIVATE_MEMBER_MODIFIER)) {
                     return "memberVariablePrivate";
+                } else if (kindModifiers.contains(ScriptElementKindModifier.PROTECTED_MEMBER_MODIFIER)) {
+                    return "memberVariableProtected";
                 } else { // public
                     return "memberVariablePublic";
                 }

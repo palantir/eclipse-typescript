@@ -35,6 +35,9 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
  */
 public final class CompilerOptions {
 
+    @JsonProperty("allowNonTsExtensions")
+    private Boolean allowNonTsExtensions;
+
     @JsonProperty("charset")
     private String charset;
 
@@ -62,6 +65,9 @@ public final class CompilerOptions {
     @JsonProperty("module")
     private ModuleKind module;
 
+    @JsonProperty("noEmitOnError")
+    private Boolean noEmitOnError;
+
     @JsonProperty("noErrorTruncation")
     private Boolean noErrorTruncation;
 
@@ -83,6 +89,9 @@ public final class CompilerOptions {
     @JsonProperty("outDir")
     private String outDir;
 
+    @JsonProperty("preserveConstEnums")
+    private Boolean preserveConstEnums;
+
     @JsonProperty("removeComments")
     private Boolean removeComments;
 
@@ -91,6 +100,9 @@ public final class CompilerOptions {
 
     @JsonProperty("sourceRoot")
     private String sourceRoot;
+
+    @JsonProperty("suppressImplicitAnyIndexErrors")
+    private Boolean suppressImplicitAnyIndexErrors;
 
     @JsonProperty("target")
     private ScriptTarget target;
@@ -113,6 +125,7 @@ public final class CompilerOptions {
         CompilerOptions compilationSettings = new CompilerOptions();
         compilationSettings.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
         compilationSettings.module = ModuleKind.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
+        compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
         compilationSettings.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
         compilationSettings.removeComments = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS);

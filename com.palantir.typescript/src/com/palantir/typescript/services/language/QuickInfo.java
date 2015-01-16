@@ -47,13 +47,12 @@ public final class QuickInfo {
         checkNotNull(kindModifiers);
         checkNotNull(textSpan);
         checkNotNull(displayParts);
-        checkNotNull(documentation);
 
         this.kind = kind;
         this.kindModifiers = ScriptElementKindModifier.parseList(kindModifiers);
         this.textSpan = textSpan;
         this.displayParts = ImmutableList.copyOf(displayParts);
-        this.documentation = ImmutableList.copyOf(documentation);
+        this.documentation = documentation != null ? ImmutableList.copyOf(documentation) : ImmutableList.<SymbolDisplayPart> of();
     }
 
     public ScriptElementKind getKind() {

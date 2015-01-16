@@ -1,3 +1,18 @@
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved. 
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0  
+ 
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, 
+MERCHANTABLITY OR NON-INFRINGEMENT. 
+ 
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+
 var ts;
 (function (ts) {
     (function (SyntaxKind) {
@@ -20443,9 +20458,7 @@ var ts;
         })(Constants || (Constants = {}));
         function formatOnEnter(position, sourceFile, rulesProvider, options) {
             var line = sourceFile.getLineAndCharacterFromPosition(position).line;
-            if (line === 1) {
-                return [];
-            }
+            ts.Debug.assert(line >= 2);
             var span = {
                 pos: ts.getStartPositionOfLine(line - 1, sourceFile),
                 end: ts.getEndLinePosition(line, sourceFile) + 1
@@ -26258,4 +26271,3 @@ var TypeScript;
         Services.TypeScriptServicesFactory = ts.TypeScriptServicesFactory;
     })(Services = TypeScript.Services || (TypeScript.Services = {}));
 })(TypeScript || (TypeScript = {}));
-//# sourceMappingURL=file:////Users/dcicerone/git/typescript/built/local/typescriptServices.js.map

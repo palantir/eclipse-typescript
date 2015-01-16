@@ -39,6 +39,10 @@ module.exports = function(grunt) {
     },
 
     ts: {
+      options: {
+        compiler: "Bridge/bin/tsc",
+        fast: "never"
+      },
       compile: {
         src: ['Bridge/src/main.ts', 'Bridge/typings/*.d.ts'],
         out: 'Bridge/build/bridge.js',

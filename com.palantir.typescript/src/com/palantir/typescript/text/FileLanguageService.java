@@ -137,7 +137,7 @@ public final class FileLanguageService {
         checkNotNull(documentText);
 
         String serviceKey = UUID.randomUUID().toString();
-        String fileName = serviceKey;
+        String fileName = serviceKey + ".ts";
         languageEndpoint.initializeIsolatedLanguageService(serviceKey, fileName, documentText);
 
         languageEndpoint.setFileOpen(fileName, true);
