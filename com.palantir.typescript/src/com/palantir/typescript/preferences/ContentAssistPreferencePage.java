@@ -81,8 +81,8 @@ public final class ContentAssistPreferencePage extends PreferencePage implements
             }
         });
 
-        this.createTextField(autoActivationGroup, "auto.activation.delay", IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_DELAY);
-        this.createTextField(autoActivationGroup, "auto.activation.triggers", IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_TRIGGERS);
+        this.createTextField(autoActivationGroup, "auto.activation.delay", IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_DELAY, 4);
+        this.createTextField(autoActivationGroup, "auto.activation.triggers", IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_TRIGGERS, 100);
 
         this.synchronizeAutoActivation();
 
@@ -135,7 +135,7 @@ public final class ContentAssistPreferencePage extends PreferencePage implements
         return true;
     }
 
-    private void createTextField(Composite parent, String textKey, Object data) {
+    private void createTextField(Composite parent, String textKey, Object data, int textLimit) {
         GridData gridData = new GridData();
 
         Label label = new Label(parent, SWT.NONE);
@@ -146,7 +146,7 @@ public final class ContentAssistPreferencePage extends PreferencePage implements
 
         Text text = new Text(parent, SWT.BORDER | SWT.SINGLE);
         text.setData(data);
-        text.setTextLimit(4);
+        text.setTextLimit(textLimit);
         gridData = new GridData();
         gridData.widthHint = 30;
         text.setLayoutData(gridData);
