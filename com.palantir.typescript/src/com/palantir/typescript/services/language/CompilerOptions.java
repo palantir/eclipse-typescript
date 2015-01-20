@@ -65,6 +65,9 @@ public final class CompilerOptions {
     @JsonProperty("module")
     private ModuleKind module;
 
+    @JsonProperty("noEmit")
+    private Boolean noEmit;
+
     @JsonProperty("noEmitOnError")
     private Boolean noEmitOnError;
 

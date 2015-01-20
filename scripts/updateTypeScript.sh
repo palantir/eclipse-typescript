@@ -5,8 +5,8 @@ set -e
 # update to the latest master code and build
 (
   cd ../typescript
-  git checkout release-1.4
-  git pull
+  git fetch
+  git checkout origin/master
   rm -rf built/local
   jake local
 )

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: TypeScript
 Bundle-SymbolicName: com.palantir.typescript.tests
-Bundle-Version: 1.4.0.qualifier
+Bundle-Version: 1.5.0.qualifier
 Bundle-Vendor: Palantir Technologies
 Fragment-Host: com.palantir.typescript
 Eclipse-BundleShape: dir

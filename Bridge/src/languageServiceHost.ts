@@ -15,13 +15,14 @@
  */
 
 /// <reference path="fileInfo.ts" />
+/// <reference path="logger.ts" />
 /// <reference path="snapshot.ts" />
 
 module Bridge {
 
     export var LIB_FILE_NAME = "lib.d.ts";
 
-    export class LanguageServiceHost implements ts.LanguageServiceHost {
+    export class LanguageServiceHost extends Logger implements ts.LanguageServiceHost {
 
         private compilationSettings: ts.CompilerOptions;
         private fileFilter: (fileName: string) => boolean;
@@ -31,6 +32,7 @@ module Bridge {
                 compilationSettings: ts.CompilerOptions,
                 fileFilter: (fileName: string) => boolean,
                 fileInfos: { [fileName: string]: FileInfo }) {
+            super();
 
             this.compilationSettings = compilationSettings;
             this.fileFilter = fileFilter;
@@ -70,10 +72,6 @@ module Bridge {
 
         public getDefaultLibFilename(options: ts.CompilerOptions) {
             return LIB_FILE_NAME;
-        }
-
-        public log(s: string) {
-            console.log(s);
         }
     }
 }
