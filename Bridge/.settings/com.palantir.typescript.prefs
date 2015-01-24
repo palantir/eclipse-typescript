@@ -1,5 +1,5 @@
 build.path.exportedFolder=
-build.path.sourceFolder=src;test;typings
+build.path.sourceFolder=src;typings
 compiler.codeGenTarget=ECMASCRIPT5
 compiler.compileOnSave=false
 compiler.generateDeclarationFiles=false
