@@ -2,7 +2,7 @@
 
 set -e
 
-# update to the latest master code and build
+# update the TypeScript code and build
 (
   cd ../typescript
   git checkout release-1.4
@@ -11,9 +11,10 @@ set -e
   jake local
 )
 
-# copy the bin directory
-rm -rf $(dirname $0)/../Bridge/bin/
-cp -r ../typescript/bin/ $(dirname $0)/../Bridge/bin/
+# copy the necessary bin files to build
+cp ../typescript/bin/lib.d.ts $(dirname $0)/../Bridge/bin/
+cp ../typescript/bin/tsc $(dirname $0)/../Bridge/bin/
+cp ../typescript/bin/tsc.js $(dirname $0)/../Bridge/bin/
 
 # copy the language services JavaScript and definition file
 cp ../typescript/built/local/typescriptServices.js $(dirname $0)/../Bridge/lib/
