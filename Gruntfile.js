@@ -19,23 +19,25 @@ module.exports = function(grunt) {
 
   // project configuration
   grunt.initConfig({
+    bridge: 'com.palantir.typescript/bridge',
     pkg: grunt.file.readJSON('package.json'),
+
 
     concat: {
       dist: {
-        src: ['Bridge/lib/typescriptServices.js', 'Bridge/build/bridge.js'],
+        src: ['<%= bridge %>/lib/typescriptServices.js', '<%= bridge %>/build/bridge.js'],
         dest: 'com.palantir.typescript/bin/bridge.js'
       }
     },
 
     ts: {
       options: {
-        compiler: "Bridge/bin/tsc",
+        compiler: "<%= bridge %>/bin/tsc",
         fast: "never"
       },
       compile: {
-        src: ['Bridge/src/main.ts', 'Bridge/typings/*.d.ts'],
-        out: 'Bridge/build/bridge.js',
+        src: ['<%= bridge %>/src/main.ts', '<%= bridge %>/typings/*.d.ts'],
+        out: '<%= bridge %>/build/bridge.js',
         options: {
           declaration: true
         }
@@ -44,7 +46,7 @@ module.exports = function(grunt) {
 
     watch: {
       scripts: {
-        files: ['Bridge/src/*.ts', 'Bridge/typings/*.d.ts'],
+        files: ['<%= bridge %>/src/*.ts', '<%= bridge %>/typings/*.d.ts'],
         tasks: ['default'],
       },
     }
