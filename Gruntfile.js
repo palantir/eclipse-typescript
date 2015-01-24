@@ -15,18 +15,18 @@
  */
 
 module.exports = function(grunt) {
-  'use strict';
+  "use strict";
 
   // project configuration
   grunt.initConfig({
-    bridge: 'com.palantir.typescript/bridge',
-    pkg: grunt.file.readJSON('package.json'),
+    bridge: "com.palantir.typescript/bridge",
+    pkg: grunt.file.readJSON("package.json"),
 
 
     concat: {
       dist: {
-        src: ['<%= bridge %>/lib/typescriptServices.js', '<%= bridge %>/build/bridge.js'],
-        dest: 'com.palantir.typescript/bin/bridge.js'
+        src: ["<%= bridge %>/lib/typescriptServices.js", "<%= bridge %>/build/bridge.js"],
+        dest: "com.palantir.typescript/bin/bridge.js"
       }
     },
 
@@ -36,8 +36,8 @@ module.exports = function(grunt) {
         fast: "never"
       },
       compile: {
-        src: ['<%= bridge %>/src/main.ts', '<%= bridge %>/typings/*.d.ts'],
-        out: '<%= bridge %>/build/bridge.js',
+        src: ["<%= bridge %>/src/main.ts", "<%= bridge %>/typings/*.d.ts"],
+        out: "<%= bridge %>/build/bridge.js",
         options: {
           declaration: true
         }
@@ -46,17 +46,17 @@ module.exports = function(grunt) {
 
     watch: {
       scripts: {
-        files: ['<%= bridge %>/src/*.ts', '<%= bridge %>/typings/*.d.ts'],
-        tasks: ['default'],
+        files: ["<%= bridge %>/src/*.ts", "<%= bridge %>/typings/*.d.ts"],
+        tasks: ["default"],
       },
     }
   });
 
   // load NPM tasks
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-ts');
+  grunt.loadNpmTasks("grunt-contrib-concat");
+  grunt.loadNpmTasks("grunt-contrib-watch");
+  grunt.loadNpmTasks("grunt-ts");
 
   // other tasks
-  grunt.registerTask('default', ['ts:compile', 'concat']);
+  grunt.registerTask("default", ["ts:compile", "concat"]);
 };
