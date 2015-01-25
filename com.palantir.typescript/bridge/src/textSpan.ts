@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
-import chai = require("chai");
+module Bridge {
 
-describe("the bridge", () => {
-    it("works", () => {
-        new Bridge.Main();
-        chai.assert(true);
-    });
-});
+    export class TextSpan implements ts.TextSpan {
+
+        public start: number;
+        public length: number;
+
+        constructor(start: number, length: number) {
+            if (start < 0 || length < 0) {
+                throw new Error();
+            }
+
+            this.start = start;
+            this.length = length;
+        }
+
+        public end(): number {
+            return this.start + this.length;
+        }
+    }
+}

@@ -1,10 +1,11 @@
 build.path.exportedFolder=
-build.path.sourceFolder=src;test;typings
+build.path.sourceFolder=bridge/lib;bridge/src;bridge/typings
 compiler.codeGenTarget=ECMASCRIPT5
 compiler.compileOnSave=false
 compiler.generateDeclarationFiles=false
 compiler.mapSourceFiles=false
-compiler.moduleGenTarget=SYNCHRONOUS
+compiler.moduleGenTarget=UNSPECIFIED
+compiler.noEmitOnError=true
 compiler.noImplicitAny=true
 compiler.noLib=false
 compiler.outputDirOption=

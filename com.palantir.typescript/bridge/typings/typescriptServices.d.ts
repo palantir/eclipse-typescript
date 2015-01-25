@@ -1123,6 +1123,7 @@ declare module ts {
         diagnostics?: boolean;
         emitBOM?: boolean;
         help?: boolean;
+        listFiles?: boolean;
         locale?: string;
         mapRoot?: string;
         module?: ModuleKind;
@@ -1136,6 +1137,7 @@ declare module ts {
         out?: string;
         outDir?: string;
         preserveConstEnums?: boolean;
+        project?: string;
         removeComments?: boolean;
         sourceMap?: boolean;
         sourceRoot?: string;
@@ -1168,6 +1170,7 @@ declare module ts {
     interface CommandLineOption {
         name: string;
         type: string | Map<number>;
+        isFilePath?: boolean;
         shortName?: string;
         description?: DiagnosticMessage;
         paramType?: DiagnosticMessage;
@@ -1428,6 +1431,7 @@ declare module ts {
         isOpen: boolean;
         version: string;
         scriptSnapshot: IScriptSnapshot;
+        nameTable: Map<string>;
         getNamedDeclarations(): Declaration[];
     }
     /**
@@ -1470,6 +1474,7 @@ declare module ts {
     }
     interface LanguageServiceHost extends Logger {
         getCompilationSettings(): CompilerOptions;
+        getNewLine?(): string;
         getScriptFileNames(): string[];
         getScriptVersion(fileName: string): string;
         getScriptIsOpen(fileName: string): boolean;

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.palantir.typescript;
+module Bridge {
 
-import static org.junit.Assert.assertEquals;
+    export class Logger implements ts.Logger {
 
-import org.junit.Test;
+        public log(s: string) {
+            console.log(s);
+        }
 
-/**
- * Placeholder tests to show that the test project works.
- *
- * @author pbiswal
- */
-public class PlaceholderTest {
-    @Test
-    public void testPass() {
-        assertEquals("hello", "hello");
+        public trace(s: string) {
+            // does nothing
+        }
+
+        public error(s: string) {
+            console.log(s);
+        }
     }
 }

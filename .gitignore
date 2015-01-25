@@ -3,5 +3,5 @@ ecbuild/
 node_modules/
 target/
 
-/Bridge/build/
 /com.palantir.typescript/bin/
+/com.palantir.typescript/bridge/build/

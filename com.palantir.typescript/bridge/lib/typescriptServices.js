@@ -718,6 +718,19 @@ var ts;
         return result;
     }
     ts.clone = clone;
+    function extend(first, second) {
+        var result = {};
+        for (var id in first) {
+            result[id] = first[id];
+        }
+        for (var id in second) {
+            if (!hasProperty(result, id)) {
+                result[id] = second[id];
+            }
+        }
+        return result;
+    }
+    ts.extend = extend;
     function forEachValue(map, callback) {
         var result;
         for (var id in map) {
@@ -1039,7 +1052,7 @@ var ts;
             return path2;
         if (!(path2 && path2.length))
             return path1;
-        if (path2.charAt(0) === ts.directorySeparator)
+        if (getRootLength(path2) !== 0)
             return path2;
         if (path1.charAt(path1.length - 1) === ts.directorySeparator)
             return path1 + path2;
@@ -1209,6 +1222,32 @@ var ts;
                     fileStream.Close();
                 }
             }
+            function getNames(collection) {
+                var result = [];
+                for (var e = new Enumerator(collection); !e.atEnd(); e.moveNext()) {
+                    result.push(e.item().Name);
+                }
+                return result.sort();
+            }
+            function readDirectory(path, extension) {
+                var result = [];
+                visitDirectory(path);
+                return result;
+                function visitDirectory(path) {
+                    var folder = fso.GetFolder(path || ".");
+                    var files = getNames(folder.files);
+                    for (var i = 0; i < files.length; i++) {
+                        var name = files[i];
+                        if (!extension || ts.fileExtensionIs(name, extension)) {
+                            result.push(ts.combinePaths(path, name));
+                        }
+                    }
+                    var subfolders = getNames(folder.subfolders);
+                    for (var i = 0; i < subfolders.length; i++) {
+                        visitDirectory(ts.combinePaths(path, subfolders[i]));
+                    }
+                }
+            }
             return {
                 args: args,
                 newLine: "\r\n",
@@ -1238,6 +1277,7 @@ var ts;
                 getCurrentDirectory: function () {
                     return new ActiveXObject("WScript.Shell").CurrentDirectory;
                 },
+                readDirectory: readDirectory,
                 exit: function (exitCode) {
                     try {
                         WScript.Quit(exitCode);
@@ -1281,6 +1321,30 @@ var ts;
                     data = '\uFEFF' + data;
                 }
                 _fs.writeFileSync(fileName, data, "utf8");
+            }
+            function readDirectory(path, extension) {
+                var result = [];
+                visitDirectory(path);
+                return result;
+                function visitDirectory(path) {
+                    var files = _fs.readdirSync(path || ".").sort();
+                    var directories = [];
+                    for (var i = 0; i < files.length; i++) {
+                        var name = ts.combinePaths(path, files[i]);
+                        var stat = _fs.lstatSync(name);
+                        if (stat.isFile()) {
+                            if (!extension || ts.fileExtensionIs(name, extension)) {
+                                result.push(name);
+                            }
+                        }
+                        else if (stat.isDirectory()) {
+                            directories.push(name);
+                        }
+                    }
+                    for (var i = 0; i < directories.length; i++) {
+                        visitDirectory(directories[i]);
+                    }
+                }
             }
             return {
                 args: process.argv.slice(2),
@@ -1326,6 +1390,7 @@ var ts;
                 getCurrentDirectory: function () {
                     return process.cwd();
                 },
+                readDirectory: readDirectory,
                 getMemoryUsage: function () {
                     if (global.gc) {
                         global.gc();
@@ -1729,11 +1794,13 @@ var ts;
         Cannot_read_file_0_Colon_1: { code: 5012, category: 1 /* Error */, key: "Cannot read file '{0}': {1}" },
         Unsupported_file_encoding: { code: 5013, category: 1 /* Error */, key: "Unsupported file encoding." },
         Unknown_compiler_option_0: { code: 5023, category: 1 /* Error */, key: "Unknown compiler option '{0}'." },
+        Compiler_option_0_requires_a_value_of_type_1: { code: 5024, category: 1 /* Error */, key: "Compiler option '{0}' requires a value of type {1}." },
         Could_not_write_file_0_Colon_1: { code: 5033, category: 1 /* Error */, key: "Could not write file '{0}': {1}" },
-        Option_mapRoot_cannot_be_specified_without_specifying_sourcemap_option: { code: 5038, category: 1 /* Error */, key: "Option mapRoot cannot be specified without specifying sourcemap option." },
-        Option_sourceRoot_cannot_be_specified_without_specifying_sourcemap_option: { code: 5039, category: 1 /* Error */, key: "Option sourceRoot cannot be specified without specifying sourcemap option." },
-        Option_noEmit_cannot_be_specified_with_option_out_or_outDir: { code: 5040, category: 1 /* Error */, key: "Option noEmit cannot be specified with option out or outDir." },
-        Option_noEmit_cannot_be_specified_with_option_declaration: { code: 5041, category: 1 /* Error */, key: "Option noEmit cannot be specified with option declaration." },
+        Option_mapRoot_cannot_be_specified_without_specifying_sourcemap_option: { code: 5038, category: 1 /* Error */, key: "Option 'mapRoot' cannot be specified without specifying 'sourcemap' option." },
+        Option_sourceRoot_cannot_be_specified_without_specifying_sourcemap_option: { code: 5039, category: 1 /* Error */, key: "Option 'sourceRoot' cannot be specified without specifying 'sourcemap' option." },
+        Option_noEmit_cannot_be_specified_with_option_out_or_outDir: { code: 5040, category: 1 /* Error */, key: "Option 'noEmit' cannot be specified with option 'out' or 'outDir'." },
+        Option_noEmit_cannot_be_specified_with_option_declaration: { code: 5041, category: 1 /* Error */, key: "Option 'noEmit' cannot be specified with option 'declaration'." },
+        Option_project_cannot_be_mixed_with_source_files_on_a_command_line: { code: 5042, category: 1 /* Error */, key: "Option 'project' cannot be mixed with source files on a command line." },
         Concatenate_and_emit_output_to_single_file: { code: 6001, category: 2 /* Message */, key: "Concatenate and emit output to single file." },
         Generates_corresponding_d_ts_file: { code: 6002, category: 2 /* Message */, key: "Generates corresponding '.d.ts' file." },
         Specifies_the_location_where_debugger_should_locate_map_files_instead_of_generated_locations: { code: 6003, category: 2 /* Message */, key: "Specifies the location where debugger should locate map files instead of generated locations." },
@@ -1748,6 +1815,7 @@ var ts;
         Specify_module_code_generation_Colon_commonjs_or_amd: { code: 6016, category: 2 /* Message */, key: "Specify module code generation: 'commonjs' or 'amd'" },
         Print_this_message: { code: 6017, category: 2 /* Message */, key: "Print this message." },
         Print_the_compiler_s_version: { code: 6019, category: 2 /* Message */, key: "Print the compiler's version." },
+        Compile_the_project_in_the_given_directory: { code: 6020, category: 2 /* Message */, key: "Compile the project in the given directory." },
         Syntax_Colon_0: { code: 6023, category: 2 /* Message */, key: "Syntax: {0}" },
         options: { code: 6024, category: 2 /* Message */, key: "options" },
         file: { code: 6025, category: 2 /* Message */, key: "file" },
@@ -1755,7 +1823,7 @@ var ts;
         Options_Colon: { code: 6027, category: 2 /* Message */, key: "Options:" },
         Version_0: { code: 6029, category: 2 /* Message */, key: "Version {0}" },
         Insert_command_line_options_and_files_from_a_file: { code: 6030, category: 2 /* Message */, key: "Insert command line options and files from a file." },
-        File_change_detected_Compiling: { code: 6032, category: 2 /* Message */, key: "File change detected. Compiling..." },
+        File_change_detected_Starting_incremental_compilation: { code: 6032, category: 2 /* Message */, key: "File change detected. Starting incremental compilation..." },
         KIND: { code: 6034, category: 2 /* Message */, key: "KIND" },
         FILE: { code: 6035, category: 2 /* Message */, key: "FILE" },
         VERSION: { code: 6036, category: 2 /* Message */, key: "VERSION" },
@@ -1934,10 +2002,10 @@ var ts;
         return false;
     }
     function isUnicodeIdentifierStart(code, languageVersion) {
-        return languageVersion === 0 /* ES3 */ ? lookupInUnicodeMap(code, unicodeES3IdentifierStart) : lookupInUnicodeMap(code, unicodeES5IdentifierStart);
+        return languageVersion >= 1 /* ES5 */ ? lookupInUnicodeMap(code, unicodeES5IdentifierStart) : lookupInUnicodeMap(code, unicodeES3IdentifierStart);
     }
     function isUnicodeIdentifierPart(code, languageVersion) {
-        return languageVersion === 0 /* ES3 */ ? lookupInUnicodeMap(code, unicodeES3IdentifierPart) : lookupInUnicodeMap(code, unicodeES5IdentifierPart);
+        return languageVersion >= 1 /* ES5 */ ? lookupInUnicodeMap(code, unicodeES5IdentifierPart) : lookupInUnicodeMap(code, unicodeES3IdentifierPart);
     }
     function makeReverseMap(source) {
         var result = [];
@@ -1981,7 +2049,7 @@ var ts;
     }
     ts.computeLineStarts = computeLineStarts;
     function getPositionFromLineAndCharacter(lineStarts, line, character) {
-        ts.Debug.assert(line > 0);
+        ts.Debug.assert(line > 0 && line <= lineStarts.length);
         return lineStarts[line - 1] + character - 1;
     }
     ts.getPositionFromLineAndCharacter = getPositionFromLineAndCharacter;
@@ -6880,7 +6948,7 @@ var ts;
     })(ts.ModuleInstanceState || (ts.ModuleInstanceState = {}));
     var ModuleInstanceState = ts.ModuleInstanceState;
     function getModuleInstanceState(node) {
-        if (node.kind === 192 /* InterfaceDeclaration */) {
+        if (node.kind === 192 /* InterfaceDeclaration */ || node.kind === 193 /* TypeAliasDeclaration */) {
             return 0 /* NonInstantiated */;
         }
         else if (ts.isConstEnumDeclaration(node)) {
@@ -7310,6 +7378,7 @@ var ts;
         var emptyArray = [];
         var emptySymbols = {};
         var compilerOptions = host.getCompilerOptions();
+        var languageVersion = compilerOptions.target || 0 /* ES3 */;
         var emitResolver = createResolver();
         var checker = {
             getNodeCount: function () { return ts.sum(host.getSourceFiles(), "nodeCount"); },
@@ -11808,6 +11877,13 @@ var ts;
                     properties[member.name] = member;
                 }
             }
+            if (contextualType && !isInferentialContext(contextualMapper)) {
+                ts.forEach(getPropertiesOfObjectType(contextualType), function (p) {
+                    if (p.flags & 536870912 /* Optional */ && !ts.hasProperty(properties, p.name)) {
+                        properties[p.name] = p;
+                    }
+                });
+            }
             var stringIndexType = getIndexType(0 /* String */);
             var numberIndexType = getIndexType(1 /* Number */);
             var result = createAnonymousType(node.symbol, properties, emptyArray, emptyArray, stringIndexType, numberIndexType);
@@ -11956,8 +12032,8 @@ var ts;
                     }
                 }
             }
-            if (indexType.flags & (1 /* Any */ | 258 /* StringLike */ | 132 /* NumberLike */)) {
-                if (indexType.flags & (1 /* Any */ | 132 /* NumberLike */)) {
+            if (isTypeOfKind(indexType, 1 /* Any */ | 258 /* StringLike */ | 132 /* NumberLike */)) {
+                if (isTypeOfKind(indexType, 1 /* Any */ | 132 /* NumberLike */)) {
                     var numberIndexType = getIndexTypeOfType(objectType, 1 /* Number */);
                     if (numberIndexType) {
                         return numberIndexType;
@@ -12408,7 +12484,7 @@ var ts;
             return getReturnTypeOfSignature(signature);
         }
         function checkTaggedTemplateExpression(node) {
-            if (compilerOptions.target < 2 /* ES6 */) {
+            if (languageVersion < 2 /* ES6 */) {
                 grammarErrorOnFirstToken(node.template, ts.Diagnostics.Tagged_templates_are_only_available_when_targeting_ECMAScript_6_and_higher);
             }
             return getReturnTypeOfSignature(getResolvedSignature(node));
@@ -12557,7 +12633,7 @@ var ts;
             }
         }
         function checkArithmeticOperandType(operand, type, diagnostic) {
-            if (!(type.flags & (1 /* Any */ | 132 /* NumberLike */))) {
+            if (!isTypeOfKind(type, 1 /* Any */ | 132 /* NumberLike */)) {
                 error(operand, diagnostic);
                 return false;
             }
@@ -12661,11 +12737,20 @@ var ts;
             }
             return numberType;
         }
-        function isStructuredType(type) {
-            if (type.flags & 16384 /* Union */) {
-                return !ts.forEach(type.types, function (t) { return !isStructuredType(t); });
+        function isTypeOfKind(type, kind) {
+            if (type.flags & kind) {
+                return true;
             }
-            return (type.flags & (48128 /* ObjectType */ | 512 /* TypeParameter */)) !== 0;
+            if (type.flags & 16384 /* Union */) {
+                var types = type.types;
+                for (var i = 0; i < types.length; i++) {
+                    if (!(types[i].flags & kind)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
         }
         function isConstEnumObjectType(type) {
             return type.flags & (48128 /* ObjectType */ | 32768 /* Anonymous */) && type.symbol && isConstEnumSymbol(type.symbol);
@@ -12674,7 +12759,7 @@ var ts;
             return (symbol.flags & 128 /* ConstEnum */) !== 0;
         }
         function checkInstanceOfExpression(node, leftType, rightType) {
-            if (!(leftType.flags & 1 /* Any */ || isStructuredType(leftType))) {
+            if (!isTypeOfKind(leftType, 1 /* Any */ | 48128 /* ObjectType */ | 512 /* TypeParameter */)) {
                 error(node.left, ts.Diagnostics.The_left_hand_side_of_an_instanceof_expression_must_be_of_type_any_an_object_type_or_a_type_parameter);
             }
             if (!(rightType.flags & 1 /* Any */ || isTypeSubtypeOf(rightType, globalFunctionType))) {
@@ -12683,10 +12768,10 @@ var ts;
             return booleanType;
         }
         function checkInExpression(node, leftType, rightType) {
-            if (leftType !== anyType && leftType !== stringType && leftType !== numberType) {
+            if (!isTypeOfKind(leftType, 1 /* Any */ | 258 /* StringLike */ | 132 /* NumberLike */)) {
                 error(node.left, ts.Diagnostics.The_left_hand_side_of_an_in_expression_must_be_of_types_any_string_or_number);
             }
-            if (!(rightType.flags & 1 /* Any */ || isStructuredType(rightType))) {
+            if (!isTypeOfKind(rightType, 1 /* Any */ | 48128 /* ObjectType */ | 512 /* TypeParameter */)) {
                 error(node.right, ts.Diagnostics.The_right_hand_side_of_an_in_expression_must_be_of_type_any_an_object_type_or_a_type_parameter);
             }
             return booleanType;
@@ -12816,13 +12901,13 @@ var ts;
                     if (rightType.flags & (32 /* Undefined */ | 64 /* Null */))
                         rightType = leftType;
                     var resultType;
-                    if (leftType.flags & 132 /* NumberLike */ && rightType.flags & 132 /* NumberLike */) {
+                    if (isTypeOfKind(leftType, 132 /* NumberLike */) && isTypeOfKind(rightType, 132 /* NumberLike */)) {
                         resultType = numberType;
                     }
-                    else if (leftType.flags & 258 /* StringLike */ || rightType.flags & 258 /* StringLike */) {
+                    else if (isTypeOfKind(leftType, 258 /* StringLike */) || isTypeOfKind(rightType, 258 /* StringLike */)) {
                         resultType = stringType;
                     }
-                    else if (leftType.flags & 1 /* Any */ || leftType === unknownType || rightType.flags & 1 /* Any */ || rightType === unknownType) {
+                    else if (leftType.flags & 1 /* Any */ || rightType.flags & 1 /* Any */) {
                         resultType = anyType;
                     }
                     if (!resultType) {
@@ -13819,7 +13904,7 @@ var ts;
                 }
             }
             var exprType = checkExpression(node.expression);
-            if (!(exprType.flags & 1 /* Any */ || isStructuredType(exprType))) {
+            if (!isTypeOfKind(exprType, 1 /* Any */ | 48128 /* ObjectType */ | 512 /* TypeParameter */)) {
                 error(node.expression, ts.Diagnostics.The_right_hand_side_of_a_for_in_statement_must_be_of_type_any_an_object_type_or_a_type_parameter);
             }
             checkSourceElement(node.statement);
@@ -15176,8 +15261,8 @@ var ts;
             if (symbol && (symbol.flags & 8 /* EnumMember */)) {
                 var declaration = symbol.valueDeclaration;
                 var constantValue;
-                if (declaration.kind === 206 /* EnumMember */ && (constantValue = getNodeLinks(declaration).enumMemberValue) !== undefined) {
-                    return constantValue;
+                if (declaration.kind === 206 /* EnumMember */) {
+                    return getEnumMemberValue(declaration);
                 }
             }
             return undefined;
@@ -15236,7 +15321,7 @@ var ts;
             globalNumberType = getGlobalType("Number");
             globalBooleanType = getGlobalType("Boolean");
             globalRegExpType = getGlobalType("RegExp");
-            globalTemplateStringsArrayType = compilerOptions.target >= 2 /* ES6 */ ? getGlobalType("TemplateStringsArray") : unknownType;
+            globalTemplateStringsArrayType = languageVersion >= 2 /* ES6 */ ? getGlobalType("TemplateStringsArray") : unknownType;
             anyArrayType = createArrayType(anyType);
         }
         function checkGrammarModifiers(node) {
@@ -15552,7 +15637,7 @@ var ts;
             grammarErrorOnNode(node, ts.Diagnostics.Computed_property_names_are_not_currently_supported);
             return;
             var computedPropertyName = node;
-            if (compilerOptions.target < 2 /* ES6 */) {
+            if (languageVersion < 2 /* ES6 */) {
                 grammarErrorOnNode(node, ts.Diagnostics.Computed_property_names_are_only_available_when_targeting_ECMAScript_6_and_higher);
             }
             else if (computedPropertyName.expression.kind === 163 /* BinaryExpression */ && computedPropertyName.expression.operator === 23 /* CommaToken */) {
@@ -15632,7 +15717,7 @@ var ts;
         }
         function checkGrammarAccessor(accessor) {
             var kind = accessor.kind;
-            if (compilerOptions.target < 1 /* ES5 */) {
+            if (languageVersion < 1 /* ES5 */) {
                 return grammarErrorOnNode(accessor.name, ts.Diagnostics.Accessors_are_only_available_when_targeting_ECMAScript_5_and_higher);
             }
             else if (ts.isInAmbientContext(accessor)) {
@@ -15797,7 +15882,7 @@ var ts;
             if (!declarationList.declarations.length) {
                 return grammarErrorAtPos(ts.getSourceFileOfNode(declarationList), declarations.pos, declarations.end - declarations.pos, ts.Diagnostics.Variable_declaration_list_cannot_be_empty);
             }
-            if (compilerOptions.target < 2 /* ES6 */) {
+            if (languageVersion < 2 /* ES6 */) {
                 if (ts.isLet(declarationList)) {
                     return grammarErrorOnFirstToken(declarationList, ts.Diagnostics.let_declarations_are_only_available_when_targeting_ECMAScript_6_and_higher);
                 }
@@ -15880,7 +15965,7 @@ var ts;
         function grammarErrorOnFirstToken(node, message, arg0, arg1, arg2) {
             var sourceFile = ts.getSourceFileOfNode(node);
             if (!hasParseDiagnostics(sourceFile)) {
-                var scanner = ts.createScanner(compilerOptions.target, true, sourceFile.text);
+                var scanner = ts.createScanner(languageVersion, true, sourceFile.text);
                 var start = scanToken(scanner, node.pos);
                 diagnostics.push(ts.createFileDiagnostic(sourceFile, start, scanner.getTextPos() - start, message, arg0, arg1, arg2));
                 return true;
@@ -15980,7 +16065,7 @@ var ts;
                 if (node.parserContextFlags & 1 /* StrictMode */) {
                     return grammarErrorOnNode(node, ts.Diagnostics.Octal_literals_are_not_allowed_in_strict_mode);
                 }
-                else if (compilerOptions.target >= 1 /* ES5 */) {
+                else if (languageVersion >= 1 /* ES5 */) {
                     return grammarErrorOnNode(node, ts.Diagnostics.Octal_literals_are_not_available_when_targeting_ECMAScript_5_and_higher);
                 }
             }
@@ -15988,7 +16073,7 @@ var ts;
         function grammarErrorAfterFirstToken(node, message, arg0, arg1, arg2) {
             var sourceFile = ts.getSourceFileOfNode(node);
             if (!hasParseDiagnostics(sourceFile)) {
-                var scanner = ts.createScanner(compilerOptions.target, true, sourceFile.text);
+                var scanner = ts.createScanner(languageVersion, true, sourceFile.text);
                 scanToken(scanner, node.pos);
                 diagnostics.push(ts.createFileDiagnostic(sourceFile, scanner.getTextPos(), 0, message, arg0, arg1, arg2));
                 return true;
@@ -16115,9 +16200,10 @@ var ts;
     function writeCommentRange(currentSourceFile, writer, comment, newLine) {
         if (currentSourceFile.text.charCodeAt(comment.pos + 1) === 42 /* asterisk */) {
             var firstCommentLineAndCharacter = currentSourceFile.getLineAndCharacterFromPosition(comment.pos);
+            var lastLine = currentSourceFile.getLineStarts().length;
             var firstCommentLineIndent;
             for (var pos = comment.pos, currentLine = firstCommentLineAndCharacter.line; pos < comment.end; currentLine++) {
-                var nextLineStart = currentSourceFile.getPositionFromLineAndCharacter(currentLine + 1, 1);
+                var nextLineStart = currentLine === lastLine ? (comment.end + 1) : currentSourceFile.getPositionFromLineAndCharacter(currentLine + 1, 1);
                 if (pos !== comment.pos) {
                     if (firstCommentLineIndent === undefined) {
                         firstCommentLineIndent = calculateIndent(currentSourceFile.getPositionFromLineAndCharacter(firstCommentLineAndCharacter.line, 1), comment.pos);
@@ -16237,6 +16323,7 @@ var ts;
     function emitDeclarations(host, resolver, diagnostics, jsFilePath, root) {
         var newLine = host.getNewLine();
         var compilerOptions = host.getCompilerOptions();
+        var languageVersion = compilerOptions.target || 0 /* ES3 */;
         var write;
         var writeLine;
         var increaseIndent;
@@ -17105,6 +17192,7 @@ var ts;
     ts.getDeclarationDiagnostics = getDeclarationDiagnostics;
     function emitFiles(resolver, host, targetSourceFile) {
         var compilerOptions = host.getCompilerOptions();
+        var languageVersion = compilerOptions.target || 0 /* ES3 */;
         var sourceMapDataList = compilerOptions.sourceMap ? [] : undefined;
         var diagnostics = [];
         var newLine = host.getNewLine();
@@ -17497,11 +17585,11 @@ var ts;
                 return false;
             }
             function emitLiteral(node) {
-                var text = compilerOptions.target < 2 /* ES6 */ && ts.isTemplateLiteralKind(node.kind) ? getTemplateLiteralAsStringLiteral(node) : node.parent ? ts.getSourceTextOfNodeFromSourceFile(currentSourceFile, node) : node.text;
+                var text = languageVersion < 2 /* ES6 */ && ts.isTemplateLiteralKind(node.kind) ? getTemplateLiteralAsStringLiteral(node) : node.parent ? ts.getSourceTextOfNodeFromSourceFile(currentSourceFile, node) : node.text;
                 if (compilerOptions.sourceMap && (node.kind === 8 /* StringLiteral */ || ts.isTemplateLiteralKind(node.kind))) {
                     writer.writeLiteral(text);
                 }
-                else if (compilerOptions.target < 2 /* ES6 */ && node.kind === 7 /* NumericLiteral */ && isBinaryOrOctalIntegerLiteral(text)) {
+                else if (languageVersion < 2 /* ES6 */ && node.kind === 7 /* NumericLiteral */ && isBinaryOrOctalIntegerLiteral(text)) {
                     write(node.text);
                 }
                 else {
@@ -17512,7 +17600,7 @@ var ts;
                 return '"' + ts.escapeString(node.text) + '"';
             }
             function emitTemplateExpression(node) {
-                if (compilerOptions.target >= 2 /* ES6 */) {
+                if (languageVersion >= 2 /* ES6 */) {
                     ts.forEachChild(node, emit);
                     return;
                 }
@@ -17559,7 +17647,7 @@ var ts;
                     }
                 }
                 function comparePrecedenceToBinaryPlus(expression) {
-                    ts.Debug.assert(compilerOptions.target <= 1 /* ES5 */);
+                    ts.Debug.assert(languageVersion < 2 /* ES6 */);
                     switch (expression.kind) {
                         case 163 /* BinaryExpression */:
                             switch (expression.operator) {
@@ -17725,7 +17813,7 @@ var ts;
                     write("[]");
                     return;
                 }
-                if (compilerOptions.target >= 2 /* ES6 */) {
+                if (languageVersion >= 2 /* ES6 */) {
                     write("[");
                     emitList(elements, 0, elements.length, (node.flags & 256 /* MultiLine */) !== 0, elements.hasTrailingComma);
                     write("]");
@@ -17770,7 +17858,7 @@ var ts;
                     if (!multiLine) {
                         write(" ");
                     }
-                    emitList(properties, 0, properties.length, multiLine, properties.hasTrailingComma && compilerOptions.target >= 1 /* ES5 */);
+                    emitList(properties, 0, properties.length, multiLine, properties.hasTrailingComma && languageVersion >= 1 /* ES5 */);
                     if (!multiLine) {
                         write(" ");
                     }
@@ -17788,7 +17876,7 @@ var ts;
                 }
                 emitLeadingComments(node);
                 emit(node.name);
-                if (compilerOptions.target < 2 /* ES6 */) {
+                if (languageVersion < 2 /* ES6 */) {
                     write(": function ");
                 }
                 emitSignatureAndBody(node);
@@ -17804,7 +17892,7 @@ var ts;
             function emitShorthandPropertyAssignment(node) {
                 emitLeadingComments(node);
                 emit(node.name);
-                if (compilerOptions.target < 2 /* ES6 */ || resolver.getExpressionNamePrefix(node.name)) {
+                if (languageVersion < 2 /* ES6 */ || resolver.getExpressionNamePrefix(node.name)) {
                     write(": ");
                     emitExpressionIdentifier(node.name);
                 }
@@ -17876,7 +17964,7 @@ var ts;
                 }
             }
             function emitTaggedTemplateExpression(node) {
-                ts.Debug.assert(compilerOptions.target >= 2 /* ES6 */, "Trying to emit a tagged template in pre-ES6 mode.");
+                ts.Debug.assert(languageVersion >= 2 /* ES6 */, "Trying to emit a tagged template in pre-ES6 mode.");
                 emit(node.tag);
                 write(" ");
                 emit(node.template);
@@ -17929,7 +18017,7 @@ var ts;
                 write(ts.tokenToString(node.operator));
             }
             function emitBinaryExpression(node) {
-                if (compilerOptions.target < 2 /* ES6 */ && node.operator === 52 /* EqualsToken */ && (node.left.kind === 148 /* ObjectLiteralExpression */ || node.left.kind === 147 /* ArrayLiteralExpression */)) {
+                if (languageVersion < 2 /* ES6 */ && node.operator === 52 /* EqualsToken */ && (node.left.kind === 148 /* ObjectLiteralExpression */ || node.left.kind === 147 /* ArrayLiteralExpression */)) {
                     emitDestructuring(node);
                 }
                 else {
@@ -18371,7 +18459,7 @@ var ts;
             function emitVariableDeclaration(node) {
                 emitLeadingComments(node);
                 if (ts.isBindingPattern(node.name)) {
-                    if (compilerOptions.target < 2 /* ES6 */) {
+                    if (languageVersion < 2 /* ES6 */) {
                         emitDestructuring(node);
                     }
                     else {
@@ -18404,7 +18492,7 @@ var ts;
             }
             function emitParameter(node) {
                 emitLeadingComments(node);
-                if (compilerOptions.target < 2 /* ES6 */) {
+                if (languageVersion < 2 /* ES6 */) {
                     if (ts.isBindingPattern(node.name)) {
                         var name = createTempVariable(node);
                         if (!tempParameters) {
@@ -18427,7 +18515,7 @@ var ts;
                 emitTrailingComments(node);
             }
             function emitDefaultValueAssignments(node) {
-                if (compilerOptions.target < 2 /* ES6 */) {
+                if (languageVersion < 2 /* ES6 */) {
                     var tempIndex = 0;
                     ts.forEach(node.parameters, function (p) {
                         if (ts.isBindingPattern(p.name)) {
@@ -18456,7 +18544,7 @@ var ts;
                 }
             }
             function emitRestParameter(node) {
-                if (compilerOptions.target < 2 /* ES6 */ && ts.hasRestParameters(node)) {
+                if (languageVersion < 2 /* ES6 */ && ts.hasRestParameters(node)) {
                     var restIndex = node.parameters.length - 1;
                     var restParam = node.parameters[restIndex];
                     var tempName = createTempVariable(node, true).text;
@@ -18529,7 +18617,7 @@ var ts;
                 write("(");
                 if (node) {
                     var parameters = node.parameters;
-                    var omitCount = compilerOptions.target < 2 /* ES6 */ && ts.hasRestParameters(node) ? 1 : 0;
+                    var omitCount = languageVersion < 2 /* ES6 */ && ts.hasRestParameters(node) ? 1 : 0;
                     emitList(parameters, 0, parameters.length - omitCount, false, false);
                 }
                 write(")");
@@ -19796,7 +19884,7 @@ var ts;
                 return;
             }
             var firstExternalModule = ts.forEach(files, function (f) { return ts.isExternalModule(f) ? f : undefined; });
-            if (firstExternalModule && options.module === 0 /* None */) {
+            if (firstExternalModule && !options.module) {
                 var externalModuleErrorSpan = ts.getErrorSpanForNode(firstExternalModule.externalModuleIndicator);
                 var errorStart = ts.skipTrivia(firstExternalModule.text, externalModuleErrorSpan.pos);
                 var errorLength = externalModuleErrorSpan.end - errorStart;
@@ -19877,12 +19965,17 @@ var ts;
             description: ts.Diagnostics.Print_this_message
         },
         {
+            name: "listFiles",
+            type: "boolean"
+        },
+        {
             name: "locale",
             type: "string"
         },
         {
             name: "mapRoot",
             type: "string",
+            isFilePath: true,
             description: ts.Diagnostics.Specifies_the_location_where_debugger_should_locate_map_files_instead_of_generated_locations,
             paramType: ts.Diagnostics.LOCATION
         },
@@ -19933,6 +20026,7 @@ var ts;
         {
             name: "outDir",
             type: "string",
+            isFilePath: true,
             description: ts.Diagnostics.Redirect_output_structure_to_the_directory,
             paramType: ts.Diagnostics.DIRECTORY
         },
@@ -19940,6 +20034,14 @@ var ts;
             name: "preserveConstEnums",
             type: "boolean",
             description: ts.Diagnostics.Do_not_erase_const_enum_declarations_in_generated_code
+        },
+        {
+            name: "project",
+            shortName: "p",
+            type: "string",
+            isFilePath: true,
+            description: ts.Diagnostics.Compile_the_project_in_the_given_directory,
+            paramType: ts.Diagnostics.DIRECTORY
         },
         {
             name: "removeComments",
@@ -19954,6 +20056,7 @@ var ts;
         {
             name: "sourceRoot",
             type: "string",
+            isFilePath: true,
             description: ts.Diagnostics.Specifies_the_location_where_debugger_should_locate_TypeScript_files_instead_of_source_locations,
             paramType: ts.Diagnostics.LOCATION
         },
@@ -19983,21 +20086,18 @@ var ts;
             description: ts.Diagnostics.Watch_input_files
         }
     ];
-    var shortOptionNames = {};
-    var optionNameMap = {};
-    ts.forEach(ts.optionDeclarations, function (option) {
-        optionNameMap[option.name.toLowerCase()] = option;
-        if (option.shortName) {
-            shortOptionNames[option.shortName] = option.name;
-        }
-    });
     function parseCommandLine(commandLine) {
-        var options = {
-            target: 0 /* ES3 */,
-            module: 0 /* None */
-        };
+        var options = {};
         var filenames = [];
         var errors = [];
+        var shortOptionNames = {};
+        var optionNameMap = {};
+        ts.forEach(ts.optionDeclarations, function (option) {
+            optionNameMap[option.name.toLowerCase()] = option;
+            if (option.shortName) {
+                shortOptionNames[option.shortName] = option.name;
+            }
+        });
         parseStrings(commandLine);
         return {
             options: options,
@@ -20087,6 +20187,83 @@ var ts;
         }
     }
     ts.parseCommandLine = parseCommandLine;
+    function readConfigFile(filename) {
+        try {
+            var text = ts.sys.readFile(filename);
+            return /\S/.test(text) ? JSON.parse(text) : {};
+        }
+        catch (e) {
+        }
+    }
+    ts.readConfigFile = readConfigFile;
+    function parseConfigFile(json, basePath) {
+        var errors = [];
+        return {
+            options: getCompilerOptions(),
+            filenames: getFiles(),
+            errors: errors
+        };
+        function getCompilerOptions() {
+            var options = {};
+            var optionNameMap = {};
+            ts.forEach(ts.optionDeclarations, function (option) {
+                optionNameMap[option.name] = option;
+            });
+            var jsonOptions = json["compilerOptions"];
+            if (jsonOptions) {
+                for (var id in jsonOptions) {
+                    if (ts.hasProperty(optionNameMap, id)) {
+                        var opt = optionNameMap[id];
+                        var optType = opt.type;
+                        var value = jsonOptions[id];
+                        var expectedType = typeof optType === "string" ? optType : "string";
+                        if (typeof value === expectedType) {
+                            if (typeof optType !== "string") {
+                                var key = value.toLowerCase();
+                                if (ts.hasProperty(optType, key)) {
+                                    value = optType[key];
+                                }
+                                else {
+                                    errors.push(ts.createCompilerDiagnostic(opt.error));
+                                    value = 0;
+                                }
+                            }
+                            if (opt.isFilePath) {
+                                value = ts.normalizePath(ts.combinePaths(basePath, value));
+                            }
+                            options[opt.name] = value;
+                        }
+                        else {
+                            errors.push(ts.createCompilerDiagnostic(ts.Diagnostics.Compiler_option_0_requires_a_value_of_type_1, id, expectedType));
+                        }
+                    }
+                    else {
+                        errors.push(ts.createCompilerDiagnostic(ts.Diagnostics.Unknown_compiler_option_0, id));
+                    }
+                }
+            }
+            return options;
+        }
+        function getFiles() {
+            var files = [];
+            if (ts.hasProperty(json, "files")) {
+                if (json["files"] instanceof Array) {
+                    var files = ts.map(json["files"], function (s) { return ts.combinePaths(basePath, s); });
+                }
+            }
+            else {
+                var sysFiles = ts.sys.readDirectory(basePath, ".ts");
+                for (var i = 0; i < sysFiles.length; i++) {
+                    var name = sysFiles[i];
+                    if (!ts.fileExtensionIs(name, ".d.ts") || !ts.contains(sysFiles, name.substr(0, name.length - 5) + ".ts")) {
+                        files.push(name);
+                    }
+                }
+            }
+            return files;
+        }
+    }
+    ts.parseConfigFile = parseConfigFile;
 })(ts || (ts = {}));
 var ts;
 (function (ts) {
@@ -21298,6 +21475,9 @@ var ts;
                     end: scanner.getTextPos(),
                     kind: currentToken
                 };
+                if (trailingTrivia) {
+                    trailingTrivia = undefined;
+                }
                 while (scanner.getStartPos() < endPos) {
                     currentToken = scanner.scan();
                     if (!ts.isTrivia(currentToken)) {
@@ -22364,7 +22544,13 @@ var ts;
                 return start;
             }
             var precedingToken = ts.findPrecedingToken(originalRange.pos, sourceFile);
-            return precedingToken ? precedingToken.end : enclosingNode.pos;
+            if (!precedingToken) {
+                return enclosingNode.pos;
+            }
+            if (precedingToken.end >= originalRange.pos) {
+                return enclosingNode.pos;
+            }
+            return precedingToken.end;
         }
         function getOwnOrInheritedDelta(n, options, sourceFile) {
             var previousLine = -1 /* Unknown */;
@@ -22927,7 +23113,8 @@ var ts;
                 if (!precedingToken) {
                     return 0;
                 }
-                if ((precedingToken.kind === 8 /* StringLiteral */ || precedingToken.kind === 9 /* RegularExpressionLiteral */) && precedingToken.getStart(sourceFile) <= position && precedingToken.end > position) {
+                var precedingTokenIsLiteral = precedingToken.kind === 8 /* StringLiteral */ || precedingToken.kind === 9 /* RegularExpressionLiteral */ || precedingToken.kind === 10 /* NoSubstitutionTemplateLiteral */ || precedingToken.kind === 11 /* TemplateHead */ || precedingToken.kind === 12 /* TemplateMiddle */ || precedingToken.kind === 13 /* TemplateTail */;
+                if (precedingTokenIsLiteral && precedingToken.getStart(sourceFile) <= position && precedingToken.end > position) {
                     return 0;
                 }
                 var lineAtPosition = sourceFile.getLineAndCharacterFromPosition(position).line;
@@ -24106,6 +24293,7 @@ var ts;
     function createLanguageServiceSourceFile(filename, scriptSnapshot, scriptTarget, version, isOpen, setNodeParents) {
         var sourceFile = ts.createSourceFile(filename, scriptSnapshot.getText(0, scriptSnapshot.getLength()), scriptTarget, setNodeParents);
         setSourceFileFields(sourceFile, scriptSnapshot, version, isOpen);
+        sourceFile.nameTable = sourceFile.identifiers;
         return sourceFile;
     }
     ts.createLanguageServiceSourceFile = createLanguageServiceSourceFile;
@@ -24129,6 +24317,7 @@ var ts;
                 if (!ts.disableIncrementalParsing) {
                     var newSourceFile = sourceFile.update(scriptSnapshot.getText(0, scriptSnapshot.getLength()), textChangeRange);
                     setSourceFileFields(newSourceFile, scriptSnapshot, version, isOpen);
+                    newSourceFile.nameTable = undefined;
                     return newSourceFile;
                 }
             }
@@ -24428,7 +24617,9 @@ var ts;
                 getCancellationToken: function () { return cancellationToken; },
                 getCanonicalFileName: function (filename) { return useCaseSensitivefilenames ? filename : filename.toLowerCase(); },
                 useCaseSensitiveFileNames: function () { return useCaseSensitivefilenames; },
-                getNewLine: function () { return "\r\n"; },
+                getNewLine: function () {
+                    return host.getNewLine ? host.getNewLine() : "\r\n";
+                },
                 getDefaultLibFilename: function (options) {
                     return host.getDefaultLibFilename(options);
                 },
@@ -25414,7 +25605,7 @@ var ts;
                 return undefined;
             }
             if (node.kind === 64 /* Identifier */ || node.kind === 92 /* ThisKeyword */ || node.kind === 90 /* SuperKeyword */ || isLiteralNameOfPropertyDeclarationOrIndexAccess(node) || isNameOfExternalModuleImportOrDeclaration(node)) {
-                return getReferencesForNode(node, [sourceFile], false, false);
+                return getReferencesForNode(node, [sourceFile], true, false, false);
             }
             switch (node.kind) {
                 case 83 /* IfKeyword */:
@@ -25836,9 +26027,27 @@ var ts;
                 return undefined;
             }
             ts.Debug.assert(node.kind === 64 /* Identifier */ || node.kind === 7 /* NumericLiteral */ || node.kind === 8 /* StringLiteral */);
-            return getReferencesForNode(node, program.getSourceFiles(), findInStrings, findInComments);
+            return getReferencesForNode(node, program.getSourceFiles(), false, findInStrings, findInComments);
         }
-        function getReferencesForNode(node, sourceFiles, findInStrings, findInComments) {
+        function initializeNameTable(sourceFile) {
+            var nameTable = {};
+            walk(sourceFile);
+            sourceFile.nameTable = nameTable;
+            function walk(node) {
+                switch (node.kind) {
+                    case 64 /* Identifier */:
+                        nameTable[node.text] = node.text;
+                        break;
+                    case 8 /* StringLiteral */:
+                    case 7 /* NumericLiteral */:
+                        nameTable[node.text] = node.text;
+                        break;
+                    default:
+                        ts.forEachChild(node, walk);
+                }
+            }
+        }
+        function getReferencesForNode(node, sourceFiles, searchOnlyInCurrentFile, findInStrings, findInComments) {
             if (isLabelName(node)) {
                 if (isJumpStatementTarget(node)) {
                     var labelDefinition = getTargetLabel(node.parent, node.text);
@@ -25871,14 +26080,25 @@ var ts;
                 getReferencesInNode(scope, symbol, declaredName, node, searchMeaning, findInStrings, findInComments, result);
             }
             else {
-                var internedName = getInternedName(symbol, declarations);
-                ts.forEach(sourceFiles, function (sourceFile) {
-                    cancellationToken.throwIfCancellationRequested();
-                    if (ts.lookUp(sourceFile.identifiers, internedName)) {
-                        result = result || [];
-                        getReferencesInNode(sourceFile, symbol, declaredName, node, searchMeaning, findInStrings, findInComments, result);
-                    }
-                });
+                if (searchOnlyInCurrentFile) {
+                    ts.Debug.assert(sourceFiles.length === 1);
+                    result = [];
+                    getReferencesInNode(sourceFiles[0], symbol, declaredName, node, searchMeaning, findInStrings, findInComments, result);
+                }
+                else {
+                    var internedName = getInternedName(symbol, declarations);
+                    ts.forEach(sourceFiles, function (sourceFile) {
+                        cancellationToken.throwIfCancellationRequested();
+                        if (!sourceFile.nameTable) {
+                            initializeNameTable(sourceFile);
+                        }
+                        ts.Debug.assert(sourceFile.nameTable !== undefined);
+                        if (ts.lookUp(sourceFile.nameTable, internedName)) {
+                            result = result || [];
+                            getReferencesInNode(sourceFile, symbol, declaredName, node, searchMeaning, findInStrings, findInComments, result);
+                        }
+                    });
+                }
             }
             return result;
             function getDeclaredName(symbol) {
