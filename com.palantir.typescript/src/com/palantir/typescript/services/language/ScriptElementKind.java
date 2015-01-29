@@ -42,6 +42,9 @@ public enum ScriptElementKind {
     // interface Y {}
     INTERFACE_ELEMENT("interface"),
 
+    // type T = ...
+    TYPE_ELEMENT("type"),
+
     // enum E
     ENUM_ELEMENT("enum"),
 
@@ -93,7 +96,7 @@ public enum ScriptElementKind {
 
     ALIAS("alias"),
 
-    CONST_ELEMENT("constant"),
+    CONST_ELEMENT("const"),
 
     LET_ELEMENT("let");
 
