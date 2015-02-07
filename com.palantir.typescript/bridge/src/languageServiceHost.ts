@@ -44,6 +44,14 @@ module Bridge {
             return this.compilationSettings;
         }
 
+        public getCurrentDirectory() {
+            return "";
+        }
+
+        public getDefaultLibFilename(options: ts.CompilerOptions) {
+            return (options.target === ts.ScriptTarget.ES6 ? LIB_ES6_FILE_NAME : LIB_FILE_NAME);
+        }
+
         public getScriptFileNames() {
             return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
                 // include the default library definition file if its enabled
@@ -55,10 +63,6 @@ module Bridge {
             });
         }
 
-        public getScriptVersion(fileName: string) {
-            return this.fileInfos[fileName].getVersion();
-        }
-
         public getScriptIsOpen(fileName: string) {
             return this.fileInfos[fileName].getOpen();
         }
@@ -67,12 +71,8 @@ module Bridge {
             return this.fileInfos[fileName].getSnapshot();
         }
 
-        public getCurrentDirectory() {
-            return "";
-        }
-
-        public getDefaultLibFilename(options: ts.CompilerOptions) {
-            return (options.target === ts.ScriptTarget.ES6 ? LIB_ES6_FILE_NAME : LIB_FILE_NAME);
+        public getScriptVersion(fileName: string) {
+            return this.fileInfos[fileName].getVersion();
         }
     }
 }
