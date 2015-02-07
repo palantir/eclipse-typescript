@@ -20,8 +20,9 @@ cp ../typescript/bin/tsc.js $(dirname $0)/../com.palantir.typescript/bridge/bin/
 cp ../typescript/built/local/typescriptServices.js $(dirname $0)/../com.palantir.typescript/bridge/lib/
 cp ../typescript/built/local/typescriptServices.d.ts $(dirname $0)/../com.palantir.typescript/bridge/typings/
 
-# copy the lib.d.ts definitions file into the plug-in
+# copy the default lib files into the plug-in
 cp ../typescript/bin/lib.d.ts $(dirname $0)/../com.palantir.typescript/src/com/palantir/typescript/services/language/
+cp ../typescript/bin/lib.es6.d.ts $(dirname $0)/../com.palantir.typescript/src/com/palantir/typescript/services/language/
 
 # convert to unix line endings
 dos2unix $(dirname $0)/../com.palantir.typescript/bridge/bin/lib.d.ts

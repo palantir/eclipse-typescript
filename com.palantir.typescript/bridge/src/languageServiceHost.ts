@@ -21,6 +21,7 @@
 module Bridge {
 
     export var LIB_FILE_NAME = "lib.d.ts";
+    export var LIB_ES6_FILE_NAME = "lib.es6.d.ts";
 
     export class LanguageServiceHost extends Logger implements ts.LanguageServiceHost {
 
@@ -46,7 +47,7 @@ module Bridge {
         public getScriptFileNames() {
             return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
                 // include the default library definition file if its enabled
-                if (fileName === LIB_FILE_NAME) {
+                if (fileName === LIB_FILE_NAME || fileName === LIB_ES6_FILE_NAME) {
                     return !this.compilationSettings.noLib;
                 }
 
@@ -71,7 +72,7 @@ module Bridge {
         }
 
         public getDefaultLibFilename(options: ts.CompilerOptions) {
-            return LIB_FILE_NAME;
+            return (options.target === ts.ScriptTarget.ES6 ? LIB_ES6_FILE_NAME : LIB_FILE_NAME);
         }
     }
 }

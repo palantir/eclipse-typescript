@@ -215,10 +215,12 @@ module Bridge {
             }
         }
 
-        public setLibContents(libContents: string) {
-            var fileInfo = new FileInfo(libContents, null);
+        public setLibContents(libContents: string, libES6Contents: string) {
+            var libFileInfo = new FileInfo(libContents, null);
+            this.fileInfos[LIB_FILE_NAME] = libFileInfo;
 
-            this.fileInfos[LIB_FILE_NAME] = fileInfo;
+            var libES6FileInfo = new FileInfo(libES6Contents, null);
+            this.fileInfos[LIB_ES6_FILE_NAME] = libES6FileInfo;
         }
 
         public updateFiles(deltas: IFileDelta[]) {
