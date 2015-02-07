@@ -104,7 +104,7 @@ module Bridge {
                     start: diagnostic.start,
                     length: diagnostic.length,
                     line: diagnostic.file.getLineAndCharacterFromPosition(diagnostic.start).line,
-                    text: diagnostic.messageText
+                    text: ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
                 };
             });
         }
@@ -114,16 +114,15 @@ module Bridge {
         }
 
         public findReferences(serviceKey: string, fileName: string, position: number) {
-            var references = this.languageServices[serviceKey].getReferencesAtPosition(fileName, position);
+            var languageService = this.languageServices[serviceKey];
+            var references = languageService.getReferencesAtPosition(fileName, position);
 
             return references.map((reference) => {
-                var snapshot = this.fileInfos[reference.fileName].getSnapshot();
-
-                var lineStarts = snapshot.getLineStartPositions();
-                var lineNumber = ts.getLineAndCharacterOfPosition(lineStarts, reference.textSpan.start).line;
-                var lineStart = ts.getPositionFromLineAndCharacter(lineStarts, lineNumber, 0);
-                var lineEnd = ts.getPositionFromLineAndCharacter(lineStarts, lineNumber + 1, 0) - 1;
-                var line = snapshot.getText(lineStart, lineEnd);
+                var sourceFile = languageService.getSourceFile(reference.fileName);
+                var lineNumber = sourceFile.getLineAndCharacterFromPosition(reference.textSpan.start).line;
+                var lineStart = sourceFile.getPositionFromLineAndCharacter(lineNumber, 0);
+                var lineEnd = sourceFile.getPositionFromLineAndCharacter(lineNumber + 1, 0);
+                var line = sourceFile.text.substring(lineStart, lineEnd);
 
                 return {
                     fileName: reference.fileName,
@@ -167,7 +166,8 @@ module Bridge {
 
                 return {
                     entries: detailEntries,
-                    memberCompletion: completions.isMemberCompletion
+                    isMemberCompletion: completions.isMemberCompletion,
+                    isNewIdentifierLocation: completions.isNewIdentifierLocation
                 };
             }
 

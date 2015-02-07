@@ -15,7 +15,6 @@
  */
 
 /// <reference path="fileInfo.ts" />
-/// <reference path="logger.ts" />
 /// <reference path="snapshot.ts" />
 
 module Bridge {
@@ -23,7 +22,7 @@ module Bridge {
     export var LIB_FILE_NAME = "lib.d.ts";
     export var LIB_ES6_FILE_NAME = "lib.es6.d.ts";
 
-    export class LanguageServiceHost extends Logger implements ts.LanguageServiceHost {
+    export class LanguageServiceHost implements ts.LanguageServiceHost {
 
         private compilationSettings: ts.CompilerOptions;
         private fileFilter: (fileName: string) => boolean;
@@ -33,7 +32,6 @@ module Bridge {
                 compilationSettings: ts.CompilerOptions,
                 fileFilter: (fileName: string) => boolean,
                 fileInfos: { [fileName: string]: FileInfo }) {
-            super();
 
             this.compilationSettings = compilationSettings;
             this.fileFilter = fileFilter;
@@ -48,7 +46,7 @@ module Bridge {
             return "";
         }
 
-        public getDefaultLibFilename(options: ts.CompilerOptions) {
+        public getDefaultLibFileName(options: ts.CompilerOptions) {
             return (options.target === ts.ScriptTarget.ES6 ? LIB_ES6_FILE_NAME : LIB_FILE_NAME);
         }
 
@@ -63,12 +61,16 @@ module Bridge {
             });
         }
 
-        public getScriptIsOpen(fileName: string) {
-            return this.fileInfos[fileName].getOpen();
-        }
-
         public getScriptSnapshot(fileName: string) {
-            return this.fileInfos[fileName].getSnapshot();
+            var fileInfo = this.fileInfos[fileName];
+
+            // return undefined if the file is not found to indicate it does not exist
+            // for more info, please see https://github.com/Microsoft/TypeScript/commit/9628191a1476bc0dbdb28bfd30b840656ffc26a3
+            if (fileInfo == null) {
+                return undefined;
+            }
+
+            return fileInfo.getSnapshot();
         }
 
         public getScriptVersion(fileName: string) {

@@ -110,6 +110,9 @@ public final class CompilerOptions {
     @JsonProperty("sourceRoot")
     private String sourceRoot;
 
+    @JsonProperty("stripInternal")
+    private Boolean stripInternal;
+
     @JsonProperty("suppressImplicitAnyIndexErrors")
     private Boolean suppressImplicitAnyIndexErrors;
 

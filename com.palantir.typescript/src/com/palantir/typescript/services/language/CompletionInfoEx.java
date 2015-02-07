@@ -32,15 +32,18 @@ import com.google.common.collect.ImmutableList;
 public final class CompletionInfoEx {
 
     private final ImmutableList<CompletionEntryDetails> entries;
-    private final boolean memberCompletion;
+    private final boolean isMemberCompletion;
+    private final boolean isNewIdentifierLocation;
 
     public CompletionInfoEx(
             @JsonProperty("entries") List<CompletionEntryDetails> entries,
-            @JsonProperty("isMemberCompletion") boolean memberCompletion) {
+            @JsonProperty("isMemberCompletion") boolean isMemberCompletion,
+            @JsonProperty("isNewIdentifierLocation") boolean isNewIdentifierLocation) {
         checkNotNull(entries);
 
         this.entries = ImmutableList.copyOf(entries);
-        this.memberCompletion = memberCompletion;
+        this.isMemberCompletion = isMemberCompletion;
+        this.isNewIdentifierLocation = isNewIdentifierLocation;
     }
 
     public ImmutableList<CompletionEntryDetails> getEntries() {
@@ -48,14 +51,19 @@ public final class CompletionInfoEx {
     }
 
     public boolean isMemberCompletion() {
-        return this.memberCompletion;
+        return this.isMemberCompletion;
+    }
+
+    public boolean isNewIdentifierLocation() {
+        return this.isNewIdentifierLocation;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("entries", this.entries)
-            .add("memberCompletion", this.memberCompletion)
+            .add("isMemberCompletion", this.isMemberCompletion)
+            .add("isNewIdentifierLocation", this.isNewIdentifierLocation)
             .toString();
     }
 }

@@ -22,13 +22,11 @@ module Bridge {
 
         private changes: TextChangeRange[];
         private contents: string;
-        private lineStartPositions: number[];
         private version: number;
 
         constructor(changes: TextChangeRange[], contents: string, version: number) {
             this.changes = changes;
             this.contents = contents;
-            this.lineStartPositions = ts.computeLineStarts(this.contents);
             this.version = version;
         }
 
@@ -38,10 +36,6 @@ module Bridge {
 
         public getLength() {
             return this.contents.length;
-        }
-
-        public getLineStartPositions() {
-            return this.lineStartPositions;
         }
 
         public getChangeRange(oldSnapshot: ts.IScriptSnapshot): ts.TextChangeRange {

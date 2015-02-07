@@ -30,6 +30,7 @@ import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 
 import com.palantir.typescript.EclipseResources;
+import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
 import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.FileLanguageService;
@@ -60,18 +61,27 @@ public final class SearchQuery implements ISearchQuery {
 
     @Override
     public IStatus run(IProgressMonitor monitor) throws OperationCanceledException {
-        List<ReferenceEntryEx> references = this.languageService.findReferences(this.offset);
+        try {
+            List<ReferenceEntryEx> references = this.languageService.findReferences(this.offset);
 
-        for (ReferenceEntryEx reference : references) {
-            String referenceFileName = reference.getFileName();
-            IFile file = EclipseResources.getFile(referenceFileName);
-            TextSpan textSpan = reference.getTextSpan();
-            FindReferenceMatch match = new FindReferenceMatch(file, textSpan.getStart(), textSpan.getLength(), reference);
+            for (ReferenceEntryEx reference : references) {
+                String referenceFileName = reference.getFileName();
+                IFile file = EclipseResources.getFile(referenceFileName);
+                TextSpan textSpan = reference.getTextSpan();
+                FindReferenceMatch match = new FindReferenceMatch(file, textSpan.getStart(), textSpan.getLength(), reference);
 
-            this.result.addMatch(match);
+                this.result.addMatch(match);
+            }
+
+            return Status.OK_STATUS;
+        } catch (RuntimeException e) {
+            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
+
+            // log the exception
+            TypeScriptPlugin.getDefault().getLog().log(status);
+
+            return status;
         }
-
-        return Status.OK_STATUS;
     }
 
     @Override
