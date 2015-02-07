@@ -30,3 +30,4 @@ dos2unix $(dirname $0)/../com.palantir.typescript/bridge/bin/tsc.js
 dos2unix $(dirname $0)/../com.palantir.typescript/bridge/lib/typescriptServices.js
 dos2unix $(dirname $0)/../com.palantir.typescript/bridge/typings/typescriptServices.d.ts
 dos2unix $(dirname $0)/../com.palantir.typescript/src/com/palantir/typescript/services/language/lib.d.ts
+dos2unix $(dirname $0)/../com.palantir.typescript/src/com/palantir/typescript/services/language/lib.es6.d.ts
