@@ -80,6 +80,33 @@ module Bridge {
             delete this.languageServices[serviceKey];
         }
 
+        public getAllTodos(projectName: string) {
+            var todos: { [fileName: string]: TodoCommentEx[] } = {};
+            Object.keys(this.fileInfos)
+                .filter((fileName) => this.isSourceFile(projectName, fileName))
+                .forEach((fileName) => {
+                	todos[fileName] = this.getTodos(projectName, fileName);
+            	});
+            return todos;
+        }
+
+        public getTodos(serviceKey: string, filename: string): TodoCommentEx[] {
+            var todos = this.languageServices[serviceKey].getTodoComments(filename,
+                [{ text: "TODO", priority: 0 }, { text: "FIXME", priority: 1 }, { text: "XXX", priority: 2 }]);
+            if (todos.length) {
+                var file = this.languageServices[serviceKey].getSourceFile(filename);
+                return todos.map((todo) => {
+                    return {
+                        start: todo.position,
+                        line: file.getLineAndCharacterFromPosition(todo.position).line,
+                        priority: todo.descriptor.priority,
+                        text: todo.message
+                    };
+                });
+            }
+            return [];
+        }
+
         public getAllDiagnostics(projectName: string) {
             var diagnostics: { [fileName: string]: DiagnosticEx[] } = {};
 
@@ -330,6 +357,13 @@ module Bridge {
         length: number;
         line: number;
         start: number;
+        text: string;
+    }
+
+    export interface TodoCommentEx {
+        start: number;
+        line: number;
+        priority: number;
         text: string;
     }
 
