@@ -57,6 +57,7 @@ import com.palantir.typescript.services.language.FileDelta;
 import com.palantir.typescript.services.language.FileDelta.Delta;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.OutputFile;
+import com.palantir.typescript.services.language.TodoCommentEx;
 
 /**
  * The TypeScript builder transpiles TypeScript files into JavaScript.
@@ -67,7 +68,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     public static final String ID = "com.palantir.typescript.typeScriptBuilder";
 
-    private static final String MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
+    private static final String PROBLEM_MARKER_TYPE = "com.palantir.typescript.typeScriptProblem";
+    private static final String TASK_MARKER_TYPE = "com.palantir.typescript.typeScriptTask";
 
     private final LanguageEndpoint languageEndpoint;
 
@@ -109,7 +111,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         this.languageEndpoint.cleanProject(this.getProject());
 
         // clear the problem markers
-        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.getProject().deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.getProject().deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
     }
 
     @Override
@@ -155,7 +158,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 this.languageEndpoint.initializeProject(referencingProject);
             }
 
-            referencingProject.deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+            referencingProject.deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+            referencingProject.deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
             this.createMarkers(referencingProject, monitor);
         }
     }
@@ -163,8 +167,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void build(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
 
-        // clear the problem markers
-        this.getProject().deleteMarkers(MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        // clear the problem and task markers
+        this.getProject().deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.getProject().deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
@@ -313,12 +318,13 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void createMarkers(IProject project, IProgressMonitor monitor) throws CoreException {
         final Map<String, List<DiagnosticEx>> diagnostics = this.languageEndpoint.getAllDiagnostics(project);
+        final Map<String, List<TodoCommentEx>> todos=this.languageEndpoint.getAllTodos(project);
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
             @Override
             public void run(IProgressMonitor runnableMonitor) throws CoreException {
-                createMarkers(diagnostics);
+                createMarkers(diagnostics, todos);
             }
         };
         ResourcesPlugin.getWorkspace().run(runnable, project, IWorkspace.AVOID_UPDATE, monitor);
@@ -343,23 +349,37 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return false;
     }
 
-    private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics) throws CoreException {
+    private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics,
+            final Map<String, List<TodoCommentEx>> todoComments) throws CoreException {
         for (Map.Entry<String, List<DiagnosticEx>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
 
-            // create the markers for this file
+            // create the problem markers for this file
             IFile file = EclipseResources.getFile(fileName);
             List<DiagnosticEx> fileDiagnostics = entry.getValue();
             for (DiagnosticEx diagnostic : fileDiagnostics) {
-                IMarker marker = file.createMarker(MARKER_TYPE);
-                Map<String, Object> attributes = createMarkerAttributes(diagnostic);
+                IMarker marker = file.createMarker(PROBLEM_MARKER_TYPE);
+                Map<String, Object> attributes = createProblemMarkerAttributes(diagnostic);
+
+                marker.setAttributes(attributes);
+            }
+        }
+        for (Map.Entry<String, List<TodoCommentEx>> entry : todoComments.entrySet()) {
+            String fileName = entry.getKey();
+
+            // create the task markers for this file
+            IFile file = EclipseResources.getFile(fileName);
+            List<TodoCommentEx> todos= entry.getValue();
+            for (TodoCommentEx todo : todos) {
+                IMarker marker = file.createMarker(TASK_MARKER_TYPE);
+                Map<String, Object> attributes = createTaskMarkerAttributes(todo);
 
                 marker.setAttributes(attributes);
             }
         }
     }
 
-    private static Map<String, Object> createMarkerAttributes(DiagnosticEx diagnostic) {
+    private static Map<String, Object> createProblemMarkerAttributes(DiagnosticEx diagnostic) {
         ImmutableMap.Builder<String, Object> attributes = ImmutableMap.builder();
 
         attributes.put(IMarker.CHAR_START, diagnostic.getStart());
@@ -368,6 +388,19 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         attributes.put(IMarker.MESSAGE, diagnostic.getText());
         attributes.put(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
         attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+
+        return attributes.build();
+    }
+
+    private static Map<String, Object> createTaskMarkerAttributes(TodoCommentEx todo) {
+        ImmutableMap.Builder<String, Object> attributes = ImmutableMap.builder();
+
+        attributes.put(IMarker.CHAR_START, todo.getStart());
+        attributes.put(IMarker.CHAR_END, todo.getStart() + todo.getText().length());
+        attributes.put(IMarker.LINE_NUMBER, todo.getLine() + 1);
+        attributes.put(IMarker.MESSAGE, todo.getText());
+        attributes.put(IMarker.PRIORITY, todo.getPriority());
+        attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
 
         return attributes.build();
     }

@@ -112,6 +112,16 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
+    public Map<String, List<TodoCommentEx>> getAllTodos(IProject project){
+        checkNotNull(project);
+        String projectName = project.getName();
+        Request request = new Request(SERVICE, "getAllTodos", projectName);
+        JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
+        CollectionType todoListType = TypeFactory.defaultInstance().constructCollectionType(List.class, TodoCommentEx.class);
+        MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, todoListType);
+        return this.bridge.call(request, returnType);
+    }
+
     public List<OutputFile> getEmitOutput(IProject project, String fileName) {
         checkNotNull(fileName);
 
@@ -187,6 +197,15 @@ public final class LanguageEndpoint {
 
         Request request = new Request(SERVICE, "getDiagnostics", serviceKey, fileName, semantic);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
+        return this.bridge.call(request, resultType);
+    }
+
+    public List<TodoCommentEx> getTodos(String serviceKey, String fileName) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getTodos", serviceKey, fileName);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TodoCommentEx.class);
         return this.bridge.call(request, resultType);
     }
 

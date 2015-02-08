@@ -35,6 +35,7 @@ import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.DiagnosticEx;
 import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.services.language.TextSpan;
+import com.palantir.typescript.services.language.TodoCommentEx;
 import com.palantir.typescript.text.FileLanguageService;
 import com.palantir.typescript.text.TypeScriptEditor;
 
@@ -47,6 +48,7 @@ public final class AnnotationReconcilingStrategy {
 
     private static final String DIAGNOSTIC_TYPE = "com.palantir.typescript.diagnostic";
     private static final String OCCURRENCES_TYPE = "com.palantir.typescript.occurrences";
+    private static final String TASK_TYPE = "com.palantir.typescript.task";
 
     private final TypeScriptEditor editor;
     private final ISourceViewer sourceViewer;
@@ -69,11 +71,12 @@ public final class AnnotationReconcilingStrategy {
         if (offset >= 0) {
             final List<DiagnosticEx> diagnostics = languageService.getDiagnostics();
             final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(offset);
+            final List<TodoCommentEx> todos= languageService.getTodos();
 
             Display.getDefault().asyncExec(new Runnable() {
                 @Override
                 public void run() {
-                    updateAnnotations(diagnostics, occurrences);
+                    updateAnnotations(diagnostics, occurrences, todos);
                 }
             });
         }
@@ -108,7 +111,7 @@ public final class AnnotationReconcilingStrategy {
         return dirty.get();
     }
 
-    private void updateAnnotations(List<DiagnosticEx> diagnostics, List<ReferenceEntry> occurrences) {
+    private void updateAnnotations(List<DiagnosticEx> diagnostics, List<ReferenceEntry> occurrences, List<TodoCommentEx> todos) {
         IAnnotationModelExtension annotationModel = (IAnnotationModelExtension) this.sourceViewer.getAnnotationModel();
 
         if (annotationModel != null) {
@@ -130,6 +133,18 @@ public final class AnnotationReconcilingStrategy {
                     Annotation annotation = new Annotation(OCCURRENCES_TYPE, false, null);
                     TextSpan textSpan = occurrence.getTextSpan();
                     Position position = new Position(textSpan.getStart(), textSpan.getLength());
+
+                    annotationsToAdd.put(annotation, position);
+                }
+            }
+
+            if (todos!=null) {
+                for (TodoCommentEx todo: todos){
+                    Annotation annotation = new Annotation(TASK_TYPE, false, todo.getText());
+                    Position position = new Position(todo.getStart(), todo.getText().length());
+
+                    annotationsToAdd.put(annotation, position);
+                    position = new Position(todo.getStart(), todo.getText().length());
 
                     annotationsToAdd.put(annotation, position);
                 }
