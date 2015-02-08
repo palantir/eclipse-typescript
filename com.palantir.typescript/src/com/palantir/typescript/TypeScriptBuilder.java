@@ -384,7 +384,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         attributes.put(IMarker.CHAR_START, diagnostic.getStart());
         attributes.put(IMarker.CHAR_END, diagnostic.getStart() + diagnostic.getLength());
-        attributes.put(IMarker.LINE_NUMBER, diagnostic.getLine() + 1);
+        attributes.put(IMarker.LINE_NUMBER, diagnostic.getLine());
         attributes.put(IMarker.MESSAGE, diagnostic.getText());
         attributes.put(IMarker.PRIORITY, IMarker.PRIORITY_NORMAL);
         attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
@@ -397,7 +397,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         attributes.put(IMarker.CHAR_START, todo.getStart());
         attributes.put(IMarker.CHAR_END, todo.getStart() + todo.getText().length());
-        attributes.put(IMarker.LINE_NUMBER, todo.getLine() + 1);
+        attributes.put(IMarker.LINE_NUMBER, todo.getLine());
         attributes.put(IMarker.MESSAGE, todo.getText());
         attributes.put(IMarker.PRIORITY, todo.getPriority());
         attributes.put(IMarker.SEVERITY, IMarker.SEVERITY_INFO);
