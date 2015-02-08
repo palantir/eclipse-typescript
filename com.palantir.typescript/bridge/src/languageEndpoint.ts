@@ -147,7 +147,7 @@ module Bridge {
                 var snapshot = this.fileInfos[reference.fileName].getSnapshot();
 
                 var lineStarts = snapshot.getLineStartPositions();
-                var lineNumber = ts.getLineAndCharacterOfPosition(lineStarts, reference.textSpan.start()).line;
+                var lineNumber = ts.getLineAndCharacterOfPosition(lineStarts, reference.textSpan.start).line;
                 var lineStart = ts.getPositionFromLineAndCharacter(lineStarts, lineNumber, 0);
                 var lineEnd = ts.getPositionFromLineAndCharacter(lineStarts, lineNumber + 1, 0) - 1;
                 var line = snapshot.getText(lineStart, lineEnd);
@@ -242,10 +242,12 @@ module Bridge {
             }
         }
 
-        public setLibContents(libContents: string) {
-            var fileInfo = new FileInfo(libContents, null);
+        public setLibContents(libContents: string, libES6Contents: string) {
+            var libFileInfo = new FileInfo(libContents, null);
+            this.fileInfos[LIB_FILE_NAME] = libFileInfo;
 
-            this.fileInfos[LIB_FILE_NAME] = fileInfo;
+            var libES6FileInfo = new FileInfo(libES6Contents, null);
+            this.fileInfos[LIB_ES6_FILE_NAME] = libES6FileInfo;
         }
 
         public updateFiles(deltas: IFileDelta[]) {

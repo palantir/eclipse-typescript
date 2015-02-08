@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+/// <reference path="logger.ts" />
+
 module Bridge {
 
     export class ClassifierEndpoint {
@@ -21,9 +23,7 @@ module Bridge {
         private classifier: ts.Classifier;
 
         constructor() {
-            this.classifier = ts.createClassifier({
-                log: (message) => console.log(message)
-            });
+            this.classifier = ts.createClassifier(new Logger());
         }
 
         public getClassificationsForLines(lines: string[], lexState: ts.EndOfLineState) {

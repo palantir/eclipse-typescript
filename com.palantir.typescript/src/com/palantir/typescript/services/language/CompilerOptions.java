@@ -56,6 +56,9 @@ public final class CompilerOptions {
     @JsonProperty("help")
     private Boolean help;
 
+    @JsonProperty("listFiles")
+    private Boolean listFiles;
+
     @JsonProperty("locale")
     private String locale;
 
@@ -64,6 +67,9 @@ public final class CompilerOptions {
 
     @JsonProperty("module")
     private ModuleKind module;
+
+    @JsonProperty("noEmit")
+    private Boolean noEmit;
 
     @JsonProperty("noEmitOnError")
     private Boolean noEmitOnError;
@@ -91,6 +97,9 @@ public final class CompilerOptions {
 
     @JsonProperty("preserveConstEnums")
     private Boolean preserveConstEnums;
+
+    @JsonProperty("project")
+    private String project;
 
     @JsonProperty("removeComments")
     private Boolean removeComments;

@@ -15,13 +15,15 @@
  */
 
 /// <reference path="fileInfo.ts" />
+/// <reference path="logger.ts" />
 /// <reference path="snapshot.ts" />
 
 module Bridge {
 
     export var LIB_FILE_NAME = "lib.d.ts";
+    export var LIB_ES6_FILE_NAME = "lib.es6.d.ts";
 
-    export class LanguageServiceHost implements ts.LanguageServiceHost {
+    export class LanguageServiceHost extends Logger implements ts.LanguageServiceHost {
 
         private compilationSettings: ts.CompilerOptions;
         private fileFilter: (fileName: string) => boolean;
@@ -31,6 +33,7 @@ module Bridge {
                 compilationSettings: ts.CompilerOptions,
                 fileFilter: (fileName: string) => boolean,
                 fileInfos: { [fileName: string]: FileInfo }) {
+            super();
 
             this.compilationSettings = compilationSettings;
             this.fileFilter = fileFilter;
@@ -41,19 +44,23 @@ module Bridge {
             return this.compilationSettings;
         }
 
+        public getCurrentDirectory() {
+            return "";
+        }
+
+        public getDefaultLibFilename(options: ts.CompilerOptions) {
+            return (options.target === ts.ScriptTarget.ES6 ? LIB_ES6_FILE_NAME : LIB_FILE_NAME);
+        }
+
         public getScriptFileNames() {
             return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
                 // include the default library definition file if its enabled
-                if (fileName === LIB_FILE_NAME) {
+                if (fileName === LIB_FILE_NAME || fileName === LIB_ES6_FILE_NAME) {
                     return !this.compilationSettings.noLib;
                 }
 
                 return this.fileFilter(fileName);
             });
-        }
-
-        public getScriptVersion(fileName: string) {
-            return this.fileInfos[fileName].getVersion();
         }
 
         public getScriptIsOpen(fileName: string) {
@@ -64,16 +71,8 @@ module Bridge {
             return this.fileInfos[fileName].getSnapshot();
         }
 
-        public getCurrentDirectory() {
-            return "";
-        }
-
-        public getDefaultLibFilename(options: ts.CompilerOptions) {
-            return LIB_FILE_NAME;
-        }
-
-        public log(s: string) {
-            console.log(s);
+        public getScriptVersion(fileName: string) {
+            return this.fileInfos[fileName].getVersion();
         }
     }
 }

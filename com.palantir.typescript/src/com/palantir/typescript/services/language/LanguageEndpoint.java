@@ -52,6 +52,7 @@ import com.palantir.typescript.services.Request;
 public final class LanguageEndpoint {
 
     private static final String LIB_FILE_NAME = "lib.d.ts";
+    private static final String LIB_ES6_FILE_NAME = "lib.es6.d.ts";
     private static final String SERVICE = "language";
 
     private final Bridge bridge;
@@ -344,8 +345,8 @@ public final class LanguageEndpoint {
         return referencedProjectNames.build();
     }
 
-    private static String readLibContents() {
-        URL libUrl = LanguageEndpoint.class.getResource(LIB_FILE_NAME);
+    private static String readLibContents(String resourceName) {
+        URL libUrl = LanguageEndpoint.class.getResource(resourceName);
 
         try {
             return Resources.toString(libUrl, Charsets.UTF_8);
@@ -355,9 +356,9 @@ public final class LanguageEndpoint {
     }
 
     private void setLibContents() {
-        String libContents = readLibContents();
-        Request request = new Request(SERVICE, "setLibContents", libContents);
+        String libContents = readLibContents(LIB_FILE_NAME);
+        String libES6Contents = readLibContents(LIB_ES6_FILE_NAME);
+        Request request = new Request(SERVICE, "setLibContents", libContents, libES6Contents);
         this.bridge.call(request, Void.class);
     }
-
 }
