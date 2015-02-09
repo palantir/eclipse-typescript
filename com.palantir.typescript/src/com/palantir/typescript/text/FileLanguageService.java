@@ -36,6 +36,7 @@ import com.palantir.typescript.services.language.ReferenceEntryEx;
 import com.palantir.typescript.services.language.RenameLocation;
 import com.palantir.typescript.services.language.TextChange;
 import com.palantir.typescript.services.language.TextSpan;
+import com.palantir.typescript.services.language.TodoCommentEx;
 
 /**
  * A language service specifically for use with a single file.
@@ -91,6 +92,10 @@ public final class FileLanguageService {
         boolean semantic = !this.serviceKey.equals(this.fileName);
 
         return this.languageEndpoint.getDiagnostics(this.serviceKey, this.fileName, semantic);
+    }
+
+    public List<TodoCommentEx> getTodos() {
+        return this.languageEndpoint.getTodos(this.serviceKey, this.fileName);
     }
 
     public List<TextChange> getFormattingEditsForRange(int start, int end, FormatCodeOptions options) {
