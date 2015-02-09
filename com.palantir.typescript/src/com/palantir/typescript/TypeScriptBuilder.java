@@ -110,9 +110,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         // clean the language service in case it is out-of-sync
         this.languageEndpoint.cleanProject(this.getProject());
 
-        // clear the problem markers
-        this.getProject().deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-        this.getProject().deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.deleteAllMarkers();
     }
 
     @Override
@@ -158,8 +156,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 this.languageEndpoint.initializeProject(referencingProject);
             }
 
-            referencingProject.deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-            referencingProject.deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+            this.deleteAllMarkers();
             this.createMarkers(referencingProject, monitor);
         }
     }
@@ -167,9 +164,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     private void build(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
         IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
 
-        // clear the problem and task markers
-        this.getProject().deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-        this.getProject().deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.deleteAllMarkers();
 
         // compile the source files if compile-on-save is enabled
         if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
@@ -190,6 +185,11 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
         // create the problem markers
         this.createMarkers(this.getProject(), monitor);
+    }
+
+    private void deleteAllMarkers() throws CoreException {
+        this.getProject().deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.getProject().deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
     }
 
     private void ensureOutputFolderExists(IProgressMonitor monitor) throws CoreException {
@@ -318,7 +318,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
 
     private void createMarkers(IProject project, IProgressMonitor monitor) throws CoreException {
         final Map<String, List<DiagnosticEx>> diagnostics = this.languageEndpoint.getAllDiagnostics(project);
-        final Map<String, List<TodoCommentEx>> todos=this.languageEndpoint.getAllTodos(project);
+        final Map<String, List<TodoCommentEx>> todos = this.languageEndpoint.getAllTodoComments(project);
 
         // create the markers within a workspace runnable for greater efficiency
         IWorkspaceRunnable runnable = new IWorkspaceRunnable() {
@@ -349,8 +349,10 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         return false;
     }
 
-    private static void createMarkers(final Map<String, List<DiagnosticEx>> diagnostics,
-            final Map<String, List<TodoCommentEx>> todoComments) throws CoreException {
+    private static void createMarkers(
+            Map<String, List<DiagnosticEx>> diagnostics,
+            Map<String, List<TodoCommentEx>> todoComments) throws CoreException {
+
         for (Map.Entry<String, List<DiagnosticEx>> entry : diagnostics.entrySet()) {
             String fileName = entry.getKey();
 
@@ -364,13 +366,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 marker.setAttributes(attributes);
             }
         }
+
         for (Map.Entry<String, List<TodoCommentEx>> entry : todoComments.entrySet()) {
             String fileName = entry.getKey();
 
             // create the task markers for this file
             IFile file = EclipseResources.getFile(fileName);
-            List<TodoCommentEx> todos= entry.getValue();
-            for (TodoCommentEx todo : todos) {
+            List<TodoCommentEx> fileTodos = entry.getValue();
+            for (TodoCommentEx todo : fileTodos) {
                 IMarker marker = file.createMarker(TASK_MARKER_TYPE);
                 Map<String, Object> attributes = createTaskMarkerAttributes(todo);
 

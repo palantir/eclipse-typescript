@@ -17,6 +17,7 @@
 package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
@@ -40,7 +41,8 @@ public final class TodoCommentEx {
             @JsonProperty("text") String text) {
         checkArgument(line >= 0);
         checkArgument(start >= 0);
-        checkArgument(priority >=0 && priority<=2);
+        checkArgument(priority >= 0 && priority <= 2);
+        checkNotNull(text);
 
         this.start = start;
         this.line = line;

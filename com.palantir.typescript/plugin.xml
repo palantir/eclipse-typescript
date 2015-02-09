@@ -48,16 +48,6 @@
             value="true">
       </persistent>
    </extension>
-   <extension
-         id="typeScriptTask"
-         name="TypeScript Task"
-         point="org.eclipse.core.resources.markers">
-		<super type="org.eclipse.core.resources.taskmarker"/>
-		<super type="org.eclipse.core.resources.textmarker"/>      
-		<persistent
-            value="true">
-      </persistent>
-   </extension>
 
    <extension
          id="typeScriptNature"
@@ -71,6 +61,19 @@
                class="com.palantir.typescript.ProjectNature">
          </run>
       </runtime>
+   </extension>
+
+   <extension
+         id="typeScriptTask"
+         name="TypeScript Task"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.taskmarker"/>
+      <super
+            type="org.eclipse.core.resources.textmarker"/>
+      <persistent
+            value="true">
+      </persistent>
    </extension>
 
    <extension
@@ -233,7 +236,6 @@
             super="org.eclipse.ui.workbench.texteditor.task">
       </type>
    </extension>
-
 
    <extension
          point="org.eclipse.ui.editors.markerAnnotationSpecification">

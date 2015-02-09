@@ -113,10 +113,11 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
-    public Map<String, List<TodoCommentEx>> getAllTodos(IProject project){
+    public Map<String, List<TodoCommentEx>> getAllTodoComments(IProject project) {
         checkNotNull(project);
+
         String projectName = project.getName();
-        Request request = new Request(SERVICE, "getAllTodos", projectName);
+        Request request = new Request(SERVICE, "getAllTodoComments", projectName);
         JavaType stringType = TypeFactory.defaultInstance().uncheckedSimpleType(String.class);
         CollectionType todoListType = TypeFactory.defaultInstance().constructCollectionType(List.class, TodoCommentEx.class);
         MapType returnType = TypeFactory.defaultInstance().constructMapType(Map.class, stringType, todoListType);
@@ -201,15 +202,6 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, resultType);
     }
 
-    public List<TodoCommentEx> getTodos(String serviceKey, String fileName) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-
-        Request request = new Request(SERVICE, "getTodos", serviceKey, fileName);
-        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TodoCommentEx.class);
-        return this.bridge.call(request, resultType);
-    }
-
     public List<TextChange> getFormattingEditsForRange(String serviceKey, String fileName, int start, int end, FormatCodeOptions options) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
@@ -268,6 +260,15 @@ public final class LanguageEndpoint {
 
         Request request = new Request(SERVICE, "getQuickInfoAtPosition", serviceKey, fileName, position);
         return this.bridge.call(request, QuickInfo.class);
+    }
+
+    public List<TodoCommentEx> getTodoComments(String serviceKey, String fileName) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+
+        Request request = new Request(SERVICE, "getTodoComments", serviceKey, fileName);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, TodoCommentEx.class);
+        return this.bridge.call(request, resultType);
     }
 
     public void setFileOpen(String fileName, boolean open) {

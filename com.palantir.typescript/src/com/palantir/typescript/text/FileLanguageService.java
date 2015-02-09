@@ -94,10 +94,6 @@ public final class FileLanguageService {
         return this.languageEndpoint.getDiagnostics(this.serviceKey, this.fileName, semantic);
     }
 
-    public List<TodoCommentEx> getTodos() {
-        return this.languageEndpoint.getTodos(this.serviceKey, this.fileName);
-    }
-
     public List<TextChange> getFormattingEditsForRange(int start, int end, FormatCodeOptions options) {
         return this.languageEndpoint.getFormattingEditsForRange(this.serviceKey, this.fileName, start, end, options);
     }
@@ -120,6 +116,10 @@ public final class FileLanguageService {
 
     public QuickInfo getQuickInfoAtPosition(int position) {
         return this.languageEndpoint.getQuickInfoAtPosition(this.serviceKey, this.fileName, position);
+    }
+
+    public List<TodoCommentEx> getTodoComments() {
+        return this.languageEndpoint.getTodoComments(this.serviceKey, this.fileName);
     }
 
     public static FileLanguageService create(LanguageEndpoint languageEndpoint, IProject project, String fileName) {

@@ -71,12 +71,12 @@ public final class AnnotationReconcilingStrategy {
         if (offset >= 0) {
             final List<DiagnosticEx> diagnostics = languageService.getDiagnostics();
             final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(offset);
-            final List<TodoCommentEx> todos= languageService.getTodos();
+            final List<TodoCommentEx> todoComments = languageService.getTodoComments();
 
             Display.getDefault().asyncExec(new Runnable() {
                 @Override
                 public void run() {
-                    updateAnnotations(diagnostics, occurrences, todos);
+                    updateAnnotations(diagnostics, occurrences, todoComments);
                 }
             });
         }
@@ -111,7 +111,7 @@ public final class AnnotationReconcilingStrategy {
         return dirty.get();
     }
 
-    private void updateAnnotations(List<DiagnosticEx> diagnostics, List<ReferenceEntry> occurrences, List<TodoCommentEx> todos) {
+    private void updateAnnotations(List<DiagnosticEx> diagnostics, List<ReferenceEntry> occurrences, List<TodoCommentEx> todoComments) {
         IAnnotationModelExtension annotationModel = (IAnnotationModelExtension) this.sourceViewer.getAnnotationModel();
 
         if (annotationModel != null) {
@@ -138,13 +138,11 @@ public final class AnnotationReconcilingStrategy {
                 }
             }
 
-            if (todos!=null) {
-                for (TodoCommentEx todo: todos){
-                    Annotation annotation = new Annotation(TASK_TYPE, false, todo.getText());
-                    Position position = new Position(todo.getStart(), todo.getText().length());
-
-                    annotationsToAdd.put(annotation, position);
-                    position = new Position(todo.getStart(), todo.getText().length());
+            // add the todo comments
+            if (todoComments != null) {
+                for (TodoCommentEx todoComment : todoComments) {
+                    Annotation annotation = new Annotation(TASK_TYPE, false, todoComment.getText());
+                    Position position = new Position(todoComment.getStart(), todoComment.getText().length());
 
                     annotationsToAdd.put(annotation, position);
                 }

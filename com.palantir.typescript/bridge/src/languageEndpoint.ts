@@ -80,35 +80,18 @@ module Bridge {
             delete this.languageServices[serviceKey];
         }
 
-        public getAllTodos(projectName: string) {
+        public getAllTodoComments(projectName: string) {
             var todos: { [fileName: string]: TodoCommentEx[] } = {};
             Object.keys(this.fileInfos)
                 .filter((fileName) => this.isSourceFile(projectName, fileName))
                 .forEach((fileName) => {
-                	todos[fileName] = this.getTodos(projectName, fileName);
-            	});
+                  todos[fileName] = this.getTodoComments(projectName, fileName);
+              });
             return todos;
         }
 
-        public getTodos(serviceKey: string, filename: string): TodoCommentEx[] {
-            var todos = this.languageServices[serviceKey].getTodoComments(filename,
-                [{ text: "TODO", priority: 0 }, { text: "FIXME", priority: 1 }, { text: "XXX", priority: 2 }]);
-            if (todos.length) {
-                var file = this.languageServices[serviceKey].getSourceFile(filename);
-                return todos.map((todo) => {
-                    return {
-                        start: todo.position,
-                        line: file.getLineAndCharacterFromPosition(todo.position).line,
-                        priority: todo.descriptor.priority,
-                        text: todo.message
-                    };
-                });
-            }
-            return [];
-        }
-
         public getAllDiagnostics(projectName: string) {
-            var diagnostics: { [fileName: string]: DiagnosticEx[] } = {};
+            var diagnostics: { [fileName: string]: DiagnosticEx[] } = Object.create(null);
 
             Object.keys(this.fileInfos)
                 .filter((fileName) => this.isSourceFile(projectName, fileName))
@@ -227,6 +210,30 @@ module Bridge {
 
         public getQuickInfoAtPosition(serviceKey: string, fileName: string, position: number) {
             return this.languageServices[serviceKey].getQuickInfoAtPosition(fileName, position);
+        }
+
+        public getTodoComments(serviceKey: string, filename: string) {
+            var descriptors = [
+                { text: "TODO", priority: 0 },
+                { text: "FIXME", priority: 1 },
+                { text: "XXX", priority: 2 }
+            ];
+
+            var todos = this.languageServices[serviceKey].getTodoComments(filename, descriptors);
+            if (todos.length > 0) {
+                var sourceFile = this.languageServices[serviceKey].getSourceFile(filename);
+
+                return todos.map((todo) => {
+                    return {
+                        start: todo.position,
+                        line: sourceFile.getLineAndCharacterFromPosition(todo.position).line,
+                        priority: todo.descriptor.priority,
+                        text: todo.message
+                    };
+                });
+            }
+
+            return [];
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
