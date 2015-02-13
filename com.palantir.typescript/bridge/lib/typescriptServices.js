@@ -1725,7 +1725,6 @@ var ts;
         this_cannot_be_referenced_in_a_computed_property_name: { code: 2465, category: 1, key: "'this' cannot be referenced in a computed property name." },
         super_cannot_be_referenced_in_a_computed_property_name: { code: 2466, category: 1, key: "'super' cannot be referenced in a computed property name." },
         A_computed_property_name_cannot_reference_a_type_parameter_from_its_containing_type: { code: 2466, category: 1, key: "A computed property name cannot reference a type parameter from its containing type." },
-        Spread_operator_in_new_expressions_is_only_available_when_targeting_ECMAScript_6_and_higher: { code: 2468, category: 1, key: "Spread operator in 'new' expressions is only available when targeting ECMAScript 6 and higher." },
         Import_declaration_0_is_using_private_name_1: { code: 4000, category: 1, key: "Import declaration '{0}' is using private name '{1}'." },
         Type_parameter_0_of_exported_class_has_or_is_using_private_name_1: { code: 4002, category: 1, key: "Type parameter '{0}' of exported class has or is using private name '{1}'." },
         Type_parameter_0_of_exported_interface_has_or_is_using_private_name_1: { code: 4004, category: 1, key: "Type parameter '{0}' of exported interface has or is using private name '{1}'." },
@@ -1802,7 +1801,6 @@ var ts;
         const_enum_member_initializer_was_evaluated_to_a_non_finite_value: { code: 4086, category: 1, key: "'const' enum member initializer was evaluated to a non-finite value." },
         const_enum_member_initializer_was_evaluated_to_disallowed_value_NaN: { code: 4087, category: 1, key: "'const' enum member initializer was evaluated to disallowed value 'NaN'." },
         Property_0_does_not_exist_on_const_enum_1: { code: 4088, category: 1, key: "Property '{0}' does not exist on 'const' enum '{1}'." },
-        let_is_not_allowed_to_be_used_as_a_name_in_let_or_const_declarations: { code: 4089, category: 1, key: "'let' is not allowed to be used as a name in 'let' or 'const' declarations." },
         The_current_host_does_not_support_the_0_option: { code: 5001, category: 1, key: "The current host does not support the '{0}' option." },
         Cannot_find_the_common_subdirectory_path_for_the_input_files: { code: 5009, category: 1, key: "Cannot find the common subdirectory path for the input files." },
         Cannot_read_file_0_Colon_1: { code: 5012, category: 1, key: "Cannot read file '{0}': {1}" },
@@ -4149,50 +4147,31 @@ var ts;
     ts.modifierToFlag = modifierToFlag;
     function fixupParentReferences(sourceFile) {
         var parent = sourceFile;
-        forEachChild(sourceFile, visitNode);
-        return;
-        function visitNode(n) {
+        function walk(n) {
             if (n.parent !== parent) {
                 n.parent = parent;
                 var saveParent = parent;
                 parent = n;
-                forEachChild(n, visitNode);
+                forEachChild(n, walk);
                 parent = saveParent;
             }
         }
+        forEachChild(sourceFile, walk);
     }
-    function shouldCheckNode(node) {
-        switch (node.kind) {
-            case 8:
-            case 7:
-            case 64:
-                return true;
-        }
-        return false;
-    }
-    function moveElementEntirelyPastChangeRange(element, isArray, delta, oldText, newText, aggressiveChecks) {
-        if (isArray) {
+    function moveElementEntirelyPastChangeRange(element, delta) {
+        if (element.length) {
             visitArray(element);
         }
         else {
             visitNode(element);
         }
-        return;
         function visitNode(node) {
-            if (aggressiveChecks && shouldCheckNode(node)) {
-                var text = oldText.substring(node.pos, node.end);
-            }
             node._children = undefined;
             node.pos += delta;
             node.end += delta;
-            if (aggressiveChecks && shouldCheckNode(node)) {
-                ts.Debug.assert(text === newText.substring(node.pos, node.end));
-            }
             forEachChild(node, visitNode, visitArray);
-            checkNodePositions(node, aggressiveChecks);
         }
         function visitArray(array) {
-            array._children = undefined;
             array.pos += delta;
             array.end += delta;
             for (var i = 0, n = array.length; i < n; i++) {
@@ -4203,7 +4182,6 @@ var ts;
     function adjustIntersectingElement(element, changeStart, changeRangeOldEnd, changeRangeNewEnd, delta) {
         ts.Debug.assert(element.end >= changeStart, "Adjusting an element that was entirely before the change range");
         ts.Debug.assert(element.pos <= changeRangeOldEnd, "Adjusting an element that was entirely after the change range");
-        ts.Debug.assert(element.pos <= element.end);
         element.pos = Math.min(element.pos, changeRangeNewEnd);
         if (element.end >= changeRangeOldEnd) {
             element.end += delta;
@@ -4217,53 +4195,35 @@ var ts;
             ts.Debug.assert(element.end <= element.parent.end);
         }
     }
-    function checkNodePositions(node, aggressiveChecks) {
-        if (aggressiveChecks) {
-            var pos = node.pos;
-            forEachChild(node, function (child) {
-                ts.Debug.assert(child.pos >= pos);
-                pos = child.end;
-            });
-            ts.Debug.assert(pos <= node.end);
-        }
-    }
-    function updateTokenPositionsAndMarkElements(sourceFile, changeStart, changeRangeOldEnd, changeRangeNewEnd, delta, oldText, newText, aggressiveChecks) {
-        visitNode(sourceFile);
-        return;
+    function updateTokenPositionsAndMarkElements(node, changeStart, changeRangeOldEnd, changeRangeNewEnd, delta) {
+        visitNode(node);
         function visitNode(child) {
-            ts.Debug.assert(child.pos <= child.end);
             if (child.pos > changeRangeOldEnd) {
-                moveElementEntirelyPastChangeRange(child, false, delta, oldText, newText, aggressiveChecks);
+                moveElementEntirelyPastChangeRange(child, delta);
                 return;
             }
             var fullEnd = child.end;
             if (fullEnd >= changeStart) {
                 child.intersectsChange = true;
-                child._children = undefined;
                 adjustIntersectingElement(child, changeStart, changeRangeOldEnd, changeRangeNewEnd, delta);
                 forEachChild(child, visitNode, visitArray);
-                checkNodePositions(child, aggressiveChecks);
                 return;
             }
-            ts.Debug.assert(fullEnd < changeStart);
         }
         function visitArray(array) {
-            ts.Debug.assert(array.pos <= array.end);
             if (array.pos > changeRangeOldEnd) {
-                moveElementEntirelyPastChangeRange(array, true, delta, oldText, newText, aggressiveChecks);
-                return;
+                moveElementEntirelyPastChangeRange(array, delta);
             }
-            var fullEnd = array.end;
-            if (fullEnd >= changeStart) {
-                array.intersectsChange = true;
-                array._children = undefined;
-                adjustIntersectingElement(array, changeStart, changeRangeOldEnd, changeRangeNewEnd, delta);
-                for (var i = 0, n = array.length; i < n; i++) {
-                    visitNode(array[i]);
+            else {
+                var fullEnd = array.end;
+                if (fullEnd >= changeStart) {
+                    array.intersectsChange = true;
+                    adjustIntersectingElement(array, changeStart, changeRangeOldEnd, changeRangeNewEnd, delta);
+                    for (var i = 0, n = array.length; i < n; i++) {
+                        visitNode(array[i]);
+                    }
                 }
-                return;
             }
-            ts.Debug.assert(fullEnd < changeStart);
         }
     }
     function extendToAffectedRange(sourceFile, changeRange) {
@@ -4271,7 +4231,6 @@ var ts;
         var start = changeRange.span.start;
         for (var i = 0; start > 0 && i <= maxLookahead; i++) {
             var nearestNode = findNearestNodeStartingBeforeOrAtPosition(sourceFile, start);
-            ts.Debug.assert(nearestNode.pos <= start);
             var position = nearestNode.pos;
             start = Math.max(0, position - 1);
         }
@@ -4333,41 +4292,17 @@ var ts;
             }
         }
     }
-    function checkChangeRange(sourceFile, newText, textChangeRange, aggressiveChecks) {
-        var oldText = sourceFile.text;
-        if (textChangeRange) {
-            ts.Debug.assert((oldText.length - textChangeRange.span.length + textChangeRange.newLength) === newText.length);
-            if (aggressiveChecks || ts.Debug.shouldAssert(3)) {
-                var oldTextPrefix = oldText.substr(0, textChangeRange.span.start);
-                var newTextPrefix = newText.substr(0, textChangeRange.span.start);
-                ts.Debug.assert(oldTextPrefix === newTextPrefix);
-                var oldTextSuffix = oldText.substring(ts.textSpanEnd(textChangeRange.span), oldText.length);
-                var newTextSuffix = newText.substring(ts.textSpanEnd(ts.textChangeRangeNewSpan(textChangeRange)), newText.length);
-                ts.Debug.assert(oldTextSuffix === newTextSuffix);
-            }
-        }
-    }
-    function updateSourceFile(sourceFile, newText, textChangeRange, aggressiveChecks) {
-        aggressiveChecks = aggressiveChecks || ts.Debug.shouldAssert(2);
-        checkChangeRange(sourceFile, newText, textChangeRange, aggressiveChecks);
+    function updateSourceFile(sourceFile, newText, textChangeRange) {
         if (ts.textChangeRangeIsUnchanged(textChangeRange)) {
             return sourceFile;
         }
         if (sourceFile.statements.length === 0) {
             return parseSourceFile(sourceFile.fileName, newText, sourceFile.languageVersion, undefined, true);
         }
-        var incrementalSourceFile = sourceFile;
-        ts.Debug.assert(!incrementalSourceFile.hasBeenIncrementallyParsed);
-        incrementalSourceFile.hasBeenIncrementallyParsed = true;
-        var oldText = sourceFile.text;
         var syntaxCursor = createSyntaxCursor(sourceFile);
         var changeRange = extendToAffectedRange(sourceFile, textChangeRange);
-        checkChangeRange(sourceFile, newText, changeRange, aggressiveChecks);
-        ts.Debug.assert(changeRange.span.start <= textChangeRange.span.start);
-        ts.Debug.assert(ts.textSpanEnd(changeRange.span) === ts.textSpanEnd(textChangeRange.span));
-        ts.Debug.assert(ts.textSpanEnd(ts.textChangeRangeNewSpan(changeRange)) === ts.textSpanEnd(ts.textChangeRangeNewSpan(textChangeRange)));
         var delta = ts.textChangeRangeNewSpan(changeRange).length - changeRange.span.length;
-        updateTokenPositionsAndMarkElements(incrementalSourceFile, changeRange.span.start, ts.textSpanEnd(changeRange.span), ts.textSpanEnd(ts.textChangeRangeNewSpan(changeRange)), delta, oldText, newText, aggressiveChecks);
+        updateTokenPositionsAndMarkElements(sourceFile, changeRange.span.start, ts.textSpanEnd(changeRange.span), ts.textSpanEnd(ts.textChangeRangeNewSpan(changeRange)), delta);
         var result = parseSourceFile(sourceFile.fileName, newText, sourceFile.languageVersion, syntaxCursor, true);
         return result;
     }
@@ -4394,7 +4329,7 @@ var ts;
         return {
             currentNode: function (position) {
                 if (position !== lastQueriedPosition) {
-                    if (current && current.end === position && currentArrayIndex < (currentArray.length - 1)) {
+                    if (current && current.end === position && currentArrayIndex < currentArray.length) {
                         currentArrayIndex++;
                         current = currentArray[currentArrayIndex];
                     }
@@ -4412,7 +4347,6 @@ var ts;
             currentArrayIndex = -1;
             current = undefined;
             forEachChild(sourceFile, visitNode, visitArray);
-            return;
             function visitNode(node) {
                 if (position >= node.pos && position < node.end) {
                     forEachChild(node, visitNode, visitArray);
@@ -4458,6 +4392,7 @@ var ts;
         var identifiers = {};
         var identifierCount = 0;
         var nodeCount = 0;
+        var scanner;
         var token;
         var sourceFile = createNode(207, 0);
         sourceFile.pos = 0;
@@ -4470,7 +4405,7 @@ var ts;
         sourceFile.flags = ts.fileExtensionIs(sourceFile.fileName, ".d.ts") ? 1024 : 0;
         var contextFlags = 0;
         var parseErrorBeforeNextFinishedNode = false;
-        var scanner = ts.createScanner(languageVersion, true, sourceText, scanError);
+        scanner = ts.createScanner(languageVersion, true, sourceText, scanError);
         token = nextToken();
         processReferenceComments(sourceFile);
         sourceFile.statements = parseList(0, true, parseSourceElement);
@@ -4483,7 +4418,6 @@ var ts;
         if (setParentNodes) {
             fixupParentReferences(sourceFile);
         }
-        syntaxCursor = undefined;
         return sourceFile;
         function setContextFlag(val, flag) {
             if (val) {
@@ -4795,6 +4729,7 @@ var ts;
                 case 16:
                     return isIdentifier();
                 case 12:
+                    return token === 23 || isStartOfExpression();
                 case 14:
                     return token === 23 || token === 21 || isStartOfExpression();
                 case 15:
@@ -4907,8 +4842,8 @@ var ts;
             parsingContext = saveParsingContext;
             return result;
         }
-        function parseListElement(parsingContext, parseElement) {
-            var node = currentNode(parsingContext);
+        function parseListElement(kind, parseElement) {
+            var node = currentNode(kind);
             if (node) {
                 return consumeNode(node);
             }
@@ -4983,9 +4918,27 @@ var ts;
                     case 192:
                     case 195:
                     case 194:
+                    case 190:
+                    case 171:
+                    case 170:
+                    case 174:
+                    case 173:
+                    case 185:
+                    case 181:
+                    case 183:
+                    case 180:
+                    case 179:
+                    case 178:
+                    case 177:
+                    case 176:
+                    case 182:
+                    case 172:
+                    case 186:
+                    case 184:
+                    case 175:
+                    case 187:
                         return true;
                 }
-                return isReusableStatement(node);
             }
             return false;
         }
@@ -5064,11 +5017,7 @@ var ts;
             return variableDeclarator.initializer === undefined;
         }
         function isReusableParameter(node) {
-            if (node.kind !== 124) {
-                return false;
-            }
-            var parameter = node;
-            return parameter.initializer === undefined;
+            return node.kind === 124;
         }
         function abortParsingListOrMoveToNextToken(kind) {
             parseErrorAtCurrentToken(parsingContextErrors(kind));
@@ -6089,24 +6038,27 @@ var ts;
             parseExpected(17);
             return finishNode(node);
         }
+        function parseAssignmentExpressionOrOmittedExpression() {
+            return token === 23 ? createNode(168) : parseAssignmentExpressionOrHigher();
+        }
         function parseSpreadElement() {
             var node = createNode(167);
             parseExpected(21);
             node.expression = parseAssignmentExpressionOrHigher();
             return finishNode(node);
         }
-        function parseArgumentOrArrayLiteralElement() {
-            return token === 21 ? parseSpreadElement() : token === 23 ? createNode(168) : parseAssignmentExpressionOrHigher();
+        function parseArrayLiteralElement() {
+            return token === 21 ? parseSpreadElement() : parseAssignmentExpressionOrOmittedExpression();
         }
         function parseArgumentExpression() {
-            return allowInAnd(parseArgumentOrArrayLiteralElement);
+            return allowInAnd(parseAssignmentExpressionOrOmittedExpression);
         }
         function parseArrayLiteralExpression() {
             var node = createNode(147);
             parseExpected(18);
             if (scanner.hasPrecedingLineBreak())
                 node.flags |= 256;
-            node.elements = parseDelimitedList(14, parseArgumentOrArrayLiteralElement);
+            node.elements = parseDelimitedList(14, parseArrayLiteralElement);
             parseExpected(19);
             return finishNode(node);
         }
@@ -7008,17 +6960,10 @@ var ts;
                         }
                         amdModuleName = amdModuleNameMatchResult[2];
                     }
-                    var amdDependencyRegEx = /^\/\/\/\s*<amd-dependency\s/gim;
-                    var pathRegex = /\spath\s*=\s*('|")(.+?)\1/gim;
-                    var nameRegex = /\sname\s*=\s*('|")(.+?)\1/gim;
+                    var amdDependencyRegEx = /^\/\/\/\s*<amd-dependency\s+path\s*=\s*('|")(.+?)\1/gim;
                     var amdDependencyMatchResult = amdDependencyRegEx.exec(comment);
                     if (amdDependencyMatchResult) {
-                        var pathMatchResult = pathRegex.exec(comment);
-                        var nameMatchResult = nameRegex.exec(comment);
-                        if (pathMatchResult) {
-                            var amdDependency = { path: pathMatchResult[2], name: nameMatchResult ? nameMatchResult[2] : undefined };
-                            amdDependencies.push(amdDependency);
-                        }
+                        amdDependencies.push(amdDependencyMatchResult[2]);
                     }
                 }
             }
@@ -12263,51 +12208,6 @@ var ts;
             resolveUntypedCall(node);
             return unknownSignature;
         }
-        function reorderCandidates(signatures, result) {
-            var lastParent;
-            var lastSymbol;
-            var cutoffIndex = 0;
-            var index;
-            var specializedIndex = -1;
-            var spliceIndex;
-            ts.Debug.assert(!result.length);
-            for (var i = 0; i < signatures.length; i++) {
-                var signature = signatures[i];
-                var symbol = signature.declaration && getSymbolOfNode(signature.declaration);
-                var parent = signature.declaration && signature.declaration.parent;
-                if (!lastSymbol || symbol === lastSymbol) {
-                    if (lastParent && parent === lastParent) {
-                        index++;
-                    }
-                    else {
-                        lastParent = parent;
-                        index = cutoffIndex;
-                    }
-                }
-                else {
-                    index = cutoffIndex = result.length;
-                    lastParent = parent;
-                }
-                lastSymbol = symbol;
-                if (signature.hasStringLiterals) {
-                    specializedIndex++;
-                    spliceIndex = specializedIndex;
-                    cutoffIndex++;
-                }
-                else {
-                    spliceIndex = index;
-                }
-                result.splice(spliceIndex, 0, signature);
-            }
-        }
-        function getSpreadArgumentIndex(args) {
-            for (var i = 0; i < args.length; i++) {
-                if (args[i].kind === 167) {
-                    return i;
-                }
-            }
-            return -1;
-        }
         function hasCorrectArity(node, args, signature) {
             var adjustedArgCount;
             var typeArguments;
@@ -12338,19 +12238,20 @@ var ts;
                 callIsIncomplete = callExpression.arguments.end === callExpression.end;
                 typeArguments = callExpression.typeArguments;
             }
-            var hasRightNumberOfTypeArgs = !typeArguments || (signature.typeParameters && typeArguments.length === signature.typeParameters.length);
-            if (!hasRightNumberOfTypeArgs) {
-                return false;
+            ts.Debug.assert(adjustedArgCount !== undefined, "'adjustedArgCount' undefined");
+            ts.Debug.assert(callIsIncomplete !== undefined, "'callIsIncomplete' undefined");
+            return checkArity(adjustedArgCount, typeArguments, callIsIncomplete, signature);
+            function checkArity(adjustedArgCount, typeArguments, callIsIncomplete, signature) {
+                if (!signature.hasRestParameter && adjustedArgCount > signature.parameters.length) {
+                    return false;
+                }
+                var hasRightNumberOfTypeArgs = !typeArguments || (signature.typeParameters && typeArguments.length === signature.typeParameters.length);
+                if (!hasRightNumberOfTypeArgs) {
+                    return false;
+                }
+                var hasEnoughArguments = adjustedArgCount >= signature.minArgumentCount;
+                return callIsIncomplete || hasEnoughArguments;
             }
-            var spreadArgIndex = getSpreadArgumentIndex(args);
-            if (spreadArgIndex >= 0) {
-                return signature.hasRestParameter && spreadArgIndex >= signature.parameters.length - 1;
-            }
-            if (!signature.hasRestParameter && adjustedArgCount > signature.parameters.length) {
-                return false;
-            }
-            var hasEnoughArguments = adjustedArgCount >= signature.minArgumentCount;
-            return callIsIncomplete || hasEnoughArguments;
         }
         function getSingleCallSignature(type) {
             if (type.flags & 48128) {
@@ -12373,25 +12274,25 @@ var ts;
             var context = createInferenceContext(typeParameters, false);
             var inferenceMapper = createInferenceMapper(context);
             for (var i = 0; i < args.length; i++) {
-                var arg = args[i];
-                if (arg.kind !== 168) {
-                    var paramType = getTypeAtPosition(signature, arg.kind === 167 ? -1 : i);
-                    if (i === 0 && args[i].parent.kind === 153) {
-                        var argType = globalTemplateStringsArrayType;
-                    }
-                    else {
-                        var mapper = excludeArgument && excludeArgument[i] !== undefined ? identityMapper : inferenceMapper;
-                        var argType = checkExpressionWithContextualType(arg, paramType, mapper);
-                    }
-                    inferTypes(context, argType, paramType);
+                if (args[i].kind === 168) {
+                    continue;
                 }
+                var parameterType = getTypeAtPosition(signature, i);
+                if (i === 0 && args[i].parent.kind === 153) {
+                    inferTypes(context, globalTemplateStringsArrayType, parameterType);
+                    continue;
+                }
+                var mapper = excludeArgument && excludeArgument[i] !== undefined ? identityMapper : inferenceMapper;
+                inferTypes(context, checkExpressionWithContextualType(args[i], parameterType, mapper), parameterType);
             }
             if (excludeArgument) {
                 for (var i = 0; i < args.length; i++) {
+                    if (args[i].kind === 168) {
+                        continue;
+                    }
                     if (excludeArgument[i] === false) {
-                        var arg = args[i];
-                        var paramType = getTypeAtPosition(signature, arg.kind === 167 ? -1 : i);
-                        inferTypes(context, checkExpressionWithContextualType(arg, paramType, inferenceMapper), paramType);
+                        var parameterType = getTypeAtPosition(signature, i);
+                        inferTypes(context, checkExpressionWithContextualType(args[i], parameterType, inferenceMapper), parameterType);
                     }
                 }
             }
@@ -12423,12 +12324,20 @@ var ts;
         function checkApplicableSignature(node, args, signature, relation, excludeArgument, reportErrors) {
             for (var i = 0; i < args.length; i++) {
                 var arg = args[i];
-                if (arg.kind !== 168) {
-                    var paramType = getTypeAtPosition(signature, arg.kind === 167 ? -1 : i);
-                    var argType = i === 0 && node.kind === 153 ? globalTemplateStringsArrayType : arg.kind === 8 && !reportErrors ? getStringLiteralType(arg) : checkExpressionWithContextualType(arg, paramType, excludeArgument && excludeArgument[i] ? identityMapper : undefined);
-                    if (!checkTypeRelatedTo(argType, paramType, relation, reportErrors ? arg : undefined, ts.Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1)) {
-                        return false;
-                    }
+                var argType;
+                if (arg.kind === 168) {
+                    continue;
+                }
+                var paramType = getTypeAtPosition(signature, i);
+                if (i === 0 && node.kind === 153) {
+                    argType = globalTemplateStringsArrayType;
+                }
+                else {
+                    argType = arg.kind === 8 && !reportErrors ? getStringLiteralType(arg) : checkExpressionWithContextualType(arg, paramType, excludeArgument && excludeArgument[i] ? identityMapper : undefined);
+                }
+                var isValidArgument = checkTypeRelatedTo(argType, paramType, relation, reportErrors ? arg : undefined, ts.Diagnostics.Argument_of_type_0_is_not_assignable_to_parameter_of_type_1);
+                if (!isValidArgument) {
+                    return false;
                 }
             }
             return true;
@@ -12469,7 +12378,7 @@ var ts;
                 }
             }
             var candidates = candidatesOutArray || [];
-            reorderCandidates(signatures, candidates);
+            collectCandidates();
             if (!candidates.length) {
                 error(node, ts.Diagnostics.Supplied_parameters_do_not_match_any_signature_of_call_target);
                 return resolveErrorCall(node);
@@ -12580,6 +12489,44 @@ var ts;
                 }
                 return undefined;
             }
+            function collectCandidates() {
+                var result = candidates;
+                var lastParent;
+                var lastSymbol;
+                var cutoffIndex = 0;
+                var index;
+                var specializedIndex = -1;
+                var spliceIndex;
+                ts.Debug.assert(!result.length);
+                for (var i = 0; i < signatures.length; i++) {
+                    var signature = signatures[i];
+                    var symbol = signature.declaration && getSymbolOfNode(signature.declaration);
+                    var parent = signature.declaration && signature.declaration.parent;
+                    if (!lastSymbol || symbol === lastSymbol) {
+                        if (lastParent && parent === lastParent) {
+                            index++;
+                        }
+                        else {
+                            lastParent = parent;
+                            index = cutoffIndex;
+                        }
+                    }
+                    else {
+                        index = cutoffIndex = result.length;
+                        lastParent = parent;
+                    }
+                    lastSymbol = symbol;
+                    if (signature.hasStringLiterals) {
+                        specializedIndex++;
+                        spliceIndex = specializedIndex;
+                        cutoffIndex++;
+                    }
+                    else {
+                        spliceIndex = index;
+                    }
+                    result.splice(spliceIndex, 0, signature);
+                }
+            }
         }
         function resolveCallExpression(node, candidatesOutArray) {
             if (node.expression.kind === 90) {
@@ -12614,12 +12561,6 @@ var ts;
             return resolveCall(node, callSignatures, candidatesOutArray);
         }
         function resolveNewExpression(node, candidatesOutArray) {
-            if (node.arguments && languageVersion < 2) {
-                var spreadIndex = getSpreadArgumentIndex(node.arguments);
-                if (spreadIndex >= 0) {
-                    error(node.arguments[spreadIndex], ts.Diagnostics.Spread_operator_in_new_expressions_is_only_available_when_targeting_ECMAScript_6_and_higher);
-                }
-            }
             var expressionType = checkExpression(node.expression);
             if (expressionType === anyType) {
                 if (node.typeArguments) {
@@ -12716,10 +12657,7 @@ var ts;
             return targetType;
         }
         function getTypeAtPosition(signature, pos) {
-            if (pos >= 0) {
-                return signature.hasRestParameter ? pos < signature.parameters.length - 1 ? getTypeOfSymbol(signature.parameters[pos]) : getRestTypeOfSignature(signature) : pos < signature.parameters.length ? getTypeOfSymbol(signature.parameters[pos]) : anyType;
-            }
-            return signature.hasRestParameter ? getTypeOfSymbol(signature.parameters[signature.parameters.length - 1]) : anyArrayType;
+            return signature.hasRestParameter ? pos < signature.parameters.length - 1 ? getTypeOfSymbol(signature.parameters[pos]) : getRestTypeOfSignature(signature) : pos < signature.parameters.length ? getTypeOfSymbol(signature.parameters[pos]) : anyType;
         }
         function assignContextualParameterTypes(signature, context, mapper) {
             var len = signature.parameters.length - (signature.hasRestParameter ? 1 : 0);
@@ -16108,21 +16046,7 @@ var ts;
                     }
                 }
             }
-            var checkLetConstNames = languageVersion >= 2 && (ts.isLet(node) || ts.isConst(node));
-            return (checkLetConstNames && checkGrammarNameInLetOrConstDeclarations(node.name)) || checkGrammarEvalOrArgumentsInStrictMode(node, node.name);
-        }
-        function checkGrammarNameInLetOrConstDeclarations(name) {
-            if (name.kind === 64) {
-                if (name.text === "let") {
-                    return grammarErrorOnNode(name, ts.Diagnostics.let_is_not_allowed_to_be_used_as_a_name_in_let_or_const_declarations);
-                }
-            }
-            else {
-                var elements = name.elements;
-                for (var i = 0; i < elements.length; ++i) {
-                    checkGrammarNameInLetOrConstDeclarations(elements[i].name);
-                }
-            }
+            return checkGrammarEvalOrArgumentsInStrictMode(node, node.name);
         }
         function checkGrammarVariableDeclarationList(declarationList) {
             var declarations = declarationList.declarations;
@@ -18114,10 +18038,21 @@ var ts;
                 }
                 return true;
             }
-            function emitListWithSpread(elements, multiLine, trailingComma) {
+            function emitArrayLiteral(node) {
+                var elements = node.elements;
+                var length = elements.length;
+                if (length === 0) {
+                    write("[]");
+                    return;
+                }
+                if (languageVersion >= 2) {
+                    write("[");
+                    emitList(elements, 0, elements.length, (node.flags & 256) !== 0, elements.hasTrailingComma);
+                    write("]");
+                    return;
+                }
                 var pos = 0;
                 var group = 0;
-                var length = elements.length;
                 while (pos < length) {
                     if (group === 1) {
                         write(".concat(");
@@ -18137,7 +18072,7 @@ var ts;
                             i++;
                         }
                         write("[");
-                        emitList(elements, pos, i - pos, multiLine, trailingComma && i === length);
+                        emitList(elements, pos, i - pos, (node.flags & 256) !== 0, elements.hasTrailingComma);
                         write("]");
                         pos = i;
                     }
@@ -18145,20 +18080,6 @@ var ts;
                 }
                 if (group > 1) {
                     write(")");
-                }
-            }
-            function emitArrayLiteral(node) {
-                var elements = node.elements;
-                if (elements.length === 0) {
-                    write("[]");
-                }
-                else if (languageVersion >= 2) {
-                    write("[");
-                    emitList(elements, 0, elements.length, (node.flags & 256) !== 0, elements.hasTrailingComma);
-                    write("]");
-                }
-                else {
-                    emitListWithSpread(elements, (node.flags & 256) !== 0, elements.hasTrailingComma);
                 }
             }
             function emitObjectLiteral(node) {
@@ -18234,71 +18155,7 @@ var ts;
                 emit(node.argumentExpression);
                 write("]");
             }
-            function hasSpreadElement(elements) {
-                return ts.forEach(elements, function (e) { return e.kind === 167; });
-            }
-            function skipParentheses(node) {
-                while (node.kind === 155 || node.kind === 154) {
-                    node = node.expression;
-                }
-                return node;
-            }
-            function emitCallTarget(node) {
-                if (node.kind === 64 || node.kind === 92 || node.kind === 90) {
-                    emit(node);
-                    return node;
-                }
-                var temp = createTempVariable(node);
-                recordTempDeclaration(temp);
-                write("(");
-                emit(temp);
-                write(" = ");
-                emit(node);
-                write(")");
-                return temp;
-            }
-            function emitCallWithSpread(node) {
-                var target;
-                var expr = skipParentheses(node.expression);
-                if (expr.kind === 149) {
-                    target = emitCallTarget(expr.expression);
-                    write(".");
-                    emit(expr.name);
-                }
-                else if (expr.kind === 150) {
-                    target = emitCallTarget(expr.expression);
-                    write("[");
-                    emit(expr.argumentExpression);
-                    write("]");
-                }
-                else if (expr.kind === 90) {
-                    target = expr;
-                    write("_super");
-                }
-                else {
-                    emit(node.expression);
-                }
-                write(".apply(");
-                if (target) {
-                    if (target.kind === 90) {
-                        emitThis(target);
-                    }
-                    else {
-                        emit(target);
-                    }
-                }
-                else {
-                    write("void 0");
-                }
-                write(", ");
-                emitListWithSpread(node.arguments, false, false);
-                write(")");
-            }
             function emitCallExpression(node) {
-                if (languageVersion < 2 && hasSpreadElement(node.arguments)) {
-                    emitCallWithSpread(node);
-                    return;
-                }
                 var superCall = false;
                 if (node.expression.kind === 90) {
                     write("_super");
@@ -19555,24 +19412,10 @@ var ts;
                     }
                 });
             }
-            function sortAMDModules(amdModules) {
-                return amdModules.sort(function (moduleA, moduleB) {
-                    if (moduleA.name === moduleB.name) {
-                        return 0;
-                    }
-                    else if (!moduleA.name) {
-                        return 1;
-                    }
-                    else {
-                        return -1;
-                    }
-                });
-            }
             function emitAMDModule(node, startIndex) {
                 var imports = getExternalImportDeclarations(node);
                 writeLine();
                 write("define(");
-                sortAMDModules(node.amdDependencies);
                 if (node.amdModuleName) {
                     write("\"" + node.amdModuleName + "\", ");
                 }
@@ -19582,7 +19425,7 @@ var ts;
                     emitLiteral(ts.getExternalModuleImportDeclarationExpression(imp));
                 });
                 ts.forEach(node.amdDependencies, function (amdDependency) {
-                    var text = "\"" + amdDependency.path + "\"";
+                    var text = "\"" + amdDependency + "\"";
                     write(", ");
                     write(text);
                 });
@@ -19590,12 +19433,6 @@ var ts;
                 ts.forEach(imports, function (imp) {
                     write(", ");
                     emit(imp.name);
-                });
-                ts.forEach(node.amdDependencies, function (amdDependency) {
-                    if (amdDependency.name) {
-                        write(", ");
-                        write(amdDependency.name);
-                    }
                 });
                 write(") {");
                 increaseIndent();
@@ -21213,7 +21050,7 @@ var ts;
                     var templateExpression = templateSpan.parent;
                     var tagExpression = templateExpression.parent;
                     ts.Debug.assert(templateExpression.kind === 165);
-                    if (node.kind === 13 && !ts.isInsideTemplateLiteral(node, position)) {
+                    if (node.kind === 13 && position >= node.getEnd() && !node.isUnterminated) {
                         return undefined;
                     }
                     var spanIndex = templateExpression.templateSpans.indexOf(templateSpan);
@@ -24503,9 +24340,6 @@ var ts;
         EndOfLineState[EndOfLineState["InMultiLineCommentTrivia"] = 1] = "InMultiLineCommentTrivia";
         EndOfLineState[EndOfLineState["InSingleQuoteStringLiteral"] = 2] = "InSingleQuoteStringLiteral";
         EndOfLineState[EndOfLineState["InDoubleQuoteStringLiteral"] = 3] = "InDoubleQuoteStringLiteral";
-        EndOfLineState[EndOfLineState["InTemplateHeadOrNoSubstitutionTemplate"] = 4] = "InTemplateHeadOrNoSubstitutionTemplate";
-        EndOfLineState[EndOfLineState["InTemplateMiddleOrTail"] = 5] = "InTemplateMiddleOrTail";
-        EndOfLineState[EndOfLineState["InTemplateSubstitutionPosition"] = 6] = "InTemplateSubstitutionPosition";
     })(ts.EndOfLineState || (ts.EndOfLineState = {}));
     var EndOfLineState = ts.EndOfLineState;
     (function (TokenClass) {
@@ -24771,11 +24605,24 @@ var ts;
     }
     ts.createLanguageServiceSourceFile = createLanguageServiceSourceFile;
     ts.disableIncrementalParsing = false;
-    function updateLanguageServiceSourceFile(sourceFile, scriptSnapshot, version, textChangeRange, aggressiveChecks) {
+    function updateLanguageServiceSourceFile(sourceFile, scriptSnapshot, version, textChangeRange) {
+        if (textChangeRange && ts.Debug.shouldAssert(1)) {
+            var oldText = sourceFile.scriptSnapshot;
+            var newText = scriptSnapshot;
+            ts.Debug.assert((oldText.getLength() - textChangeRange.span.length + textChangeRange.newLength) === newText.getLength());
+            if (ts.Debug.shouldAssert(3)) {
+                var oldTextPrefix = oldText.getText(0, textChangeRange.span.start);
+                var newTextPrefix = newText.getText(0, textChangeRange.span.start);
+                ts.Debug.assert(oldTextPrefix === newTextPrefix);
+                var oldTextSuffix = oldText.getText(ts.textSpanEnd(textChangeRange.span), oldText.getLength());
+                var newTextSuffix = newText.getText(ts.textSpanEnd(ts.textChangeRangeNewSpan(textChangeRange)), newText.getLength());
+                ts.Debug.assert(oldTextSuffix === newTextSuffix);
+            }
+        }
         if (textChangeRange) {
             if (version !== sourceFile.version) {
                 if (!ts.disableIncrementalParsing) {
-                    var newSourceFile = ts.updateSourceFile(sourceFile, scriptSnapshot.getText(0, scriptSnapshot.getLength()), textChangeRange, aggressiveChecks);
+                    var newSourceFile = ts.updateSourceFile(sourceFile, scriptSnapshot.getText(0, scriptSnapshot.getLength()), textChangeRange);
                     setSourceFileFields(newSourceFile, scriptSnapshot, version);
                     newSourceFile.nameTable = undefined;
                     return newSourceFile;
@@ -25103,6 +24950,7 @@ var ts;
             typeInfoResolver = program.getTypeChecker();
             return;
             function getOrCreateSourceFile(fileName) {
+                cancellationToken.throwIfCancellationRequested();
                 var hostFileInformation = hostCache.getOrCreateEntry(fileName);
                 if (!hostFileInformation) {
                     return undefined;
@@ -27561,6 +27409,7 @@ var ts;
             var sourceFile = getValidSourceFile(fileName);
             cancellationToken.throwIfCancellationRequested();
             var fileContents = sourceFile.text;
+            cancellationToken.throwIfCancellationRequested();
             var result = [];
             if (descriptors.length > 0) {
                 var regExp = getTodoCommentsRegExp();
@@ -27710,7 +27559,6 @@ var ts;
         noRegexTable[15] = true;
         noRegexTable[94] = true;
         noRegexTable[79] = true;
-        var templateStack = [];
         function isAccessibilityModifier(kind) {
             switch (kind) {
                 case 107:
@@ -27729,13 +27577,10 @@ var ts;
             }
             return true;
         }
-        function getClassificationsForLine(text, lexState, syntacticClassifierAbsent) {
+        function getClassificationsForLine(text, lexState, classifyKeywordsInGenerics) {
             var offset = 0;
             var token = 0;
             var lastNonTriviaToken = 0;
-            while (templateStack.length > 0) {
-                templateStack.pop();
-            }
             switch (lexState) {
                 case 3:
                     text = '"\\\n' + text;
@@ -27748,16 +27593,6 @@ var ts;
                 case 1:
                     text = "/*\n" + text;
                     offset = 3;
-                    break;
-                case 4:
-                    text = "`\n" + text;
-                    offset = 2;
-                    break;
-                case 5:
-                    text = "}\n" + text;
-                    offset = 2;
-                case 6:
-                    templateStack.push(11);
                     break;
             }
             scanner.setText(text);
@@ -27787,34 +27622,8 @@ var ts;
                         angleBracketStack--;
                     }
                     else if (token === 110 || token === 119 || token === 117 || token === 111) {
-                        if (angleBracketStack > 0 && !syntacticClassifierAbsent) {
+                        if (angleBracketStack > 0 && !classifyKeywordsInGenerics) {
                             token = 64;
-                        }
-                    }
-                    else if (token === 11) {
-                        templateStack.push(token);
-                    }
-                    else if (token === 14) {
-                        if (templateStack.length > 0) {
-                            templateStack.push(token);
-                        }
-                    }
-                    else if (token === 15) {
-                        if (templateStack.length > 0) {
-                            var lastTemplateStackToken = ts.lastOrUndefined(templateStack);
-                            if (lastTemplateStackToken === 11) {
-                                token = scanner.reScanTemplateToken();
-                                if (token === 13) {
-                                    templateStack.pop();
-                                }
-                                else {
-                                    ts.Debug.assert(token === 12, "Should have been a template middle. Was " + token);
-                                }
-                            }
-                            else {
-                                ts.Debug.assert(lastTemplateStackToken === 14, "Should have been an open brace. Was: " + token);
-                                templateStack.pop();
-                            }
                         }
                     }
                     lastNonTriviaToken = token;
@@ -27845,22 +27654,6 @@ var ts;
                         if (scanner.isUnterminated()) {
                             result.finalLexState = 1;
                         }
-                    }
-                    else if (ts.isTemplateLiteralKind(token)) {
-                        if (scanner.isUnterminated()) {
-                            if (token === 13) {
-                                result.finalLexState = 5;
-                            }
-                            else if (token === 10) {
-                                result.finalLexState = 4;
-                            }
-                            else {
-                                ts.Debug.fail("Only 'NoSubstitutionTemplateLiteral's and 'TemplateTail's can be unterminated; got SyntaxKind #" + token);
-                            }
-                        }
-                    }
-                    else if (templateStack.length > 0 && ts.lastOrUndefined(templateStack) === 11) {
-                        result.finalLexState = 6;
                     }
                 }
             }
@@ -27956,9 +27749,6 @@ var ts;
                     return 4;
                 case 64:
                 default:
-                    if (ts.isTemplateLiteralKind(token)) {
-                        return 7;
-                    }
                     return 5;
             }
         }
