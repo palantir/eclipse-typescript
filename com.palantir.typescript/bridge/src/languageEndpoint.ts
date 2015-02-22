@@ -113,7 +113,7 @@ module Bridge {
                 return {
                     start: diagnostic.start,
                     length: diagnostic.length,
-                    line: diagnostic.file.getLineAndCharacterFromPosition(diagnostic.start).line,
+                    line: diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start).line,
                     text: ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
                 };
             });
@@ -129,9 +129,9 @@ module Bridge {
 
             return references.map((reference) => {
                 var sourceFile = languageService.getSourceFile(reference.fileName);
-                var lineNumber = sourceFile.getLineAndCharacterFromPosition(reference.textSpan.start).line;
-                var lineStart = sourceFile.getPositionFromLineAndCharacter(lineNumber, 0);
-                var lineEnd = sourceFile.getPositionFromLineAndCharacter(lineNumber + 1, 0);
+                var lineNumber = sourceFile.getLineAndCharacterOfPosition(reference.textSpan.start).line;
+                var lineStart = sourceFile.getPositionOfLineAndCharacter(lineNumber, 0);
+                var lineEnd = sourceFile.getPositionOfLineAndCharacter(lineNumber + 1, 0);
                 var line = sourceFile.text.substring(lineStart, lineEnd);
 
                 return {
@@ -226,7 +226,7 @@ module Bridge {
                 return todos.map((todo) => {
                     return {
                         start: todo.position,
-                        line: sourceFile.getLineAndCharacterFromPosition(todo.position).line,
+                        line: sourceFile.getLineAndCharacterOfPosition(todo.position).line,
                         priority: todo.descriptor.priority,
                         text: todo.message
                     };
