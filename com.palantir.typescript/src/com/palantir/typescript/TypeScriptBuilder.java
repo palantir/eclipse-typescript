@@ -171,10 +171,19 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             this.ensureOutputFolderExists(monitor);
 
             if (isOutputFileSpecified()) {
-                // pick the first file as the one to "compile" (like a full build)
-                if (!fileDeltas.isEmpty()) {
-                    String fileName = fileDeltas.iterator().next().getFileName();
+                String fileName = null;
 
+                // pick the first non-definition file as the one to "compile" (like a full build)
+                for (FileDelta fileDelta : fileDeltas) {
+                    String deltaFileName = fileDelta.getFileName();
+
+                    if (!isDefinitionFile(deltaFileName)) {
+                        fileName = deltaFileName;
+                        break;
+                    }
+                }
+
+                if (fileName != null) {
                     this.compile(fileName, monitor);
                 }
             } else {
@@ -233,8 +242,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 String removedFileName = fileDelta.getFileName();
                 IPath removedFilePath = EclipseResources.getFile(removedFileName).getFullPath();
 
-                // skip ambient declaration files
-                if (removedFileName.endsWith(".d.ts")) {
+                // skip definition files
+                if (isDefinitionFile(removedFileName)) {
                     continue;
                 }
 
@@ -258,8 +267,8 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             if (delta == Delta.ADDED || delta == Delta.CHANGED) {
                 String fileName = fileDelta.getFileName();
 
-                // skip ambient declaration files
-                if (fileName.endsWith(".d.ts")) {
+                // skip definition files
+                if (isDefinitionFile(fileName)) {
                     continue;
                 }
 
@@ -302,7 +311,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             // to know about it. we send it back over the bridge because the node side doesn't
             // know the filesystem path of the file and so can't create the FileInfo without this call.
             if (isProjectReferenced && TypeScriptProjects.isContainedInFolders(project, Folders.EXPORTED, eclipseFile)
-                    && outputFileName.endsWith(".d.ts")) {
+                    && isDefinitionFile(outputFileName)) {
                 emittedOutputToSend.add(new FileDelta(Delta.ADDED, eclipseFile));
             }
         }
@@ -434,5 +443,9 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             return null;
         }
         return emittedFile;
+    }
+
+    private static boolean isDefinitionFile(String fileName) {
+        return fileName.endsWith(".d.ts");
     }
 }
