@@ -22,6 +22,8 @@ module Bridge {
     export var LIB_FILE_NAME = "lib.d.ts";
     export var LIB_ES6_FILE_NAME = "lib.es6.d.ts";
 
+    const EOL = require("os").EOL;
+
     export class LanguageServiceHost implements ts.LanguageServiceHost {
 
         private compilationSettings: ts.CompilerOptions;
@@ -48,6 +50,10 @@ module Bridge {
 
         public getDefaultLibFileName(options: ts.CompilerOptions) {
             return (options.target === ts.ScriptTarget.ES6 ? LIB_ES6_FILE_NAME : LIB_FILE_NAME);
+        }
+
+        public getNewLine() {
+            return EOL;
         }
 
         public getScriptFileNames() {
