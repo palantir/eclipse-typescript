@@ -109,7 +109,7 @@ module Bridge {
                 diagnostics = this.languageServices[serviceKey].getSemanticDiagnostics(fileName);
             }
 
-            return diagnostics.map((diagnostic) => {
+            return diagnostics.filter((diagnostic) => diagnostic != null).map((diagnostic) => {
                 return {
                     start: diagnostic.start,
                     length: diagnostic.length,
