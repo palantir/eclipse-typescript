@@ -41,9 +41,6 @@ public final class CompilerOptions {
     @JsonProperty("charset")
     private String charset;
 
-    @JsonProperty("codepage")
-    private Integer codepage;
-
     @JsonProperty("declaration")
     private Boolean declaration;
 
@@ -82,9 +79,6 @@ public final class CompilerOptions {
 
     @JsonProperty("noLib")
     private Boolean noLib;
-
-    @JsonProperty("noLibCheck")
-    private Boolean noLibCheck;
 
     @JsonProperty("noResolve")
     private Boolean noResolve;
