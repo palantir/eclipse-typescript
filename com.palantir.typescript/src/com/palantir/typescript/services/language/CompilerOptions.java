@@ -98,6 +98,9 @@ public final class CompilerOptions {
     @JsonProperty("removeComments")
     private Boolean removeComments;
 
+    @JsonProperty("separateCompilation")
+    private Boolean separateCompilation;
+
     @JsonProperty("sourceMap")
     private Boolean sourceMap;
 
