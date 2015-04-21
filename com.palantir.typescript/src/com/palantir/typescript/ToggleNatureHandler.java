@@ -41,7 +41,7 @@ public final class ToggleNatureHandler extends AbstractHandler {
         ISelection currentSelection = HandlerUtil.getCurrentSelection(event);
 
         if (currentSelection instanceof IStructuredSelection) {
-            for (Iterator<?> it = ((IStructuredSelection) currentSelection).iterator(); it.hasNext();) {
+            for (Iterator it = ((IStructuredSelection) currentSelection).iterator(); it.hasNext();) {
                 Object element = it.next();
                 IProject project = null;
 

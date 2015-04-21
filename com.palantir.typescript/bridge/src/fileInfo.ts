@@ -20,7 +20,7 @@ module Bridge {
 
     export class FileInfo {
 
-        private changes: TextChangeRange[];
+        private changes: ts.TextChangeRange[];
         private contents: string;
         private open: boolean;
         private path: string;
@@ -36,8 +36,8 @@ module Bridge {
             var prefix = this.contents.substring(0, offset);
             var suffix = this.contents.substring(offset + length);
             var newContents = prefix + text + suffix;
-            var span = new TextSpan(offset, length);
-            var change = new TextChangeRange(span, text.length);
+            var span = ts.createTextSpan(offset, length);
+            var change = ts.createTextChangeRange(span, text.length);
 
             this.contents = newContents;
 
@@ -65,8 +65,8 @@ module Bridge {
         }
 
         public updateFile(contents: string) {
-            var span = new TextSpan(0, this.contents.length);
-            var change = new TextChangeRange(span, contents.length);
+            var span = ts.createTextSpan(0, this.contents.length);
+            var change = ts.createTextChangeRange(span, contents.length);
 
             this.contents = contents;
 

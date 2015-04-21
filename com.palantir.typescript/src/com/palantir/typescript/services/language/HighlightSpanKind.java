@@ -14,24 +14,30 @@
  * limitations under the License.
  */
 
-module Bridge {
+package com.palantir.typescript.services.language;
 
-    export class TextSpan implements ts.TextSpan {
+import com.fasterxml.jackson.annotation.JsonValue;
 
-        public start: number;
-        public length: number;
+/**
+ * Corresponds to the class with the same name in languageService.ts.
+ *
+ * @author dcicerone
+ */
+public enum HighlightSpanKind {
 
-        constructor(start: number, length: number) {
-            if (start < 0 || length < 0) {
-                throw new Error();
-            }
+    NONE("none"),
+    DEFINITION("definition"),
+    REFERENCE("reference"),
+    WRITTEN_REFERENCE("writtenReference");
 
-            this.start = start;
-            this.length = length;
-        }
+    private final String value;
 
-        public end(): number {
-            return this.start + this.length;
-        }
+    private HighlightSpanKind(String value) {
+        this.value = value;
+    }
+
+    @JsonValue
+    public String getValue() {
+        return this.value;
     }
 }

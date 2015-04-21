@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.Display;
 
 import com.google.common.collect.Maps;
 import com.palantir.typescript.services.language.DiagnosticEx;
-import com.palantir.typescript.services.language.ReferenceEntry;
+import com.palantir.typescript.services.language.HighlightSpan;
 import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.services.language.TodoCommentEx;
 import com.palantir.typescript.text.FileLanguageService;
@@ -70,13 +70,13 @@ public final class AnnotationReconcilingStrategy {
         int offset = this.getOffset();
         if (offset >= 0) {
             final List<DiagnosticEx> diagnostics = languageService.getDiagnostics();
-            final List<ReferenceEntry> occurrences = languageService.getOccurrencesAtPosition(offset);
+            final List<HighlightSpan> highlightSpans = languageService.getHighlightSpans(offset);
             final List<TodoCommentEx> todoComments = languageService.getTodoComments();
 
             Display.getDefault().asyncExec(new Runnable() {
                 @Override
                 public void run() {
-                    updateAnnotations(diagnostics, occurrences, todoComments);
+                    updateAnnotations(diagnostics, highlightSpans, todoComments);
                 }
             });
         }
@@ -111,7 +111,7 @@ public final class AnnotationReconcilingStrategy {
         return dirty.get();
     }
 
-    private void updateAnnotations(List<DiagnosticEx> diagnostics, List<ReferenceEntry> occurrences, List<TodoCommentEx> todoComments) {
+    private void updateAnnotations(List<DiagnosticEx> diagnostics, List<HighlightSpan> highlightSpans, List<TodoCommentEx> todoComments) {
         IAnnotationModelExtension annotationModel = (IAnnotationModelExtension) this.sourceViewer.getAnnotationModel();
 
         if (annotationModel != null) {
@@ -127,11 +127,11 @@ public final class AnnotationReconcilingStrategy {
                 }
             }
 
-            // add the occurrences
-            if (occurrences != null) {
-                for (ReferenceEntry occurrence : occurrences) {
+            // add the highlights
+            if (highlightSpans != null) {
+                for (HighlightSpan highlightSpan : highlightSpans) {
                     Annotation annotation = new Annotation(OCCURRENCES_TYPE, false, null);
-                    TextSpan textSpan = occurrence.getTextSpan();
+                    TextSpan textSpan = highlightSpan.getTextSpan();
                     Position position = new Position(textSpan.getStart(), textSpan.getLength());
 
                     annotationsToAdd.put(annotation, position);

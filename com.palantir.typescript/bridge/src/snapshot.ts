@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-/// <reference path="textChangeRange.ts" />
-
 module Bridge {
 
     export class ScriptSnapshot implements ts.IScriptSnapshot {
 
-        private changes: TextChangeRange[];
+        private changes: ts.TextChangeRange[];
         private contents: string;
         private version: number;
 
-        constructor(changes: TextChangeRange[], contents: string, version: number) {
+        constructor(changes: ts.TextChangeRange[], contents: string, version: number) {
             this.changes = changes;
             this.contents = contents;
             this.version = version;
@@ -42,12 +40,12 @@ module Bridge {
             var oldSnapshot2 = <ScriptSnapshot> oldSnapshot;
 
             if (this.version === oldSnapshot2.version) {
-                return TextChangeRange.unchanged;
+                return ts.unchangedTextChangeRange;
             } else if (this.version - oldSnapshot2.version <= this.changes.length) {
                 var start = this.changes.length - (this.version - oldSnapshot2.version);
                 var changes = this.changes.slice(start);
 
-                return TextChangeRange.collapseChangesAcrossMultipleVersions(changes);
+                return ts.collapseTextChangeRangesAcrossMultipleVersions(changes);
             } else {
                 return null;
             }

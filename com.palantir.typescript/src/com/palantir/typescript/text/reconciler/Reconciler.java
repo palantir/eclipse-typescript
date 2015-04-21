@@ -157,7 +157,11 @@ public final class Reconciler implements IReconciler {
         this.executor.schedule(new Runnable() {
             @Override
             public void run() {
-                reconcile();
+                try {
+                    reconcile();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }, delay, TimeUnit.MILLISECONDS);
     }

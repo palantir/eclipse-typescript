@@ -50,6 +50,9 @@ public final class CompilerOptions {
     @JsonProperty("emitBOM")
     private Boolean emitBOM;
 
+    @JsonProperty("emitDecoratorMetadata")
+    private Boolean emitDecoratorMetadata;
+
     @JsonProperty("help")
     private Boolean help;
 
@@ -97,6 +100,9 @@ public final class CompilerOptions {
 
     @JsonProperty("removeComments")
     private Boolean removeComments;
+
+    @JsonProperty("rootDir")
+    private String rootDir;
 
     @JsonProperty("separateCompilation")
     private Boolean separateCompilation;

@@ -22,7 +22,7 @@ package com.palantir.typescript.services.classifier;
  * @author dcicerone
  */
 public enum EndOfLineState {
-    START,
+    NONE,
     IN_MULTI_LINE_COMMENT_TRIVIA,
     IN_SINGLE_QUOTE_STRING_LITERAL,
     IN_DOUBLE_QUOTE_STRING_LITERAL,

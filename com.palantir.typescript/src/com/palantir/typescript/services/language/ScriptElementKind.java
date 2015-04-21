@@ -27,6 +27,8 @@ public enum ScriptElementKind {
 
     UNKNOWN(""),
 
+    WARNING("warning"),
+
     // predefined type (void) or keyword (class)
     KEYWORD("keyword"),
 

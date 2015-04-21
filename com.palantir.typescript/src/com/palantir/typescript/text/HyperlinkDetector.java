@@ -28,6 +28,7 @@ import org.eclipse.jface.text.hyperlink.IHyperlink;
 import org.eclipse.jface.text.hyperlink.IHyperlinkDetector;
 
 import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.TextSpan;
 
 /**
@@ -60,7 +61,7 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
                 IRegion hyperlinkRegion = new Region(spanOffset, endOffset - spanOffset);
 
                 // don't follow references to the built-in default library
-                if (definition.getFileName().equals("lib.d.ts")) {
+                if (LanguageEndpoint.isLibFileName(definition.getFileName())) {
                     return null;
                 }
 

@@ -21,6 +21,7 @@ import java.util.List;
 import org.eclipse.jface.text.ITextSelection;
 
 import com.palantir.typescript.services.language.DefinitionInfo;
+import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.text.TypeScriptEditor;
 
 /**
@@ -45,7 +46,7 @@ public final class OpenDefinitionAction extends TypeScriptEditorAction {
             DefinitionInfo definition = definitions.get(0);
 
             // don't follow references to the built-in default library
-            if (!definition.getFileName().equals("lib.d.ts")) {
+            if (!LanguageEndpoint.isLibFileName(definition.getFileName())) {
                 TypeScriptEditor.openDefinition(definition);
             }
         }

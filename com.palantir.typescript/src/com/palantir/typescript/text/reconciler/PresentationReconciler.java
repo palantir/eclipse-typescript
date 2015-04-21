@@ -236,7 +236,7 @@ public final class PresentationReconciler implements IPresentationReconciler {
         }
 
         // get the previous line's final lex state (if available)
-        EndOfLineState lexState = EndOfLineState.START;
+        EndOfLineState lexState = EndOfLineState.NONE;
         if (startLine > 0 && !this.finalLexStates.isEmpty()) {
             int previousLineOffset = document.getLineOffset(startLine - 1);
 

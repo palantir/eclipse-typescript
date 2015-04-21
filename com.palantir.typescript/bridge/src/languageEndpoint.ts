@@ -188,6 +188,10 @@ module Bridge {
             return this.languageServices[serviceKey].getDefinitionAtPosition(fileName, position);
         }
 
+        public getDocumentHighlights(serviceKey: string, fileName: string, position: number, filesToSearch: string[]) {
+            return this.languageServices[serviceKey].getDocumentHighlights(fileName, position, filesToSearch);
+        }
+
         public getFormattingEditsForRange(serviceKey: string, fileName: string, start: number, end: number, options: ts.FormatCodeOptions) {
             return this.languageServices[serviceKey].getFormattingEditsForRange(fileName, start, end, options);
         }
@@ -202,10 +206,6 @@ module Bridge {
 
         public getNavigationBarItems(serviceKey: string, fileName: string) {
             return this.languageServices[serviceKey].getNavigationBarItems(fileName);
-        }
-
-        public getOccurrencesAtPosition(serviceKey: string, fileName: string, position: number) {
-            return this.languageServices[serviceKey].getOccurrencesAtPosition(fileName, position);
         }
 
         public getQuickInfoAtPosition(serviceKey: string, fileName: string, position: number) {

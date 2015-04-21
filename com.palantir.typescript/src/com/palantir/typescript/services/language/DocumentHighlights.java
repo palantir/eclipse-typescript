@@ -18,52 +18,47 @@ package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 
 /**
- * Corresponds to the class with the same name in TypeScript.
+ * Corresponds to the class with the same name in languageService.ts.
  *
  * @author dcicerone
  */
-public final class ReferenceEntry implements RenameLocation {
+public final class DocumentHighlights {
 
     private final String fileName;
-    private final boolean isWriteAccess;
-    private final TextSpan textSpan;
+    private final List<HighlightSpan> highlightSpans;
 
-    public ReferenceEntry(
+    @JsonCreator
+    public DocumentHighlights(
             @JsonProperty("fileName") String fileName,
-            @JsonProperty("isWriteAccess") boolean isWriteAccess,
-            @JsonProperty("textSpan") TextSpan textSpan) {
+            @JsonProperty("highlightSpans") List<HighlightSpan> highlightSpans) {
         checkNotNull(fileName);
-        checkNotNull(textSpan);
+        checkNotNull(highlightSpans);
 
         this.fileName = fileName;
-        this.isWriteAccess = isWriteAccess;
-        this.textSpan = textSpan;
+        this.highlightSpans = ImmutableList.copyOf(highlightSpans);
     }
 
-    @Override
     public String getFileName() {
         return this.fileName;
     }
 
-    public boolean isWriteAccess() {
-        return this.isWriteAccess;
-    }
-
-    @Override
-    public TextSpan getTextSpan() {
-        return this.textSpan;
+    public List<HighlightSpan> getHighlightSpans() {
+        return this.highlightSpans;
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("fileName", this.fileName)
-            .add("isWriteAccess", this.isWriteAccess)
-            .add("textSpan", this.textSpan)
+            .add("highlightSpans", this.highlightSpans)
             .toString();
     }
 }

@@ -23,15 +23,17 @@ import java.util.UUID;
 
 import org.eclipse.core.resources.IProject;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.services.language.CompletionInfoEx;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.DiagnosticEx;
+import com.palantir.typescript.services.language.DocumentHighlights;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.FormatCodeOptions;
+import com.palantir.typescript.services.language.HighlightSpan;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.QuickInfo;
-import com.palantir.typescript.services.language.ReferenceEntry;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
 import com.palantir.typescript.services.language.RenameLocation;
 import com.palantir.typescript.services.language.TextChange;
@@ -98,6 +100,18 @@ public final class FileLanguageService {
         return this.languageEndpoint.getFormattingEditsForRange(this.serviceKey, this.fileName, start, end, options);
     }
 
+    public List<HighlightSpan> getHighlightSpans(int position) {
+        ImmutableList<String> filesToSearch = ImmutableList.of(this.fileName);
+        List<DocumentHighlights> highlights = this.languageEndpoint.getDocumentHighlights(this.serviceKey, this.fileName, position,
+            filesToSearch);
+
+        if (highlights == null || highlights.isEmpty()) {
+            return null;
+        }
+
+        return highlights.get(0).getHighlightSpans();
+    }
+
     public int getIndentationAtPosition(int position, EditorOptions options) {
         return this.languageEndpoint.getIndentationAtPosition(this.serviceKey, this.fileName, position, options);
     }
@@ -108,10 +122,6 @@ public final class FileLanguageService {
 
     public List<NavigationBarItem> getNavigationBarItems() {
         return this.languageEndpoint.getNavigationBarItems(this.serviceKey, this.fileName);
-    }
-
-    public List<ReferenceEntry> getOccurrencesAtPosition(int position) {
-        return this.languageEndpoint.getOccurrencesAtPosition(this.serviceKey, this.fileName, position);
     }
 
     public QuickInfo getQuickInfoAtPosition(int position) {

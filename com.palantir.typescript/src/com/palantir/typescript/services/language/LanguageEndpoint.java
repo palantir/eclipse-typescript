@@ -160,7 +160,7 @@ public final class LanguageEndpoint {
         checkArgument(position >= 0);
 
         Request request = new Request(SERVICE, "findRenameLocations", serviceKey, fileName, position, findInStrings, findInComments);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
+        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, RenameLocation.class);
         return this.bridge.call(request, returnType);
     }
 
@@ -199,6 +199,17 @@ public final class LanguageEndpoint {
 
         Request request = new Request(SERVICE, "getDiagnostics", serviceKey, fileName, semantic);
         CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DiagnosticEx.class);
+        return this.bridge.call(request, resultType);
+    }
+
+    public List<DocumentHighlights> getDocumentHighlights(String serviceKey, String fileName, int position, List<String> filesToSearch) {
+        checkNotNull(serviceKey);
+        checkNotNull(fileName);
+        checkArgument(position >= 0);
+        checkNotNull(filesToSearch);
+
+        Request request = new Request(SERVICE, "getDocumentHighlights", serviceKey, fileName, position, filesToSearch);
+        CollectionType resultType = TypeFactory.defaultInstance().constructCollectionType(List.class, DocumentHighlights.class);
         return this.bridge.call(request, resultType);
     }
 
@@ -243,16 +254,6 @@ public final class LanguageEndpoint {
         return this.bridge.call(request, returnType);
     }
 
-    public List<ReferenceEntry> getOccurrencesAtPosition(String serviceKey, String fileName, int position) {
-        checkNotNull(serviceKey);
-        checkNotNull(fileName);
-        checkArgument(position >= 0);
-
-        Request request = new Request(SERVICE, "getOccurrencesAtPosition", serviceKey, fileName, position);
-        CollectionType returnType = TypeFactory.defaultInstance().constructCollectionType(List.class, ReferenceEntry.class);
-        return this.bridge.call(request, returnType);
-    }
-
     public QuickInfo getQuickInfoAtPosition(String serviceKey, String fileName, int position) {
         checkNotNull(serviceKey);
         checkNotNull(fileName);
@@ -290,6 +291,12 @@ public final class LanguageEndpoint {
 
     public void dispose() {
         this.bridge.dispose();
+    }
+
+    public static boolean isLibFileName(String fileName) {
+        checkNotNull(fileName);
+
+        return fileName.equals(LIB_FILE_NAME) || fileName.equals(LIB_ES6_FILE_NAME);
     }
 
     private void initializeProjectTree(IProject project, Set<IProject> initializedProjects) {
