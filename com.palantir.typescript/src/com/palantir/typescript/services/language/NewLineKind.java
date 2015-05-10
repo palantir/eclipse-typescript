@@ -16,42 +16,20 @@
 
 package com.palantir.typescript.services.language;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Corresponds to the enum with the same name in typescriptServices.d.ts.
  *
- * @author tyleradams
+ * @author dcicerone
  */
-public enum ModuleKind {
+public enum NewLineKind {
 
-    NONE,
-    COMMONSJS,
-    AMD,
-    UMD,
-    SYSTEM;
+    CARRIAGE_RETURN_LINE_FEED,
+    LINE_FEED;
 
     @JsonValue
     public int getValue() {
         return this.ordinal();
-    }
-
-    /**
-     * Parses legacy module kinds for backward-compatibility.
-     */
-    public static ModuleKind parse(String moduleKind) {
-        checkNotNull(moduleKind);
-
-        if (moduleKind.equals("ASYNCHRONOUS")) {
-            return AMD;
-        } else if (moduleKind.equals("SYNCHRONOUS")) {
-            return COMMONSJS;
-        } else if (moduleKind.equals("UNSPECIFIED")) {
-            return NONE;
-        } else {
-            return valueOf(moduleKind);
-        }
     }
 }

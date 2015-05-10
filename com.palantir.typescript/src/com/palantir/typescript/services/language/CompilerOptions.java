@@ -56,6 +56,12 @@ public final class CompilerOptions {
     @JsonProperty("help")
     private Boolean help;
 
+    @JsonProperty("inlineSourceMap")
+    private Boolean inlineSourceMap;
+
+    @JsonProperty("inlineSources")
+    private Boolean inlineSources;
+
     @JsonProperty("listFiles")
     private Boolean listFiles;
 
@@ -68,8 +74,14 @@ public final class CompilerOptions {
     @JsonProperty("module")
     private ModuleKind module;
 
+    @JsonProperty("newLine")
+    private NewLineKind newLine;
+
     @JsonProperty("noEmit")
     private Boolean noEmit;
+
+    @JsonProperty("noEmitHelpers")
+    private Boolean noEmitHelpers;
 
     @JsonProperty("noEmitOnError")
     private Boolean noEmitOnError;
@@ -136,7 +148,7 @@ public final class CompilerOptions {
         // create the compilation settings from the preferences
         CompilerOptions compilationSettings = new CompilerOptions();
         compilationSettings.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
-        compilationSettings.module = ModuleKind.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
+        compilationSettings.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
         compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
         compilationSettings.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
