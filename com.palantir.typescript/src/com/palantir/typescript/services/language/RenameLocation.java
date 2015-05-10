@@ -16,16 +16,46 @@
 
 package com.palantir.typescript.services.language;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.base.Objects;
 
 /**
  * Corresponds to the interface with the same name in TypeScript.
  *
  * @author dcicerone
  */
-public interface RenameLocation {
+@JsonIgnoreProperties("isWriteAccess")
+public final class RenameLocation {
 
-    String getFileName();
+    private final String fileName;
+    private final TextSpan textSpan;
 
-    TextSpan getTextSpan();
+    public RenameLocation(
+            @JsonProperty("fileName") String fileName,
+            @JsonProperty("textSpan") TextSpan textSpan) {
+        checkNotNull(fileName);
+        checkNotNull(textSpan);
 
+        this.fileName = fileName;
+        this.textSpan = textSpan;
+    }
+
+    public String getFileName() {
+        return this.fileName;
+    }
+
+    public TextSpan getTextSpan() {
+        return this.textSpan;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+            .add("fileName", this.fileName)
+            .add("textSpan", this.textSpan)
+            .toString();
+    }
 }
