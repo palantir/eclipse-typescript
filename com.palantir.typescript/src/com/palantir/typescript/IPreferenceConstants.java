@@ -34,6 +34,7 @@ public interface IPreferenceConstants {
     String COMPILER_MODULE = "compiler.moduleGenTarget";
     String COMPILER_NO_EMIT_ON_ERROR = "compiler.noEmitOnError";
     String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
+    String COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS = "compiler.suppressImplicitAnyIndexErrors";
     String COMPILER_NO_LIB = "compiler.noLib";
     String COMPILER_OUT_DIR = "compiler.outputDirOption";
     String COMPILER_OUT_FILE = "compiler.outputFileOption";
