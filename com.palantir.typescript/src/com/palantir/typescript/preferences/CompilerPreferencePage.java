@@ -53,6 +53,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private ComboFieldEditor moduleField;
     private BooleanFieldEditor noEmitOnErrorField;
     private BooleanFieldEditor noImplicitAnyField;
+    private BooleanFieldEditor suppressImplicitAnyIndexErrorsField;
     private BooleanFieldEditor noLibField;
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
@@ -154,6 +155,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             getResource("no.implicit.any"),
             this.getFieldEditorParent());
         this.addField(this.noImplicitAnyField);
+
+        this.suppressImplicitAnyIndexErrorsField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS,
+            getResource("suppress.implicit.any.index.errors"),
+            this.getFieldEditorParent());
+        this.addField(this.suppressImplicitAnyIndexErrorsField);
 
         this.noLibField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
