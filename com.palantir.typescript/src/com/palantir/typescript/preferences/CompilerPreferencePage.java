@@ -56,6 +56,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor noLibField;
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
+    private BooleanFieldEditor suppressImplicitAnyIndexErrorsField;
     private ComboFieldEditor targetField;
 
     public CompilerPreferencePage() {
@@ -110,8 +111,10 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
         Object source = event.getSource();
 
-        if (source.equals(this.compileOnSaveField) && event.getProperty().equals(FieldEditor.VALUE)) {
-            this.updateFieldEditors();
+        if (event.getProperty().equals(FieldEditor.VALUE)) {
+            if (source.equals(this.compileOnSaveField) || source.equals(this.noImplicitAnyField)) {
+                this.updateFieldEditors();
+            }
         }
 
         if (source.equals(this.compileOnSaveField)
@@ -122,6 +125,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
                 || source.equals(this.noLibField)
                 || source.equals(this.removeCommentsField)
                 || source.equals(this.sourceMapField)
+                || source.equals(this.suppressImplicitAnyIndexErrorsField)
                 || source.equals(this.targetField)) {
             this.compilerPreferencesModified = true;
         }
@@ -154,6 +158,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             getResource("no.implicit.any"),
             this.getFieldEditorParent());
         this.addField(this.noImplicitAnyField);
+
+        this.suppressImplicitAnyIndexErrorsField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS,
+            getResource("suppress.implicit.any.index.errors"),
+            this.getFieldEditorParent());
+        this.addField(this.suppressImplicitAnyIndexErrorsField);
 
         this.noLibField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
@@ -219,12 +229,15 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     protected void updateFieldEditors() {
         super.updateFieldEditors();
 
-        boolean enabled = this.compileOnSaveField.getBooleanValue() && this.isPageEnabled();
         Composite parent = this.getFieldEditorParent();
 
-        this.declarationField.setEnabled(enabled, parent);
-        this.removeCommentsField.setEnabled(enabled, parent);
-        this.sourceMapField.setEnabled(enabled, parent);
+        boolean compileOnSaveEnabled = this.compileOnSaveField.getBooleanValue() && this.isPageEnabled();
+        this.declarationField.setEnabled(compileOnSaveEnabled, parent);
+        this.removeCommentsField.setEnabled(compileOnSaveEnabled, parent);
+        this.sourceMapField.setEnabled(compileOnSaveEnabled, parent);
+
+        boolean noImplicitAnyEnabled = this.noImplicitAnyField.getBooleanValue() && this.isPageEnabled();
+        this.suppressImplicitAnyIndexErrorsField.setEnabled(noImplicitAnyEnabled, parent);
     }
 
     private String[][] createComboFieldValues(Enum[] enums) {
