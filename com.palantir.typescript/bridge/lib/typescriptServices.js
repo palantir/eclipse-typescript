@@ -12930,7 +12930,15 @@ var ts;
         function getTypeOfAlias(symbol) {
             var links = getSymbolLinks(symbol);
             if (!links.type) {
-                links.type = getTypeOfSymbol(resolveAlias(symbol));
+                var targetSymbol = resolveAlias(symbol);
+                // It only makes sense to get the type of a value symbol. If the result of resolving
+                // the alias is not a value, then it has no type. To get the type associated with a
+                // type symbol, call getDeclaredTypeOfSymbol.
+                // This check is important because without it, a call to getTypeOfSymbol could end
+                // up recursively calling getTypeOfAlias, causing a stack overflow.
+                links.type = targetSymbol.flags & 107455 /* Value */
+                    ? getTypeOfSymbol(targetSymbol)
+                    : unknownType;
             }
             return links.type;
         }
