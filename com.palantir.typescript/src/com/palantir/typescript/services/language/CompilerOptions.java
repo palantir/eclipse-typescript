@@ -62,6 +62,9 @@ public final class CompilerOptions {
     @JsonProperty("inlineSources")
     private Boolean inlineSources;
 
+    @JsonProperty("isolatedModules")
+    private Boolean isolatedModules;
+
     @JsonProperty("listFiles")
     private Boolean listFiles;
 
@@ -115,9 +118,6 @@ public final class CompilerOptions {
 
     @JsonProperty("rootDir")
     private String rootDir;
-
-    @JsonProperty("separateCompilation")
-    private Boolean separateCompilation;
 
     @JsonProperty("sourceMap")
     private Boolean sourceMap;
