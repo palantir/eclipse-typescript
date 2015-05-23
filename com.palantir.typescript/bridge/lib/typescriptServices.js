@@ -20680,6 +20680,7 @@ var ts;
                     break;
                 case 135 /* MethodDeclaration */:
                 case 134 /* MethodSignature */:
+                    ts.forEach(node.decorators, checkFunctionExpressionBodies);
                     ts.forEach(node.parameters, checkFunctionExpressionBodies);
                     if (ts.isObjectLiteralMethod(node)) {
                         checkFunctionExpressionOrObjectLiteralMethodBody(node);
@@ -20694,6 +20695,7 @@ var ts;
                 case 193 /* WithStatement */:
                     checkFunctionExpressionBodies(node.expression);
                     break;
+                case 131 /* Decorator */:
                 case 130 /* Parameter */:
                 case 133 /* PropertyDeclaration */:
                 case 132 /* PropertySignature */:
@@ -42344,7 +42346,7 @@ var ts;
                 return {
                     options: configFile.options,
                     files: configFile.fileNames,
-                    errors: [realizeDiagnostics(configFile.errors, '\r\n')]
+                    errors: realizeDiagnostics(configFile.errors, '\r\n')
                 };
             });
         };
