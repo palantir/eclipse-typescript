@@ -50,6 +50,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
+    private BooleanFieldEditor experimentalDecoratorsField;
     private ComboFieldEditor moduleField;
     private BooleanFieldEditor noEmitOnErrorField;
     private BooleanFieldEditor noImplicitAnyField;
@@ -119,6 +120,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.declarationField)
+                || source.equals(this.experimentalDecoratorsField)
                 || source.equals(this.moduleField)
                 || source.equals(this.noEmitOnErrorField)
                 || source.equals(this.noImplicitAnyField)
@@ -170,6 +172,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             getResource("no.lib"),
             this.getFieldEditorParent());
         this.addField(this.noLibField);
+
+        this.experimentalDecoratorsField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS,
+            getResource("experimental.decorators"),
+            this.getFieldEditorParent());
+        this.addField(this.experimentalDecoratorsField);
 
         this.compileOnSaveField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,

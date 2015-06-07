@@ -53,6 +53,9 @@ public final class CompilerOptions {
     @JsonProperty("emitDecoratorMetadata")
     private Boolean emitDecoratorMetadata;
 
+    @JsonProperty("experimentalDecorators")
+    private Boolean experimentalDecorators;
+
     @JsonProperty("help")
     private Boolean help;
 
@@ -148,6 +151,7 @@ public final class CompilerOptions {
         // create the compilation settings from the preferences
         CompilerOptions compilationSettings = new CompilerOptions();
         compilationSettings.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
+        compilationSettings.experimentalDecorators = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS);
         compilationSettings.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
         compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);

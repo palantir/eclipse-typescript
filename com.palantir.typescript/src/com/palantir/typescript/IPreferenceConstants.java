@@ -30,6 +30,7 @@ public interface IPreferenceConstants {
     String COMPILER_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
     String COMPILER_DECLARATION = "compiler.generateDeclarationFiles";
+    String COMPILER_EXPERIMENTAL_DECORATORS = "compiler.experimentalDecorators";
     String COMPILER_SOURCE_MAP = "compiler.mapSourceFiles";
     String COMPILER_MODULE = "compiler.moduleGenTarget";
     String COMPILER_NO_EMIT_ON_ERROR = "compiler.noEmitOnError";

@@ -1092,6 +1092,7 @@ var ts;
         Type_expected_0_is_a_reserved_word_in_strict_mode: { code: 1215, category: ts.DiagnosticCategory.Error, key: "Type expected. '{0}' is a reserved word in strict mode" },
         Type_expected_0_is_a_reserved_word_in_strict_mode_Class_definitions_are_automatically_in_strict_mode: { code: 1216, category: ts.DiagnosticCategory.Error, key: "Type expected. '{0}' is a reserved word in strict mode. Class definitions are automatically in strict mode." },
         Export_assignment_is_not_supported_when_module_flag_is_system: { code: 1218, category: ts.DiagnosticCategory.Error, key: "Export assignment is not supported when '--module' flag is 'system'." },
+        Experimental_support_for_decorators_is_a_feature_that_is_subject_to_change_in_a_future_release_Specify_experimentalDecorators_to_remove_this_warning: { code: 1219, category: ts.DiagnosticCategory.Error, key: "Experimental support for decorators is a feature that is subject to change in a future release. Specify '--experimentalDecorators' to remove this warning." },
         Duplicate_identifier_0: { code: 2300, category: ts.DiagnosticCategory.Error, key: "Duplicate identifier '{0}'." },
         Initializer_of_instance_member_variable_0_cannot_reference_identifier_1_declared_in_the_constructor: { code: 2301, category: ts.DiagnosticCategory.Error, key: "Initializer of instance member variable '{0}' cannot reference identifier '{1}' declared in the constructor." },
         Static_members_cannot_reference_class_type_parameters: { code: 2302, category: ts.DiagnosticCategory.Error, key: "Static members cannot reference class type parameters." },
@@ -1425,6 +1426,9 @@ var ts;
         Specifies_the_end_of_line_sequence_to_be_used_when_emitting_files_Colon_CRLF_dos_or_LF_unix: { code: 6060, category: ts.DiagnosticCategory.Message, key: "Specifies the end of line sequence to be used when emitting files: 'CRLF' (dos) or 'LF' (unix)." },
         NEWLINE: { code: 6061, category: ts.DiagnosticCategory.Message, key: "NEWLINE" },
         Argument_for_newLine_option_must_be_CRLF_or_LF: { code: 6062, category: ts.DiagnosticCategory.Error, key: "Argument for '--newLine' option must be 'CRLF' or 'LF'." },
+        Option_experimentalDecorators_must_also_be_specified_when_option_emitDecoratorMetadata_is_specified: { code: 6064, category: ts.DiagnosticCategory.Error, key: "Option 'experimentalDecorators' must also be specified when option 'emitDecoratorMetadata' is specified." },
+        Enables_experimental_support_for_ES7_decorators: { code: 6065, category: ts.DiagnosticCategory.Message, key: "Enables experimental support for ES7 decorators." },
+        Enables_experimental_support_for_emitting_type_metadata_for_decorators: { code: 6066, category: ts.DiagnosticCategory.Message, key: "Enables experimental support for emitting type metadata for decorators." },
         Variable_0_implicitly_has_an_1_type: { code: 7005, category: ts.DiagnosticCategory.Error, key: "Variable '{0}' implicitly has an '{1}' type." },
         Parameter_0_implicitly_has_an_1_type: { code: 7006, category: ts.DiagnosticCategory.Error, key: "Parameter '{0}' implicitly has an '{1}' type." },
         Member_0_implicitly_has_an_1_type: { code: 7008, category: ts.DiagnosticCategory.Error, key: "Member '{0}' implicitly has an '{1}' type." },
@@ -4684,6 +4688,21 @@ var ts;
         return result;
     }
     ts.convertToBase64 = convertToBase64;
+    var carriageReturnLineFeed = "\r\n";
+    var lineFeed = "\n";
+    function getNewLineCharacter(options) {
+        if (options.newLine === 0) {
+            return carriageReturnLineFeed;
+        }
+        else if (options.newLine === 1) {
+            return lineFeed;
+        }
+        else if (ts.sys) {
+            return ts.sys.newLine;
+        }
+        return carriageReturnLineFeed;
+    }
+    ts.getNewLineCharacter = getNewLineCharacter;
 })(ts || (ts = {}));
 var ts;
 (function (ts) {
@@ -8888,27 +8907,31 @@ var ts;
                     case 138:
                     case 201:
                     case 164:
-                        if (name === "arguments") {
+                        if (meaning & 3 && name === "arguments") {
                             result = argumentsSymbol;
                             break loop;
                         }
                         break;
                     case 163:
-                        if (name === "arguments") {
+                        if (meaning & 3 && name === "arguments") {
                             result = argumentsSymbol;
                             break loop;
                         }
-                        var functionName = location.name;
-                        if (functionName && name === functionName.text) {
-                            result = location.symbol;
-                            break loop;
+                        if (meaning & 16) {
+                            var functionName = location.name;
+                            if (functionName && name === functionName.text) {
+                                result = location.symbol;
+                                break loop;
+                            }
                         }
                         break;
                     case 175:
-                        var className = location.name;
-                        if (className && name === className.text) {
-                            result = location.symbol;
-                            break loop;
+                        if (meaning & 32) {
+                            var className = location.name;
+                            if (className && name === className.text) {
+                                result = location.symbol;
+                                break loop;
+                            }
                         }
                         break;
                     case 131:
@@ -14446,6 +14469,9 @@ var ts;
                 checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
             }
             if (node.body) {
+                if (!node.type) {
+                    getReturnTypeOfSignature(getSignatureFromDeclaration(node));
+                }
                 if (node.body.kind === 180) {
                     checkSourceElement(node.body);
                 }
@@ -15585,6 +15611,9 @@ var ts;
             }
             if (!ts.nodeCanBeDecorated(node)) {
                 return;
+            }
+            if (!compilerOptions.experimentalDecorators) {
+                error(node, ts.Diagnostics.Experimental_support_for_decorators_is_a_feature_that_is_subject_to_change_in_a_future_release_Specify_experimentalDecorators_to_remove_this_warning);
             }
             if (compilerOptions.emitDecoratorMetadata) {
                 switch (node.kind) {
@@ -21504,7 +21533,12 @@ var ts;
                 return result;
             }
             function parenthesizeForAccess(expr) {
-                if (ts.isLeftHandSideExpression(expr) && expr.kind !== 159 && expr.kind !== 7) {
+                while (expr.kind === 161) {
+                    expr = expr.expression;
+                }
+                if (ts.isLeftHandSideExpression(expr) &&
+                    expr.kind !== 159 &&
+                    expr.kind !== 7) {
                     return expr;
                 }
                 var node = ts.createSynthesizedNode(162);
@@ -21711,7 +21745,7 @@ var ts;
                 }
             }
             function emitParenExpression(node) {
-                if (!node.parent || node.parent.kind !== 164) {
+                if (!ts.nodeIsSynthesized(node) && node.parent.kind !== 164) {
                     if (node.expression.kind === 161) {
                         var operand = node.expression.expression;
                         while (operand.kind == 161) {
@@ -23698,7 +23732,7 @@ var ts;
                         emitDeclarationName(node);
                         write("\", ");
                         emitDeclarationName(node);
-                        write(")");
+                        write(");");
                     }
                     emitExportMemberAssignments(node.name);
                 }
@@ -23806,7 +23840,7 @@ var ts;
                         emitDeclarationName(node);
                         write("\", ");
                         emitDeclarationName(node);
-                        write(")");
+                        write(");");
                     }
                     emitExportMemberAssignments(node.name);
                 }
@@ -25051,8 +25085,6 @@ var ts;
     ts.ioReadTime = 0;
     ts.ioWriteTime = 0;
     ts.version = "1.5.3";
-    var carriageReturnLineFeed = "\r\n";
-    var lineFeed = "\n";
     function findConfigFile(searchPath) {
         var fileName = "tsconfig.json";
         while (true) {
@@ -25123,9 +25155,7 @@ var ts;
                 }
             }
         }
-        var newLine = options.newLine === 0 ? carriageReturnLineFeed :
-            options.newLine === 1 ? lineFeed :
-                ts.sys.newLine;
+        var newLine = ts.getNewLineCharacter(options);
         return {
             getSourceFile: getSourceFile,
             getDefaultLibFileName: function (options) { return ts.combinePaths(ts.getDirectoryPath(ts.normalizePath(ts.sys.getExecutingFilePath())), ts.getDefaultLibFileName(options)); },
@@ -25193,6 +25223,7 @@ var ts;
             getGlobalDiagnostics: getGlobalDiagnostics,
             getSemanticDiagnostics: getSemanticDiagnostics,
             getDeclarationDiagnostics: getDeclarationDiagnostics,
+            getCompilerOptionsDiagnostics: getCompilerOptionsDiagnostics,
             getTypeChecker: getTypeChecker,
             getDiagnosticsProducingTypeChecker: getDiagnosticsProducingTypeChecker,
             getCommonSourceDirectory: function () { return commonSourceDirectory; },
@@ -25272,6 +25303,11 @@ var ts;
                 var writeFile = function () { };
                 return ts.getDeclarationDiagnostics(getEmitHost(writeFile), resolver, sourceFile);
             }
+        }
+        function getCompilerOptionsDiagnostics() {
+            var allDiagnostics = [];
+            ts.addRange(allDiagnostics, diagnostics.getGlobalDiagnostics());
+            return ts.sortAndDeduplicateDiagnostics(allDiagnostics);
         }
         function getGlobalDiagnostics() {
             var typeChecker = getDiagnosticsProducingTypeChecker();
@@ -25547,6 +25583,10 @@ var ts;
                     diagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Option_noEmit_cannot_be_specified_with_option_declaration));
                 }
             }
+            if (options.emitDecoratorMetadata &&
+                !options.experimentalDecorators) {
+                diagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Option_experimentalDecorators_must_also_be_specified_when_option_emitDecoratorMetadata_is_specified));
+            }
         }
     }
     ts.createProgram = createProgram;
@@ -25741,9 +25781,15 @@ var ts;
             description: ts.Diagnostics.Watch_input_files
         },
         {
+            name: "experimentalDecorators",
+            type: "boolean",
+            description: ts.Diagnostics.Enables_experimental_support_for_ES7_decorators
+        },
+        {
             name: "emitDecoratorMetadata",
             type: "boolean",
-            experimental: true
+            experimental: true,
+            description: ts.Diagnostics.Enables_experimental_support_for_emitting_type_metadata_for_decorators
         }
     ];
     function parseCommandLine(commandLine) {

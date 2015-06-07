@@ -1825,6 +1825,7 @@ var ts;
         Type_expected_0_is_a_reserved_word_in_strict_mode: { code: 1215, category: ts.DiagnosticCategory.Error, key: "Type expected. '{0}' is a reserved word in strict mode" },
         Type_expected_0_is_a_reserved_word_in_strict_mode_Class_definitions_are_automatically_in_strict_mode: { code: 1216, category: ts.DiagnosticCategory.Error, key: "Type expected. '{0}' is a reserved word in strict mode. Class definitions are automatically in strict mode." },
         Export_assignment_is_not_supported_when_module_flag_is_system: { code: 1218, category: ts.DiagnosticCategory.Error, key: "Export assignment is not supported when '--module' flag is 'system'." },
+        Experimental_support_for_decorators_is_a_feature_that_is_subject_to_change_in_a_future_release_Specify_experimentalDecorators_to_remove_this_warning: { code: 1219, category: ts.DiagnosticCategory.Error, key: "Experimental support for decorators is a feature that is subject to change in a future release. Specify '--experimentalDecorators' to remove this warning." },
         Duplicate_identifier_0: { code: 2300, category: ts.DiagnosticCategory.Error, key: "Duplicate identifier '{0}'." },
         Initializer_of_instance_member_variable_0_cannot_reference_identifier_1_declared_in_the_constructor: { code: 2301, category: ts.DiagnosticCategory.Error, key: "Initializer of instance member variable '{0}' cannot reference identifier '{1}' declared in the constructor." },
         Static_members_cannot_reference_class_type_parameters: { code: 2302, category: ts.DiagnosticCategory.Error, key: "Static members cannot reference class type parameters." },
@@ -2158,6 +2159,9 @@ var ts;
         Specifies_the_end_of_line_sequence_to_be_used_when_emitting_files_Colon_CRLF_dos_or_LF_unix: { code: 6060, category: ts.DiagnosticCategory.Message, key: "Specifies the end of line sequence to be used when emitting files: 'CRLF' (dos) or 'LF' (unix)." },
         NEWLINE: { code: 6061, category: ts.DiagnosticCategory.Message, key: "NEWLINE" },
         Argument_for_newLine_option_must_be_CRLF_or_LF: { code: 6062, category: ts.DiagnosticCategory.Error, key: "Argument for '--newLine' option must be 'CRLF' or 'LF'." },
+        Option_experimentalDecorators_must_also_be_specified_when_option_emitDecoratorMetadata_is_specified: { code: 6064, category: ts.DiagnosticCategory.Error, key: "Option 'experimentalDecorators' must also be specified when option 'emitDecoratorMetadata' is specified." },
+        Enables_experimental_support_for_ES7_decorators: { code: 6065, category: ts.DiagnosticCategory.Message, key: "Enables experimental support for ES7 decorators." },
+        Enables_experimental_support_for_emitting_type_metadata_for_decorators: { code: 6066, category: ts.DiagnosticCategory.Message, key: "Enables experimental support for emitting type metadata for decorators." },
         Variable_0_implicitly_has_an_1_type: { code: 7005, category: ts.DiagnosticCategory.Error, key: "Variable '{0}' implicitly has an '{1}' type." },
         Parameter_0_implicitly_has_an_1_type: { code: 7006, category: ts.DiagnosticCategory.Error, key: "Parameter '{0}' implicitly has an '{1}' type." },
         Member_0_implicitly_has_an_1_type: { code: 7008, category: ts.DiagnosticCategory.Error, key: "Member '{0}' implicitly has an '{1}' type." },
@@ -5774,6 +5778,21 @@ var ts;
         return result;
     }
     ts.convertToBase64 = convertToBase64;
+    var carriageReturnLineFeed = "\r\n";
+    var lineFeed = "\n";
+    function getNewLineCharacter(options) {
+        if (options.newLine === 0 /* CarriageReturnLineFeed */) {
+            return carriageReturnLineFeed;
+        }
+        else if (options.newLine === 1 /* LineFeed */) {
+            return lineFeed;
+        }
+        else if (ts.sys) {
+            return ts.sys.newLine;
+        }
+        return carriageReturnLineFeed;
+    }
+    ts.getNewLineCharacter = getNewLineCharacter;
 })(ts || (ts = {}));
 var ts;
 (function (ts) {
@@ -11128,27 +11147,31 @@ var ts;
                     case 138 /* SetAccessor */:
                     case 201 /* FunctionDeclaration */:
                     case 164 /* ArrowFunction */:
-                        if (name === "arguments") {
+                        if (meaning & 3 /* Variable */ && name === "arguments") {
                             result = argumentsSymbol;
                             break loop;
                         }
                         break;
                     case 163 /* FunctionExpression */:
-                        if (name === "arguments") {
+                        if (meaning & 3 /* Variable */ && name === "arguments") {
                             result = argumentsSymbol;
                             break loop;
                         }
-                        var functionName = location.name;
-                        if (functionName && name === functionName.text) {
-                            result = location.symbol;
-                            break loop;
+                        if (meaning & 16 /* Function */) {
+                            var functionName = location.name;
+                            if (functionName && name === functionName.text) {
+                                result = location.symbol;
+                                break loop;
+                            }
                         }
                         break;
                     case 175 /* ClassExpression */:
-                        var className = location.name;
-                        if (className && name === className.text) {
-                            result = location.symbol;
-                            break loop;
+                        if (meaning & 32 /* Class */) {
+                            var className = location.name;
+                            if (className && name === className.text) {
+                                result = location.symbol;
+                                break loop;
+                            }
                         }
                         break;
                     case 131 /* Decorator */:
@@ -17573,6 +17596,14 @@ var ts;
                 checkIfNonVoidFunctionHasReturnExpressionsOrSingleThrowStatment(node, getTypeFromTypeNode(node.type));
             }
             if (node.body) {
+                if (!node.type) {
+                    // There are some checks that are only performed in getReturnTypeFromBody, that may produce errors
+                    // we need. An example is the noImplicitAny errors resulting from widening the return expression
+                    // of a function. Because checking of function expression bodies is deferred, there was never an
+                    // appropriate time to do this during the main walk of the file (see the comment at the top of
+                    // checkFunctionExpressionBodies). So it must be done now.
+                    getReturnTypeOfSignature(getSignatureFromDeclaration(node));
+                }
                 if (node.body.kind === 180 /* Block */) {
                     checkSourceElement(node.body);
                 }
@@ -18916,6 +18947,9 @@ var ts;
             // checkGrammarDecorators.
             if (!ts.nodeCanBeDecorated(node)) {
                 return;
+            }
+            if (!compilerOptions.experimentalDecorators) {
+                error(node, ts.Diagnostics.Experimental_support_for_decorators_is_a_feature_that_is_subject_to_change_in_a_future_release_Specify_experimentalDecorators_to_remove_this_warning);
             }
             if (compilerOptions.emitDecoratorMetadata) {
                 // we only need to perform these checks if we are emitting serialized type metadata for the target of a decorator.
@@ -25579,6 +25613,11 @@ var ts;
                 return result;
             }
             function parenthesizeForAccess(expr) {
+                // When diagnosing whether the expression needs parentheses, the decision should be based
+                // on the innermost expression in a chain of nested type assertions.
+                while (expr.kind === 161 /* TypeAssertionExpression */) {
+                    expr = expr.expression;
+                }
                 // isLeftHandSideExpression is almost the correct criterion for when it is not necessary
                 // to parenthesize the expression before a dot. The known exceptions are:
                 //
@@ -25587,7 +25626,9 @@ var ts;
                 //    NumberLiteral
                 //       1.x            -> not the same as (1).x
                 //
-                if (ts.isLeftHandSideExpression(expr) && expr.kind !== 159 /* NewExpression */ && expr.kind !== 7 /* NumericLiteral */) {
+                if (ts.isLeftHandSideExpression(expr) &&
+                    expr.kind !== 159 /* NewExpression */ &&
+                    expr.kind !== 7 /* NumericLiteral */) {
                     return expr;
                 }
                 var node = ts.createSynthesizedNode(162 /* ParenthesizedExpression */);
@@ -25818,7 +25859,10 @@ var ts;
                 }
             }
             function emitParenExpression(node) {
-                if (!node.parent || node.parent.kind !== 164 /* ArrowFunction */) {
+                // If the node is synthesized, it means the emitter put the parentheses there,
+                // not the user. If we didn't want them, the emitter would not have put them
+                // there.
+                if (!ts.nodeIsSynthesized(node) && node.parent.kind !== 164 /* ArrowFunction */) {
                     if (node.expression.kind === 161 /* TypeAssertionExpression */) {
                         var operand = node.expression.expression;
                         // Make sure we consider all nested cast expressions, e.g.:
@@ -28100,7 +28144,7 @@ var ts;
                         emitDeclarationName(node);
                         write("\", ");
                         emitDeclarationName(node);
-                        write(")");
+                        write(");");
                     }
                     emitExportMemberAssignments(node.name);
                 }
@@ -28210,7 +28254,7 @@ var ts;
                         emitDeclarationName(node);
                         write("\", ");
                         emitDeclarationName(node);
-                        write(")");
+                        write(");");
                     }
                     emitExportMemberAssignments(node.name);
                 }
@@ -29632,8 +29676,6 @@ var ts;
     /* @internal */ ts.ioWriteTime = 0;
     /** The version of the TypeScript compiler release */
     ts.version = "1.5.3";
-    var carriageReturnLineFeed = "\r\n";
-    var lineFeed = "\n";
     function findConfigFile(searchPath) {
         var fileName = "tsconfig.json";
         while (true) {
@@ -29707,9 +29749,7 @@ var ts;
                 }
             }
         }
-        var newLine = options.newLine === 0 /* CarriageReturnLineFeed */ ? carriageReturnLineFeed :
-            options.newLine === 1 /* LineFeed */ ? lineFeed :
-                ts.sys.newLine;
+        var newLine = ts.getNewLineCharacter(options);
         return {
             getSourceFile: getSourceFile,
             getDefaultLibFileName: function (options) { return ts.combinePaths(ts.getDirectoryPath(ts.normalizePath(ts.sys.getExecutingFilePath())), ts.getDefaultLibFileName(options)); },
@@ -29777,6 +29817,7 @@ var ts;
             getGlobalDiagnostics: getGlobalDiagnostics,
             getSemanticDiagnostics: getSemanticDiagnostics,
             getDeclarationDiagnostics: getDeclarationDiagnostics,
+            getCompilerOptionsDiagnostics: getCompilerOptionsDiagnostics,
             getTypeChecker: getTypeChecker,
             getDiagnosticsProducingTypeChecker: getDiagnosticsProducingTypeChecker,
             getCommonSourceDirectory: function () { return commonSourceDirectory; },
@@ -29867,6 +29908,11 @@ var ts;
                 var writeFile = function () { };
                 return ts.getDeclarationDiagnostics(getEmitHost(writeFile), resolver, sourceFile);
             }
+        }
+        function getCompilerOptionsDiagnostics() {
+            var allDiagnostics = [];
+            ts.addRange(allDiagnostics, diagnostics.getGlobalDiagnostics());
+            return ts.sortAndDeduplicateDiagnostics(allDiagnostics);
         }
         function getGlobalDiagnostics() {
             var typeChecker = getDiagnosticsProducingTypeChecker();
@@ -30168,6 +30214,10 @@ var ts;
                     diagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Option_noEmit_cannot_be_specified_with_option_declaration));
                 }
             }
+            if (options.emitDecoratorMetadata &&
+                !options.experimentalDecorators) {
+                diagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Option_experimentalDecorators_must_also_be_specified_when_option_emitDecoratorMetadata_is_specified));
+            }
         }
     }
     ts.createProgram = createProgram;
@@ -30363,9 +30413,15 @@ var ts;
             description: ts.Diagnostics.Watch_input_files
         },
         {
+            name: "experimentalDecorators",
+            type: "boolean",
+            description: ts.Diagnostics.Enables_experimental_support_for_ES7_decorators
+        },
+        {
             name: "emitDecoratorMetadata",
             type: "boolean",
-            experimental: true
+            experimental: true,
+            description: ts.Diagnostics.Enables_experimental_support_for_emitting_type_metadata_for_decorators
         }
     ];
     function parseCommandLine(commandLine) {
@@ -36659,12 +36715,20 @@ var ts;
      * Extra compiler options that will unconditionally be used bu this function are:
      * - isolatedModules = true
      * - allowNonTsExtensions = true
+     * - noLib = true
+     * - noResolve = true
      */
     function transpile(input, compilerOptions, fileName, diagnostics) {
         var options = compilerOptions ? ts.clone(compilerOptions) : getDefaultCompilerOptions();
         options.isolatedModules = true;
         // Filename can be non-ts file.
         options.allowNonTsExtensions = true;
+        // We are not returning a sourceFile for lib file when asked by the program, 
+        // so pass --noLib to avoid reporting a file not found error.
+        options.noLib = true;
+        // We are not doing a full typecheck, we are not resolving the whole context,
+        // so pass --noResolve to avoid reporting missing file errors.
+        options.noResolve = true;
         // Parse
         var inputFileName = fileName || "module.ts";
         var sourceFile = ts.createSourceFile(inputFileName, input, options.target);
@@ -36672,6 +36736,7 @@ var ts;
         if (diagnostics && sourceFile.parseDiagnostics) {
             diagnostics.push.apply(diagnostics, sourceFile.parseDiagnostics);
         }
+        var newLine = ts.getNewLineCharacter(options);
         // Output
         var outputText;
         // Create a compilerHost object to allow the compiler to read and write files
@@ -36685,11 +36750,11 @@ var ts;
             useCaseSensitiveFileNames: function () { return false; },
             getCanonicalFileName: function (fileName) { return fileName; },
             getCurrentDirectory: function () { return ""; },
-            getNewLine: function () { return (ts.sys && ts.sys.newLine) || "\r\n"; }
+            getNewLine: function () { return newLine; }
         };
         var program = ts.createProgram([inputFileName], options, compilerHost);
         if (diagnostics) {
-            diagnostics.push.apply(diagnostics, program.getGlobalDiagnostics());
+            diagnostics.push.apply(diagnostics, program.getCompilerOptionsDiagnostics());
         }
         // Emit
         program.emit();
@@ -37292,12 +37357,16 @@ var ts;
                     }
                 }
             }
+            // hostCache is captured in the closure for 'getOrCreateSourceFile' but it should not be used past this point.
+            // It needs to be cleared to allow all collected snapshots to be released
+            hostCache = undefined;
             program = newProgram;
             // Make sure all the nodes in the program are both bound, and have their parent 
             // pointers set property.
             program.getTypeChecker();
             return;
             function getOrCreateSourceFile(fileName) {
+                ts.Debug.assert(hostCache !== undefined);
                 // The program is asking for this file, check first if the host can locate it.
                 // If the host can not locate the file, then it does not exist. return undefined
                 // to the program to allow reporting of errors for missing files.
