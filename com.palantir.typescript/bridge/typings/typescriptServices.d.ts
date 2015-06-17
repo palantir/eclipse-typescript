@@ -748,7 +748,7 @@ declare module ts {
             path: string;
             name: string;
         }[];
-        amdModuleName: string;
+        moduleName: string;
         referencedFiles: FileReference[];
         hasNoDefaultLib: boolean;
         languageVersion: ScriptTarget;
@@ -1847,7 +1847,7 @@ declare module ts {
         isCancellationRequested(): boolean;
         throwIfCancellationRequested(): void;
     }
-    function transpile(input: string, compilerOptions?: CompilerOptions, fileName?: string, diagnostics?: Diagnostic[]): string;
+    function transpile(input: string, compilerOptions?: CompilerOptions, fileName?: string, diagnostics?: Diagnostic[], moduleName?: string): string;
     function createLanguageServiceSourceFile(fileName: string, scriptSnapshot: IScriptSnapshot, scriptTarget: ScriptTarget, version: string, setNodeParents: boolean): SourceFile;
     let disableIncrementalParsing: boolean;
     function updateLanguageServiceSourceFile(sourceFile: SourceFile, scriptSnapshot: IScriptSnapshot, version: string, textChangeRange: TextChangeRange, aggressiveChecks?: boolean): SourceFile;

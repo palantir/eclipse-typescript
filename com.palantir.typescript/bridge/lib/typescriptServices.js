@@ -10227,7 +10227,7 @@ var ts;
             }
             sourceFile.referencedFiles = referencedFiles;
             sourceFile.amdDependencies = amdDependencies;
-            sourceFile.amdModuleName = amdModuleName;
+            sourceFile.moduleName = amdModuleName;
         }
         function setExternalModuleIndicator(sourceFile) {
             sourceFile.externalModuleIndicator = ts.forEach(sourceFile.statements, function (node) {
@@ -28957,10 +28957,10 @@ var ts;
                 emitSetters(exportStarFunction);
                 writeLine();
                 emitExecute(node, startIndex);
-                emitTempDeclarations(true);
                 decreaseIndent();
                 writeLine();
                 write("}"); // return
+                emitTempDeclarations(true);
             }
             function emitSetters(exportStarFunction) {
                 write("setters:[");
@@ -29093,7 +29093,11 @@ var ts;
                 ts.Debug.assert(!exportFunctionForFile);
                 // make sure that  name of 'exports' function does not conflict with existing identifiers
                 exportFunctionForFile = makeUniqueName("exports");
-                write("System.register([");
+                write("System.register(");
+                if (node.moduleName) {
+                    write("\"" + node.moduleName + "\", ");
+                }
+                write("[");
                 for (var i = 0; i < externalImports.length; ++i) {
                     var text = getExternalModuleNameText(externalImports[i]);
                     if (i !== 0) {
@@ -29173,8 +29177,8 @@ var ts;
                 collectExternalModuleInfo(node);
                 writeLine();
                 write("define(");
-                if (node.amdModuleName) {
-                    write("\"" + node.amdModuleName + "\", ");
+                if (node.moduleName) {
+                    write("\"" + node.moduleName + "\", ");
                 }
                 emitAMDDependencies(node, true);
                 write(") {");
@@ -36718,7 +36722,7 @@ var ts;
      * - noLib = true
      * - noResolve = true
      */
-    function transpile(input, compilerOptions, fileName, diagnostics) {
+    function transpile(input, compilerOptions, fileName, diagnostics, moduleName) {
         var options = compilerOptions ? ts.clone(compilerOptions) : getDefaultCompilerOptions();
         options.isolatedModules = true;
         // Filename can be non-ts file.
@@ -36732,6 +36736,9 @@ var ts;
         // Parse
         var inputFileName = fileName || "module.ts";
         var sourceFile = ts.createSourceFile(inputFileName, input, options.target);
+        if (moduleName) {
+            sourceFile.moduleName = moduleName;
+        }
         // Store syntactic diagnostics
         if (diagnostics && sourceFile.parseDiagnostics) {
             diagnostics.push.apply(diagnostics, sourceFile.parseDiagnostics);
