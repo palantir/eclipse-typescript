@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jdt.internal.ui.actions.CollapseAllAction;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -33,8 +35,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
@@ -75,6 +79,11 @@ public final class OutlinePage extends ContentOutlinePage {
         if (navigationBarItems.size() < 500) {
             treeViewer.expandAll();
         }
+
+        IPageSite site = getSite();
+        IActionBars actionBars = site.getActionBars();
+        IToolBarManager toolBarManager = actionBars.getToolBarManager();
+        toolBarManager.add(new CollapseAllAction(treeViewer));
 
         this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this.selectionListener);
     }
