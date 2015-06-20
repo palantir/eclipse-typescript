@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.search2.internal.ui.basic.views.ExpandAllAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -84,6 +85,8 @@ public final class OutlinePage extends ContentOutlinePage {
         IActionBars actionBars = site.getActionBars();
         IToolBarManager toolBarManager = actionBars.getToolBarManager();
         toolBarManager.add(new CollapseAllAction(treeViewer));
+
+        toolBarManager.add(new ExpandAllAction());
 
         this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this.selectionListener);
     }
