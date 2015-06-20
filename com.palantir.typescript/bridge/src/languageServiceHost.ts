@@ -57,14 +57,7 @@ module Bridge {
         }
 
         public getScriptFileNames() {
-            return Object.getOwnPropertyNames(this.fileInfos).filter((fileName) => {
-                // include the default library definition file if its enabled
-                if (fileName === LIB_FILE_NAME || fileName === LIB_ES6_FILE_NAME) {
-                    return !this.compilationSettings.noLib;
-                }
-
-                return this.fileFilter(fileName);
-            });
+            return Object.getOwnPropertyNames(this.fileInfos).filter(this.fileFilter);
         }
 
         public getScriptSnapshot(fileName: string) {

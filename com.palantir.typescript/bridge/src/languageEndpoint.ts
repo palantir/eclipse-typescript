@@ -316,7 +316,13 @@ module Bridge {
         }
 
         private createProjectLanguageService(projectName: string, compilationSettings: ts.CompilerOptions, referencedProjectNames: string[]) {
+            var defaultLibFileName = ts.getDefaultLibFileName(compilationSettings);
+
             var fileFilter = (fileName: string) => {
+                if (fileName === defaultLibFileName) {
+                    return !compilationSettings.noLib;
+                }
+
                 return this.isSourceFile(projectName, fileName) || this.isReferencedFile(referencedProjectNames, fileName);
             }
 
