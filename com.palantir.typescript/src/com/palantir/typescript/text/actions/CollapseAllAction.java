@@ -16,36 +16,43 @@
 
 package com.palantir.typescript.text.actions;
 
-import org.eclipse.core.runtime.Assert;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 
-import com.palantir.typescript.Images;
+import com.palantir.typescript.Resources;
 
 /**
  * Outline view collapse all action.
  *
  * @author Diogo Sant'Ana <diogosantana@gmail.com>
  */
-public class CollapseAllAction extends Action {
+public final class CollapseAllAction extends Action {
 
-    private TreeViewer viewer;
+    private final TreeViewer viewer;
 
     public CollapseAllAction(TreeViewer viewer) {
-        super("Collapse All", Images.DESC_COLLAPSEALL);
-        setToolTipText("Collapse All");
-        setDescription("Collapse All");
-        Assert.isNotNull(viewer);
-        this.viewer =  viewer;
+        checkNotNull(viewer);
+
+        this.viewer = viewer;
+
+        this.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_ELCL_COLLAPSEALL));
+        this.setText(Resources.BUNDLE.getString("collapse.all"));
     }
 
     @Override
     public void run() {
+        Control control = this.viewer.getControl();
+
+        control.setRedraw(false);
         try {
-            viewer.getControl().setRedraw(false);
-            viewer.collapseAll();
+            this.viewer.collapseAll();
         } finally {
-            viewer.getControl().setRedraw(true);
+            control.setRedraw(true);
         }
     }
 }

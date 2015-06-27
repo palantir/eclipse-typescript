@@ -27,8 +27,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 import com.palantir.typescript.services.language.ScriptElementKind;
 import com.palantir.typescript.services.language.ScriptElementKindModifier;
@@ -41,12 +39,6 @@ import com.palantir.typescript.services.language.ScriptElementKindModifier;
 public final class Images {
 
     private static final ImageRegistry REGISTRY = new ImageRegistry();
-
-    public static final ImageDescriptor DESC_COLLAPSEALL= sharedImageDescriptor(ISharedImages.IMG_ELCL_COLLAPSEALL);
-
-    private static ImageDescriptor sharedImageDescriptor(String name){
-        return PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(name);
-    }
 
     public static Image getImage(ScriptElementKind kind, List<ScriptElementKindModifier> kindModifiers) {
         checkNotNull(kind);

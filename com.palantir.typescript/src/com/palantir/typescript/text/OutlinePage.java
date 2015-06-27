@@ -75,10 +75,10 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.setLabelProvider(new NavigationBarItemLabelProvider());
         treeViewer.setInput(navigationBarItems);
 
-        IPageSite site = getSite();
+        // add collapse all button
+        IPageSite site = this.getSite();
         IActionBars actionBars = site.getActionBars();
         IToolBarManager toolBarManager = actionBars.getToolBarManager();
-
         toolBarManager.add(new CollapseAllAction(treeViewer));
 
         // expand all the nodes if there aren't too many of them
@@ -86,7 +86,7 @@ public final class OutlinePage extends ContentOutlinePage {
             treeViewer.expandAll();
         }
 
-        this.getSite().getWorkbenchWindow().getSelectionService().addPostSelectionListener(this.selectionListener);
+        site.getWorkbenchWindow().getSelectionService().addPostSelectionListener(this.selectionListener);
     }
 
     @Override
