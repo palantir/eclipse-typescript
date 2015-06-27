@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.List;
 
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.text.TextSelection;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -33,14 +34,17 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.part.IPageSite;
 import org.eclipse.ui.views.contentoutline.ContentOutlinePage;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.navigate.NavigationBarItemLabelProvider;
 import com.palantir.typescript.services.language.NavigationBarItem;
 import com.palantir.typescript.services.language.TextSpan;
+import com.palantir.typescript.text.actions.CollapseAllAction;
 
 /**
  * The outline view.
@@ -70,6 +74,12 @@ public final class OutlinePage extends ContentOutlinePage {
         treeViewer.setContentProvider(new ContentProvider());
         treeViewer.setLabelProvider(new NavigationBarItemLabelProvider());
         treeViewer.setInput(navigationBarItems);
+
+        IPageSite site = getSite();
+        IActionBars actionBars = site.getActionBars();
+        IToolBarManager toolBarManager = actionBars.getToolBarManager();
+
+        toolBarManager.add(new CollapseAllAction(treeViewer));
 
         // expand all the nodes if there aren't too many of them
         if (navigationBarItems.size() < 500) {
