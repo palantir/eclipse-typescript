@@ -6,7 +6,7 @@ set -e
 (
   cd ../typescript
   git fetch
-  git checkout origin/release-1.5
+  git checkout origin/master
   rm -rf built/local
   jake local
 )

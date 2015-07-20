@@ -22,7 +22,7 @@
   *
   * @author tyleradams
   */
-module Bridge {
+namespace Bridge {
 
     export class Main {
 

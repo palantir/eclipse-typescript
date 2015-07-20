@@ -17,7 +17,7 @@
 /// <reference path="fileInfo.ts" />
 /// <reference path="snapshot.ts" />
 
-module Bridge {
+namespace Bridge {
 
     export const LIB_FILE_NAME = "lib.d.ts";
     export const LIB_ES6_FILE_NAME = "lib.es6.d.ts";

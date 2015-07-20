@@ -34,7 +34,8 @@ public enum ScriptElementKindModifier {
     PROTECTED_MEMBER_MODIFIER("protected"),
     EXPORTED_MODIFIER("export"),
     AMBIENT_MODIFIER("declare"),
-    STATIC_MODIFIER("static");
+    STATIC_MODIFIER("static"),
+    ABSTRACT_MODIFIFER("abstract");
 
     private final String value;
 

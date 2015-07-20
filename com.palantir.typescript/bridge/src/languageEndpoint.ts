@@ -17,7 +17,7 @@
 /// <reference path="languageServiceHost.ts" />
 
 
-module Bridge {
+namespace Bridge {
 
     export class LanguageEndpoint {
 

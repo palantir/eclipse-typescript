@@ -16,7 +16,7 @@
 
 /// <reference path="snapshot.ts" />
 
-module Bridge {
+namespace Bridge {
 
     export class FileInfo {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module Bridge {
+namespace Bridge {
 
     export class ScriptSnapshot implements ts.IScriptSnapshot {
 

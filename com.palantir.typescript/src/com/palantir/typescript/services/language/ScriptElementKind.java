@@ -41,6 +41,9 @@ public enum ScriptElementKind {
     // class X {}
     CLASS_ELEMENT("class"),
 
+    // var x = class X {}
+    LOCAL_CLASS_ELEMENT("local class"),
+
     // interface Y {}
     INTERFACE_ELEMENT("interface"),
 
