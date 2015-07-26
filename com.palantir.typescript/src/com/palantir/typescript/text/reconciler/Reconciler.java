@@ -69,12 +69,13 @@ public final class Reconciler implements IReconciler {
     private final TypeScriptEditor editor;
 
     private final AnnotationReconcilingStrategy annotationStrategy;
+    private final AtomicBoolean caretChanged;
     private final CaretListener caretListener;
+    private final AtomicBoolean documentChanged;
     private final Queue<DocumentEvent> eventQueue;
     private final ScheduledExecutorService executor;
     private final MyListener listener;
     private final OutlineViewReconcilingStrategy outlineViewStrategy;
-    private final AtomicBoolean reconcileRequired;
     private final SpellingReconcileStrategy spellingStrategy;
 
     private FileLanguageService cachedLanguageService;
@@ -87,12 +88,13 @@ public final class Reconciler implements IReconciler {
         this.editor = editor;
 
         this.annotationStrategy = new AnnotationReconcilingStrategy(editor, sourceViewer);
-        this.outlineViewStrategy = new OutlineViewReconcilingStrategy(editor);
+        this.caretChanged = new AtomicBoolean();
         this.caretListener = new MyCaretListener();
+        this.documentChanged = new AtomicBoolean();
         this.eventQueue = Queues.newConcurrentLinkedQueue();
         this.executor = createExecutor();
         this.listener = new MyListener();
-        this.reconcileRequired = new AtomicBoolean();
+        this.outlineViewStrategy = new OutlineViewReconcilingStrategy(editor);
         this.spellingStrategy = new SpellingReconcileStrategy(sourceViewer, EditorsUI.getSpellingService());
     }
 
@@ -153,7 +155,6 @@ public final class Reconciler implements IReconciler {
     }
 
     private void scheduleReconcile(long delay) {
-        this.reconcileRequired.set(true);
         this.executor.schedule(new Runnable() {
             @Override
             public void run() {
@@ -179,8 +180,7 @@ public final class Reconciler implements IReconciler {
     }
 
     private void reconcile() {
-        // check that a reconcile is still required (many tasks may be queued but only one should run at any given time)
-        if (this.reconcileRequired.compareAndSet(true, false)) {
+        if (this.documentChanged.compareAndSet(true, false)) {
             // spelling
             if (EditorsUI.getPreferenceStore().getBoolean(SpellingService.PREFERENCE_SPELLING_ENABLED)) {
                 int length = this.editor.getDocument().getLength();
@@ -193,7 +193,16 @@ public final class Reconciler implements IReconciler {
             FileLanguageService languageService = this.getLanguageService();
             this.processEvents(languageService);
             this.annotationStrategy.reconcile(languageService);
+
+            // outline view
             this.outlineViewStrategy.reconcile(languageService);
+        }
+
+        if (this.caretChanged.compareAndSet(true, false)) {
+            // annotations
+            FileLanguageService languageService = this.getLanguageService();
+            this.processEvents(languageService);
+            this.annotationStrategy.reconcile(languageService);
         }
     }
 
@@ -207,6 +216,7 @@ public final class Reconciler implements IReconciler {
     private final class MyCaretListener implements CaretListener {
         @Override
         public void caretMoved(CaretEvent event) {
+            caretChanged.set(true);
             scheduleReconcile(DELAY);
         }
     }
@@ -220,6 +230,7 @@ public final class Reconciler implements IReconciler {
         public void documentChanged(DocumentEvent event) {
             Reconciler.this.eventQueue.add(event);
 
+            documentChanged.set(true);
             scheduleReconcile(DELAY);
         }
 
@@ -245,6 +256,7 @@ public final class Reconciler implements IReconciler {
                 spellingStrategy.setDocument(newInput);
 
                 // initial reconcile
+                documentChanged.set(true);
                 scheduleReconcile(0);
             }
         }
