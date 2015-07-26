@@ -189,6 +189,11 @@ public final class OutlinePage extends ContentOutlinePage {
             boolean selected = false;
 
             for (TreeItem treeItem : treeItems) {
+
+                if ("<global>".equals(treeItem.getText())) {
+                    continue;
+                }
+
                 NavigationBarItem navigateToItem = (NavigationBarItem) treeItem.getData();
 
                 if (navigateToItem == null) {
