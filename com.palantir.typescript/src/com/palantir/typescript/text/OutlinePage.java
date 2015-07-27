@@ -192,19 +192,22 @@ public final class OutlinePage extends ContentOutlinePage {
         private TreeItem findBestMatch(TreeItem[] treeItems, int offset, TreeItem bestItem, int bestSpanLength) {
             for (TreeItem treeItem : treeItems) {
                 NavigationBarItem navigateToItem = (NavigationBarItem) treeItem.getData();
-                List<TextSpan> spans = navigateToItem.getSpans();
 
-                for (TextSpan span : spans) {
-                    if (span.contains(offset)) {
-                        // the best item is the one with the smallest span which contains the offset
-                        if (bestItem == null || (span.getLength() < bestSpanLength)) {
-                            bestItem = treeItem;
-                            bestSpanLength = span.getLength();
+                if (navigateToItem != null) {
+                    List<TextSpan> spans = navigateToItem.getSpans();
+
+                    for (TextSpan span : spans) {
+                        if (span.contains(offset)) {
+                            // the best item is the one with the smallest span which contains the offset
+                            if (bestItem == null || (span.getLength() < bestSpanLength)) {
+                                bestItem = treeItem;
+                                bestSpanLength = span.getLength();
+                            }
                         }
                     }
-                }
 
-                bestItem = this.findBestMatch(treeItem.getItems(), offset, bestItem, bestSpanLength);
+                    bestItem = this.findBestMatch(treeItem.getItems(), offset, bestItem, bestSpanLength);
+                }
             }
 
             return bestItem;
