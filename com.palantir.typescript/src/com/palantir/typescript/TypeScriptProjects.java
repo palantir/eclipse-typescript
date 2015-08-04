@@ -240,7 +240,14 @@ public final class TypeScriptProjects {
     }
 
     private static boolean isTypeScriptFile(IResource resource) {
-        return resource.getType() == IResource.FILE && resource.getName().endsWith(".ts");
+        // needs to be a file
+        if (resource.getType() != IResource.FILE) {
+            return false;
+        }
+
+        // needs to have a .ts or .tsx extension
+        String resourceName = resource.getName();
+        return resourceName.endsWith(".ts") || resourceName.endsWith(".tsx");
     }
 
     private static final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {

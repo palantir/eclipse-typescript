@@ -22,7 +22,7 @@
       <viewer
             id="com.palantir.typescript.mergeViewer"
             class="com.palantir.typescript.MergeViewerCreator"
-            extensions="ts">
+            extensions="ts, tsx">
       </viewer>
    </extension>
 
@@ -212,7 +212,7 @@
          point="org.eclipse.ui.editors">
       <editor
             name="TypeScript Editor"
-            extensions="ts"
+            extensions="ts, tsx"
             icon="icons/typeScript.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="com.palantir.typescript.text.TypeScriptEditor"
