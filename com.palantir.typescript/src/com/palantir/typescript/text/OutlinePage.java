@@ -177,44 +177,40 @@ public final class OutlinePage extends ContentOutlinePage {
             if (part instanceof TypeScriptEditor) {
                 TextSelection textSelection = (TextSelection) selection;
                 int offset = textSelection.getOffset();
-                TreeItem[] treeItems = getTreeViewer().getTree().getItems();
+                Tree tree = OutlinePage.this.getTreeViewer().getTree();
+                TreeItem[] treeItems = tree.getItems();
 
-                if (!this.selectTreeItem(treeItems, offset)) {
-                    OutlinePage.this.getTreeViewer().getTree().deselectAll();
+                TreeItem bestItem = this.findBestMatch(treeItems, offset, null, -1);
+                if (bestItem != null) {
+                    tree.select(bestItem);
+                } else {
+                    tree.deselectAll();
                 }
             }
         }
 
-        private boolean selectTreeItem(TreeItem[] treeItems, int offset) {
-            boolean selected = false;
-
+        private TreeItem findBestMatch(TreeItem[] treeItems, int offset, TreeItem bestItem, int bestSpanLength) {
             for (TreeItem treeItem : treeItems) {
                 NavigationBarItem navigateToItem = (NavigationBarItem) treeItem.getData();
 
-                if (navigateToItem == null) {
-                    continue;
-                }
+                if (navigateToItem != null) {
+                    List<TextSpan> spans = navigateToItem.getSpans();
 
-                TextSpan textSpan = navigateToItem.getSpans().get(0);
-                if (textSpan.getStart() <= offset && offset <= textSpan.getStart() + textSpan.getLength()) {
-                    TreeItem[] childTreeItems = treeItem.getItems();
-
-                    // check for a better match in one of the children items
-                    if (childTreeItems.length != 0) {
-                        selected = this.selectTreeItem(childTreeItems, offset);
+                    for (TextSpan span : spans) {
+                        if (span.contains(offset)) {
+                            // the best item is the one with the smallest span which contains the offset
+                            if (bestItem == null || (span.getLength() < bestSpanLength)) {
+                                bestItem = treeItem;
+                                bestSpanLength = span.getLength();
+                            }
+                        }
                     }
 
-                    // no better match found, select this item
-                    if (!selected) {
-                        OutlinePage.this.getTreeViewer().getTree().select(treeItem);
-                        selected = true;
-                    }
-
-                    return selected;
+                    bestItem = this.findBestMatch(treeItem.getItems(), offset, bestItem, bestSpanLength);
                 }
             }
 
-            return selected;
+            return bestItem;
         }
     }
 }

@@ -16,6 +16,8 @@
 
 package com.palantir.typescript.services.language;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
@@ -40,6 +42,12 @@ public final class TextSpan {
 
     public int getLength() {
         return this.length;
+    }
+
+    public boolean contains(int offset) {
+        checkArgument(offset >= 0);
+
+        return this.start <= offset && offset < (this.start + this.length);
     }
 
     @Override

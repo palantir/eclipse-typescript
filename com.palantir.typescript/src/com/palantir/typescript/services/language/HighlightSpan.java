@@ -19,6 +19,7 @@ package com.palantir.typescript.services.language;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
@@ -27,6 +28,7 @@ import com.google.common.base.Objects;
  *
  * @author dcicerone
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class HighlightSpan {
 
     private final HighlightSpanKind kind;
