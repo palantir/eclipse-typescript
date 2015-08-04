@@ -1,3 +1,18 @@
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved. 
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0  
+ 
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE, 
+MERCHANTABLITY OR NON-INFRINGEMENT. 
+ 
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
+
 var ts;
 (function (ts) {
     // token > SyntaxKind.Identifer => token is a keyword
@@ -6687,17 +6702,6 @@ var ts;
             (node.parent.kind === 163 /* PropertyAccessExpression */ && node.parent.name === node);
     }
     ts.isRightSideOfQualifiedNameOrPropertyAccess = isRightSideOfQualifiedNameOrPropertyAccess;
-    function isEmptyObjectLiteralOrArrayLiteral(expression) {
-        var kind = expression.kind;
-        if (kind === 162 /* ObjectLiteralExpression */) {
-            return expression.properties.length === 0;
-        }
-        if (kind === 161 /* ArrayLiteralExpression */) {
-            return expression.elements.length === 0;
-        }
-        return false;
-    }
-    ts.isEmptyObjectLiteralOrArrayLiteral = isEmptyObjectLiteralOrArrayLiteral;
     function getLocalSymbolForExportDefault(symbol) {
         return symbol && symbol.valueDeclaration && (symbol.valueDeclaration.flags & 1024 /* Default */) ? symbol.valueDeclaration.localSymbol : undefined;
     }
@@ -9913,7 +9917,7 @@ var ts;
         }
         function parseSuperExpression() {
             var expression = parseTokenNode();
-            if (token === 16 /* OpenParenToken */ || token === 20 /* DotToken */ || token === 18 /* OpenBracketToken */) {
+            if (token === 16 /* OpenParenToken */ || token === 20 /* DotToken */) {
                 return expression;
             }
             // If we have seen "super" it must be followed by '(' or '.'.
@@ -14747,6 +14751,9 @@ var ts;
                 // fact an iterable or array (depending on target language).
                 var elementType = checkIteratedTypeOrElementType(parentType, pattern, false);
                 if (!declaration.dotDotDotToken) {
+                    if (isTypeAny(elementType)) {
+                        return elementType;
+                    }
                     // Use specific property type when parent is a tuple or numeric index type when parent is an array
                     var propName = "" + ts.indexOf(pattern.elements, declaration);
                     type = isTupleLikeType(parentType)
@@ -14811,10 +14818,6 @@ var ts;
             // If it is a short-hand property assignment, use the type of the identifier
             if (declaration.kind === 243 /* ShorthandPropertyAssignment */) {
                 return checkIdentifier(declaration.name);
-            }
-            // If the declaration specifies a binding pattern, use the type implied by the binding pattern
-            if (ts.isBindingPattern(declaration.name)) {
-                return getTypeFromBindingPattern(declaration.name);
             }
             // No type specified and nothing can be inferred
             return undefined;
@@ -14894,6 +14897,11 @@ var ts;
                 // object literal uses a different path). We exclude widening only so that language services and type verification
                 // tools see the actual type.
                 return declaration.kind !== 242 /* PropertyAssignment */ ? getWidenedType(type) : type;
+            }
+            // If no type was specified and nothing could be inferred, and if the declaration specifies a binding pattern, use
+            // the type implied by the binding pattern
+            if (ts.isBindingPattern(declaration.name)) {
+                return getTypeFromBindingPattern(declaration.name);
             }
             // Rest parameters default to type any[], other parameters default to type any
             type = declaration.dotDotDotToken ? anyArrayType : anyType;
@@ -16582,7 +16590,7 @@ var ts;
             };
         }
         function createInferenceMapper(context) {
-            var mapper = function (t) {
+            return function (t) {
                 for (var i = 0; i < context.typeParameters.length; i++) {
                     if (t === context.typeParameters[i]) {
                         context.inferences[i].isFixed = true;
@@ -16591,8 +16599,6 @@ var ts;
                 }
                 return t;
             };
-            mapper.context = context;
-            return mapper;
         }
         function identityMapper(type) {
             return type;
@@ -17728,9 +17734,7 @@ var ts;
             var inferences = [];
             for (var _i = 0; _i < typeParameters.length; _i++) {
                 var unused = typeParameters[_i];
-                inferences.push({
-                    primary: undefined, secondary: undefined, isFixed: false
-                });
+                inferences.push({ primary: undefined, secondary: undefined, isFixed: false });
             }
             return {
                 typeParameters: typeParameters,
@@ -18915,23 +18919,10 @@ var ts;
             }
             return result;
         }
-        /**
-         * Detect if the mapper implies an inference context. Specifically, there are 4 possible values
-         * for a mapper. Let's go through each one of them:
-         *
-         *    1. undefined - this means we are not doing inferential typing, but we may do contextual typing,
-         *       which could cause us to assign a parameter a type
-         *    2. identityMapper - means we want to avoid assigning a parameter a type, whether or not we are in
-         *       inferential typing (context is undefined for the identityMapper)
-         *    3. a mapper created by createInferenceMapper - we are doing inferential typing, we want to assign
-         *       types to parameters and fix type parameters (context is defined)
-         *    4. an instantiation mapper created by createTypeMapper or createTypeEraser - this should never be
-         *       passed as the contextual mapper when checking an expression (context is undefined for these)
-         *
-         * isInferentialContext is detecting if we are in case 3
-         */
+        // Presence of a contextual type mapper indicates inferential typing, except the identityMapper object is
+        // used as a special marker for other purposes.
         function isInferentialContext(mapper) {
-            return mapper && mapper.context;
+            return mapper && mapper !== identityMapper;
         }
         // A node is an assignment target if it is on the left hand side of an '=' token, if it is parented by a property
         // assignment in an object literal that is an assignment target, or if it is parented by an array literal that is
@@ -20774,51 +20765,13 @@ var ts;
             var len = signature.parameters.length - (signature.hasRestParameter ? 1 : 0);
             for (var i = 0; i < len; i++) {
                 var parameter = signature.parameters[i];
-                var contextualParameterType = getTypeAtPosition(context, i);
-                assignTypeToParameterAndFixTypeParameters(parameter, contextualParameterType, mapper);
+                var links = getSymbolLinks(parameter);
+                links.type = instantiateType(getTypeAtPosition(context, i), mapper);
             }
             if (signature.hasRestParameter && context.hasRestParameter && signature.parameters.length >= context.parameters.length) {
                 var parameter = ts.lastOrUndefined(signature.parameters);
-                var contextualParameterType = getTypeOfSymbol(ts.lastOrUndefined(context.parameters));
-                assignTypeToParameterAndFixTypeParameters(parameter, contextualParameterType, mapper);
-            }
-        }
-        function assignTypeToParameterAndFixTypeParameters(parameter, contextualType, mapper) {
-            var links = getSymbolLinks(parameter);
-            if (!links.type) {
-                links.type = instantiateType(contextualType, mapper);
-            }
-            else if (isInferentialContext(mapper)) {
-                // Even if the parameter already has a type, it might be because it was given a type while
-                // processing the function as an argument to a prior signature during overload resolution.
-                // If this was the case, it may have caused some type parameters to be fixed. So here,
-                // we need to ensure that type parameters at the same positions get fixed again. This is
-                // done by calling instantiateType to attach the mapper to the contextualType, and then
-                // calling inferTypes to force a walk of contextualType so that all the correct fixing
-                // happens. The choice to pass in links.type may seem kind of arbitrary, but it serves
-                // to make sure that all the correct positions in contextualType are reached by the walk.
-                // Here is an example:
-                //
-                //      interface Base {
-                //          baseProp;
-                //      }
-                //      interface Derived extends Base {
-                //          toBase(): Base;
-                //      }
-                //
-                //      var derived: Derived;
-                //
-                //      declare function foo<T>(x: T, func: (p: T) => T): T;
-                //      declare function foo<T>(x: T, func: (p: T) => T): T;
-                //
-                //      var result = foo(derived, d => d.toBase());
-                //
-                // We are typing d while checking the second overload. But we've already given d
-                // a type (Derived) from the first overload. However, we still want to fix the
-                // T in the second overload so that we do not infer Base as a candidate for T
-                // (inferring Base would make type argument inference inconsistent between the two
-                // overloads).
-                inferTypes(mapper.context, links.type, instantiateType(contextualType, mapper));
+                var links = getSymbolLinks(parameter);
+                links.type = instantiateType(getTypeOfSymbol(ts.lastOrUndefined(context.parameters)), mapper);
             }
         }
         function createPromiseType(promisedType) {
@@ -21006,34 +20959,27 @@ var ts;
             }
             var links = getNodeLinks(node);
             var type = getTypeOfSymbol(node.symbol);
-            var contextSensitive = isContextSensitive(node);
-            var mightFixTypeParameters = contextSensitive && isInferentialContext(contextualMapper);
-            // Check if function expression is contextually typed and assign parameter types if so.
-            // See the comment in assignTypeToParameterAndFixTypeParameters to understand why we need to
-            // check mightFixTypeParameters.
-            if (mightFixTypeParameters || !(links.flags & 1024 /* ContextChecked */)) {
+            // Check if function expression is contextually typed and assign parameter types if so
+            if (!(links.flags & 1024 /* ContextChecked */)) {
                 var contextualSignature = getContextualSignature(node);
                 // If a type check is started at a function expression that is an argument of a function call, obtaining the
                 // contextual type may recursively get back to here during overload resolution of the call. If so, we will have
                 // already assigned contextual types.
-                var contextChecked = !!(links.flags & 1024 /* ContextChecked */);
-                if (mightFixTypeParameters || !contextChecked) {
+                if (!(links.flags & 1024 /* ContextChecked */)) {
                     links.flags |= 1024 /* ContextChecked */;
                     if (contextualSignature) {
                         var signature = getSignaturesOfType(type, 0 /* Call */)[0];
-                        if (contextSensitive) {
+                        if (isContextSensitive(node)) {
                             assignContextualParameterTypes(signature, contextualSignature, contextualMapper || identityMapper);
                         }
-                        if (mightFixTypeParameters || !node.type && !signature.resolvedReturnType) {
+                        if (!node.type && !signature.resolvedReturnType) {
                             var returnType = getReturnTypeFromBody(node, contextualMapper);
                             if (!signature.resolvedReturnType) {
                                 signature.resolvedReturnType = returnType;
                             }
                         }
                     }
-                    if (!contextChecked) {
-                        checkSignatureDeclaration(node);
-                    }
+                    checkSignatureDeclaration(node);
                 }
             }
             if (produceDiagnostics && node.kind !== 140 /* MethodDeclaration */ && node.kind !== 139 /* MethodSignature */) {
@@ -21660,7 +21606,7 @@ var ts;
             return instantiateTypeWithSingleGenericCallSignature(node, uninstantiatedType, contextualMapper);
         }
         function instantiateTypeWithSingleGenericCallSignature(node, type, contextualMapper) {
-            if (isInferentialContext(contextualMapper)) {
+            if (contextualMapper && contextualMapper !== identityMapper) {
                 var signature = getSingleCallSignature(type);
                 if (signature && signature.typeParameters) {
                     var contextualType = getContextualType(node);
@@ -25086,21 +25032,10 @@ var ts;
                 // This is a declaration, call getSymbolOfNode
                 return getSymbolOfNode(node.parent);
             }
-            if (node.kind === 66 /* Identifier */) {
-                if (isInRightSideOfImportOrExportAssignment(node)) {
-                    return node.parent.kind === 224 /* ExportAssignment */
-                        ? getSymbolOfEntityNameOrPropertyAccessExpression(node)
-                        : getSymbolOfPartOfRightHandSideOfImportEquals(node);
-                }
-                else if (node.parent.kind === 160 /* BindingElement */ &&
-                    node.parent.parent.kind === 158 /* ObjectBindingPattern */ &&
-                    node === node.parent.propertyName) {
-                    var typeOfPattern = getTypeAtLocation(node.parent.parent);
-                    var propertyDeclaration = typeOfPattern && getPropertyOfType(typeOfPattern, node.text);
-                    if (propertyDeclaration) {
-                        return propertyDeclaration;
-                    }
-                }
+            if (node.kind === 66 /* Identifier */ && isInRightSideOfImportOrExportAssignment(node)) {
+                return node.parent.kind === 224 /* ExportAssignment */
+                    ? getSymbolOfEntityNameOrPropertyAccessExpression(node)
+                    : getSymbolOfPartOfRightHandSideOfImportEquals(node);
             }
             switch (node.kind) {
                 case 66 /* Identifier */:
@@ -30887,10 +30822,7 @@ var ts;
                 function emitAssignmentExpression(root) {
                     var target = root.left;
                     var value = root.right;
-                    if (ts.isEmptyObjectLiteralOrArrayLiteral(target)) {
-                        emit(value);
-                    }
-                    else if (isAssignmentExpressionStatement) {
+                    if (isAssignmentExpressionStatement) {
                         emitDestructuringAssignment(target, value);
                     }
                     else {
@@ -31765,14 +31697,10 @@ var ts;
                         }
                     }
                 }
-                var startIndex = 0;
                 write(" {");
                 scopeEmitStart(node, "constructor");
                 increaseIndent();
                 if (ctor) {
-                    // Emit all the directive prologues (like "use strict").  These have to come before
-                    // any other preamble code we write (like parameter initializers).
-                    startIndex = emitDirectivePrologues(ctor.body.statements, true);
                     emitDetachedComments(ctor.body.statements);
                 }
                 emitCaptureThisForNodeIfNecessary(node);
@@ -31807,7 +31735,7 @@ var ts;
                     if (superCall) {
                         statements = statements.slice(1);
                     }
-                    emitLinesStartingAt(statements, startIndex);
+                    emitLines(statements);
                 }
                 emitTempDeclarations(true);
                 writeLine();
@@ -42722,19 +42650,8 @@ var ts;
                 else if (objectLikeContainer.kind === 158 /* ObjectBindingPattern */) {
                     // We are *only* completing on properties from the type being destructured.
                     isNewIdentifierLocation = false;
-                    var rootDeclaration = ts.getRootDeclaration(objectLikeContainer.parent);
-                    if (ts.isVariableLike(rootDeclaration)) {
-                        // We don't want to complete using the type acquired by the shape 
-                        // of the binding pattern; we are only interested in types acquired
-                        // through type declaration or inference.
-                        if (rootDeclaration.initializer || rootDeclaration.type) {
-                            typeForObject = typeChecker.getTypeAtLocation(objectLikeContainer);
-                            existingMembers = objectLikeContainer.elements;
-                        }
-                    }
-                    else {
-                        ts.Debug.fail("Root declaration is not variable-like.");
-                    }
+                    typeForObject = typeChecker.getTypeAtLocation(objectLikeContainer);
+                    existingMembers = objectLikeContainer.elements;
                 }
                 else {
                     ts.Debug.fail("Expected object literal or binding pattern, got " + objectLikeContainer.kind);
@@ -47071,18 +46988,8 @@ var ts;
         function CoreServicesShimHostAdapter(shimHost) {
             this.shimHost = shimHost;
         }
-        CoreServicesShimHostAdapter.prototype.readDirectory = function (rootDir, extension, exclude) {
-            // Wrap the API changes for 1.5 release. This try/catch
-            // should be removed once TypeScript 1.5 has shipped.
-            // Also consider removing the optional designation for
-            // the exclude param at this time.
-            var encoded;
-            try {
-                encoded = this.shimHost.readDirectory(rootDir, extension, JSON.stringify(exclude));
-            }
-            catch (e) {
-                encoded = this.shimHost.readDirectory(rootDir, extension);
-            }
+        CoreServicesShimHostAdapter.prototype.readDirectory = function (rootDir, extension) {
+            var encoded = this.shimHost.readDirectory(rootDir, extension);
             return JSON.parse(encoded);
         };
         return CoreServicesShimHostAdapter;
@@ -47624,4 +47531,3 @@ var TypeScript;
 })(TypeScript || (TypeScript = {}));
 /* @internal */
 var toolsVersion = "1.5";
-//# sourceMappingURL=file:////Users/dcicerone/git/typescript/built/local/typescriptServices.js.map
