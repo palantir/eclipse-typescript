@@ -19,7 +19,6 @@ package com.palantir.typescript.services.language;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Objects;
 
@@ -28,21 +27,28 @@ import com.google.common.base.Objects;
  *
  * @author dcicerone
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
 public final class HighlightSpan {
 
+    private final String fileName;
     private final HighlightSpanKind kind;
     private final TextSpan textSpan;
 
     @JsonCreator
     public HighlightSpan(
+            @JsonProperty("fileName") String fileName,
             @JsonProperty("kind") HighlightSpanKind kind,
             @JsonProperty("textSpan") TextSpan textSpan) {
+        // fileName can be null
         checkNotNull(kind);
         checkNotNull(textSpan);
 
+        this.fileName = fileName;
         this.kind = kind;
         this.textSpan = textSpan;
+    }
+
+    public String getFileName() {
+        return this.fileName;
     }
 
     public HighlightSpanKind getKind() {
@@ -56,6 +62,7 @@ public final class HighlightSpan {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
+            .add("fileName", this.fileName)
             .add("kind", this.kind)
             .add("textSpan", this.textSpan)
             .toString();
