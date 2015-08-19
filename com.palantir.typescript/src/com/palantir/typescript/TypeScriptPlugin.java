@@ -147,16 +147,16 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     protected void initializeDefaultPluginPreferences() {
         IPreferenceStore store = TypeScriptPlugin.getDefault().getPreferenceStore();
 
-        store.setDefault(IPreferenceConstants.COMPILER_TARGET, ScriptTarget.ECMASCRIPT5.toString());
         store.setDefault(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, false);
         store.setDefault(IPreferenceConstants.COMPILER_DECLARATION, false);
         store.setDefault(IPreferenceConstants.COMPILER_JSX, JsxEmit.NONE.toString());
-        store.setDefault(IPreferenceConstants.COMPILER_SOURCE_MAP, false);
         store.setDefault(IPreferenceConstants.COMPILER_MODULE, ModuleKind.NONE.toString());
         store.setDefault(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, false);
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
+        store.setDefault(IPreferenceConstants.COMPILER_SOURCE_MAP, false);
         store.setDefault(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS, false);
+        store.setDefault(IPreferenceConstants.COMPILER_TARGET, ScriptTarget.ECMASCRIPT5.toString());
 
         store.setDefault(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_DELAY, 200);
         store.setDefault(IPreferenceConstants.CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED, true);
