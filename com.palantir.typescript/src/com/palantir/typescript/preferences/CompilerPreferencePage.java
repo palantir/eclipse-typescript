@@ -36,6 +36,7 @@ import com.palantir.typescript.Builders;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.Resources;
 import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.services.language.JsxEmit;
 import com.palantir.typescript.services.language.ModuleKind;
 import com.palantir.typescript.services.language.ScriptTarget;
 
@@ -51,6 +52,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
     private BooleanFieldEditor experimentalDecoratorsField;
+    private ComboFieldEditor jsxField;
     private ComboFieldEditor moduleField;
     private BooleanFieldEditor noEmitOnErrorField;
     private BooleanFieldEditor noImplicitAnyField;
@@ -121,6 +123,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.declarationField)
                 || source.equals(this.experimentalDecoratorsField)
+                || source.equals(this.jsxField)
                 || source.equals(this.moduleField)
                 || source.equals(this.noEmitOnErrorField)
                 || source.equals(this.noImplicitAnyField)
@@ -141,6 +144,13 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.createComboFieldValues(ScriptTarget.values()),
             this.getFieldEditorParent());
         this.addField(this.targetField);
+
+        this.jsxField = new ComboFieldEditor(
+            IPreferenceConstants.COMPILER_JSX,
+            getResource("jsx"),
+            this.createComboFieldValues(JsxEmit.values()),
+            this.getFieldEditorParent());
+        this.addField(this.jsxField);
 
         this.moduleField = new ComboFieldEditor(
             IPreferenceConstants.COMPILER_MODULE,

@@ -68,6 +68,9 @@ public final class CompilerOptions {
     @JsonProperty("isolatedModules")
     private Boolean isolatedModules;
 
+    @JsonProperty("jsx")
+    private JsxEmit jsx;
+
     @JsonProperty("listFiles")
     private Boolean listFiles;
 
@@ -152,6 +155,7 @@ public final class CompilerOptions {
         CompilerOptions compilationSettings = new CompilerOptions();
         compilationSettings.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
         compilationSettings.experimentalDecorators = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS);
+        compilationSettings.jsx = JsxEmit.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_JSX));
         compilationSettings.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
         compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
