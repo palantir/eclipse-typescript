@@ -36,6 +36,7 @@ import com.google.common.collect.Lists;
 import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
+import com.palantir.typescript.services.language.JsxEmit;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.ModuleKind;
 import com.palantir.typescript.services.language.ScriptTarget;
@@ -149,6 +150,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.COMPILER_TARGET, ScriptTarget.ECMASCRIPT5.toString());
         store.setDefault(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, false);
         store.setDefault(IPreferenceConstants.COMPILER_DECLARATION, false);
+        store.setDefault(IPreferenceConstants.COMPILER_JSX, JsxEmit.NONE.toString());
         store.setDefault(IPreferenceConstants.COMPILER_SOURCE_MAP, false);
         store.setDefault(IPreferenceConstants.COMPILER_MODULE, ModuleKind.NONE.toString());
         store.setDefault(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, false);
