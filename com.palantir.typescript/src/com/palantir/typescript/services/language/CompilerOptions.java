@@ -113,6 +113,9 @@ public final class CompilerOptions {
     @JsonProperty("outDir")
     private String outDir;
 
+    @JsonProperty("outFile")
+    private String outFile;
+
     @JsonProperty("preserveConstEnums")
     private Boolean preserveConstEnums;
 
