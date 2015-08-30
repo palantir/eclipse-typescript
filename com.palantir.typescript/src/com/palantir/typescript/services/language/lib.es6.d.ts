@@ -13007,7 +13007,7 @@ interface MessageEvent extends Event {
 
 declare var MessageEvent: {
     prototype: MessageEvent;
-    new(): MessageEvent;
+    new(type: string, eventInitDict?: MessageEventInit): MessageEvent;
 }
 
 interface MessagePort extends EventTarget {
@@ -13749,7 +13749,7 @@ interface ProgressEvent extends Event {
 
 declare var ProgressEvent: {
     prototype: ProgressEvent;
-    new(): ProgressEvent;
+    new(type: string, eventInitDict?: ProgressEventInit): ProgressEvent;
 }
 
 interface Range {
@@ -17916,7 +17916,6 @@ interface NodeListOf<TNode extends Node> extends NodeList {
     [index: number]: TNode;
 }
 
-
 interface BlobPropertyBag {
     type?: string;
     endings?: string;
@@ -17932,6 +17931,21 @@ interface EventListenerObject {
 }
 
 declare type EventListenerOrEventListenerObject = EventListener | EventListenerObject;
+
+interface MessageEventInit extends EventInit {
+    data?: any;
+    origin?: string;
+    lastEventId?: string;
+    channel?: string;
+    source?: any;
+    ports?: MessagePort[];
+}
+
+interface ProgressEventInit extends EventInit {
+    lengthComputable?: boolean;
+    loaded?: number;
+    total?: number;
+}
 
 interface ErrorEventHandler {
     (message: string, filename?: string, lineno?: number, colno?: number, error?:Error): void;
@@ -18262,8 +18276,7 @@ declare function addEventListener(type: "unload", listener: (ev: Event) => any, 
 declare function addEventListener(type: "volumechange", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare function addEventListener(type: "waiting", listener: (ev: Event) => any, useCapture?: boolean): void;
 declare function addEventListener(type: "wheel", listener: (ev: WheelEvent) => any, useCapture?: boolean): void;
-declare function addEventListener(type: string, listener: EventListenerOrEventListenerObject, useCapture?: boolean): void;
-interface DOMTokenList {
+declare function addEventListener(type: string, listener: EventListenerOrEventListenerObject, useCapture?: boolean): void;interface DOMTokenList {
     [Symbol.iterator](): IterableIterator<string>;
 }
 

@@ -29,7 +29,7 @@ import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 
 /**
- * Corresponds to the class with the same name in compiler/precompile.ts.
+ * Corresponds to the enum with the same name in typescriptServices.d.ts.
  *
  * @author tyleradams
  */
@@ -59,6 +59,9 @@ public final class CompilerOptions {
     @JsonProperty("help")
     private Boolean help;
 
+    @JsonProperty("init")
+    private Boolean init;
+
     @JsonProperty("inlineSourceMap")
     private Boolean inlineSourceMap;
 
@@ -82,6 +85,9 @@ public final class CompilerOptions {
 
     @JsonProperty("module")
     private ModuleKind module;
+
+    @JsonProperty("moduleResolution")
+    private ModuleResolutionKind moduleResolution;
 
     @JsonProperty("newLine")
     private NewLineKind newLine;
@@ -134,6 +140,9 @@ public final class CompilerOptions {
     @JsonProperty("sourceRoot")
     private String sourceRoot;
 
+    @JsonProperty("suppressExcessPropertyErrors")
+    private Boolean suppressExcessPropertyErrors;
+
     @JsonProperty("suppressImplicitAnyIndexErrors")
     private Boolean suppressImplicitAnyIndexErrors;
 
@@ -160,6 +169,7 @@ public final class CompilerOptions {
         compilationSettings.experimentalDecorators = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS);
         compilationSettings.jsx = JsxEmit.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_JSX));
         compilationSettings.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
+        compilationSettings.moduleResolution = ModuleResolutionKind.CLASSIC;
         compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
         compilationSettings.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
