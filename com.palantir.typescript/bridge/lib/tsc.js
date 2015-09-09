@@ -17006,7 +17006,7 @@ var ts;
          * @param target The right-hand-side of the relation.
          * @param relation The relation considered. One of 'identityRelation', 'assignableRelation', or 'subTypeRelation'.
          * Used as both to determine which checks are performed and as a cache of previously computed results.
-         * @param errorNode The node upon which all errors will be reported, if defined.
+         * @param errorNode The suggested node upon which all errors will be reported, if defined. This may or may not be the actual node used.
          * @param headMessage If the error chain should be prepended by a head message, then headMessage will be used.
          * @param containingMessageChain A chain of errors to prepend any new errors found.
          */
@@ -17213,6 +17213,10 @@ var ts;
                     var prop = _a[_i];
                     if (!isKnownProperty(target, prop.name)) {
                         if (reportErrors) {
+                            // We know *exactly* where things went wrong when comparing the types.
+                            // Use this property as the error node as this will be more helpful in
+                            // reasoning about what went wrong.
+                            errorNode = prop.valueDeclaration;
                             reportError(ts.Diagnostics.Object_literal_may_only_specify_known_properties_and_0_does_not_exist_in_type_1, symbolToString(prop), typeToString(target));
                         }
                         return true;
@@ -25622,7 +25626,10 @@ var ts;
                 var symbols = [];
                 var name_15 = symbol.name;
                 ts.forEach(getSymbolLinks(symbol).containingType.types, function (t) {
-                    symbols.push(getPropertyOfType(t, name_15));
+                    var symbol = getPropertyOfType(t, name_15);
+                    if (symbol) {
+                        symbols.push(symbol);
+                    }
                 });
                 return symbols;
             }
@@ -32825,50 +32832,49 @@ var ts;
                 write("void 0");
             }
             function emitSerializedTypeNode(node) {
-                if (!node) {
-                    return;
-                }
-                switch (node.kind) {
-                    case 101 /* VoidKeyword */:
-                        write("void 0");
-                        return;
-                    case 158 /* ParenthesizedType */:
-                        emitSerializedTypeNode(node.type);
-                        return;
-                    case 150 /* FunctionType */:
-                    case 151 /* ConstructorType */:
-                        write("Function");
-                        return;
-                    case 154 /* ArrayType */:
-                    case 155 /* TupleType */:
-                        write("Array");
-                        return;
-                    case 148 /* TypePredicate */:
-                    case 118 /* BooleanKeyword */:
-                        write("Boolean");
-                        return;
-                    case 128 /* StringKeyword */:
-                    case 9 /* StringLiteral */:
-                        write("String");
-                        return;
-                    case 126 /* NumberKeyword */:
-                        write("Number");
-                        return;
-                    case 129 /* SymbolKeyword */:
-                        write("Symbol");
-                        return;
-                    case 149 /* TypeReference */:
-                        emitSerializedTypeReferenceNode(node);
-                        return;
-                    case 152 /* TypeQuery */:
-                    case 153 /* TypeLiteral */:
-                    case 156 /* UnionType */:
-                    case 157 /* IntersectionType */:
-                    case 115 /* AnyKeyword */:
-                        break;
-                    default:
-                        ts.Debug.fail("Cannot serialize unexpected type node.");
-                        break;
+                if (node) {
+                    switch (node.kind) {
+                        case 101 /* VoidKeyword */:
+                            write("void 0");
+                            return;
+                        case 158 /* ParenthesizedType */:
+                            emitSerializedTypeNode(node.type);
+                            return;
+                        case 150 /* FunctionType */:
+                        case 151 /* ConstructorType */:
+                            write("Function");
+                            return;
+                        case 154 /* ArrayType */:
+                        case 155 /* TupleType */:
+                            write("Array");
+                            return;
+                        case 148 /* TypePredicate */:
+                        case 118 /* BooleanKeyword */:
+                            write("Boolean");
+                            return;
+                        case 128 /* StringKeyword */:
+                        case 9 /* StringLiteral */:
+                            write("String");
+                            return;
+                        case 126 /* NumberKeyword */:
+                            write("Number");
+                            return;
+                        case 129 /* SymbolKeyword */:
+                            write("Symbol");
+                            return;
+                        case 149 /* TypeReference */:
+                            emitSerializedTypeReferenceNode(node);
+                            return;
+                        case 152 /* TypeQuery */:
+                        case 153 /* TypeLiteral */:
+                        case 156 /* UnionType */:
+                        case 157 /* IntersectionType */:
+                        case 115 /* AnyKeyword */:
+                            break;
+                        default:
+                            ts.Debug.fail("Cannot serialize unexpected type node.");
+                            break;
+                    }
                 }
                 write("Object");
             }
@@ -36236,7 +36242,6 @@ var ts;
                 "node": 2 /* NodeJs */,
                 "classic": 1 /* Classic */
             },
-            experimental: true,
             description: ts.Diagnostics.Specifies_module_resolution_strategy_Colon_node_Node_or_classic_TypeScript_pre_1_6
         }
     ];
