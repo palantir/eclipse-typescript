@@ -156,7 +156,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 this.languageEndpoint.initializeProject(referencingProject);
             }
 
-            this.deleteAllMarkers();
+            this.deleteAllMarkers(referencingProject);
             this.createMarkers(referencingProject, monitor);
         }
     }
@@ -196,9 +196,13 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         this.createMarkers(this.getProject(), monitor);
     }
 
+    private void deleteAllMarkers(IProject project) throws CoreException {
+        project.deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        project.deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+    }
+
     private void deleteAllMarkers() throws CoreException {
-        this.getProject().deleteMarkers(PROBLEM_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
-        this.getProject().deleteMarkers(TASK_MARKER_TYPE, true, IResource.DEPTH_INFINITE);
+        this.deleteAllMarkers(this.getProject());
     }
 
     private void ensureOutputFolderExists(IProgressMonitor monitor) throws CoreException {
