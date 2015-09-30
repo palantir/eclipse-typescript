@@ -177,6 +177,7 @@ public final class CompilerOptions {
         compilationSettings.sourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SOURCE_MAP);
         compilationSettings.suppressImplicitAnyIndexErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS);
+        compilationSettings.suppressExcessPropertyErrors = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
         compilationSettings.target = ScriptTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET));
 
         // set the output directory or file if it was specified

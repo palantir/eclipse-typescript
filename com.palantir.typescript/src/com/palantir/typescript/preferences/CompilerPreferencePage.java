@@ -60,6 +60,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor removeCommentsField;
     private BooleanFieldEditor sourceMapField;
     private BooleanFieldEditor suppressImplicitAnyIndexErrorsField;
+    private BooleanFieldEditor suppressExcessPropertyErrorsField;
     private ComboFieldEditor targetField;
 
     public CompilerPreferencePage() {
@@ -131,6 +132,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
                 || source.equals(this.removeCommentsField)
                 || source.equals(this.sourceMapField)
                 || source.equals(this.suppressImplicitAnyIndexErrorsField)
+                || source.equals(this.suppressExcessPropertyErrorsField)
                 || source.equals(this.targetField)) {
             this.compilerPreferencesModified = true;
         }
@@ -176,6 +178,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             getResource("suppress.implicit.any.index.errors"),
             this.getFieldEditorParent());
         this.addField(this.suppressImplicitAnyIndexErrorsField);
+
+        this.suppressExcessPropertyErrorsField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS,
+            getResource("suppress.excess.property.errors"),
+            this.getFieldEditorParent());
+        this.addField(this.suppressExcessPropertyErrorsField);
 
         this.noLibField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_LIB,
