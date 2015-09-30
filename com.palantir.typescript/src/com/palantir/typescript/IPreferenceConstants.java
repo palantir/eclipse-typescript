@@ -40,8 +40,8 @@ public interface IPreferenceConstants {
     String COMPILER_OUT_DIR = "compiler.outputDirOption";
     String COMPILER_OUT_FILE = "compiler.outputFileOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
-    String COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS = "compiler.suppressImplicitAnyIndexErrors";
     String COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS = "compiler.suppressExcessPropertyErrors";
+    String COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS = "compiler.suppressImplicitAnyIndexErrors";
 
     String CONTENT_ASSIST_AUTO_ACTIVATION_DELAY = "contentAssist.autoActivationDelay";
     String CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED = "contentAssist.autoActivationEnabled";
