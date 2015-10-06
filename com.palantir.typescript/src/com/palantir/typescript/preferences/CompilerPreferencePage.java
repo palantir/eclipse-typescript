@@ -52,6 +52,8 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
     private BooleanFieldEditor experimentalDecoratorsField;
+    private BooleanFieldEditor inlineSourceMapField;
+    private BooleanFieldEditor inlineSourcesField;
     private ComboFieldEditor jsxField;
     private ComboFieldEditor moduleField;
     private BooleanFieldEditor noEmitOnErrorField;
@@ -116,7 +118,10 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         Object source = event.getSource();
 
         if (event.getProperty().equals(FieldEditor.VALUE)) {
-            if (source.equals(this.compileOnSaveField) || source.equals(this.noImplicitAnyField)) {
+            if (source.equals(this.compileOnSaveField)
+                    || source.equals(this.inlineSourceMapField)
+                    || source.equals(this.noImplicitAnyField)
+                    || source.equals(this.sourceMapField)) {
                 this.updateFieldEditors();
             }
         }
@@ -124,6 +129,8 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         if (source.equals(this.compileOnSaveField)
                 || source.equals(this.declarationField)
                 || source.equals(this.experimentalDecoratorsField)
+                || source.equals(this.inlineSourceMapField)
+                || source.equals(this.inlineSourcesField)
                 || source.equals(this.jsxField)
                 || source.equals(this.moduleField)
                 || source.equals(this.noEmitOnErrorField)
@@ -209,6 +216,18 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.getFieldEditorParent());
         this.addField(this.sourceMapField);
 
+        this.inlineSourceMapField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP,
+            getResource("inline.source.map"),
+            this.getFieldEditorParent());
+        this.addField(this.inlineSourceMapField);
+
+        this.inlineSourcesField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_INLINE_SOURCES,
+            getResource("inline.sources"),
+            this.getFieldEditorParent());
+        this.addField(this.inlineSourcesField);
+
         this.declarationField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_DECLARATION,
             getResource("declaration"),
@@ -258,9 +277,14 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         Composite parent = this.getFieldEditorParent();
 
         boolean compileOnSaveEnabled = this.compileOnSaveField.getBooleanValue() && this.isPageEnabled();
+        boolean sourceMapEnabled = this.sourceMapField.getBooleanValue() && compileOnSaveEnabled;
+        boolean inlineSourceMapEnabled = this.inlineSourceMapField.getBooleanValue() && compileOnSaveEnabled;
+
         this.declarationField.setEnabled(compileOnSaveEnabled, parent);
         this.removeCommentsField.setEnabled(compileOnSaveEnabled, parent);
-        this.sourceMapField.setEnabled(compileOnSaveEnabled, parent);
+        this.sourceMapField.setEnabled(compileOnSaveEnabled && !inlineSourceMapEnabled, parent);
+        this.inlineSourceMapField.setEnabled(compileOnSaveEnabled && !sourceMapEnabled, parent);
+        this.inlineSourcesField.setEnabled(compileOnSaveEnabled && inlineSourceMapEnabled, parent);
 
         boolean noImplicitAnyEnabled = this.noImplicitAnyField.getBooleanValue() && this.isPageEnabled();
         this.suppressImplicitAnyIndexErrorsField.setEnabled(noImplicitAnyEnabled, parent);

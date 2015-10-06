@@ -149,6 +149,8 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
 
         store.setDefault(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, false);
         store.setDefault(IPreferenceConstants.COMPILER_DECLARATION, false);
+        store.setDefault(IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP, false);
+        store.setDefault(IPreferenceConstants.COMPILER_INLINE_SOURCES, false);
         store.setDefault(IPreferenceConstants.COMPILER_JSX, JsxEmit.NONE.toString());
         store.setDefault(IPreferenceConstants.COMPILER_MODULE, ModuleKind.NONE.toString());
         store.setDefault(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, false);
