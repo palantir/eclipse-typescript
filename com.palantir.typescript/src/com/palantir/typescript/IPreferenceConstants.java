@@ -31,6 +31,8 @@ public interface IPreferenceConstants {
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";
     String COMPILER_DECLARATION = "compiler.generateDeclarationFiles";
     String COMPILER_EXPERIMENTAL_DECORATORS = "compiler.experimentalDecorators";
+    String COMPILER_INLINE_SOURCE_MAP = "compiler.inlineSourceMap";
+    String COMPILER_INLINE_SOURCES = "compiler.inlineSources";
     String COMPILER_JSX = "compiler.jsx";
     String COMPILER_SOURCE_MAP = "compiler.mapSourceFiles";
     String COMPILER_MODULE = "compiler.moduleGenTarget";
