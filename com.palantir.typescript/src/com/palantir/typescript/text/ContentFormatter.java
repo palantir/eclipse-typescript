@@ -31,6 +31,7 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.services.language.FormatCodeOptions;
+import com.palantir.typescript.services.language.IndentStyle;
 import com.palantir.typescript.services.language.TextChange;
 import com.palantir.typescript.services.language.TextSpan;
 
@@ -82,6 +83,7 @@ public final class ContentFormatter implements IContentFormatter {
             this.preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE),
             this.preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH),
             this.preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS),
+            IndentStyle.valueOf(this.preferenceStore.getString(IPreferenceConstants.EDITOR_INDENT_STYLE)),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS),

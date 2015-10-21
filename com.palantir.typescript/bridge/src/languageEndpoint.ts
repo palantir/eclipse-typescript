@@ -85,8 +85,8 @@ namespace Bridge {
             Object.keys(this.fileInfos)
                 .filter((fileName) => this.isSourceFile(projectName, fileName))
                 .forEach((fileName) => {
-                  todos[fileName] = this.getTodoComments(projectName, fileName);
-              });
+                    todos[fileName] = this.getTodoComments(projectName, fileName);
+                });
             return todos;
         }
 

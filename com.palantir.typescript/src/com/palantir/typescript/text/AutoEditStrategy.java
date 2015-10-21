@@ -37,6 +37,7 @@ import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.EditorOptions;
+import com.palantir.typescript.services.language.IndentStyle;
 import com.palantir.typescript.services.language.TextSpan;
 
 /**
@@ -56,6 +57,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     private boolean closeBraces;
     private boolean closeJSDocs;
     private int indentSize;
+    private IndentStyle indentStyle;
     private boolean spacesForTabs;
     private int tabWidth;
 
@@ -172,7 +174,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
     }
 
     private int getIndentationAtPosition(int position) {
-        EditorOptions options = new EditorOptions(this.indentSize, this.tabWidth, this.spacesForTabs);
+        EditorOptions options = new EditorOptions(this.indentSize, this.tabWidth, this.spacesForTabs, this.indentStyle);
 
         try {
             return this.editor.getLanguageService().getIndentationAtPosition(position, options);
@@ -217,6 +219,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         this.closeBraces = this.preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_BRACES);
         this.closeJSDocs = this.preferenceStore.getBoolean(IPreferenceConstants.EDITOR_CLOSE_JSDOCS);
         this.indentSize = this.preferenceStore.getInt(IPreferenceConstants.EDITOR_INDENT_SIZE);
+        this.indentStyle = IndentStyle.valueOf(this.preferenceStore.getString(IPreferenceConstants.EDITOR_INDENT_STYLE));
         this.spacesForTabs = this.preferenceStore.getBoolean(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_SPACES_FOR_TABS);
         this.tabWidth = this.preferenceStore.getInt(AbstractDecoratedTextEditorPreferenceConstants.EDITOR_TAB_WIDTH);
     }

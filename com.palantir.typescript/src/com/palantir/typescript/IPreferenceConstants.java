@@ -49,6 +49,7 @@ public interface IPreferenceConstants {
     String EDITOR_CLOSE_BRACES = "editor.closeBraces";
     String EDITOR_CLOSE_JSDOCS = "editor.closeJSDocs";
     String EDITOR_INDENT_SIZE = "editor.indentSize";
+    String EDITOR_INDENT_STYLE = "editor.indentStyle";
     String EDITOR_MATCHING_BRACKETS = "editor.matchingBrackets";
     String EDITOR_MATCHING_BRACKETS_COLOR = "editor.matchingBracketsColor";
 

@@ -4,9 +4,9 @@ set -e
 
 # update the TypeScript code and build
 (
-  cd ../typescript
+  cd ../TypeScript
   git fetch
-  git checkout origin/release-1.6
+  git checkout origin/release-1.7
   rm -rf built/local
   jake clean
   jake local

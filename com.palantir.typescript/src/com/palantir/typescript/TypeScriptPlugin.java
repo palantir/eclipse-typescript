@@ -36,6 +36,7 @@ import com.google.common.collect.Lists;
 import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
+import com.palantir.typescript.services.language.IndentStyle;
 import com.palantir.typescript.services.language.JsxEmit;
 import com.palantir.typescript.services.language.LanguageEndpoint;
 import com.palantir.typescript.services.language.ModuleKind;
@@ -167,6 +168,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.EDITOR_CLOSE_BRACES, false);
         store.setDefault(IPreferenceConstants.EDITOR_CLOSE_JSDOCS, true);
         store.setDefault(IPreferenceConstants.EDITOR_INDENT_SIZE, 4);
+        store.setDefault(IPreferenceConstants.EDITOR_INDENT_STYLE, IndentStyle.SMART.toString());
         store.setDefault(IPreferenceConstants.EDITOR_MATCHING_BRACKETS, true);
         store.setDefault(IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR, "128,128,128");
 

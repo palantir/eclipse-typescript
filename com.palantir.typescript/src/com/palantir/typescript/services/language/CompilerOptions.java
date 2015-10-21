@@ -53,6 +53,9 @@ public final class CompilerOptions {
     @JsonProperty("emitDecoratorMetadata")
     private Boolean emitDecoratorMetadata;
 
+    @JsonProperty("experimentalAsyncFunctions")
+    private Boolean experimentalAsyncFunctions;
+
     @JsonProperty("experimentalDecorators")
     private Boolean experimentalDecorators;
 

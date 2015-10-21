@@ -19,25 +19,18 @@ package com.palantir.typescript.services.language;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Corresponds to the enum with the same name in TypeScript.
+ * Corresponds to the enum with the same name in languageServices.d.ts.
  *
- * @author tyleradams
+ * @author dcicerone
  */
-public enum ScriptTarget {
+public enum IndentStyle {
 
-    ECMASCRIPT3(0),
-    ECMASCRIPT5(1),
-    ECMASCRIPT6(2),
-    ES2015(2);
-
-    private final int value;
-
-    private ScriptTarget(int value) {
-        this.value = value;
-    }
+    NONE,
+    BLOCK,
+    SMART;
 
     @JsonValue
     public int getValue() {
-        return this.value;
+        return this.ordinal();
     }
 }

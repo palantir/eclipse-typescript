@@ -54,6 +54,7 @@ public final class FormatCodeOptions extends EditorOptions {
             int indentSize,
             int tabSize,
             boolean convertTabsToSpaces,
+            IndentStyle indentStyle,
             boolean insertSpaceAfterCommaDelimiter,
             boolean insertSpaceAfterSemicolonInForStatements,
             boolean insertSpaceBeforeAndAfterBinaryOperators,
@@ -62,7 +63,7 @@ public final class FormatCodeOptions extends EditorOptions {
             boolean insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis,
             boolean placeOpenBraceOnNewLineForFunctions,
             boolean placeOpenBraceOnNewLineForControlBlocks) {
-        super(indentSize, tabSize, convertTabsToSpaces);
+        super(indentSize, tabSize, convertTabsToSpaces, indentStyle);
 
         this.insertSpaceAfterCommaDelimiter = insertSpaceAfterCommaDelimiter;
         this.insertSpaceAfterSemicolonInForStatements = insertSpaceAfterSemicolonInForStatements;
@@ -81,6 +82,7 @@ public final class FormatCodeOptions extends EditorOptions {
             .add("tabSize", this.getTabSize())
             .add("newLineCharacter", NEW_LINE_ESCAPER.escape(this.getNewLineCharacter()))
             .add("convertTabsToSpaces", this.getConvertTabsToSpaces())
+            .add("indentStyle", this.getIndentStyle())
             .add("insertSpaceAfterCommaDelimiter", this.insertSpaceAfterCommaDelimiter)
             .add("insertSpaceAfterSemicolonInForStatements", this.insertSpaceAfterSemicolonInForStatements)
             .add("insertSpaceBeforeAndAfterBinaryOperators", this.insertSpaceBeforeAndAfterBinaryOperators)

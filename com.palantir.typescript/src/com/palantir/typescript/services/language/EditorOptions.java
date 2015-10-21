@@ -35,51 +35,61 @@ public class EditorOptions {
         .addEscape('\r', "\\r")
         .build();
 
+    @JsonProperty("ConvertTabsToSpaces")
+    private boolean convertTabsToSpaces;
+
     @JsonProperty("IndentSize")
     private int indentSize;
 
-    @JsonProperty("TabSize")
-    private int tabSize;
+    @JsonProperty("IndentStyle")
+    private IndentStyle indentStyle;
 
     @JsonProperty("NewLineCharacter")
     private String newLineCharacter;
 
-    @JsonProperty("ConvertTabsToSpaces")
-    private boolean convertTabsToSpaces;
+    @JsonProperty("TabSize")
+    private int tabSize;
 
-    public EditorOptions(int indentSize, int tabSize, boolean convertTabsToSpaces) {
+    public EditorOptions(int indentSize, int tabSize, boolean convertTabsToSpaces, IndentStyle indentStyle) {
         checkArgument(indentSize >= 0);
         checkArgument(tabSize >= 0);
+        checkArgument(indentStyle != null);
 
         this.indentSize = indentSize;
         this.tabSize = tabSize;
         this.newLineCharacter = System.getProperty("line.separator");
         this.convertTabsToSpaces = convertTabsToSpaces;
-    }
-
-    public int getIndentSize() {
-        return this.indentSize;
-    }
-
-    public int getTabSize() {
-        return this.tabSize;
-    }
-
-    public String getNewLineCharacter() {
-        return this.newLineCharacter;
+        this.indentStyle = indentStyle;
     }
 
     public boolean getConvertTabsToSpaces() {
         return this.convertTabsToSpaces;
     }
 
+    public int getIndentSize() {
+        return this.indentSize;
+    }
+
+    public IndentStyle getIndentStyle() {
+        return this.indentStyle;
+    }
+
+    public String getNewLineCharacter() {
+        return this.newLineCharacter;
+    }
+
+    public int getTabSize() {
+        return this.tabSize;
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-            .add("indentSize", this.indentSize)
-            .add("tabSize", this.tabSize)
-            .add("newLineCharacter", NEW_LINE_ESCAPER.escape(this.newLineCharacter))
             .add("convertTabsToSpaces", this.convertTabsToSpaces)
+            .add("indentSize", this.indentSize)
+            .add("indentStyle", this.indentStyle)
+            .add("newLineCharacter", NEW_LINE_ESCAPER.escape(this.newLineCharacter))
+            .add("tabSize", this.tabSize)
             .toString();
     }
 }

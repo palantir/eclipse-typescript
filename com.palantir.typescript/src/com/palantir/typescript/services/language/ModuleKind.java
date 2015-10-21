@@ -27,15 +27,23 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ModuleKind {
 
-    NONE,
-    COMMONSJS,
-    AMD,
-    UMD,
-    SYSTEM;
+    NONE(0),
+    COMMONSJS(1),
+    AMD(2),
+    UMD(3),
+    SYSTEM(4),
+    ES6(5),
+    ES2015(5);
+
+    private final int value;
+
+    private ModuleKind(int value) {
+        this.value = value;
+    }
 
     @JsonValue
     public int getValue() {
-        return this.ordinal();
+        return this.value;
     }
 
     /**
