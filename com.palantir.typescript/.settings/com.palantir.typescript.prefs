@@ -3,6 +3,7 @@ build.path.sourceFolder=bridge/src;bridge/typings
 compiler.codeGenTarget=ECMASCRIPT5
 compiler.compileOnSave=false
 compiler.generateDeclarationFiles=false
+compiler.jsx=NONE
 compiler.mapSourceFiles=false
 compiler.moduleGenTarget=NONE
 compiler.noEmitOnError=true
