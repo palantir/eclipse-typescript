@@ -125,7 +125,7 @@ abstract class FieldEditorProjectPreferencePage extends FieldEditorPreferencePag
     @Override
     public void createControl(Composite parent) {
         if (this.isPropertyPage()) {
-            IProject project = this.element.getAdapter(IProject.class);
+            IProject project = (IProject) this.element.getAdapter(IProject.class);
             String sentinelPropertyName = this.getSentinelPropertyName();
 
             this.projectPreferenceStore = new ProjectPreferenceStore(project, super.getPreferenceStore(), sentinelPropertyName);

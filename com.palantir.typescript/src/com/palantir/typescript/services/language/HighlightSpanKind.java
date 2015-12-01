@@ -32,7 +32,7 @@ public enum HighlightSpanKind {
 
     private final String value;
 
-    HighlightSpanKind(String value) {
+    private HighlightSpanKind(String value) {
         this.value = value;
     }
 

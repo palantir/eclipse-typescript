@@ -48,7 +48,7 @@ public final class ToggleNatureHandler extends AbstractHandler {
                 if (element instanceof IProject) {
                     project = (IProject) element;
                 } else if (element instanceof IAdaptable) {
-                    project = ((IAdaptable) element).getAdapter(IProject.class);
+                    project = (IProject) ((IAdaptable) element).getAdapter(IProject.class);
                 }
 
                 if (project != null) {

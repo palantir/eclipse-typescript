@@ -39,7 +39,7 @@ public enum ScriptElementKindModifier {
 
     private final String value;
 
-    ScriptElementKindModifier(String value) {
+    private ScriptElementKindModifier(String value) {
         this.value = value;
     }
 

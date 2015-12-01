@@ -32,7 +32,7 @@ public enum ScriptTarget {
 
     private final int value;
 
-    ScriptTarget(int value) {
+    private ScriptTarget(int value) {
         this.value = value;
     }
 

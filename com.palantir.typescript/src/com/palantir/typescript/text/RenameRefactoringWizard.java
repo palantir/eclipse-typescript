@@ -59,7 +59,7 @@ public final class RenameRefactoringWizard extends RefactoringWizard {
 
         private final TypeScriptRenameProcessor processor;
 
-        MyUserInputWizardPage(TypeScriptRenameProcessor processor) {
+        public MyUserInputWizardPage(TypeScriptRenameProcessor processor) {
             super(MyUserInputWizardPage.class.getSimpleName());
 
             this.processor = processor;

@@ -38,7 +38,7 @@ final class SearchResultTreeContentProvider implements ITreeContentProvider {
 
     private final Multimap<Object, Object> children;
 
-    SearchResultTreeContentProvider() {
+    public SearchResultTreeContentProvider() {
         this.children = LinkedHashMultimap.create();
     }
 

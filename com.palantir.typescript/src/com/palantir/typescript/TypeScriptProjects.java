@@ -260,7 +260,7 @@ public final class TypeScriptProjects {
         private final ImmutableList.Builder<FileDelta> fileDeltas;
         private final IContainer container;
 
-        MyResourceDeltaVisitor(IContainer container) {
+        public MyResourceDeltaVisitor(IContainer container) {
             this.fileDeltas = ImmutableList.builder();
             this.container = container;
         }

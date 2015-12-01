@@ -94,7 +94,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
                 // rebuild the workspace
                 if (result == 2) {
                     if (this.isPropertyPage()) {
-                        IProject project = this.getElement().getAdapter(IProject.class);
+                        IProject project = (IProject) this.getElement().getAdapter(IProject.class);
 
                         Builders.rebuildProject(project);
                     } else {

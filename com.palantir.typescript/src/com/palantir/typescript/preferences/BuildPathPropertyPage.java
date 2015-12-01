@@ -92,7 +92,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
             }
 
             // rebuild the project
-            IProject project = this.getElement().getAdapter(IProject.class);
+            IProject project = (IProject) this.getElement().getAdapter(IProject.class);
             Builders.rebuildProject(project);
         }
 
@@ -151,7 +151,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
     private IEclipsePreferences getProjectPreferences() {
         IAdaptable element = this.getElement();
-        IProject project = element.getAdapter(IProject.class);
+        IProject project = (IProject) element.getAdapter(IProject.class);
         IScopeContext projectScope = new ProjectScope(project);
 
         return projectScope.getNode(TypeScriptPlugin.ID);
@@ -161,7 +161,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
         private final Text field;
 
-        MyListener(Text folderField) {
+        public MyListener(Text folderField) {
             this.field = folderField;
         }
 
@@ -182,7 +182,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
                 if (selection instanceof IAdaptable) {
                     IAdaptable adaptable = (IAdaptable) selection;
-                    IResource resource = adaptable.getAdapter(IResource.class);
+                    IResource resource = (IResource) adaptable.getAdapter(IResource.class);
                     IPath projectRelativePath = resource.getProjectRelativePath();
 
                     this.field.setText(projectRelativePath.toPortableString());
@@ -209,7 +209,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
     private static final class MyTreeContentProvider extends ForwardingTreeContentProvider {
 
-        MyTreeContentProvider() {
+        public MyTreeContentProvider() {
             super(new WorkbenchContentProvider());
         }
 

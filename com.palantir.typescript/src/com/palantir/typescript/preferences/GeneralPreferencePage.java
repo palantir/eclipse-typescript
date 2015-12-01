@@ -110,7 +110,7 @@ public final class GeneralPreferencePage extends PreferencePage implements IWork
 
         private final Text field;
 
-        MyListener(Text folderField) {
+        public MyListener(Text folderField) {
             this.field = folderField;
         }
 
