@@ -107,7 +107,7 @@ public enum ScriptElementKind {
 
     private final String value;
 
-    private ScriptElementKind(String value) {
+    ScriptElementKind(String value) {
         this.value = value;
     }
 

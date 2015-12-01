@@ -53,7 +53,7 @@ public enum SymbolDisplayPartKind {
 
     private final String value;
 
-    private SymbolDisplayPartKind(String value) {
+    SymbolDisplayPartKind(String value) {
         this.value = value;
     }
 

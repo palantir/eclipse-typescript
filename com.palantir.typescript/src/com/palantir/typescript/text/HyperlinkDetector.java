@@ -94,7 +94,7 @@ public final class HyperlinkDetector implements IHyperlinkDetector {
         private final DefinitionInfo definition;
         private final IRegion region;
 
-        public MyHyperlink(DefinitionInfo definition, IRegion region) {
+        MyHyperlink(DefinitionInfo definition, IRegion region) {
             this.definition = definition;
             this.region = region;
         }
