@@ -32,8 +32,7 @@ public enum ModuleKind {
     AMD(2),
     UMD(3),
     SYSTEM(4),
-    ES6(5),
-    ES2015(5);
+    ES6(5);
 
     private final int value;
 

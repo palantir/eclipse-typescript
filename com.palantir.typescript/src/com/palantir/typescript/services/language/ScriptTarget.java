@@ -27,8 +27,7 @@ public enum ScriptTarget {
 
     ECMASCRIPT3(0),
     ECMASCRIPT5(1),
-    ECMASCRIPT6(2),
-    ES2015(2);
+    ECMASCRIPT6(2);
 
     private final int value;
 
