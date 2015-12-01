@@ -161,7 +161,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
         private final Text field;
 
-        public MyListener(Text folderField) {
+        MyListener(Text folderField) {
             this.field = folderField;
         }
 
@@ -209,7 +209,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
     private static final class MyTreeContentProvider extends ForwardingTreeContentProvider {
 
-        public MyTreeContentProvider() {
+        MyTreeContentProvider() {
             super(new WorkbenchContentProvider());
         }
 

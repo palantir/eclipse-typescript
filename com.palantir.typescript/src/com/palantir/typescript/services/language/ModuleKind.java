@@ -37,7 +37,7 @@ public enum ModuleKind {
 
     private final int value;
 
-    private ModuleKind(int value) {
+    ModuleKind(int value) {
         this.value = value;
     }
 

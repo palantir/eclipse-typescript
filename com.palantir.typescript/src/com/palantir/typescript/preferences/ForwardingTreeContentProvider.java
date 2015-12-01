@@ -28,7 +28,7 @@ abstract class ForwardingTreeContentProvider implements ITreeContentProvider {
 
     private final ITreeContentProvider delegate;
 
-    public ForwardingTreeContentProvider(ITreeContentProvider delegate) {
+    ForwardingTreeContentProvider(ITreeContentProvider delegate) {
         this.delegate = delegate;
     }
 

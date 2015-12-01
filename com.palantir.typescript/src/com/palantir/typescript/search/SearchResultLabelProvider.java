@@ -48,7 +48,7 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
     private final boolean isTree;
     private final SearchResultPage page;
 
-    public SearchResultLabelProvider(SearchResultPage page, boolean isTree) {
+    SearchResultLabelProvider(SearchResultPage page, boolean isTree) {
         super(new MyWorkbenchLabelProvider());
 
         checkNotNull(page);
