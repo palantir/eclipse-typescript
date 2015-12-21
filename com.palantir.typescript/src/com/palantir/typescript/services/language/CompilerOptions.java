@@ -35,8 +35,20 @@ import com.palantir.typescript.preferences.ProjectPreferenceStore;
  */
 public final class CompilerOptions {
 
+    @JsonProperty("allowJs")
+    private Boolean allowJs;
+
     @JsonProperty("allowNonTsExtensions")
     private Boolean allowNonTsExtensions;
+
+    @JsonProperty("allowSyntheticDefaultImports")
+    private Boolean allowSyntheticDefaultImports;
+
+    @JsonProperty("allowUnreachableCode")
+    private Boolean allowUnreachableCode;
+
+    @JsonProperty("allowUnusedLabels")
+    private Boolean allowUnusedLabels;
 
     @JsonProperty("charset")
     private String charset;
@@ -58,6 +70,9 @@ public final class CompilerOptions {
 
     @JsonProperty("experimentalDecorators")
     private Boolean experimentalDecorators;
+
+    @JsonProperty("forceConsistentCasingInFileNames")
+    private Boolean forceConsistentCasingInFileNames;
 
     @JsonProperty("help")
     private Boolean help;
@@ -107,8 +122,14 @@ public final class CompilerOptions {
     @JsonProperty("noErrorTruncation")
     private Boolean noErrorTruncation;
 
+    @JsonProperty("noFallthroughCasesInSwitch")
+    private Boolean noFallthroughCasesInSwitch;
+
     @JsonProperty("noImplicitAny")
     private Boolean noImplicitAny;
+
+    @JsonProperty("noImplicitReturns")
+    private Boolean noImplicitReturns;
 
     @JsonProperty("noLib")
     private Boolean noLib;
