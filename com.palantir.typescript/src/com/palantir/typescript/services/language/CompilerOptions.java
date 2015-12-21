@@ -187,24 +187,25 @@ public final class CompilerOptions {
 
         IPreferenceStore preferenceStore = new ProjectPreferenceStore(project);
 
-        // create the compilation settings from the preferences
-        CompilerOptions compilationSettings = new CompilerOptions();
-        compilationSettings.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
-        compilationSettings.experimentalDecorators = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS);
-        compilationSettings.inlineSourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP);
-        compilationSettings.inlineSources = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCES);
-        compilationSettings.jsx = JsxEmit.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_JSX));
-        compilationSettings.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
-        compilationSettings.moduleResolution = ModuleResolutionKind.CLASSIC;
-        compilationSettings.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
-        compilationSettings.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
-        compilationSettings.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
-        compilationSettings.removeComments = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS);
-        compilationSettings.sourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SOURCE_MAP);
-        compilationSettings.suppressExcessPropertyErrors = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
-        compilationSettings.suppressImplicitAnyIndexErrors = preferenceStore
+        // create the compiler options from the preferences
+        CompilerOptions compilerOptions = new CompilerOptions();
+        compilerOptions.declaration = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_DECLARATION);
+        compilerOptions.experimentalDecorators = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS);
+        compilerOptions.inlineSourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP);
+        compilerOptions.inlineSources = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCES);
+        compilerOptions.jsx = JsxEmit.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_JSX));
+        compilerOptions.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
+        compilerOptions.moduleResolution = ModuleResolutionKind.CLASSIC;
+        compilerOptions.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
+        compilerOptions.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
+        compilerOptions.noImplicitReturns = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_RETURNS);
+        compilerOptions.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
+        compilerOptions.removeComments = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS);
+        compilerOptions.sourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SOURCE_MAP);
+        compilerOptions.suppressExcessPropertyErrors = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
+        compilerOptions.suppressImplicitAnyIndexErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS);
-        compilationSettings.target = ScriptTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET));
+        compilerOptions.target = ScriptTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET));
 
         // set the output directory or file if it was specified
         String outDir = preferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
@@ -223,11 +224,11 @@ public final class CompilerOptions {
                 outputFolderName = EclipseResources.getContainerName(project);
             }
 
-            compilationSettings.out = outputFolderName + outFile;
+            compilerOptions.out = outputFolderName + outFile;
         } else if (outputFolderName != null) {
-            compilationSettings.outDir = outputFolderName;
+            compilerOptions.outDir = outputFolderName;
         }
 
-        return compilationSettings;
+        return compilerOptions;
     }
 }
