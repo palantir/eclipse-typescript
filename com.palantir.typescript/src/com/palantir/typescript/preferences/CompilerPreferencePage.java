@@ -57,6 +57,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private ComboFieldEditor jsxField;
     private ComboFieldEditor moduleField;
     private BooleanFieldEditor noEmitOnErrorField;
+    private BooleanFieldEditor noFallthroughCasesInSwitchField;
     private BooleanFieldEditor noImplicitAnyField;
     private BooleanFieldEditor noImplicitReturnsField;
     private BooleanFieldEditor noLibField;
@@ -135,6 +136,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
                 || source.equals(this.jsxField)
                 || source.equals(this.moduleField)
                 || source.equals(this.noEmitOnErrorField)
+                || source.equals(this.noFallthroughCasesInSwitchField)
                 || source.equals(this.noImplicitAnyField)
                 || source.equals(this.noImplicitReturnsField)
                 || source.equals(this.noLibField)
@@ -175,6 +177,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             getResource("no.emit.on.error"),
             this.getFieldEditorParent());
         this.addField(this.noEmitOnErrorField);
+
+        this.noFallthroughCasesInSwitchField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_NO_FALLTHROUGH_CASES_IN_SWITCH,
+            getResource("no.fallthrough.cases.in.switch"),
+            this.getFieldEditorParent());
+        this.addField(this.noFallthroughCasesInSwitchField);
 
         this.noImplicitAnyField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY,

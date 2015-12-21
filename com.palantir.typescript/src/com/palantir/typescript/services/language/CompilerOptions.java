@@ -197,12 +197,15 @@ public final class CompilerOptions {
         compilerOptions.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
         compilerOptions.moduleResolution = ModuleResolutionKind.CLASSIC;
         compilerOptions.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
+        compilerOptions.noFallthroughCasesInSwitch = preferenceStore
+            .getBoolean(IPreferenceConstants.COMPILER_NO_FALLTHROUGH_CASES_IN_SWITCH);
         compilerOptions.noImplicitAny = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY);
         compilerOptions.noImplicitReturns = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_IMPLICIT_RETURNS);
         compilerOptions.noLib = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_LIB);
         compilerOptions.removeComments = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_REMOVE_COMMENTS);
         compilerOptions.sourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SOURCE_MAP);
-        compilerOptions.suppressExcessPropertyErrors = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
+        compilerOptions.suppressExcessPropertyErrors = preferenceStore
+            .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
         compilerOptions.suppressImplicitAnyIndexErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS);
         compilerOptions.target = ScriptTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET));
