@@ -90,6 +90,7 @@ public final class ContentFormatter implements IContentFormatter {
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS),
+            this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_TEMPLATE_STRING_BRACES),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS),
             this.preferenceStore.getBoolean(IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS));
     }

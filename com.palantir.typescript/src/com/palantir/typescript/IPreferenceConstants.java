@@ -62,6 +62,7 @@ public interface IPreferenceConstants {
     String FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS = "formatter.insertSpaceAfterFunctionKeywordForAnonymousFunctions";
     String FORMATTER_INSERT_SPACE_AFTER_KEYWORDS_IN_CONTROL_FLOW_STATEMENTS = "formatter.insertSpaceAfterKeywordsInControlFlowStatements";
     String FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_NONEMPTY_PARENTHESIS = "formatter.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis";
+    String FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_TEMPLATE_STRING_BRACES = "formatter.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces";
     String FORMATTER_INSERT_SPACE_AFTER_SEMICOLON_IN_FOR_STATEMENTS = "formatter.insertSpaceAfterSemicolonInForStatements";
     String FORMATTER_INSERT_SPACE_BEFORE_AND_AFTER_BINARY_OPERATORS = "formatter.insertSpaceBeforeAndAfterBinaryOperators";
     String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_CONTROL_BLOCKS = "formatter.placeOpenBraceOnNewLineForControlBlocks";

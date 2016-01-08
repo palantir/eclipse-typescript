@@ -27,28 +27,31 @@ import com.google.common.base.Objects;
 public final class FormatCodeOptions extends EditorOptions {
 
     @JsonProperty("InsertSpaceAfterCommaDelimiter")
-    private boolean insertSpaceAfterCommaDelimiter;
+    private final boolean insertSpaceAfterCommaDelimiter;
 
     @JsonProperty("InsertSpaceAfterSemicolonInForStatements")
-    private boolean insertSpaceAfterSemicolonInForStatements;
+    private final boolean insertSpaceAfterSemicolonInForStatements;
 
     @JsonProperty("InsertSpaceBeforeAndAfterBinaryOperators")
-    private boolean insertSpaceBeforeAndAfterBinaryOperators;
+    private final boolean insertSpaceBeforeAndAfterBinaryOperators;
 
     @JsonProperty("InsertSpaceAfterKeywordsInControlFlowStatements")
-    private boolean insertSpaceAfterKeywordsInControlFlowStatements;
+    private final boolean insertSpaceAfterKeywordsInControlFlowStatements;
 
     @JsonProperty("InsertSpaceAfterFunctionKeywordForAnonymousFunctions")
-    private boolean insertSpaceAfterFunctionKeywordForAnonymousFunctions;
+    private final boolean insertSpaceAfterFunctionKeywordForAnonymousFunctions;
 
     @JsonProperty("InsertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis")
-    private boolean insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis;
+    private final boolean insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis;
+
+    @JsonProperty("InsertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces")
+    private final boolean insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces;
 
     @JsonProperty("PlaceOpenBraceOnNewLineForFunctions")
-    private boolean placeOpenBraceOnNewLineForFunctions;
+    private final boolean placeOpenBraceOnNewLineForFunctions;
 
     @JsonProperty("PlaceOpenBraceOnNewLineForControlBlocks")
-    private boolean placeOpenBraceOnNewLineForControlBlocks;
+    private final boolean placeOpenBraceOnNewLineForControlBlocks;
 
     public FormatCodeOptions(
             int indentSize,
@@ -61,6 +64,7 @@ public final class FormatCodeOptions extends EditorOptions {
             boolean insertSpaceAfterKeywordsInControlFlowStatements,
             boolean insertSpaceAfterFunctionKeywordForAnonymousFunctions,
             boolean insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis,
+            boolean insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces,
             boolean placeOpenBraceOnNewLineForFunctions,
             boolean placeOpenBraceOnNewLineForControlBlocks) {
         super(indentSize, tabSize, convertTabsToSpaces, indentStyle);
@@ -71,6 +75,7 @@ public final class FormatCodeOptions extends EditorOptions {
         this.insertSpaceAfterKeywordsInControlFlowStatements = insertSpaceAfterKeywordsInControlFlowStatements;
         this.insertSpaceAfterFunctionKeywordForAnonymousFunctions = insertSpaceAfterFunctionKeywordForAnonymousFunctions;
         this.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis;
+        this.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces = insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces;
         this.placeOpenBraceOnNewLineForFunctions = placeOpenBraceOnNewLineForFunctions;
         this.placeOpenBraceOnNewLineForControlBlocks = placeOpenBraceOnNewLineForControlBlocks;
     }
@@ -90,6 +95,8 @@ public final class FormatCodeOptions extends EditorOptions {
             .add("insertSpaceAfterFunctionKeywordForAnonymousFunctions", this.insertSpaceAfterFunctionKeywordForAnonymousFunctions)
             .add("insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis",
                 this.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis)
+            .add("insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces",
+                this.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces)
             .add("placeOpenBraceOnNewLineForFunctions", this.placeOpenBraceOnNewLineForFunctions)
             .add("placeOpenBraceOnNewLineForControlBlocks", this.placeOpenBraceOnNewLineForControlBlocks)
             .toString();

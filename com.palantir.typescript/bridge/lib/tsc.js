@@ -1078,9 +1078,11 @@ var ts;
             var count = array.length;
             if (count > 0) {
                 var pos = 0;
-                var result = arguments.length <= 2 ? array[pos++] : initial;
+                var result = arguments.length <= 2 ? array[pos] : initial;
+                pos++;
                 while (pos < count) {
-                    result = f(result, array[pos++]);
+                    result = f(result, array[pos]);
+                    pos++;
                 }
                 return result;
             }
@@ -1092,9 +1094,11 @@ var ts;
         if (array) {
             var pos = array.length - 1;
             if (pos >= 0) {
-                var result = arguments.length <= 2 ? array[pos--] : initial;
+                var result = arguments.length <= 2 ? array[pos] : initial;
+                pos--;
                 while (pos >= 0) {
-                    result = f(result, array[pos--]);
+                    result = f(result, array[pos]);
+                    pos--;
                 }
                 return result;
             }
@@ -2285,6 +2289,7 @@ var ts;
         An_interface_property_cannot_have_an_initializer: { code: 1246, category: ts.DiagnosticCategory.Error, key: "An_interface_property_cannot_have_an_initializer_1246", message: "An interface property cannot have an initializer." },
         A_type_literal_property_cannot_have_an_initializer: { code: 1247, category: ts.DiagnosticCategory.Error, key: "A_type_literal_property_cannot_have_an_initializer_1247", message: "A type literal property cannot have an initializer." },
         A_class_member_cannot_have_the_0_keyword: { code: 1248, category: ts.DiagnosticCategory.Error, key: "A_class_member_cannot_have_the_0_keyword_1248", message: "A class member cannot have the '{0}' keyword." },
+        A_decorator_can_only_decorate_a_method_implementation_not_an_overload: { code: 1249, category: ts.DiagnosticCategory.Error, key: "A_decorator_can_only_decorate_a_method_implementation_not_an_overload_1249", message: "A decorator can only decorate a method implementation, not an overload." },
         with_statements_are_not_allowed_in_an_async_function_block: { code: 1300, category: ts.DiagnosticCategory.Error, key: "with_statements_are_not_allowed_in_an_async_function_block_1300", message: "'with' statements are not allowed in an async function block." },
         await_expression_is_only_allowed_within_an_async_function: { code: 1308, category: ts.DiagnosticCategory.Error, key: "await_expression_is_only_allowed_within_an_async_function_1308", message: "'await' expression is only allowed within an async function." },
         Async_functions_are_only_available_when_targeting_ECMAScript_6_and_higher: { code: 1311, category: ts.DiagnosticCategory.Error, key: "Async_functions_are_only_available_when_targeting_ECMAScript_6_and_higher_1311", message: "Async functions are only available when targeting ECMAScript 6 and higher." },
@@ -2616,6 +2621,7 @@ var ts;
         Cannot_write_file_0_because_it_would_be_overwritten_by_multiple_input_files: { code: 5056, category: ts.DiagnosticCategory.Error, key: "Cannot_write_file_0_because_it_would_be_overwritten_by_multiple_input_files_5056", message: "Cannot write file '{0}' because it would be overwritten by multiple input files." },
         Cannot_find_a_tsconfig_json_file_at_the_specified_directory_Colon_0: { code: 5057, category: ts.DiagnosticCategory.Error, key: "Cannot_find_a_tsconfig_json_file_at_the_specified_directory_Colon_0_5057", message: "Cannot find a tsconfig.json file at the specified directory: '{0}'" },
         The_specified_path_does_not_exist_Colon_0: { code: 5058, category: ts.DiagnosticCategory.Error, key: "The_specified_path_does_not_exist_Colon_0_5058", message: "The specified path does not exist: '{0}'" },
+        Invalide_value_for_reactNamespace_0_is_not_a_valid_identifier: { code: 5059, category: ts.DiagnosticCategory.Error, key: "Invalide_value_for_reactNamespace_0_is_not_a_valid_identifier_5059", message: "Invalide value for '--reactNamespace'. '{0}' is not a valid identifier." },
         Concatenate_and_emit_output_to_single_file: { code: 6001, category: ts.DiagnosticCategory.Message, key: "Concatenate_and_emit_output_to_single_file_6001", message: "Concatenate and emit output to single file." },
         Generates_corresponding_d_ts_file: { code: 6002, category: ts.DiagnosticCategory.Message, key: "Generates_corresponding_d_ts_file_6002", message: "Generates corresponding '.d.ts' file." },
         Specifies_the_location_where_debugger_should_locate_map_files_instead_of_generated_locations: { code: 6003, category: ts.DiagnosticCategory.Message, key: "Specifies_the_location_where_debugger_should_locate_map_files_instead_of_generated_locations_6003", message: "Specifies the location where debugger should locate map files instead of generated locations." },
@@ -2683,6 +2689,7 @@ var ts;
         Argument_for_jsx_must_be_preserve_or_react: { code: 6081, category: ts.DiagnosticCategory.Message, key: "Argument_for_jsx_must_be_preserve_or_react_6081", message: "Argument for '--jsx' must be 'preserve' or 'react'." },
         Only_amd_and_system_modules_are_supported_alongside_0: { code: 6082, category: ts.DiagnosticCategory.Error, key: "Only_amd_and_system_modules_are_supported_alongside_0_6082", message: "Only 'amd' and 'system' modules are supported alongside --{0}." },
         Allow_javascript_files_to_be_compiled: { code: 6083, category: ts.DiagnosticCategory.Message, key: "Allow_javascript_files_to_be_compiled_6083", message: "Allow javascript files to be compiled." },
+        Specifies_the_object_invoked_for_createElement_and_spread_when_targeting_react_JSX_emit: { code: 6084, category: ts.DiagnosticCategory.Message, key: "Specifies_the_object_invoked_for_createElement_and_spread_when_targeting_react_JSX_emit_6084", message: "Specifies the object invoked for createElement and __spread when targeting 'react' JSX emit" },
         Variable_0_implicitly_has_an_1_type: { code: 7005, category: ts.DiagnosticCategory.Error, key: "Variable_0_implicitly_has_an_1_type_7005", message: "Variable '{0}' implicitly has an '{1}' type." },
         Parameter_0_implicitly_has_an_1_type: { code: 7006, category: ts.DiagnosticCategory.Error, key: "Parameter_0_implicitly_has_an_1_type_7006", message: "Parameter '{0}' implicitly has an '{1}' type." },
         Member_0_implicitly_has_an_1_type: { code: 7008, category: ts.DiagnosticCategory.Error, key: "Member_0_implicitly_has_an_1_type_7008", message: "Member '{0}' implicitly has an '{1}' type." },
@@ -2730,7 +2737,8 @@ var ts;
         Cannot_use_JSX_unless_the_jsx_flag_is_provided: { code: 17004, category: ts.DiagnosticCategory.Error, key: "Cannot_use_JSX_unless_the_jsx_flag_is_provided_17004", message: "Cannot use JSX unless the '--jsx' flag is provided." },
         A_constructor_cannot_contain_a_super_call_when_its_class_extends_null: { code: 17005, category: ts.DiagnosticCategory.Error, key: "A_constructor_cannot_contain_a_super_call_when_its_class_extends_null_17005", message: "A constructor cannot contain a 'super' call when its class extends 'null'" },
         An_unary_expression_with_the_0_operator_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Consider_enclosing_the_expression_in_parentheses: { code: 17006, category: ts.DiagnosticCategory.Error, key: "An_unary_expression_with_the_0_operator_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_ex_17006", message: "An unary expression with the '{0}' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses." },
-        A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Consider_enclosing_the_expression_in_parentheses: { code: 17007, category: ts.DiagnosticCategory.Error, key: "A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Con_17007", message: "A type assertion expression is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses." }
+        A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Consider_enclosing_the_expression_in_parentheses: { code: 17007, category: ts.DiagnosticCategory.Error, key: "A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Con_17007", message: "A type assertion expression is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses." },
+        JSX_element_0_has_no_corresponding_closing_tag: { code: 17008, category: ts.DiagnosticCategory.Error, key: "JSX_element_0_has_no_corresponding_closing_tag_17008", message: "JSX element '{0}' has no corresponding closing tag." }
     };
 })(ts || (ts = {}));
 /// <reference path="core.ts"/>
@@ -2970,7 +2978,8 @@ var ts;
         var pos = 0;
         var lineStart = 0;
         while (pos < text.length) {
-            var ch = text.charCodeAt(pos++);
+            var ch = text.charCodeAt(pos);
+            pos++;
             switch (ch) {
                 case 13 /* carriageReturn */:
                     if (text.charCodeAt(pos) === 10 /* lineFeed */) {
@@ -3345,6 +3354,19 @@ var ts;
             ch > 127 /* maxAsciiCharacter */ && isUnicodeIdentifierPart(ch, languageVersion);
     }
     ts.isIdentifierPart = isIdentifierPart;
+    /* @internal */
+    function isIdentifier(name, languageVersion) {
+        if (!isIdentifierStart(name.charCodeAt(0), languageVersion)) {
+            return false;
+        }
+        for (var i = 1, n = name.length; i < n; i++) {
+            if (!isIdentifierPart(name.charCodeAt(i), languageVersion)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    ts.isIdentifier = isIdentifier;
     // Creates a scanner over a (possibly unspecified) range of a piece of text.
     function createScanner(languageVersion, skipTrivia, languageVariant, text, onError, start, length) {
         if (languageVariant === void 0) { languageVariant = 0 /* Standard */; }
@@ -3467,7 +3489,8 @@ var ts;
             return value;
         }
         function scanString() {
-            var quote = text.charCodeAt(pos++);
+            var quote = text.charCodeAt(pos);
+            pos++;
             var result = "";
             var start = pos;
             while (true) {
@@ -3563,7 +3586,8 @@ var ts;
                 error(ts.Diagnostics.Unexpected_end_of_text);
                 return "";
             }
-            var ch = text.charCodeAt(pos++);
+            var ch = text.charCodeAt(pos);
+            pos++;
             switch (ch) {
                 case 48 /* _0 */:
                     return "\0";
@@ -3790,7 +3814,8 @@ var ts;
                             }
                             return pos += 2, token = 31 /* ExclamationEqualsToken */;
                         }
-                        return pos++, token = 49 /* ExclamationToken */;
+                        pos++;
+                        return token = 49 /* ExclamationToken */;
                     case 34 /* doubleQuote */:
                     case 39 /* singleQuote */:
                         tokenValue = scanString();
@@ -3801,7 +3826,8 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 62 /* PercentEqualsToken */;
                         }
-                        return pos++, token = 40 /* PercentToken */;
+                        pos++;
+                        return token = 40 /* PercentToken */;
                     case 38 /* ampersand */:
                         if (text.charCodeAt(pos + 1) === 38 /* ampersand */) {
                             return pos += 2, token = 51 /* AmpersandAmpersandToken */;
@@ -3809,11 +3835,14 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 66 /* AmpersandEqualsToken */;
                         }
-                        return pos++, token = 46 /* AmpersandToken */;
+                        pos++;
+                        return token = 46 /* AmpersandToken */;
                     case 40 /* openParen */:
-                        return pos++, token = 17 /* OpenParenToken */;
+                        pos++;
+                        return token = 17 /* OpenParenToken */;
                     case 41 /* closeParen */:
-                        return pos++, token = 18 /* CloseParenToken */;
+                        pos++;
+                        return token = 18 /* CloseParenToken */;
                     case 42 /* asterisk */:
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 59 /* AsteriskEqualsToken */;
@@ -3824,7 +3853,8 @@ var ts;
                             }
                             return pos += 2, token = 38 /* AsteriskAsteriskToken */;
                         }
-                        return pos++, token = 37 /* AsteriskToken */;
+                        pos++;
+                        return token = 37 /* AsteriskToken */;
                     case 43 /* plus */:
                         if (text.charCodeAt(pos + 1) === 43 /* plus */) {
                             return pos += 2, token = 41 /* PlusPlusToken */;
@@ -3832,9 +3862,11 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 57 /* PlusEqualsToken */;
                         }
-                        return pos++, token = 35 /* PlusToken */;
+                        pos++;
+                        return token = 35 /* PlusToken */;
                     case 44 /* comma */:
-                        return pos++, token = 24 /* CommaToken */;
+                        pos++;
+                        return token = 24 /* CommaToken */;
                     case 45 /* minus */:
                         if (text.charCodeAt(pos + 1) === 45 /* minus */) {
                             return pos += 2, token = 42 /* MinusMinusToken */;
@@ -3842,7 +3874,8 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 58 /* MinusEqualsToken */;
                         }
-                        return pos++, token = 36 /* MinusToken */;
+                        pos++;
+                        return token = 36 /* MinusToken */;
                     case 46 /* dot */:
                         if (isDigit(text.charCodeAt(pos + 1))) {
                             tokenValue = scanNumber();
@@ -3851,7 +3884,8 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 46 /* dot */ && text.charCodeAt(pos + 2) === 46 /* dot */) {
                             return pos += 3, token = 22 /* DotDotDotToken */;
                         }
-                        return pos++, token = 21 /* DotToken */;
+                        pos++;
+                        return token = 21 /* DotToken */;
                     case 47 /* slash */:
                         // Single-line comment
                         if (text.charCodeAt(pos + 1) === 47 /* slash */) {
@@ -3899,7 +3933,8 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 61 /* SlashEqualsToken */;
                         }
-                        return pos++, token = 39 /* SlashToken */;
+                        pos++;
+                        return token = 39 /* SlashToken */;
                     case 48 /* _0 */:
                         if (pos + 2 < end && (text.charCodeAt(pos + 1) === 88 /* X */ || text.charCodeAt(pos + 1) === 120 /* x */)) {
                             pos += 2;
@@ -3951,9 +3986,11 @@ var ts;
                         tokenValue = scanNumber();
                         return token = 8 /* NumericLiteral */;
                     case 58 /* colon */:
-                        return pos++, token = 54 /* ColonToken */;
+                        pos++;
+                        return token = 54 /* ColonToken */;
                     case 59 /* semicolon */:
-                        return pos++, token = 23 /* SemicolonToken */;
+                        pos++;
+                        return token = 23 /* SemicolonToken */;
                     case 60 /* lessThan */:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
@@ -3978,7 +4015,8 @@ var ts;
                             text.charCodeAt(pos + 2) !== 42 /* asterisk */) {
                             return pos += 2, token = 26 /* LessThanSlashToken */;
                         }
-                        return pos++, token = 25 /* LessThanToken */;
+                        pos++;
+                        return token = 25 /* LessThanToken */;
                     case 61 /* equals */:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
@@ -3998,7 +4036,8 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 62 /* greaterThan */) {
                             return pos += 2, token = 34 /* EqualsGreaterThanToken */;
                         }
-                        return pos++, token = 56 /* EqualsToken */;
+                        pos++;
+                        return token = 56 /* EqualsToken */;
                     case 62 /* greaterThan */:
                         if (isConflictMarkerTrivia(text, pos)) {
                             pos = scanConflictMarkerTrivia(text, pos, error);
@@ -4009,20 +4048,26 @@ var ts;
                                 return token = 7 /* ConflictMarkerTrivia */;
                             }
                         }
-                        return pos++, token = 27 /* GreaterThanToken */;
+                        pos++;
+                        return token = 27 /* GreaterThanToken */;
                     case 63 /* question */:
-                        return pos++, token = 53 /* QuestionToken */;
+                        pos++;
+                        return token = 53 /* QuestionToken */;
                     case 91 /* openBracket */:
-                        return pos++, token = 19 /* OpenBracketToken */;
+                        pos++;
+                        return token = 19 /* OpenBracketToken */;
                     case 93 /* closeBracket */:
-                        return pos++, token = 20 /* CloseBracketToken */;
+                        pos++;
+                        return token = 20 /* CloseBracketToken */;
                     case 94 /* caret */:
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 68 /* CaretEqualsToken */;
                         }
-                        return pos++, token = 48 /* CaretToken */;
+                        pos++;
+                        return token = 48 /* CaretToken */;
                     case 123 /* openBrace */:
-                        return pos++, token = 15 /* OpenBraceToken */;
+                        pos++;
+                        return token = 15 /* OpenBraceToken */;
                     case 124 /* bar */:
                         if (text.charCodeAt(pos + 1) === 124 /* bar */) {
                             return pos += 2, token = 52 /* BarBarToken */;
@@ -4030,13 +4075,17 @@ var ts;
                         if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                             return pos += 2, token = 67 /* BarEqualsToken */;
                         }
-                        return pos++, token = 47 /* BarToken */;
+                        pos++;
+                        return token = 47 /* BarToken */;
                     case 125 /* closeBrace */:
-                        return pos++, token = 16 /* CloseBraceToken */;
+                        pos++;
+                        return token = 16 /* CloseBraceToken */;
                     case 126 /* tilde */:
-                        return pos++, token = 50 /* TildeToken */;
+                        pos++;
+                        return token = 50 /* TildeToken */;
                     case 64 /* at */:
-                        return pos++, token = 55 /* AtToken */;
+                        pos++;
+                        return token = 55 /* AtToken */;
                     case 92 /* backslash */:
                         var cookedChar = peekUnicodeEscape();
                         if (cookedChar >= 0 && isIdentifierStart(cookedChar, languageVersion)) {
@@ -4045,7 +4094,8 @@ var ts;
                             return token = getIdentifierToken();
                         }
                         error(ts.Diagnostics.Invalid_character);
-                        return pos++, token = 0 /* Unknown */;
+                        pos++;
+                        return token = 0 /* Unknown */;
                     default:
                         if (isIdentifierStart(ch, languageVersion)) {
                             pos++;
@@ -4067,7 +4117,8 @@ var ts;
                             continue;
                         }
                         error(ts.Diagnostics.Invalid_character);
-                        return pos++, token = 0 /* Unknown */;
+                        pos++;
+                        return token = 0 /* Unknown */;
                 }
             }
         }
@@ -4083,10 +4134,12 @@ var ts;
                     if (text.charCodeAt(pos + 1) === 61 /* equals */) {
                         return pos += 2, token = 64 /* GreaterThanGreaterThanEqualsToken */;
                     }
-                    return pos++, token = 44 /* GreaterThanGreaterThanToken */;
+                    pos++;
+                    return token = 44 /* GreaterThanGreaterThanToken */;
                 }
                 if (text.charCodeAt(pos) === 61 /* equals */) {
-                    return pos++, token = 29 /* GreaterThanEqualsToken */;
+                    pos++;
+                    return token = 29 /* GreaterThanEqualsToken */;
                 }
             }
             return token;
@@ -4313,7 +4366,7 @@ var ts;
         if (array1.length !== array2.length) {
             return false;
         }
-        for (var i = 0; i < array1.length; ++i) {
+        for (var i = 0; i < array1.length; i++) {
             var equals = equaler ? equaler(array1[i], array2[i]) : array1[i] === array2[i];
             if (!equals) {
                 return false;
@@ -5999,8 +6052,8 @@ var ts;
             writeTextOfNode: writeTextOfNode,
             writeLiteral: writeLiteral,
             writeLine: writeLine,
-            increaseIndent: function () { return indent++; },
-            decreaseIndent: function () { return indent--; },
+            increaseIndent: function () { indent++; },
+            decreaseIndent: function () { indent--; },
             getIndent: function () { return indent; },
             getTextPos: function () { return output.length; },
             getLine: function () { return lineCount + 1; },
@@ -9883,6 +9936,16 @@ var ts;
             node.name = parseRightSideOfDot(/*allowIdentifierNames*/ true);
             return finishNode(node);
         }
+        function tagNamesAreEquivalent(lhs, rhs) {
+            if (lhs.kind !== rhs.kind) {
+                return false;
+            }
+            if (lhs.kind === 69 /* Identifier */) {
+                return lhs.text === rhs.text;
+            }
+            return lhs.right.text === rhs.right.text &&
+                tagNamesAreEquivalent(lhs.left, rhs.left);
+        }
         function parseJsxElementOrSelfClosingElement(inExpressionContext) {
             var opening = parseJsxOpeningOrSelfClosingElement(inExpressionContext);
             var result;
@@ -9891,6 +9954,9 @@ var ts;
                 node.openingElement = opening;
                 node.children = parseJsxChildren(node.openingElement.tagName);
                 node.closingElement = parseJsxClosingElement(inExpressionContext);
+                if (!tagNamesAreEquivalent(node.openingElement.tagName, node.closingElement.tagName)) {
+                    parseErrorAtPosition(node.closingElement.pos, node.closingElement.end - node.closingElement.pos, ts.Diagnostics.Expected_corresponding_JSX_closing_tag_for_0, ts.getTextOfNodeFromSourceText(sourceText, node.openingElement.tagName));
+                }
                 result = finishNode(node);
             }
             else {
@@ -9944,10 +10010,13 @@ var ts;
             while (true) {
                 token = scanner.reScanJsxToken();
                 if (token === 26 /* LessThanSlashToken */) {
+                    // Closing tag
                     break;
                 }
                 else if (token === 1 /* EndOfFileToken */) {
-                    parseErrorAtCurrentToken(ts.Diagnostics.Expected_corresponding_JSX_closing_tag_for_0, ts.getTextOfNodeFromSourceText(sourceText, openingTagName));
+                    // If we hit EOF, issue the error at the tag that lacks the closing element
+                    // rather than at the end of the file (which is useless)
+                    parseErrorAtPosition(openingTagName.pos, openingTagName.end - openingTagName.pos, ts.Diagnostics.JSX_element_0_has_no_corresponding_closing_tag, ts.getTextOfNodeFromSourceText(sourceText, openingTagName));
                     break;
                 }
                 result.push(parseJsxChild());
@@ -14131,15 +14200,18 @@ var ts;
     var nextNodeId = 1;
     var nextMergeId = 1;
     function getNodeId(node) {
-        if (!node.id)
-            node.id = nextNodeId++;
+        if (!node.id) {
+            node.id = nextNodeId;
+            nextNodeId++;
+        }
         return node.id;
     }
     ts.getNodeId = getNodeId;
     ts.checkTime = 0;
     function getSymbolId(symbol) {
         if (!symbol.id) {
-            symbol.id = nextSymbolId++;
+            symbol.id = nextSymbolId;
+            nextSymbolId++;
         }
         return symbol.id;
     }
@@ -14387,8 +14459,10 @@ var ts;
             return result;
         }
         function recordMergedSymbol(target, source) {
-            if (!source.mergeId)
-                source.mergeId = nextMergeId++;
+            if (!source.mergeId) {
+                source.mergeId = nextMergeId;
+                nextMergeId++;
+            }
             mergedSymbols[source.mergeId] = target;
         }
         function cloneSymbol(symbol) {
@@ -15268,7 +15342,8 @@ var ts;
         }
         function createType(flags) {
             var result = new Type(checker, flags);
-            result.id = typeCount++;
+            result.id = typeCount;
+            typeCount++;
             return result;
         }
         function createIntrinsicType(kind, intrinsicName) {
@@ -15762,11 +15837,13 @@ var ts;
                     }
                     if (pos < end) {
                         writePunctuation(writer, 25 /* LessThanToken */);
-                        writeType(typeArguments[pos++], 0 /* None */);
+                        writeType(typeArguments[pos], 0 /* None */);
+                        pos++;
                         while (pos < end) {
                             writePunctuation(writer, 24 /* CommaToken */);
                             writeSpace(writer);
-                            writeType(typeArguments[pos++], 0 /* None */);
+                            writeType(typeArguments[pos], 0 /* None */);
+                            pos++;
                         }
                         writePunctuation(writer, 27 /* GreaterThanToken */);
                     }
@@ -19345,7 +19422,7 @@ var ts;
                     return 0 /* False */;
                 }
                 var result = -1 /* True */;
-                for (var i = 0, len = sourceSignatures.length; i < len; ++i) {
+                for (var i = 0, len = sourceSignatures.length; i < len; i++) {
                     var related = compareSignaturesIdentical(sourceSignatures[i], targetSignatures[i], /*partialMatch*/ false, /*ignoreReturnTypes*/ false, isRelatedTo);
                     if (!related) {
                         return 0 /* False */;
@@ -20889,6 +20966,11 @@ var ts;
                 }
                 return type;
             }
+            else if (operator === 51 /* AmpersandAmpersandToken */ || operator === 24 /* CommaToken */) {
+                if (node === binaryExpression.right) {
+                    return getContextualType(binaryExpression);
+                }
+            }
             return undefined;
         }
         // Apply a mapping function to a contextual type and return the resulting type. If the contextual type
@@ -20988,22 +21070,20 @@ var ts;
             var conditional = node.parent;
             return node === conditional.whenTrue || node === conditional.whenFalse ? getContextualType(conditional) : undefined;
         }
-        function getContextualTypeForJsxExpression(expr) {
-            // Contextual type only applies to JSX expressions that are in attribute assignments (not in 'Children' positions)
-            if (expr.parent.kind === 240 /* JsxAttribute */) {
-                var attrib = expr.parent;
-                var attrsType = getJsxElementAttributesType(attrib.parent);
+        function getContextualTypeForJsxAttribute(attribute) {
+            var kind = attribute.kind;
+            var jsxElement = attribute.parent;
+            var attrsType = getJsxElementAttributesType(jsxElement);
+            if (attribute.kind === 240 /* JsxAttribute */) {
                 if (!attrsType || isTypeAny(attrsType)) {
                     return undefined;
                 }
-                else {
-                    return getTypeOfPropertyOfType(attrsType, attrib.name.text);
-                }
+                return getTypeOfPropertyOfType(attrsType, attribute.name.text);
             }
-            if (expr.kind === 241 /* JsxSpreadAttribute */) {
-                return getJsxElementAttributesType(expr.parent);
+            else if (attribute.kind === 241 /* JsxSpreadAttribute */) {
+                return attrsType;
             }
-            return undefined;
+            ts.Debug.fail("Expected JsxAttribute or JsxSpreadAttribute, got ts.SyntaxKind[" + kind + "]");
         }
         // Return the contextual type for a given expression node. During overload resolution, a contextual type may temporarily
         // be "pushed" onto a node using the contextualType property.
@@ -21069,8 +21149,10 @@ var ts;
                 case 174 /* ParenthesizedExpression */:
                     return getContextualType(parent);
                 case 242 /* JsxExpression */:
+                    return getContextualType(parent);
+                case 240 /* JsxAttribute */:
                 case 241 /* JsxSpreadAttribute */:
-                    return getContextualTypeForJsxExpression(parent);
+                    return getContextualTypeForJsxAttribute(parent);
             }
             return undefined;
         }
@@ -21432,27 +21514,11 @@ var ts;
             checkJsxOpeningLikeElement(node);
             return jsxElementType || anyType;
         }
-        function tagNamesAreEquivalent(lhs, rhs) {
-            if (lhs.kind !== rhs.kind) {
-                return false;
-            }
-            if (lhs.kind === 69 /* Identifier */) {
-                return lhs.text === rhs.text;
-            }
-            return lhs.right.text === rhs.right.text &&
-                tagNamesAreEquivalent(lhs.left, rhs.left);
-        }
         function checkJsxElement(node) {
             // Check attributes
             checkJsxOpeningLikeElement(node.openingElement);
-            // Check that the closing tag matches
-            if (!tagNamesAreEquivalent(node.openingElement.tagName, node.closingElement.tagName)) {
-                error(node.closingElement, ts.Diagnostics.Expected_corresponding_JSX_closing_tag_for_0, ts.getTextOfNode(node.openingElement.tagName));
-            }
-            else {
-                // Perform resolution on the closing tag so that rename/go to definition/etc work
-                getJsxElementTagSymbol(node.closingElement);
-            }
+            // Perform resolution on the closing tag so that rename/go to definition/etc work
+            getJsxElementTagSymbol(node.closingElement);
             // Check children
             for (var _i = 0, _a = node.children; _i < _a.length; _i++) {
                 var child = _a[_i];
@@ -21806,14 +21872,13 @@ var ts;
         function checkJsxOpeningLikeElement(node) {
             checkGrammarJsxElement(node);
             checkJsxPreconditions(node);
-            // If we're compiling under --jsx react, the symbol 'React' should
-            // be marked as 'used' so we don't incorrectly elide its import. And if there
-            // is no 'React' symbol in scope, we should issue an error.
-            if (compilerOptions.jsx === 2 /* React */) {
-                var reactSym = resolveName(node.tagName, "React", 107455 /* Value */, ts.Diagnostics.Cannot_find_name_0, "React");
-                if (reactSym) {
-                    getSymbolLinks(reactSym).referenced = true;
-                }
+            // The reactNamespace symbol should be marked as 'used' so we don't incorrectly elide its import. And if there
+            // is no reactNamespace symbol in scope when targeting React emit, we should issue an error.
+            var reactRefErr = compilerOptions.jsx === 2 /* React */ ? ts.Diagnostics.Cannot_find_name_0 : undefined;
+            var reactNamespace = compilerOptions.reactNamespace ? compilerOptions.reactNamespace : "React";
+            var reactSym = resolveName(node.tagName, reactNamespace, 107455 /* Value */, reactRefErr, reactNamespace);
+            if (reactSym) {
+                getSymbolLinks(reactSym).referenced = true;
             }
             var targetAttributesType = getJsxElementAttributesType(node);
             var nameTable = {};
@@ -26644,7 +26709,8 @@ var ts;
                         error(member.name, ts.Diagnostics.Enum_member_must_have_initializer);
                     }
                     if (autoValue !== undefined) {
-                        getNodeLinks(member).enumMemberValue = autoValue++;
+                        getNodeLinks(member).enumMemberValue = autoValue;
+                        autoValue++;
                     }
                 }
                 nodeLinks.flags |= 8192 /* EnumValuesComputed */;
@@ -28181,7 +28247,12 @@ var ts;
                 return false;
             }
             if (!ts.nodeCanBeDecorated(node)) {
-                return grammarErrorOnFirstToken(node, ts.Diagnostics.Decorators_are_not_valid_here);
+                if (node.kind === 143 /* MethodDeclaration */ && !ts.nodeIsPresent(node.body)) {
+                    return grammarErrorOnFirstToken(node, ts.Diagnostics.A_decorator_can_only_decorate_a_method_implementation_not_an_overload);
+                }
+                else {
+                    return grammarErrorOnFirstToken(node, ts.Diagnostics.Decorators_are_not_valid_here);
+                }
             }
             else if (node.kind === 145 /* GetAccessor */ || node.kind === 146 /* SetAccessor */) {
                 var accessors = ts.getAllAccessorDeclarations(node.parent.members, node);
@@ -29847,7 +29918,8 @@ var ts;
             }
             var count = 0;
             while (true) {
-                var name_18 = baseName + "_" + (++count);
+                count++;
+                var name_18 = baseName + "_" + count;
                 if (!ts.hasProperty(currentIdentifiers, name_18)) {
                     return name_18;
                 }
@@ -31917,7 +31989,7 @@ var ts;
                 }
                 function emitJsxElement(openingNode, children) {
                     var syntheticReactRef = ts.createSynthesizedNode(69 /* Identifier */);
-                    syntheticReactRef.text = "React";
+                    syntheticReactRef.text = compilerOptions.reactNamespace ? compilerOptions.reactNamespace : "React";
                     syntheticReactRef.parent = openingNode;
                     // Call React.createElement(tag, ...
                     emitLeadingComments(openingNode);
@@ -34673,20 +34745,29 @@ var ts;
                 }
                 // TODO (yuisu) : we should not have special cases to condition emitting comments
                 // but have one place to fix check for these conditions.
-                if (node.kind !== 143 /* MethodDeclaration */ && node.kind !== 142 /* MethodSignature */ &&
-                    node.parent && node.parent.kind !== 247 /* PropertyAssignment */ &&
-                    node.parent.kind !== 170 /* CallExpression */) {
-                    // 1. Methods will emit the comments as part of emitting method declaration
+                var kind = node.kind, parent = node.parent;
+                if (kind !== 143 /* MethodDeclaration */ &&
+                    kind !== 142 /* MethodSignature */ &&
+                    parent &&
+                    parent.kind !== 247 /* PropertyAssignment */ &&
+                    parent.kind !== 170 /* CallExpression */ &&
+                    parent.kind !== 166 /* ArrayLiteralExpression */) {
+                    // 1. Methods will emit comments at their assignment declaration sites.
+                    //
                     // 2. If the function is a property of object literal, emitting leading-comments
-                    // is done by emitNodeWithoutSourceMap which then call this function.
-                    // In particular, we would like to avoid emit comments twice in following case:
-                    //      For example:
+                    //    is done by emitNodeWithoutSourceMap which then call this function.
+                    //    In particular, we would like to avoid emit comments twice in following case:
+                    //
                     //          var obj = {
                     //              id:
                     //                  /*comment*/ () => void
                     //          }
+                    //
                     // 3. If the function is an argument in call expression, emitting of comments will be
-                    // taken care of in emit list of arguments inside of emitCallexpression
+                    //    taken care of in emit list of arguments inside of 'emitCallExpression'.
+                    //
+                    // 4. If the function is in an array literal, 'emitLinePreservingList' will take care
+                    //    of leading comments.
                     emitLeadingComments(node);
                 }
                 emitStart(node);
@@ -34709,11 +34790,11 @@ var ts;
                     emitDeclarationName(node);
                 }
                 emitSignatureAndBody(node);
-                if (modulekind !== 5 /* ES6 */ && node.kind === 215 /* FunctionDeclaration */ && node.parent === currentSourceFile && node.name) {
+                if (modulekind !== 5 /* ES6 */ && kind === 215 /* FunctionDeclaration */ && parent === currentSourceFile && node.name) {
                     emitExportMemberAssignments(node.name);
                 }
                 emitEnd(node);
-                if (node.kind !== 143 /* MethodDeclaration */ && node.kind !== 142 /* MethodSignature */) {
+                if (kind !== 143 /* MethodDeclaration */ && kind !== 142 /* MethodSignature */) {
                     emitTrailingComments(node);
                 }
             }
@@ -35742,7 +35823,7 @@ var ts;
                             });
                             leadingComma = true;
                         }
-                        ++parameterIndex;
+                        parameterIndex++;
                     }
                 }
                 return argumentsWritten;
@@ -36668,7 +36749,7 @@ var ts;
                 increaseIndent();
                 var started = false;
                 if (exportedDeclarations) {
-                    for (var i = 0; i < exportedDeclarations.length; ++i) {
+                    for (var i = 0; i < exportedDeclarations.length; i++) {
                         // write name of exported declaration, i.e 'export var x...'
                         writeExportedName(exportedDeclarations[i]);
                     }
@@ -36770,7 +36851,7 @@ var ts;
                     writeLine();
                     write("var ");
                     var seen = {};
-                    for (var i = 0; i < hoistedVars.length; ++i) {
+                    for (var i = 0; i < hoistedVars.length; i++) {
                         var local = hoistedVars[i];
                         var name_26 = local.kind === 69 /* Identifier */
                             ? local
@@ -36955,7 +37036,7 @@ var ts;
             }
             function emitSetters(exportStarFunction, dependencyGroups) {
                 write("setters:[");
-                for (var i = 0; i < dependencyGroups.length; ++i) {
+                for (var i = 0; i < dependencyGroups.length; i++) {
                     if (i !== 0) {
                         write(",");
                     }
@@ -36997,7 +37078,7 @@ var ts;
                                     write(exportFunctionForFile + "({");
                                     writeLine();
                                     increaseIndent();
-                                    for (var i_2 = 0, len = entry.exportClause.elements.length; i_2 < len; ++i_2) {
+                                    for (var i_2 = 0, len = entry.exportClause.elements.length; i_2 < len; i_2++) {
                                         if (i_2 !== 0) {
                                             write(",");
                                             writeLine();
@@ -37036,7 +37117,7 @@ var ts;
                 write("execute: function() {");
                 increaseIndent();
                 writeLine();
-                for (var i = startIndex; i < node.statements.length; ++i) {
+                for (var i = startIndex; i < node.statements.length; i++) {
                     var statement = node.statements[i];
                     switch (statement.kind) {
                         // - function declarations are not emitted because they were already hoisted
@@ -37095,7 +37176,7 @@ var ts;
                 write("[");
                 var groupIndices = {};
                 var dependencyGroups = [];
-                for (var i = 0; i < externalImports.length; ++i) {
+                for (var i = 0; i < externalImports.length; i++) {
                     var text = getExternalModuleNameText(externalImports[i], emitRelativePathAsModuleName);
                     if (ts.hasProperty(groupIndices, text)) {
                         // deduplicate/group entries in dependency list by the dependency name
@@ -37313,7 +37394,9 @@ var ts;
                     // Replace entities like &nbsp;
                     result = result.replace(/&(\w+);/g, function (s, m) {
                         if (entities[m] !== undefined) {
-                            return String.fromCharCode(entities[m]);
+                            var ch = String.fromCharCode(entities[m]);
+                            // &quot; needs to be escaped
+                            return ch === "\"" ? "\\\"" : ch;
                         }
                         else {
                             return s;
@@ -37378,7 +37461,7 @@ var ts;
             }
             function emitDirectivePrologues(statements, startWithNewLine, ensureUseStrict) {
                 var foundUseStrict = false;
-                for (var i = 0; i < statements.length; ++i) {
+                for (var i = 0; i < statements.length; i++) {
                     if (ts.isPrologueDirective(statements[i])) {
                         if (isUseStrictPrologue(statements[i])) {
                             foundUseStrict = true;
@@ -37399,7 +37482,7 @@ var ts;
             }
             function writeLines(text) {
                 var lines = text.split(/\r\n|\r|\n/g);
-                for (var i = 0; i < lines.length; ++i) {
+                for (var i = 0; i < lines.length; i++) {
                     var line = lines[i];
                     if (line.length) {
                         writeLine();
@@ -37930,11 +38013,11 @@ var ts;
         if (ts.getRootLength(moduleName) !== 0 || nameStartsWithDotSlashOrDotDotSlash(moduleName)) {
             var failedLookupLocations = [];
             var candidate = ts.normalizePath(ts.combinePaths(containingDirectory, moduleName));
-            var resolvedFileName = loadNodeModuleFromFile(supportedExtensions, candidate, failedLookupLocations, host);
+            var resolvedFileName = loadNodeModuleFromFile(supportedExtensions, candidate, failedLookupLocations, /*onlyRecordFailures*/ false, host);
             if (resolvedFileName) {
                 return { resolvedModule: { resolvedFileName: resolvedFileName }, failedLookupLocations: failedLookupLocations };
             }
-            resolvedFileName = loadNodeModuleFromDirectory(supportedExtensions, candidate, failedLookupLocations, host);
+            resolvedFileName = loadNodeModuleFromDirectory(supportedExtensions, candidate, failedLookupLocations, /*onlyRecordFailures*/ false, host);
             return resolvedFileName
                 ? { resolvedModule: { resolvedFileName: resolvedFileName }, failedLookupLocations: failedLookupLocations }
                 : { resolvedModule: undefined, failedLookupLocations: failedLookupLocations };
@@ -37944,11 +38027,21 @@ var ts;
         }
     }
     ts.nodeModuleNameResolver = nodeModuleNameResolver;
-    function loadNodeModuleFromFile(extensions, candidate, failedLookupLocation, host) {
+    /* @internal */
+    function directoryProbablyExists(directoryName, host) {
+        // if host does not support 'directoryExists' assume that directory will exist
+        return !host.directoryExists || host.directoryExists(directoryName);
+    }
+    ts.directoryProbablyExists = directoryProbablyExists;
+    /**
+     * @param {boolean} onlyRecordFailures - if true then function won't try to actually load files but instead record all attempts as failures. This flag is necessary
+     * in cases when we know upfront that all load attempts will fail (because containing folder does not exists) however we still need to record all failed lookup locations.
+     */
+    function loadNodeModuleFromFile(extensions, candidate, failedLookupLocation, onlyRecordFailures, host) {
         return ts.forEach(extensions, tryLoad);
         function tryLoad(ext) {
             var fileName = ts.fileExtensionIs(candidate, ext) ? candidate : candidate + ext;
-            if (host.fileExists(fileName)) {
+            if (!onlyRecordFailures && host.fileExists(fileName)) {
                 return fileName;
             }
             else {
@@ -37957,9 +38050,10 @@ var ts;
             }
         }
     }
-    function loadNodeModuleFromDirectory(extensions, candidate, failedLookupLocation, host) {
+    function loadNodeModuleFromDirectory(extensions, candidate, failedLookupLocation, onlyRecordFailures, host) {
         var packageJsonPath = ts.combinePaths(candidate, "package.json");
-        if (host.fileExists(packageJsonPath)) {
+        var directoryExists = !onlyRecordFailures && directoryProbablyExists(candidate, host);
+        if (directoryExists && host.fileExists(packageJsonPath)) {
             var jsonContent;
             try {
                 var jsonText = host.readFile(packageJsonPath);
@@ -37970,7 +38064,8 @@ var ts;
                 jsonContent = { typings: undefined };
             }
             if (typeof jsonContent.typings === "string") {
-                var result = loadNodeModuleFromFile(extensions, ts.normalizePath(ts.combinePaths(candidate, jsonContent.typings)), failedLookupLocation, host);
+                var path = ts.normalizePath(ts.combinePaths(candidate, jsonContent.typings));
+                var result = loadNodeModuleFromFile(extensions, path, failedLookupLocation, !directoryProbablyExists(ts.getDirectoryPath(path), host), host);
                 if (result) {
                     return result;
                 }
@@ -37980,7 +38075,7 @@ var ts;
             // record package json as one of failed lookup locations - in the future if this file will appear it will invalidate resolution results
             failedLookupLocation.push(packageJsonPath);
         }
-        return loadNodeModuleFromFile(extensions, ts.combinePaths(candidate, "index"), failedLookupLocation, host);
+        return loadNodeModuleFromFile(extensions, ts.combinePaths(candidate, "index"), failedLookupLocation, !directoryExists, host);
     }
     function loadModuleFromNodeModules(moduleName, directory, host) {
         var failedLookupLocations = [];
@@ -37989,13 +38084,14 @@ var ts;
             var baseName = ts.getBaseFileName(directory);
             if (baseName !== "node_modules") {
                 var nodeModulesFolder = ts.combinePaths(directory, "node_modules");
+                var nodeModulesFolderExists = directoryProbablyExists(nodeModulesFolder, host);
                 var candidate = ts.normalizePath(ts.combinePaths(nodeModulesFolder, moduleName));
                 // Load only typescript files irrespective of allowJs option if loading from node modules
-                var result = loadNodeModuleFromFile(ts.supportedTypeScriptExtensions, candidate, failedLookupLocations, host);
+                var result = loadNodeModuleFromFile(ts.supportedTypeScriptExtensions, candidate, failedLookupLocations, !nodeModulesFolderExists, host);
                 if (result) {
                     return { resolvedModule: { resolvedFileName: result, isExternalLibraryImport: true }, failedLookupLocations: failedLookupLocations };
                 }
-                result = loadNodeModuleFromDirectory(ts.supportedTypeScriptExtensions, candidate, failedLookupLocations, host);
+                result = loadNodeModuleFromDirectory(ts.supportedTypeScriptExtensions, candidate, failedLookupLocations, !nodeModulesFolderExists, host);
                 if (result) {
                     return { resolvedModule: { resolvedFileName: result, isExternalLibraryImport: true }, failedLookupLocations: failedLookupLocations };
                 }
@@ -38125,7 +38221,8 @@ var ts;
             getCanonicalFileName: getCanonicalFileName,
             getNewLine: function () { return newLine; },
             fileExists: function (fileName) { return ts.sys.fileExists(fileName); },
-            readFile: function (fileName) { return ts.sys.readFile(fileName); }
+            readFile: function (fileName) { return ts.sys.readFile(fileName); },
+            directoryExists: function (directoryName) { return ts.sys.directoryExists(directoryName); }
         };
     }
     ts.createCompilerHost = createCompilerHost;
@@ -38306,7 +38403,7 @@ var ts;
                         var moduleNames = ts.map(newSourceFile.imports, function (name) { return name.text; });
                         var resolutions = resolveModuleNamesWorker(moduleNames, ts.getNormalizedAbsolutePath(newSourceFile.fileName, currentDirectory));
                         // ensure that module resolution results are still correct
-                        for (var i = 0; i < moduleNames.length; ++i) {
+                        for (var i = 0; i < moduleNames.length; i++) {
                             var newResolution = resolutions[i];
                             var oldResolution = ts.getResolvedModule(oldSourceFile, moduleNames[i]);
                             var resolutionChanged = oldResolution
@@ -38331,7 +38428,7 @@ var ts;
                 newSourceFiles.push(newSourceFile);
             }
             // update fileName -> file mapping
-            for (var i = 0, len = newSourceFiles.length; i < len; ++i) {
+            for (var i = 0, len = newSourceFiles.length; i < len; i++) {
                 filesByName.set(filePaths[i], newSourceFiles[i]);
             }
             files = newSourceFiles;
@@ -38373,8 +38470,11 @@ var ts;
             // If the noEmitOnError flag is set, then check if we have any errors so far.  If so,
             // immediately bail out.  Note that we pass 'undefined' for 'sourceFile' so that we
             // get any preEmit diagnostics, not just the ones
-            if (options.noEmitOnError && getPreEmitDiagnostics(program, /*sourceFile:*/ undefined, cancellationToken).length > 0) {
-                return { diagnostics: [], sourceMaps: undefined, emitSkipped: true };
+            if (options.noEmitOnError) {
+                var preEmitDiagnostics = getPreEmitDiagnostics(program, /*sourceFile:*/ undefined, cancellationToken);
+                if (preEmitDiagnostics.length > 0) {
+                    return { diagnostics: preEmitDiagnostics, sourceMaps: undefined, emitSkipped: true };
+                }
             }
             // Create the emit resolver outside of the "emitTime" tracking code below.  That way
             // any cost associated with it (like type checking) are appropriate associated with
@@ -38803,7 +38903,7 @@ var ts;
                 file.resolvedModules = {};
                 var moduleNames = ts.map(file.imports, function (name) { return name.text; });
                 var resolutions = resolveModuleNamesWorker(moduleNames, ts.getNormalizedAbsolutePath(file.fileName, currentDirectory));
-                for (var i = 0; i < file.imports.length; ++i) {
+                for (var i = 0; i < file.imports.length; i++) {
                     var resolution = resolutions[i];
                     ts.setResolvedModule(file, moduleNames[i], resolution);
                     if (resolution && !options.noResolve) {
@@ -38987,6 +39087,9 @@ var ts;
                 !options.experimentalDecorators) {
                 programDiagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Option_0_cannot_be_specified_without_specifying_option_1, "emitDecoratorMetadata", "experimentalDecorators"));
             }
+            if (options.reactNamespace && !ts.isIdentifier(options.reactNamespace, languageVersion)) {
+                programDiagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Invalide_value_for_reactNamespace_0_is_not_a_valid_identifier, options.reactNamespace));
+            }
             // If the emit is enabled make sure that every output file is unique and not overwriting any of the input files
             if (!options.noEmit) {
                 var emitHost = getEmitHost();
@@ -39077,6 +39180,11 @@ var ts;
             paramType: ts.Diagnostics.KIND,
             description: ts.Diagnostics.Specify_JSX_code_generation_Colon_preserve_or_react,
             error: ts.Diagnostics.Argument_for_jsx_must_be_preserve_or_react
+        },
+        {
+            name: "reactNamespace",
+            type: "string",
+            description: ts.Diagnostics.Specifies_the_object_invoked_for_createElement_and_spread_when_targeting_react_JSX_emit
         },
         {
             name: "listFiles",
@@ -39347,7 +39455,8 @@ var ts;
         function parseStrings(args) {
             var i = 0;
             while (i < args.length) {
-                var s = args[i++];
+                var s = args[i];
+                i++;
                 if (s.charCodeAt(0) === 64 /* at */) {
                     parseResponseFile(s.slice(1));
                 }
@@ -39365,18 +39474,21 @@ var ts;
                         }
                         switch (opt.type) {
                             case "number":
-                                options[opt.name] = parseInt(args[i++]);
+                                options[opt.name] = parseInt(args[i]);
+                                i++;
                                 break;
                             case "boolean":
                                 options[opt.name] = true;
                                 break;
                             case "string":
-                                options[opt.name] = args[i++] || "";
+                                options[opt.name] = args[i] || "";
+                                i++;
                                 break;
                             // If not a primitive, the possible types are specified in what is effectively a map of options.
                             default:
                                 var map_1 = opt.type;
-                                var key = (args[i++] || "").toLowerCase();
+                                var key = (args[i] || "").toLowerCase();
+                                i++;
                                 if (ts.hasProperty(map_1, key)) {
                                     options[opt.name] = map_1[key];
                                 }

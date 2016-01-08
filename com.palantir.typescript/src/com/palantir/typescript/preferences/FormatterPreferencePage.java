@@ -93,6 +93,11 @@ public final class FormatterPreferencePage extends FieldEditorProjectPreferenceP
             this.getFieldEditorParent()));
 
         this.addField(new BooleanFieldEditor(
+            IPreferenceConstants.FORMATTER_INSERT_SPACE_AFTER_OPENING_AND_BEFORE_CLOSING_TEMPLATE_STRING_BRACES,
+            getResource("preferences.formatter.insert.space.after.opening.and.before.closing.template.string.braces"),
+            this.getFieldEditorParent()));
+
+        this.addField(new BooleanFieldEditor(
             IPreferenceConstants.FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS,
             getResource("preferences.formatter.place.open.brace.on.new.line.for.functions"),
             this.getFieldEditorParent()));

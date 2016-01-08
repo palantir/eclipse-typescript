@@ -152,6 +152,9 @@ public final class CompilerOptions {
     @JsonProperty("project")
     private String project;
 
+    @JsonProperty("reactNamespace")
+    private String reactNamespace;
+
     @JsonProperty("removeComments")
     private Boolean removeComments;
 

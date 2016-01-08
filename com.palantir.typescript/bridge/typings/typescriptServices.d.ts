@@ -1431,6 +1431,7 @@ declare namespace ts {
         inlineSourceMap?: boolean;
         inlineSources?: boolean;
         jsx?: JsxEmit;
+        reactNamespace?: string;
         listFiles?: boolean;
         locale?: string;
         mapRoot?: string;
@@ -1511,6 +1512,7 @@ declare namespace ts {
     interface ModuleResolutionHost {
         fileExists(fileName: string): boolean;
         readFile(fileName: string): string;
+        directoryExists?(directoryName: string): boolean;
     }
     interface ResolvedModule {
         resolvedFileName: string;
@@ -1790,6 +1792,7 @@ declare namespace ts {
         error?(s: string): void;
         useCaseSensitiveFileNames?(): boolean;
         resolveModuleNames?(moduleNames: string[], containingFile: string): ResolvedModule[];
+        directoryExists?(directoryName: string): boolean;
     }
     interface LanguageService {
         cleanupSemanticCache(): void;
@@ -1927,6 +1930,7 @@ declare namespace ts {
         InsertSpaceAfterFunctionKeywordForAnonymousFunctions: boolean;
         InsertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis: boolean;
         InsertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets: boolean;
+        InsertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces: boolean;
         PlaceOpenBraceOnNewLineForFunctions: boolean;
         PlaceOpenBraceOnNewLineForControlBlocks: boolean;
         [s: string]: boolean | number | string;
