@@ -131,6 +131,9 @@ public final class CompilerOptions {
     @JsonProperty("noImplicitReturns")
     private Boolean noImplicitReturns;
 
+    @JsonProperty("noImplicitUseStrict")
+    private Boolean noImplicitUseStrict;
+
     @JsonProperty("noLib")
     private Boolean noLib;
 
