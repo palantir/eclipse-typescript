@@ -43,7 +43,7 @@ final class SearchResultLabelProvider extends DelegatingStyledCellLabelProvider 
 
     private static final String HIGHLIGHT_BG_COLOR_NAME = "org.eclipse.search.ui.match.highlight";
     private static final Styler HIGHLIGHT_STYLE = StyledString.createColorRegistryStyler(null, HIGHLIGHT_BG_COLOR_NAME);
-    private static final CharMatcher NON_WHITESPACE_MATCHER = CharMatcher.WHITESPACE.negate();
+    private static final CharMatcher NON_WHITESPACE_MATCHER = CharMatcher.whitespace().negate();
 
     private final boolean isTree;
     private final SearchResultPage page;
