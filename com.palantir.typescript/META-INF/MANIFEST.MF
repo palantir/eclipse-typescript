@@ -23,9 +23,9 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/guava-19.0.jar,
  .,
- lib/jackson-annotations-2.2.0.jar,
- lib/jackson-core-2.2.0.jar,
- lib/jackson-databind-2.2.0.jar
+ lib/jackson-annotations-2.7.2.jar,
+ lib/jackson-core-2.7.2.jar,
+ lib/jackson-databind-2.7.2.jar
 Import-Package: org.eclipse.core.resources,
  org.eclipse.ui.part
 Eclipse-BundleShape: dir
