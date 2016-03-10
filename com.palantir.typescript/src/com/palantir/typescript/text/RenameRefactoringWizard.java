@@ -84,7 +84,7 @@ public final class RenameRefactoringWizard extends RefactoringWizard {
                 @Override
                 public void modifyText(ModifyEvent e) {
                     // check that there is no whitespace in the new name
-                    if (!CharMatcher.WHITESPACE.matchesAnyOf(MyUserInputWizardPage.this.nameField.getText())) {
+                    if (!CharMatcher.whitespace().matchesAnyOf(MyUserInputWizardPage.this.nameField.getText())) {
                         setPageComplete(true);
                     }
                 }

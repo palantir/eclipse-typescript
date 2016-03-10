@@ -50,7 +50,7 @@ import com.palantir.typescript.services.language.CompletionInfoEx;
  */
 public final class ContentAssistProcessor implements ICompletionListener, IContentAssistProcessor {
 
-    private static final CharMatcher NON_IDENTIFIER = CharMatcher.WHITESPACE.or(CharMatcher.anyOf("(){}[]+-/*=%!<>?&|,;"));
+    private static final CharMatcher NON_IDENTIFIER = CharMatcher.whitespace().or(CharMatcher.anyOf("(){}[]+-/*=%!<>?&|,;"));
 
     private final TypeScriptEditor editor;
 

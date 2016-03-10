@@ -29,7 +29,7 @@ import com.google.common.base.CharMatcher;
  */
 public final class PrefixMatcher {
 
-    private static final CharMatcher UPPER_CASE = CharMatcher.JAVA_UPPER_CASE;
+    private static final CharMatcher UPPER_CASE = CharMatcher.javaUpperCase();
 
     private final Pattern pattern;
 
