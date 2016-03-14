@@ -36,6 +36,7 @@ public interface IPreferenceConstants {
     String COMPILER_JSX = "compiler.jsx";
     String COMPILER_SOURCE_MAP = "compiler.mapSourceFiles";
     String COMPILER_MODULE = "compiler.moduleGenTarget";
+    String COMPILER_MODULE_RESOLUTION = "compiler.moduleResolution";
     String COMPILER_NO_EMIT_ON_ERROR = "compiler.noEmitOnError";
     String COMPILER_NO_FALLTHROUGH_CASES_IN_SWITCH = "compiler.noFallthroughCasesInSwitch";
     String COMPILER_NO_IMPLICIT_ANY = "compiler.noImplicitAny";
