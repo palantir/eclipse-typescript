@@ -25,12 +25,17 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ModuleResolutionKind {
 
-    NONE,
-    CLASSIC,
-    NODE_JS;
+    CLASSIC(1),
+    NODE_JS(2);
+
+    private final int value;
+
+    ModuleResolutionKind(int value) {
+        this.value = value;
+    }
 
     @JsonValue
     public int getValue() {
-        return this.ordinal();
+        return this.value;
     }
 }
