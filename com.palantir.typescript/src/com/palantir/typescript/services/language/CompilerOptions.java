@@ -201,7 +201,8 @@ public final class CompilerOptions {
         compilerOptions.inlineSources = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCES);
         compilerOptions.jsx = JsxEmit.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_JSX));
         compilerOptions.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
-        compilerOptions.moduleResolution = ModuleResolutionKind.CLASSIC;
+        compilerOptions.moduleResolution = ModuleResolutionKind
+            .valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_RESOLUTION));
         compilerOptions.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilerOptions.noFallthroughCasesInSwitch = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_NO_FALLTHROUGH_CASES_IN_SWITCH);

@@ -38,6 +38,7 @@ import com.palantir.typescript.Resources;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.JsxEmit;
 import com.palantir.typescript.services.language.ModuleKind;
+import com.palantir.typescript.services.language.ModuleResolutionKind;
 import com.palantir.typescript.services.language.ScriptTarget;
 
 /**
@@ -56,6 +57,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor inlineSourcesField;
     private ComboFieldEditor jsxField;
     private ComboFieldEditor moduleField;
+    private ComboFieldEditor moduleResolutionField;
     private BooleanFieldEditor noEmitOnErrorField;
     private BooleanFieldEditor noFallthroughCasesInSwitchField;
     private BooleanFieldEditor noImplicitAnyField;
@@ -135,6 +137,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
                 || source.equals(this.inlineSourcesField)
                 || source.equals(this.jsxField)
                 || source.equals(this.moduleField)
+                || source.equals(this.moduleResolutionField)
                 || source.equals(this.noEmitOnErrorField)
                 || source.equals(this.noFallthroughCasesInSwitchField)
                 || source.equals(this.noImplicitAnyField)
@@ -171,6 +174,13 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.createComboFieldValues(ModuleKind.values()),
             this.getFieldEditorParent());
         this.addField(this.moduleField);
+
+        this.moduleResolutionField = new ComboFieldEditor(
+            IPreferenceConstants.COMPILER_MODULE_RESOLUTION,
+            getResource("module.resolution"),
+            this.createComboFieldValues(ModuleResolutionKind.values()),
+            this.getFieldEditorParent());
+        this.addField(this.moduleResolutionField);
 
         this.noEmitOnErrorField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR,
