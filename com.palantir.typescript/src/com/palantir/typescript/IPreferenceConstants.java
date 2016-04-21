@@ -16,6 +16,7 @@
 
 package com.palantir.typescript;
 
+import org.eclipse.jdt.ui.PreferenceConstants;
 
 /**
  * The preference constants used for handling preferences.
@@ -56,8 +57,8 @@ public interface IPreferenceConstants {
     String EDITOR_CLOSE_JSDOCS = "editor.closeJSDocs";
     String EDITOR_INDENT_SIZE = "editor.indentSize";
     String EDITOR_INDENT_STYLE = "editor.indentStyle";
-    String EDITOR_MATCHING_BRACKETS = "editor.matchingBrackets";
-    String EDITOR_MATCHING_BRACKETS_COLOR = "editor.matchingBracketsColor";
+    String EDITOR_MATCHING_BRACKETS = PreferenceConstants.EDITOR_MATCHING_BRACKETS;
+    String EDITOR_MATCHING_BRACKETS_COLOR = PreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR;
 
     String FORMATTER_INSERT_SPACE_AFTER_COMMA_DELIMITER = "formatter.insertSpaceAfterCommaDelimiter";
     String FORMATTER_INSERT_SPACE_AFTER_FUNCTION_KEYWORD_FOR_ANONYMOUS_FUNCTIONS = "formatter.insertSpaceAfterFunctionKeywordForAnonymousFunctions";
