@@ -25,6 +25,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentEvent;
@@ -158,12 +159,16 @@ public final class TypeScriptEditor extends TextEditor {
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
 
+        this.characterPairMatcher = createCharacterPairMatcher();
+
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
 
             // set a project-specific preference store
             ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
+                    PreferenceConstants.getPreferenceStore(),
+                    TypeScriptPlugin.getDefault().getPreferenceStore(),
                     new ProjectPreferenceStore(project),
                     EditorsUI.getPreferenceStore(),
                     PlatformUI.getPreferenceStore()
@@ -223,11 +228,11 @@ public final class TypeScriptEditor extends TextEditor {
 
     @Override
     protected void configureSourceViewerDecorationSupport(SourceViewerDecorationSupport support) {
-        super.configureSourceViewerDecorationSupport(support);
-
         support.setCharacterPairMatcher(this.characterPairMatcher);
         support.setMatchingCharacterPainterPreferenceKeys(IPreferenceConstants.EDITOR_MATCHING_BRACKETS,
             IPreferenceConstants.EDITOR_MATCHING_BRACKETS_COLOR);
+
+        super.configureSourceViewerDecorationSupport(support);
     }
 
     @Override
@@ -286,21 +291,6 @@ public final class TypeScriptEditor extends TextEditor {
         sourceViewer.addTextInputListener(new MyListener());
 
         return sourceViewer;
-    }
-
-    @Override
-    protected void initializeEditor() {
-        super.initializeEditor();
-
-        this.characterPairMatcher = createCharacterPairMatcher();
-
-        // set the preference store
-        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
-                TypeScriptPlugin.getDefault().getPreferenceStore(),
-                EditorsUI.getPreferenceStore(),
-                PlatformUI.getPreferenceStore()
-        });
-        this.setPreferenceStore(chainedPreferenceStore);
     }
 
     @Override
