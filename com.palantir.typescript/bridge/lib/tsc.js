@@ -363,6 +363,9 @@ var ts;
         NodeFlags[NodeFlags["HasDecorators"] = 8388608] = "HasDecorators";
         NodeFlags[NodeFlags["HasParamDecorators"] = 16777216] = "HasParamDecorators";
         NodeFlags[NodeFlags["HasAsyncFunctions"] = 33554432] = "HasAsyncFunctions";
+        // This was picked out from the 'master' branch.
+        // To keep the flags consistent, we're skipping a few ahead.
+        NodeFlags[NodeFlags["HasJsxSpreadAttribute"] = 1073741824] = "HasJsxSpreadAttribute";
         NodeFlags[NodeFlags["Modifier"] = 1022] = "Modifier";
         NodeFlags[NodeFlags["AccessibilityModifier"] = 56] = "AccessibilityModifier";
         NodeFlags[NodeFlags["BlockScoped"] = 24576] = "BlockScoped";
@@ -389,7 +392,7 @@ var ts;
         // its type can be specified usign a JSDoc comment.
         ParserContextFlags[ParserContextFlags["JavaScriptFile"] = 32] = "JavaScriptFile";
         // Context flags set directly by the parser.
-        ParserContextFlags[ParserContextFlags["ParserGeneratedFlags"] = 31] = "ParserGeneratedFlags";
+        ParserContextFlags[ParserContextFlags["ParserGeneratedFlags"] = 63] = "ParserGeneratedFlags";
         // Exclude these flags when parsing a Type
         ParserContextFlags[ParserContextFlags["TypeExcludesFlags"] = 10] = "TypeExcludesFlags";
         // Context flags computed by aggregating child flags upwards.
@@ -696,6 +699,14 @@ var ts;
         NewLineKind[NewLineKind["LineFeed"] = 1] = "LineFeed";
     })(ts.NewLineKind || (ts.NewLineKind = {}));
     var NewLineKind = ts.NewLineKind;
+    (function (ScriptKind) {
+        ScriptKind[ScriptKind["Unknown"] = 0] = "Unknown";
+        ScriptKind[ScriptKind["JS"] = 1] = "JS";
+        ScriptKind[ScriptKind["JSX"] = 2] = "JSX";
+        ScriptKind[ScriptKind["TS"] = 3] = "TS";
+        ScriptKind[ScriptKind["TSX"] = 4] = "TSX";
+    })(ts.ScriptKind || (ts.ScriptKind = {}));
+    var ScriptKind = ts.ScriptKind;
     (function (ScriptTarget) {
         ScriptTarget[ScriptTarget["ES3"] = 0] = "ES3";
         ScriptTarget[ScriptTarget["ES5"] = 1] = "ES5";
@@ -1117,6 +1128,14 @@ var ts;
         return hasOwnProperty.call(map, key);
     }
     ts.hasProperty = hasProperty;
+    function getKeys(map) {
+        var keys = [];
+        for (var key in map) {
+            keys.push(key);
+        }
+        return keys;
+    }
+    ts.getKeys = getKeys;
     function getProperty(map, key) {
         return hasOwnProperty.call(map, key) ? map[key] : undefined;
     }
@@ -1574,6 +1593,32 @@ var ts;
         return pathLen > extLen && path.substr(pathLen - extLen, extLen) === extension;
     }
     ts.fileExtensionIs = fileExtensionIs;
+    function ensureScriptKind(fileName, scriptKind) {
+        // Using scriptKind as a condition handles both:
+        // - 'scriptKind' is unspecified and thus it is `undefined`
+        // - 'scriptKind' is set and it is `Unknown` (0)
+        // If the 'scriptKind' is 'undefined' or 'Unknown' then we attempt
+        // to get the ScriptKind from the file name. If it cannot be resolved
+        // from the file name then the default 'TS' script kind is returned.
+        return (scriptKind || getScriptKindFromFileName(fileName)) || 3 /* TS */;
+    }
+    ts.ensureScriptKind = ensureScriptKind;
+    function getScriptKindFromFileName(fileName) {
+        var ext = fileName.substr(fileName.lastIndexOf("."));
+        switch (ext.toLowerCase()) {
+            case ".js":
+                return 1 /* JS */;
+            case ".jsx":
+                return 2 /* JSX */;
+            case ".ts":
+                return 3 /* TS */;
+            case ".tsx":
+                return 4 /* TSX */;
+            default:
+                return 0 /* Unknown */;
+        }
+    }
+    ts.getScriptKindFromFileName = getScriptKindFromFileName;
     /**
      *  List of supported extensions in order of file resolution precedence.
      */
@@ -2048,15 +2093,20 @@ var ts;
                         var current = files_2[_i];
                         var name_3 = ts.combinePaths(path, current);
                         if (!ts.contains(exclude, getCanonicalPath(name_3))) {
-                            var stat = _fs.statSync(name_3);
-                            if (stat.isFile()) {
-                                if (!extension || ts.fileExtensionIs(name_3, extension)) {
-                                    result.push(name_3);
+                            // fs.statSync would throw an exception if the file is a symlink
+                            // whose linked file doesn't exist.
+                            try {
+                                var stat = _fs.statSync(name_3);
+                                if (stat.isFile()) {
+                                    if (!extension || ts.fileExtensionIs(name_3, extension)) {
+                                        result.push(name_3);
+                                    }
+                                }
+                                else if (stat.isDirectory()) {
+                                    directories.push(name_3);
                                 }
                             }
-                            else if (stat.isDirectory()) {
-                                directories.push(name_3);
-                            }
+                            catch (e) { }
                         }
                     }
                     for (var _a = 0, directories_1 = directories; _a < directories_1.length; _a++) {
@@ -2799,6 +2849,7 @@ var ts;
         Only_amd_and_system_modules_are_supported_alongside_0: { code: 6082, category: ts.DiagnosticCategory.Error, key: "Only_amd_and_system_modules_are_supported_alongside_0_6082", message: "Only 'amd' and 'system' modules are supported alongside --{0}." },
         Allow_javascript_files_to_be_compiled: { code: 6083, category: ts.DiagnosticCategory.Message, key: "Allow_javascript_files_to_be_compiled_6083", message: "Allow javascript files to be compiled." },
         Specifies_the_object_invoked_for_createElement_and_spread_when_targeting_react_JSX_emit: { code: 6084, category: ts.DiagnosticCategory.Message, key: "Specifies_the_object_invoked_for_createElement_and_spread_when_targeting_react_JSX_emit_6084", message: "Specifies the object invoked for createElement and __spread when targeting 'react' JSX emit" },
+        Option_0_should_have_array_of_strings_as_a_value: { code: 6103, category: ts.DiagnosticCategory.Error, key: "Option_0_should_have_array_of_strings_as_a_value_6103", message: "Option '{0}' should have array of strings as a value." },
         Do_not_emit_use_strict_directives_in_module_output: { code: 6112, category: ts.DiagnosticCategory.Message, key: "Do_not_emit_use_strict_directives_in_module_output_6112", message: "Do not emit 'use strict' directives in module output." },
         Variable_0_implicitly_has_an_1_type: { code: 7005, category: ts.DiagnosticCategory.Error, key: "Variable_0_implicitly_has_an_1_type_7005", message: "Variable '{0}' implicitly has an '{1}' type." },
         Parameter_0_implicitly_has_an_1_type: { code: 7006, category: ts.DiagnosticCategory.Error, key: "Parameter_0_implicitly_has_an_1_type_7006", message: "Parameter '{0}' implicitly has an '{1}' type." },
@@ -2849,7 +2900,9 @@ var ts;
         An_unary_expression_with_the_0_operator_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Consider_enclosing_the_expression_in_parentheses: { code: 17006, category: ts.DiagnosticCategory.Error, key: "An_unary_expression_with_the_0_operator_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_ex_17006", message: "An unary expression with the '{0}' operator is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses." },
         A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Consider_enclosing_the_expression_in_parentheses: { code: 17007, category: ts.DiagnosticCategory.Error, key: "A_type_assertion_expression_is_not_allowed_in_the_left_hand_side_of_an_exponentiation_expression_Con_17007", message: "A type assertion expression is not allowed in the left-hand side of an exponentiation expression. Consider enclosing the expression in parentheses." },
         JSX_element_0_has_no_corresponding_closing_tag: { code: 17008, category: ts.DiagnosticCategory.Error, key: "JSX_element_0_has_no_corresponding_closing_tag_17008", message: "JSX element '{0}' has no corresponding closing tag." },
-        super_must_be_called_before_accessing_this_in_the_constructor_of_a_derived_class: { code: 17009, category: ts.DiagnosticCategory.Error, key: "super_must_be_called_before_accessing_this_in_the_constructor_of_a_derived_class_17009", message: "'super' must be called before accessing 'this' in the constructor of a derived class." }
+        super_must_be_called_before_accessing_this_in_the_constructor_of_a_derived_class: { code: 17009, category: ts.DiagnosticCategory.Error, key: "super_must_be_called_before_accessing_this_in_the_constructor_of_a_derived_class_17009", message: "'super' must be called before accessing 'this' in the constructor of a derived class." },
+        Unknown_typing_option_0: { code: 17010, category: ts.DiagnosticCategory.Error, key: "Unknown_typing_option_0_17010", message: "Unknown typing option '{0}'." },
+        Too_many_JavaScript_files_in_the_project_Consider_specifying_the_exclude_setting_in_project_configuration_to_limit_included_source_folders_The_likely_folder_to_exclude_is_0_To_disable_the_project_size_limit_set_the_disableSizeLimit_compiler_option_to_true: { code: 17012, category: ts.DiagnosticCategory.Error, key: "Too_many_JavaScript_files_in_the_project_Consider_specifying_the_exclude_setting_in_project_configur_17012", message: "Too many JavaScript files in the project. Consider specifying the 'exclude' setting in project configuration to limit included source folders. The likely folder to exclude is '{0}'. To disable the project size limit, set the 'disableSizeLimit' compiler option to 'true'." }
     };
 })(ts || (ts = {}));
 /// <reference path="core.ts"/>
@@ -5528,6 +5581,9 @@ var ts;
     /// Given a BinaryExpression, returns SpecialPropertyAssignmentKind for the various kinds of property
     /// assignments we treat as special in the binder
     function getSpecialPropertyAssignmentKind(expression) {
+        if (!isInJavaScriptFile(expression)) {
+            return 0 /* None */;
+        }
         if (expression.kind !== 184 /* BinaryExpression */) {
             return 0 /* None */;
         }
@@ -6787,6 +6843,10 @@ var ts;
         return ts.forEach(ts.supportedJavascriptExtensions, function (extension) { return ts.fileExtensionIs(fileName, extension); });
     }
     ts.hasJavaScriptFileExtension = hasJavaScriptFileExtension;
+    function hasTypeScriptFileExtension(fileName) {
+        return ts.forEach(ts.supportedTypeScriptExtensions, function (extension) { return ts.fileExtensionIs(fileName, extension); });
+    }
+    ts.hasTypeScriptFileExtension = hasTypeScriptFileExtension;
     /**
      * Replace each instance of non-ascii characters by one, two, three, or four escape sequences
      * representing the UTF-8 encoding of the character, and return the expanded char code list.
@@ -7537,10 +7597,10 @@ var ts;
         }
     }
     ts.forEachChild = forEachChild;
-    function createSourceFile(fileName, sourceText, languageVersion, setParentNodes) {
+    function createSourceFile(fileName, sourceText, languageVersion, setParentNodes, scriptKind) {
         if (setParentNodes === void 0) { setParentNodes = false; }
         var start = new Date().getTime();
-        var result = Parser.parseSourceFile(fileName, sourceText, languageVersion, /*syntaxCursor*/ undefined, setParentNodes);
+        var result = Parser.parseSourceFile(fileName, sourceText, languageVersion, /*syntaxCursor*/ undefined, setParentNodes, scriptKind);
         ts.parseTime += new Date().getTime() - start;
         return result;
     }
@@ -7665,19 +7725,19 @@ var ts;
         // Note: any errors at the end of the file that do not precede a regular node, should get
         // attached to the EOF token.
         var parseErrorBeforeNextFinishedNode = false;
-        function parseSourceFile(fileName, _sourceText, languageVersion, _syntaxCursor, setParentNodes) {
-            var isJavaScriptFile = ts.hasJavaScriptFileExtension(fileName) || _sourceText.lastIndexOf("// @language=javascript", 0) === 0;
-            initializeState(fileName, _sourceText, languageVersion, isJavaScriptFile, _syntaxCursor);
-            var result = parseSourceFileWorker(fileName, languageVersion, setParentNodes);
+        function parseSourceFile(fileName, _sourceText, languageVersion, _syntaxCursor, setParentNodes, scriptKind) {
+            scriptKind = ts.ensureScriptKind(fileName, scriptKind);
+            initializeState(fileName, _sourceText, languageVersion, _syntaxCursor, scriptKind);
+            var result = parseSourceFileWorker(fileName, languageVersion, setParentNodes, scriptKind);
             clearState();
             return result;
         }
         Parser.parseSourceFile = parseSourceFile;
-        function getLanguageVariant(fileName) {
+        function getLanguageVariant(scriptKind) {
             // .tsx and .jsx files are treated as jsx language variant.
-            return ts.fileExtensionIs(fileName, ".tsx") || ts.fileExtensionIs(fileName, ".jsx") || ts.fileExtensionIs(fileName, ".js") ? 1 /* JSX */ : 0 /* Standard */;
+            return scriptKind === 4 /* TSX */ || scriptKind === 2 /* JSX */ || scriptKind === 1 /* JS */ ? 1 /* JSX */ : 0 /* Standard */;
         }
-        function initializeState(fileName, _sourceText, languageVersion, isJavaScriptFile, _syntaxCursor) {
+        function initializeState(fileName, _sourceText, languageVersion, _syntaxCursor, scriptKind) {
             NodeConstructor = ts.objectAllocator.getNodeConstructor();
             SourceFileConstructor = ts.objectAllocator.getSourceFileConstructor();
             sourceText = _sourceText;
@@ -7687,13 +7747,13 @@ var ts;
             identifiers = {};
             identifierCount = 0;
             nodeCount = 0;
-            contextFlags = isJavaScriptFile ? 32 /* JavaScriptFile */ : 0 /* None */;
+            contextFlags = scriptKind === 1 /* JS */ || scriptKind === 2 /* JSX */ ? 32 /* JavaScriptFile */ : 0 /* None */;
             parseErrorBeforeNextFinishedNode = false;
             // Initialize and prime the scanner before parsing the source elements.
             scanner.setText(sourceText);
             scanner.setOnError(scanError);
             scanner.setScriptTarget(languageVersion);
-            scanner.setLanguageVariant(getLanguageVariant(fileName));
+            scanner.setLanguageVariant(getLanguageVariant(scriptKind));
         }
         function clearState() {
             // Clear out the text the scanner is pointing at, so it doesn't keep anything alive unnecessarily.
@@ -7706,8 +7766,8 @@ var ts;
             syntaxCursor = undefined;
             sourceText = undefined;
         }
-        function parseSourceFileWorker(fileName, languageVersion, setParentNodes) {
-            sourceFile = createSourceFile(fileName, languageVersion);
+        function parseSourceFileWorker(fileName, languageVersion, setParentNodes, scriptKind) {
+            sourceFile = createSourceFile(fileName, languageVersion, scriptKind);
             if (contextFlags & 32 /* JavaScriptFile */) {
                 sourceFile.parserContextFlags = 32 /* JavaScriptFile */;
             }
@@ -7764,7 +7824,7 @@ var ts;
             }
         }
         Parser.fixupParentReferences = fixupParentReferences;
-        function createSourceFile(fileName, languageVersion) {
+        function createSourceFile(fileName, languageVersion, scriptKind) {
             // code from createNode is inlined here so createNode won't have to deal with special case of creating source files
             // this is quite rare comparing to other nodes and createNode should be as fast as possible
             var sourceFile = new SourceFileConstructor(251 /* SourceFile */, /*pos*/ 0, /* end */ sourceText.length);
@@ -7774,7 +7834,8 @@ var ts;
             sourceFile.languageVersion = languageVersion;
             sourceFile.fileName = ts.normalizePath(fileName);
             sourceFile.flags = ts.fileExtensionIs(sourceFile.fileName, ".d.ts") ? 4096 /* DeclarationFile */ : 0;
-            sourceFile.languageVariant = getLanguageVariant(sourceFile.fileName);
+            sourceFile.languageVariant = getLanguageVariant(scriptKind);
+            sourceFile.scriptKind = scriptKind;
             return sourceFile;
         }
         function setContextFlag(val, flag) {
@@ -8440,7 +8501,7 @@ var ts;
             // differently depending on what mode it is in.
             //
             // This also applies to all our other context flags as well.
-            var nodeContextFlags = node.parserContextFlags & 31 /* ParserGeneratedFlags */;
+            var nodeContextFlags = node.parserContextFlags & 63 /* ParserGeneratedFlags */;
             if (nodeContextFlags !== contextFlags) {
                 return undefined;
             }
@@ -12080,7 +12141,7 @@ var ts;
             }
             JSDocParser.isJSDocType = isJSDocType;
             function parseJSDocTypeExpressionForTests(content, start, length) {
-                initializeState("file.js", content, 2 /* Latest */, /*isJavaScriptFile*/ true, /*_syntaxCursor:*/ undefined);
+                initializeState("file.js", content, 2 /* Latest */, /*_syntaxCursor:*/ undefined, 1 /* JS */);
                 scanner.setText(content, start, length);
                 token = scanner.scan();
                 var jsDocTypeExpression = parseJSDocTypeExpression();
@@ -12347,7 +12408,7 @@ var ts;
                 }
             }
             function parseIsolatedJSDocComment(content, start, length) {
-                initializeState("file.js", content, 2 /* Latest */, /*isJavaScriptFile*/ true, /*_syntaxCursor:*/ undefined);
+                initializeState("file.js", content, 2 /* Latest */, /*_syntaxCursor:*/ undefined, 1 /* JS */);
                 sourceFile = { languageVariant: 0 /* Standard */, text: content };
                 var jsDocComment = parseJSDocCommentWorker(start, length);
                 var diagnostics = parseDiagnostics;
@@ -12617,7 +12678,7 @@ var ts;
             if (sourceFile.statements.length === 0) {
                 // If we don't have any statements in the current source file, then there's no real
                 // way to incrementally parse.  So just do a full parse instead.
-                return Parser.parseSourceFile(sourceFile.fileName, newText, sourceFile.languageVersion, /*syntaxCursor*/ undefined, /*setParentNodes*/ true);
+                return Parser.parseSourceFile(sourceFile.fileName, newText, sourceFile.languageVersion, /*syntaxCursor*/ undefined, /*setParentNodes*/ true, sourceFile.scriptKind);
             }
             // Make sure we're not trying to incrementally update a source file more than once.  Once
             // we do an update the original source file is considered unusbale from that point onwards.
@@ -12673,7 +12734,7 @@ var ts;
             // inconsistent tree.  Setting the parents on the new tree should be very fast.  We
             // will immediately bail out of walking any subtrees when we can see that their parents
             // are already correct.
-            var result = Parser.parseSourceFile(sourceFile.fileName, newText, sourceFile.languageVersion, syntaxCursor, /*setParentNodes*/ true);
+            var result = Parser.parseSourceFile(sourceFile.fileName, newText, sourceFile.languageVersion, syntaxCursor, /*setParentNodes*/ true, sourceFile.scriptKind);
             return result;
         }
         IncrementalParser.updateSourceFile = updateSourceFile;
@@ -13189,6 +13250,7 @@ var ts;
         var hasAsyncFunctions;
         var hasDecorators;
         var hasParameterDecorators;
+        var hasJsxSpreadAttribute;
         // If this file is an external module, then it is automatically in strict-mode according to
         // ES6.  If it is not an external module, then we'll determine if it is in strict mode or
         // not depending on if we see "use strict" in certain places (or if we hit a class/namespace).
@@ -13222,6 +13284,7 @@ var ts;
             hasAsyncFunctions = false;
             hasDecorators = false;
             hasParameterDecorators = false;
+            hasJsxSpreadAttribute = false;
         }
         return bindSourceFile;
         function createSymbol(flags, name) {
@@ -13514,6 +13577,9 @@ var ts;
                 if (hasAsyncFunctions) {
                     flags |= 33554432 /* HasAsyncFunctions */;
                 }
+                if (hasJsxSpreadAttribute) {
+                    flags |= 1073741824 /* HasJsxSpreadAttribute */;
+                }
             }
             node.flags = flags;
             if (saveState) {
@@ -13725,6 +13791,7 @@ var ts;
                 case 146 /* GetAccessor */:
                 case 147 /* SetAccessor */:
                 case 153 /* FunctionType */:
+                case 264 /* JSDocFunctionType */:
                 case 154 /* ConstructorType */:
                 case 176 /* FunctionExpression */:
                 case 177 /* ArrowFunction */:
@@ -14202,6 +14269,9 @@ var ts;
                     return bindPropertyOrMethodOrAccessor(node, 4 /* Property */, 107455 /* PropertyExcludes */);
                 case 250 /* EnumMember */:
                     return bindPropertyOrMethodOrAccessor(node, 8 /* EnumMember */, 107455 /* EnumMemberExcludes */);
+                case 242 /* JsxSpreadAttribute */:
+                    hasJsxSpreadAttribute = true;
+                    return;
                 case 148 /* CallSignature */:
                 case 149 /* ConstructSignature */:
                 case 150 /* IndexSignature */:
@@ -14330,7 +14400,7 @@ var ts;
         function bindModuleExportsAssignment(node) {
             // 'module.exports = expr' assignment
             setCommonJsModuleIndicator(node);
-            bindExportAssignment(node);
+            declareSymbol(file.symbol.exports, file.symbol, node, 4 /* Property */ | 7340032 /* Export */ | 512 /* ValueModule */, 0 /* None */);
         }
         function bindThisPropertyAssignment(node) {
             // Declare a 'member' in case it turns out the container was an ES5 class
@@ -14360,7 +14430,8 @@ var ts;
                 funcSymbol.members = {};
             }
             // Declare the method/property
-            declareSymbol(funcSymbol.members, funcSymbol, leftSideOfAssignment, 4 /* Property */, 107455 /* PropertyExcludes */);
+            // It's acceptable for multiple prototype property assignments of the same identifier to occur
+            declareSymbol(funcSymbol.members, funcSymbol, leftSideOfAssignment, 4 /* Property */, 107455 /* PropertyExcludes */ & ~4 /* Property */);
         }
         function bindCallExpression(node) {
             // We're only inspecting call expressions to detect CommonJS modules, so we can skip
@@ -15419,7 +15490,9 @@ var ts;
         function getTargetOfImportClause(node) {
             var moduleSymbol = resolveExternalModuleName(node, node.parent.moduleSpecifier);
             if (moduleSymbol) {
-                var exportDefaultSymbol = resolveSymbol(moduleSymbol.exports["default"]);
+                var exportDefaultSymbol = moduleSymbol.exports["export="] ?
+                    getPropertyOfType(getTypeOfSymbol(moduleSymbol.exports["export="]), "default") :
+                    resolveSymbol(moduleSymbol.exports["default"]);
                 if (!exportDefaultSymbol && !allowSyntheticDefaultImports) {
                     error(node.name, ts.Diagnostics.Module_0_has_no_default_export, symbolToString(moduleSymbol));
                 }
@@ -15488,8 +15561,15 @@ var ts;
             if (targetSymbol) {
                 var name_9 = specifier.propertyName || specifier.name;
                 if (name_9.text) {
+                    var symbolFromVariable = void 0;
+                    // First check if module was specified with "export=". If so, get the member from the resolved type
+                    if (moduleSymbol && moduleSymbol.exports && moduleSymbol.exports["export="]) {
+                        symbolFromVariable = getPropertyOfType(getTypeOfSymbol(targetSymbol), name_9.text);
+                    }
+                    else {
+                        symbolFromVariable = getPropertyOfVariable(targetSymbol, name_9.text);
+                    }
                     var symbolFromModule = getExportOfModule(targetSymbol, name_9.text);
-                    var symbolFromVariable = getPropertyOfVariable(targetSymbol, name_9.text);
                     var symbol = symbolFromModule && symbolFromVariable ?
                         combineValueAndTypeSymbols(symbolFromVariable, symbolFromModule) :
                         symbolFromModule || symbolFromVariable;
@@ -19383,7 +19463,7 @@ var ts;
             for (var i = 0; i < checkCount; i++) {
                 var s = i < sourceMax ? getTypeOfSymbol(sourceParams[i]) : getRestTypeOfSignature(source);
                 var t = i < targetMax ? getTypeOfSymbol(targetParams[i]) : getRestTypeOfSignature(target);
-                var related = compareTypes(t, s, /*reportErrors*/ false) || compareTypes(s, t, reportErrors);
+                var related = compareTypes(s, t, /*reportErrors*/ false) || compareTypes(t, s, reportErrors);
                 if (!related) {
                     if (reportErrors) {
                         errorReporter(ts.Diagnostics.Types_of_parameters_0_and_1_are_incompatible, sourceParams[i < sourceMax ? i : sourceMax].name, targetParams[i < targetMax ? i : targetMax].name);
@@ -20508,8 +20588,10 @@ var ts;
         function inferTypes(context, source, target) {
             var sourceStack;
             var targetStack;
+            var maxDepth = 5;
             var depth = 0;
             var inferiority = 0;
+            var visited = {};
             inferFromTypes(source, target);
             function isInProcess(source, target) {
                 for (var i = 0; i < depth; i++) {
@@ -20635,9 +20717,19 @@ var ts;
                         if (isInProcess(source, target)) {
                             return;
                         }
+                        // we delibirately limit the depth we examine to infer types: this speeds up the overall inference process
+                        // and user rarely expects inferences to be made from the deeply nested constituents.
+                        if (depth > maxDepth) {
+                            return;
+                        }
                         if (isDeeplyNestedGeneric(source, sourceStack, depth) && isDeeplyNestedGeneric(target, targetStack, depth)) {
                             return;
                         }
+                        var key = source.id + "," + target.id;
+                        if (ts.hasProperty(visited, key)) {
+                            return;
+                        }
+                        visited[key] = true;
                         if (depth === 0) {
                             sourceStack = [];
                             targetStack = [];
@@ -24282,6 +24374,7 @@ var ts;
             }
             // The identityMapper object is used to indicate that function expressions are wildcards
             if (contextualMapper === identityMapper && isContextSensitive(node)) {
+                checkNodeDeferred(node);
                 return anyFunctionType;
             }
             var links = getNodeLinks(node);
@@ -30528,7 +30621,7 @@ var ts;
     function getDeclarationDiagnostics(host, resolver, targetSourceFile) {
         var declarationDiagnostics = ts.createDiagnosticCollection();
         ts.forEachExpectedEmitFile(host, getDeclarationDiagnosticsFromFile, targetSourceFile);
-        return declarationDiagnostics.getDiagnostics(targetSourceFile.fileName);
+        return declarationDiagnostics.getDiagnostics(targetSourceFile ? targetSourceFile.fileName : undefined);
         function getDeclarationDiagnosticsFromFile(_a, sources, isBundledEmit) {
             var declarationFilePath = _a.declarationFilePath;
             emitDeclarations(host, resolver, declarationDiagnostics, declarationFilePath, sources, isBundledEmit);
@@ -32348,6 +32441,7 @@ var ts;
     function emitFiles(resolver, host, targetSourceFile) {
         // emit output for the __extends helper function
         var extendsHelper = "\nvar __extends = (this && this.__extends) || function (d, b) {\n    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];\n    function __() { this.constructor = d; }\n    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());\n};";
+        var assignHelper = "\nvar __assign = (this && this.__assign) || Object.assign || function(t) {\n    for (var s, i = 1, n = arguments.length; i < n; i++) {\n        s = arguments[i];\n        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))\n            t[p] = s[p];\n    }\n    return t;\n};";
         // emit output for the __decorate helper function
         var decorateHelper = "\nvar __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {\n    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;\n    if (typeof Reflect === \"object\" && typeof Reflect.decorate === \"function\") r = Reflect.decorate(decorators, target, key, desc);\n    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;\n    return c > 3 && r && Object.defineProperty(target, key, r), r;\n};";
         // emit output for the __metadata helper function
@@ -32437,6 +32531,7 @@ var ts;
             var decoratedClassAliases;
             var convertedLoopState;
             var extendsEmitted;
+            var assignEmitted;
             var decorateEmitted;
             var paramEmitted;
             var awaiterEmitted;
@@ -32507,6 +32602,7 @@ var ts;
                 decorateEmitted = false;
                 paramEmitted = false;
                 awaiterEmitted = false;
+                assignEmitted = false;
                 tempFlags = 0;
                 tempVariables = undefined;
                 tempParameters = undefined;
@@ -33063,11 +33159,10 @@ var ts;
                     }
                     else {
                         // Either emit one big object literal (no spread attribs), or
-                        // a call to React.__spread
+                        // a call to the __assign helper
                         var attrs = openingNode.attributes;
                         if (ts.forEach(attrs, function (attr) { return attr.kind === 242 /* JsxSpreadAttribute */; })) {
-                            emitExpressionIdentifier(syntheticReactRef);
-                            write(".__spread(");
+                            write("__assign(");
                             var haveOpenedObjectLiteral = false;
                             for (var i = 0; i < attrs.length; i++) {
                                 if (attrs[i].kind === 242 /* JsxSpreadAttribute */) {
@@ -38748,9 +38843,13 @@ var ts;
                 if (!compilerOptions.noEmitHelpers) {
                     // Only Emit __extends function when target ES5.
                     // For target ES6 and above, we can emit classDeclaration as is.
-                    if ((languageVersion < 2 /* ES6 */) && (!extendsEmitted && node.flags & 4194304 /* HasClassExtends */)) {
+                    if (languageVersion < 2 /* ES6 */ && !extendsEmitted && node.flags & 4194304 /* HasClassExtends */) {
                         writeLines(extendsHelper);
                         extendsEmitted = true;
+                    }
+                    if (compilerOptions.jsx !== 1 /* Preserve */ && !assignEmitted && (node.flags & 1073741824 /* HasJsxSpreadAttribute */)) {
+                        writeLines(assignHelper);
+                        assignEmitted = true;
                     }
                     if (!decorateEmitted && node.flags & 8388608 /* HasDecorators */) {
                         writeLines(decorateHelper);
@@ -39238,9 +39337,10 @@ var ts;
     /* @internal */ ts.emitTime = 0;
     /* @internal */ ts.ioReadTime = 0;
     /* @internal */ ts.ioWriteTime = 0;
+    /* @internal */ ts.maxProgramSizeForNonTsFiles = 20 * 1024 * 1024;
     /** The version of the TypeScript compiler release */
     var emptyArray = [];
-    ts.version = "1.8.2";
+    ts.version = "1.8.10";
     function findConfigFile(searchPath, fileExists) {
         var fileName = "tsconfig.json";
         while (true) {
@@ -39532,6 +39632,8 @@ var ts;
         var diagnosticsProducingTypeChecker;
         var noDiagnosticsTypeChecker;
         var classifiableNames;
+        var programSizeLimitExceeded = -1;
+        var programSizeForNonTsFiles = 0;
         var skipDefaultLib = options.noLib;
         var supportedExtensions = ts.getSupportedExtensions(options);
         var start = new Date().getTime();
@@ -39573,7 +39675,8 @@ var ts;
                 (oldOptions.target !== options.target) ||
                 (oldOptions.noLib !== options.noLib) ||
                 (oldOptions.jsx !== options.jsx) ||
-                (oldOptions.allowJs !== options.allowJs)) {
+                (oldOptions.allowJs !== options.allowJs) ||
+                (oldOptions.disableSizeLimit !== options.disableSizeLimit)) {
                 oldProgram = undefined;
             }
         }
@@ -39614,6 +39717,9 @@ var ts;
         verifyCompilerOptions();
         ts.programTime += new Date().getTime() - start;
         return program;
+        function exceedProgramSizeLimit() {
+            return !options.disableSizeLimit && programSizeForNonTsFiles === programSizeLimitExceeded;
+        }
         function getCommonSourceDirectory() {
             if (typeof commonSourceDirectory === "undefined") {
                 if (options.rootDir && checkSourceFilesBelongToPath(files, options.rootDir)) {
@@ -39805,7 +39911,14 @@ var ts;
             return getDiagnosticsHelper(sourceFile, getSemanticDiagnosticsForFile, cancellationToken);
         }
         function getDeclarationDiagnostics(sourceFile, cancellationToken) {
-            return getDiagnosticsHelper(sourceFile, getDeclarationDiagnosticsForFile, cancellationToken);
+            var options = program.getCompilerOptions();
+            // collect diagnostics from the program only once if either no source file was specified or out/outFile is set (bundled emit)
+            if (!sourceFile || options.out || options.outFile) {
+                return getDeclarationDiagnosticsWorker(sourceFile, cancellationToken);
+            }
+            else {
+                return getDiagnosticsHelper(sourceFile, getDeclarationDiagnosticsForFile, cancellationToken);
+            }
         }
         function getSyntacticDiagnosticsForFile(sourceFile, cancellationToken) {
             return sourceFile.parseDiagnostics;
@@ -39999,15 +40112,16 @@ var ts;
                 }
             });
         }
-        function getDeclarationDiagnosticsForFile(sourceFile, cancellationToken) {
+        function getDeclarationDiagnosticsWorker(sourceFile, cancellationToken) {
             return runWithCancellationToken(function () {
-                if (!ts.isDeclarationFile(sourceFile)) {
-                    var resolver = getDiagnosticsProducingTypeChecker().getEmitResolver(sourceFile, cancellationToken);
-                    // Don't actually write any files since we're just getting diagnostics.
-                    var writeFile_1 = function () { };
-                    return ts.getDeclarationDiagnostics(getEmitHost(writeFile_1), resolver, sourceFile);
-                }
+                var resolver = getDiagnosticsProducingTypeChecker().getEmitResolver(sourceFile, cancellationToken);
+                // Don't actually write any files since we're just getting diagnostics.
+                var writeFile = function () { };
+                return ts.getDeclarationDiagnostics(getEmitHost(writeFile), resolver, sourceFile);
             });
+        }
+        function getDeclarationDiagnosticsForFile(sourceFile, cancellationToken) {
+            return ts.isDeclarationFile(sourceFile) ? [] : getDeclarationDiagnosticsWorker(sourceFile, cancellationToken);
         }
         function getOptionsDiagnostics() {
             var allDiagnostics = [];
@@ -40137,7 +40251,7 @@ var ts;
                     }
                 }
             }
-            if (diagnostic) {
+            if (diagnostic && !exceedProgramSizeLimit()) {
                 if (refFile !== undefined && refEnd !== undefined && refPos !== undefined) {
                     fileProcessingDiagnostics.add(ts.createFileDiagnostic.apply(void 0, [refFile, refPos, refEnd - refPos, diagnostic].concat(diagnosticArgument)));
                 }
@@ -40165,6 +40279,10 @@ var ts;
                 }
                 return file_1;
             }
+            var isNonTsFile = !ts.hasTypeScriptFileExtension(fileName);
+            if (isNonTsFile && exceedProgramSizeLimit()) {
+                return undefined;
+            }
             // We haven't looked for this file, do so now and cache result
             var file = host.getSourceFile(fileName, options.target, function (hostErrorMessage) {
                 if (refFile !== undefined && refPos !== undefined && refEnd !== undefined) {
@@ -40174,6 +40292,24 @@ var ts;
                     fileProcessingDiagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Cannot_read_file_0_Colon_1, fileName, hostErrorMessage));
                 }
             });
+            if (isNonTsFile && !options.disableSizeLimit && file && file.text) {
+                programSizeForNonTsFiles += file.text.length;
+                if (programSizeForNonTsFiles > ts.maxProgramSizeForNonTsFiles) {
+                    // If the program size limit was reached when processing a file, this file is
+                    // likely in the problematic folder than contains too many files.
+                    // Normally the folder is one level down from the commonSourceDirectory, for example,
+                    // if the commonSourceDirectory is "/src/", and the last processed path was "/src/node_modules/a/b.js",
+                    // we should show in the error message "/src/node_modules/".
+                    var commonSourceDirectory_1 = getCommonSourceDirectory();
+                    var rootLevelDirectory = path.substring(0, Math.max(commonSourceDirectory_1.length, path.indexOf(ts.directorySeparator, commonSourceDirectory_1.length)));
+                    if (rootLevelDirectory[rootLevelDirectory.length - 1] !== ts.directorySeparator) {
+                        rootLevelDirectory += ts.directorySeparator;
+                    }
+                    programDiagnostics.add(ts.createCompilerDiagnostic(ts.Diagnostics.Too_many_JavaScript_files_in_the_project_Consider_specifying_the_exclude_setting_in_project_configuration_to_limit_included_source_folders_The_likely_folder_to_exclude_is_0_To_disable_the_project_size_limit_set_the_disableSizeLimit_compiler_option_to_true, rootLevelDirectory));
+                    programSizeForNonTsFiles = programSizeLimitExceeded;
+                    return undefined;
+                }
+            }
             filesByName.set(path, file);
             if (file) {
                 file.path = path;
@@ -40754,6 +40890,10 @@ var ts;
             name: "noCustomAsyncPromise",
             type: "boolean",
             experimental: true
+        },
+        {
+            name: "disableSizeLimit",
+            type: "boolean"
         }
     ];
     var optionNameMapCache;
@@ -40943,6 +41083,7 @@ var ts;
         return {
             options: options,
             fileNames: getFileNames(),
+            typingOptions: getTypingOptions(),
             errors: errors
         };
         function getFileNames() {
@@ -40963,7 +41104,7 @@ var ts;
                 }
                 else {
                     // by default exclude node_modules, and any specificied output directory
-                    exclude = ["node_modules"];
+                    exclude = ["node_modules", "bower_components"];
                     var outDir = json["compilerOptions"] && json["compilerOptions"]["outDir"];
                     if (outDir) {
                         exclude.push(outDir);
@@ -41001,6 +41142,34 @@ var ts;
                 }
             }
             return fileNames;
+        }
+        function getTypingOptions() {
+            var options = ts.getBaseFileName(configFileName) === "jsconfig.json"
+                ? { enableAutoDiscovery: true, include: [], exclude: [] }
+                : { enableAutoDiscovery: false, include: [], exclude: [] };
+            var jsonTypingOptions = json["typingOptions"];
+            if (jsonTypingOptions) {
+                for (var id in jsonTypingOptions) {
+                    if (id === "enableAutoDiscovery") {
+                        if (typeof jsonTypingOptions[id] === "boolean") {
+                            options.enableAutoDiscovery = jsonTypingOptions[id];
+                        }
+                        else {
+                            errors.push(ts.createCompilerDiagnostic(ts.Diagnostics.Unknown_typing_option_0, id));
+                        }
+                    }
+                    else if (id === "include") {
+                        options.include = convertJsonOptionToStringArray(id, jsonTypingOptions[id], errors);
+                    }
+                    else if (id === "exclude") {
+                        options.exclude = convertJsonOptionToStringArray(id, jsonTypingOptions[id], errors);
+                    }
+                    else {
+                        errors.push(ts.createCompilerDiagnostic(ts.Diagnostics.Unknown_typing_option_0, id));
+                    }
+                }
+            }
+            return options;
         }
     }
     ts.parseJsonConfigFileContent = parseJsonConfigFileContent;
@@ -41050,6 +41219,30 @@ var ts;
         return { options: options, errors: errors };
     }
     ts.convertCompilerOptionsFromJson = convertCompilerOptionsFromJson;
+    function convertJsonOptionToStringArray(optionName, optionJson, errors, func) {
+        var items = [];
+        var invalidOptionType = false;
+        if (!ts.isArray(optionJson)) {
+            invalidOptionType = true;
+        }
+        else {
+            for (var _i = 0, _a = optionJson; _i < _a.length; _i++) {
+                var element = _a[_i];
+                if (typeof element === "string") {
+                    var item = func ? func(element) : element;
+                    items.push(item);
+                }
+                else {
+                    invalidOptionType = true;
+                    break;
+                }
+            }
+        }
+        if (invalidOptionType) {
+            errors.push(ts.createCompilerDiagnostic(ts.Diagnostics.Option_0_should_have_array_of_strings_as_a_value, optionName));
+        }
+        return items;
+    }
 })(ts || (ts = {}));
 /// <reference path="program.ts"/>
 /// <reference path="commandLineParser.ts"/>
