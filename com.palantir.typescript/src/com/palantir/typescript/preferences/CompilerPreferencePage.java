@@ -19,8 +19,6 @@ package com.palantir.typescript.preferences;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
@@ -28,7 +26,6 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -89,7 +86,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
                 recompiledProject = this.getElement().getAdapter(IProject.class);
             }
 
-            if (promptRecompile(this.getShell(), recompiledProject)) {
+            if (Builders.promptRecompile(this.getShell(), recompiledProject)) {
                 process = super.performOk();
             }
 
@@ -98,29 +95,6 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             process = super.performOk();
         }
 
-        return process;
-    }
-
-    public static boolean promptRecompile(Shell shell, IProject onlyProject) {
-        String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
-        String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
-        String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
-        MessageDialog dialog = new MessageDialog(shell, title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
-        int result = dialog.open();
-
-        boolean process = false;
-        if (result != 1) { // cancel
-            process = true;
-
-            // rebuild the workspace
-            if (result == 2) {
-                if (onlyProject != null) {
-                    Builders.rebuildProject(onlyProject);
-                } else {
-                    Builders.rebuildWorkspace();
-                }
-            }
-        }
         return process;
     }
 
