@@ -58,6 +58,7 @@ import com.palantir.typescript.TypeScriptPlugin;
  */
 public final class BuildPathPropertyPage extends PropertyPage {
 
+    private Button useTsConfigCheckButton;
     private Text exportFolderField;
     private Text outputFileField;
     private Text outputFolderField;
@@ -111,7 +112,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
 
         this.projectPreferenceStore = new ProjectPreferenceStore(getProject());
 
-        createUseTsConfigField(composite);
+        this.useTsConfigCheckButton = createUseTsConfigField(composite);
 
         this.sourceFolderField = this.createFolderField(composite, SWT.NONE, "Source folder(s):",
             IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
@@ -120,29 +121,40 @@ public final class BuildPathPropertyPage extends PropertyPage {
         this.outputFolderField = this.createFolderField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUT_DIR);
         this.outputFileField = this.createFileField(composite, SWT.PUSH, "Output file name:", IPreferenceConstants.COMPILER_OUT_FILE);
 
+        updateFieldsState();
+
         return composite;
     }
 
-    public void createUseTsConfigField(final Composite composite) {
+    public Button createUseTsConfigField(final Composite composite) {
         Label label = new Label(composite, SWT.NONE);
         label.setLayoutData(new GridData(GridData.BEGINNING, SWT.CENTER, false, false));
         label.setText("Use tsconfig");
 
         final Button button = new Button(composite, SWT.CHECK);
         button.setLayoutData(new GridData(GridData.BEGINNING, SWT.CENTER, false, false));
-        button.setSelection(projectPreferenceStore.isUsingTsConfigFile());
         button.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event e) {
                 projectPreferenceStore.setUsingTsConfigFile(button.getSelection());
-                exportFolderField.setEnabled(!button.getSelection());
-                outputFileField.setEnabled(!button.getSelection());
-                outputFolderField.setEnabled(!button.getSelection());
-                sourceFolderField.setEnabled(!button.getSelection());
+                if (button.getSelection()) {
+                    Builders.promptRecompile(getShell(), getProject());
+                }
+                updateFieldsState();
             }
         });
+        button.setSelection(projectPreferenceStore.isUsingTsConfigFile());
 
         new Label(composite, SWT.NONE);
+
+        return button;
+    }
+
+    public void updateFieldsState() {
+        exportFolderField.setEnabled(!useTsConfigCheckButton.getSelection());
+        outputFileField.setEnabled(!useTsConfigCheckButton.getSelection());
+        outputFolderField.setEnabled(!useTsConfigCheckButton.getSelection());
+        sourceFolderField.setEnabled(!useTsConfigCheckButton.getSelection());
     }
 
     private Text createFileField(Composite composite, int style, String labelText, String preferenceKey) {
