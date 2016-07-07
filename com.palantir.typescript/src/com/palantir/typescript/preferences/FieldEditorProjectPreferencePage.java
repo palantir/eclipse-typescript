@@ -90,7 +90,7 @@ abstract class FieldEditorProjectPreferencePage extends FieldEditorPreferencePag
             // enable project specific settings
             this.projectSpecificCheckbox = new Button(composite, SWT.CHECK);
             this.projectSpecificCheckbox.setFont(parent.getFont());
-            this.projectSpecificCheckbox.setSelection(this.projectPreferenceStore.getProjectSpecificSettings());
+            this.projectSpecificCheckbox.setSelection(this.projectPreferenceStore.getProjectSpecificSettings() || this.projectPreferenceStore.isUsingTsConfigFile());
             this.projectSpecificCheckbox.setText("Enable project specific settings");
             this.projectSpecificCheckbox.addSelectionListener(new SelectionAdapter() {
                 @Override

@@ -63,8 +63,11 @@ public final class BuildPathPropertyPage extends PropertyPage {
     private Text outputFolderField;
     private Text sourceFolderField;
 
+    private ProjectPreferenceStore projectPreferenceStore;
+
     @Override
     public boolean performOk() {
+        // TODO : use preference store
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
         String oldSourceFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "");
         String oldExportedFolder = projectPreferences.get(IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER, "");
@@ -106,12 +109,40 @@ public final class BuildPathPropertyPage extends PropertyPage {
         composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
         composite.setFont(parent.getFont());
 
-        this.sourceFolderField = this.createFolderField(composite, SWT.NONE, "Source folder(s):", IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
-        this.exportFolderField = this.createFolderField(composite, SWT.NONE, "Exported folder(s):", IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER);
+        this.projectPreferenceStore = new ProjectPreferenceStore(getProject());
+
+        createUseTsConfigField(composite);
+
+        this.sourceFolderField = this.createFolderField(composite, SWT.NONE, "Source folder(s):",
+            IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
+        this.exportFolderField = this.createFolderField(composite, SWT.NONE, "Exported folder(s):",
+            IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER);
         this.outputFolderField = this.createFolderField(composite, SWT.PUSH, "Output folder:", IPreferenceConstants.COMPILER_OUT_DIR);
         this.outputFileField = this.createFileField(composite, SWT.PUSH, "Output file name:", IPreferenceConstants.COMPILER_OUT_FILE);
 
         return composite;
+    }
+
+    public void createUseTsConfigField(final Composite composite) {
+        Label label = new Label(composite, SWT.NONE);
+        label.setLayoutData(new GridData(GridData.BEGINNING, SWT.CENTER, false, false));
+        label.setText("Use tsconfig");
+
+        final Button button = new Button(composite, SWT.CHECK);
+        button.setLayoutData(new GridData(GridData.BEGINNING, SWT.CENTER, false, false));
+        button.setSelection(projectPreferenceStore.isUsingTsConfigFile());
+        button.addListener(SWT.Selection, new Listener() {
+            @Override
+            public void handleEvent(Event e) {
+                projectPreferenceStore.setUsingTsConfigFile(button.getSelection());
+                exportFolderField.setEnabled(!button.getSelection());
+                outputFileField.setEnabled(!button.getSelection());
+                outputFolderField.setEnabled(!button.getSelection());
+                sourceFolderField.setEnabled(!button.getSelection());
+            }
+        });
+
+        new Label(composite, SWT.NONE);
     }
 
     private Text createFileField(Composite composite, int style, String labelText, String preferenceKey) {
@@ -149,10 +180,15 @@ public final class BuildPathPropertyPage extends PropertyPage {
         return text;
     }
 
-    private IEclipsePreferences getProjectPreferences() {
+    private IProject getProject() {
         IAdaptable element = this.getElement();
         IProject project = (IProject) element.getAdapter(IProject.class);
-        IScopeContext projectScope = new ProjectScope(project);
+
+        return project;
+    }
+
+    private IEclipsePreferences getProjectPreferences() {
+        IScopeContext projectScope = new ProjectScope(getProject());
 
         return projectScope.getNode(TypeScriptPlugin.ID);
     }

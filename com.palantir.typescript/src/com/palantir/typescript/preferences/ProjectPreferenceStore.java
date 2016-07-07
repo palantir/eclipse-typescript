@@ -19,16 +19,30 @@ package com.palantir.typescript.preferences;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.security.MessageDigest;
+import java.util.Map;
+import java.util.Objects;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.io.CharStreams;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 
 /**
@@ -37,8 +51,13 @@ import com.palantir.typescript.TypeScriptPlugin;
  * Adapted from http://www.eclipse.org/articles/Article-Mutatis-mutandis/overlay-pages.html.
  *
  * @author dcicerone
+ * @author lgrignon
  */
 public final class ProjectPreferenceStore extends PreferenceStore {
+
+    private static final BiMap<String, String> PREFERENCE_TO_TSCONFIG_PATH = createPreferenceToTsConfigPathMap();
+
+    private static final Map<String, String> TSCONFIG_PATH_TO_PREFERENCE = PREFERENCE_TO_TSCONFIG_PATH.inverse();
 
     private final IProject project;
     private final IPreferenceStore preferenceStore;
@@ -158,6 +177,14 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         this.projectSpecificSettings = projectSpecificSettings;
     }
 
+    public boolean isUsingTsConfigFile() {
+        return getProjectPreferences().getBoolean(IPreferenceConstants.GENERAL_USE_TSCONFIG_FILE, false);
+    }
+
+    public void setUsingTsConfigFile(boolean useTsConfigFile) {
+        getProjectPreferences().putBoolean(IPreferenceConstants.GENERAL_USE_TSCONFIG_FILE, useTsConfigFile);
+    }
+
     @Override
     public void save() throws IOException {
         this.writeProperties();
@@ -181,6 +208,13 @@ public final class ProjectPreferenceStore extends PreferenceStore {
             return;
         }
 
+        boolean useTsConfigFile = isUsingTsConfigFile();
+        if (useTsConfigFile && isTsConfigPreference(name)) {
+            if (didTsConfigFileChanged()) {
+                reloadTsConfigFile();
+            }
+        }
+
         if (this.projectSpecificSettings && super.contains(name)) {
             return;
         }
@@ -200,6 +234,146 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         } finally {
             this.inserting = false;
         }
+    }
+
+    private void reloadTsConfigFile() {
+        Status status = new Status(IStatus.INFO, TypeScriptPlugin.ID, "reload tsconfig file");
+        TypeScriptPlugin.getDefault().getLog().log(status);
+
+        // read JSON from a file
+        IFile tsConfigFile = null;
+        InputStream tsConfigStream = null;
+        try {
+            tsConfigFile = getTsConfigFile();
+
+            tsConfigStream = tsConfigFile.getContents();
+            String tsConfigContent = CharStreams.toString(new InputStreamReader(tsConfigStream, tsConfigFile.getCharset()));
+
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> tsConfigEntries = mapper.readValue(tsConfigContent,
+                new TypeReference<Map<String, Object>>() {
+                });
+
+            decodeTsConfigEntries("", tsConfigEntries);
+
+        } catch (Exception e) {
+            String errorMessage = "Cannot reload ts config file '" + tsConfigFile + "'";
+            Status errorStatus = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+            TypeScriptPlugin.getDefault().getLog().log(errorStatus);
+        } finally {
+            if (tsConfigStream != null) {
+                try {
+                    tsConfigStream.close();
+                } catch (IOException e) {
+                    System.err.println("error while releasing tsconfig stream");
+                }
+            }
+        }
+    }
+
+    private void decodeTsConfigEntries(String jsonTreePath, Map<String, Object> entries) {
+
+        IEclipsePreferences projectPreferences = this.getProjectPreferences();
+
+        for (Map.Entry<String, Object> tsConfigEntry : entries.entrySet()) {
+            if (tsConfigEntry.getValue() instanceof Map) {
+                decodeTsConfigEntries(jsonTreePath + tsConfigEntry.getKey() + ".", (Map) tsConfigEntry.getValue());
+            } else if (isSupportedTsConfigPath(jsonTreePath + tsConfigEntry.getKey())) {
+
+                String matchingPreference = TSCONFIG_PATH_TO_PREFERENCE.get(jsonTreePath + tsConfigEntry.getKey());
+                TypeScriptPlugin.getDefault().getLog().log(new Status(IStatus.INFO, TypeScriptPlugin.ID,
+                    "setting preference " + matchingPreference + " to " + tsConfigEntry.getValue()));
+
+                projectPreferences.put(matchingPreference, tsConfigEntry.getValue() == null ? null : tsConfigEntry.getValue().toString());
+            }
+        }
+    }
+
+    private boolean isTsConfigPreference(String name) {
+        return PREFERENCE_TO_TSCONFIG_PATH.containsKey(name);
+    }
+
+    private boolean isSupportedTsConfigPath(String tsConfigJsonPath) {
+        return TSCONFIG_PATH_TO_PREFERENCE.containsKey(tsConfigJsonPath);
+    }
+
+    private String getFileSHA1(IFile file) {
+
+        if (!file.exists()) {
+            return null;
+        }
+
+        InputStream fileInputStream = null;
+        try {
+            fileInputStream = file.getContents();
+            MessageDigest md = MessageDigest.getInstance("SHA1");
+            byte[] dataBytes = new byte[1024];
+
+            int nread = 0;
+
+            while ((nread = fileInputStream.read(dataBytes)) != -1) {
+                md.update(dataBytes, 0, nread);
+            }
+
+            byte[] mdbytes = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < mdbytes.length; i++) {
+                sb.append(Integer.toString((mdbytes[i] & 0xff) + 0x100, 16).substring(1));
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            String errorMessage = "Cannot sha1 '" + file + "'";
+            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+            TypeScriptPlugin.getDefault().getLog().log(status);
+            return null;
+        } finally {
+            try {
+                if (fileInputStream != null) {
+                    fileInputStream.close();
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    private boolean didTsConfigFileChanged() {
+        IEclipsePreferences projectPreferences = this.getProjectPreferences();
+
+        IFile tsConfigFile = getTsConfigFile();
+        boolean changed = true;
+        if (tsConfigFile.exists()) {
+            changed = false;
+            try {
+                long previousLastModTimestamp = projectPreferences
+                    .getLong(IPreferenceConstants.PREFERENCE_STORE_TS_CONFIG_LAST_MODIFICATION_TIME, -1);
+                long currentLastModTimestamp = tsConfigFile.getModificationStamp();
+                if (previousLastModTimestamp != currentLastModTimestamp) {
+                    projectPreferences.putLong(IPreferenceConstants.PREFERENCE_STORE_TS_CONFIG_LAST_MODIFICATION_TIME,
+                        currentLastModTimestamp);
+
+                    // optimization: get hash only if mod timestamp changed
+                    String previousHash = projectPreferences.get(IPreferenceConstants.PREFERENCE_STORE_TS_CONFIG_HASH, null);
+                    String currentHash = getFileSHA1(tsConfigFile);
+                    if (!Objects.equals(previousHash, currentHash)) {
+                        projectPreferences.put(IPreferenceConstants.PREFERENCE_STORE_TS_CONFIG_HASH, currentHash);
+
+                        changed = true;
+                    }
+                }
+
+            } catch (Exception e) {
+                String errorMessage = "Cannot tell if tsconfig file changed '" + tsConfigFile + "'";
+                Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
+                TypeScriptPlugin.getDefault().getLog().log(status);
+            }
+        }
+
+        return changed;
+    }
+
+    public IFile getTsConfigFile() {
+        IFile tsConfigFile = this.project.getFile("tsconfig.json");
+        return tsConfigFile;
     }
 
     private void writeProperties() throws IOException {
@@ -226,5 +400,33 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         IScopeContext projectScope = new ProjectScope(this.project);
 
         return projectScope.getNode(TypeScriptPlugin.ID);
+    }
+
+    private static BiMap<String, String> createPreferenceToTsConfigPathMap() {
+        BiMap<String, String> map = HashBiMap.<String, String> create();
+        map.put(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, "compileOnSave");
+        map.put(IPreferenceConstants.COMPILER_DECLARATION, "compilerOptions.declaration");
+        map.put(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS, "compilerOptions.experimentalDecorators");
+        map.put(IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP, "compilerOptions.inlineSourceMap");
+        map.put(IPreferenceConstants.COMPILER_INLINE_SOURCES, "compilerOptions.inlineSource");
+        map.put(IPreferenceConstants.COMPILER_JSX, "compilerOptions.jsx");
+        map.put(IPreferenceConstants.COMPILER_MODULE, "compilerOptions.module");
+        map.put(IPreferenceConstants.COMPILER_MODULE_RESOLUTION, "compilerOptions.moduleResolution");
+        map.put(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR, "compilerOptions.noEmitOnError");
+        map.put(IPreferenceConstants.COMPILER_NO_FALLTHROUGH_CASES_IN_SWITCH, "compilerOptions.noFallthroughCasesInSwitch");
+        map.put(IPreferenceConstants.COMPILER_NO_IMPLICIT_ANY, "compilerOptions.noImplicitAny");
+        map.put(IPreferenceConstants.COMPILER_NO_IMPLICIT_RETURNS, "compilerOptions.noImplicitReturns");
+        map.put(IPreferenceConstants.COMPILER_NO_LIB, "compilerOptions.noLib");
+        map.put(IPreferenceConstants.COMPILER_OUT_DIR, "compilerOptions.outDir");
+        map.put(IPreferenceConstants.COMPILER_OUT_FILE, "compilerOptions.outFile");
+        map.put(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, "compilerOptions.removeComments");
+        map.put(IPreferenceConstants.COMPILER_SOURCE_MAP, "compilerOptions.sourceMap");
+        map.put(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS, "compilerOptions.suppressExcessPropertyErrors");
+        map.put(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS, "compilerOptions.suppressImplicitAnyIndexErrors");
+        map.put(IPreferenceConstants.COMPILER_TARGET, "compilerOptions.target");
+
+        //        map.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "compilerOptions.target");
+
+        return map;
     }
 }

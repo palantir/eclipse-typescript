@@ -70,6 +70,7 @@ public interface IPreferenceConstants {
     String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS = "formatter.placeOpenBraceOnNewLineForFunctions";
 
     String GENERAL_NODE_PATH = "general.nodePath";
+    String GENERAL_USE_TSCONFIG_FILE = "general.useTsConfigFile";
 
     String SYNTAX_COLORING_COMMENT_COLOR = "syntaxColoring.comment.color";
     String SYNTAX_COLORING_IDENTIFIER_COLOR = "syntaxColoring.identifier.color";
@@ -79,4 +80,7 @@ public interface IPreferenceConstants {
     String SYNTAX_COLORING_PUNCTUATION_COLOR = "syntaxColoring.punctuation.color";
     String SYNTAX_COLORING_REG_EXP_LITERAL_COLOR = "syntaxColoring.regExpLiteral.color";
     String SYNTAX_COLORING_STRING_LITERAL_COLOR = "syntaxColoring.stringLiteral.color";
+
+    String PREFERENCE_STORE_TS_CONFIG_LAST_MODIFICATION_TIME = "preferenceStore.tsConfigLastModTime";
+    String PREFERENCE_STORE_TS_CONFIG_HASH = "preferenceStore.tsConfigHash";
 }

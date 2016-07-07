@@ -28,6 +28,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -79,32 +80,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     @Override
     public boolean performOk() {
-        final boolean process;
+        boolean process = false;
 
         // offer to rebuild the workspace if the compiler preferences were modified
         if (this.compilerPreferencesModified) {
-            String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
-            String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
-            String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
-            MessageDialog dialog = new MessageDialog(this.getShell(), title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
-            int result = dialog.open();
-
-            if (result == 1) { // cancel
-                process = false;
-            } else {
-                // yes/no
+            if (promptRecompile(this.getShell(), this.isPropertyPage())) {
                 process = super.performOk();
-
-                // rebuild the workspace
-                if (result == 2) {
-                    if (this.isPropertyPage()) {
-                        IProject project = (IProject) this.getElement().getAdapter(IProject.class);
-
-                        Builders.rebuildProject(project);
-                    } else {
-                        Builders.rebuildWorkspace();
-                    }
-                }
             }
 
             this.compilerPreferencesModified = false;
@@ -112,6 +93,31 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             process = super.performOk();
         }
 
+        return process;
+    }
+
+    public static boolean promptRecompile(Shell shell, boolean projectOnly) {
+        final boolean process;
+        String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
+        String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
+        String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
+        MessageDialog dialog = new MessageDialog(shell, title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
+        int result = dialog.open();
+
+        if (result != 1) { // cancel
+            process = true;
+
+            // rebuild the workspace
+            if (result == 2) {
+                if (projectOnly) {
+                    IProject project = (IProject) this.getElement().getAdapter(IProject.class);
+
+                    Builders.rebuildProject(project);
+                } else {
+                    Builders.rebuildWorkspace();
+                }
+            }
+        }
         return process;
     }
 
