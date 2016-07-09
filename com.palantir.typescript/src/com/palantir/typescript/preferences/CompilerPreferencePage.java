@@ -89,7 +89,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
         if (this.compilerPreferencesModified) {
             IProject recompiledProject = null;
             if (this.isPropertyPage()) {
-                recompiledProject = this.getElement().getAdapter(IProject.class);
+                recompiledProject = (IProject) this.getElement().getAdapter(IProject.class);
             }
 
             if (Builders.promptRecompile(this.getShell(), recompiledProject)) {
@@ -315,7 +315,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             String resourceKey = Ascii.toLowerCase(key).replace("_", ".");
             String label = getResource(resourceKey);
             if (!alreadyAddedLabels.contains(label)) {
-                fieldValues.add(new String [] { label,  key });
+                fieldValues.add(new String[] { label, key });
                 alreadyAddedLabels.add(label);
             }
         }
