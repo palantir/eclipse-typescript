@@ -26,8 +26,6 @@ import com.fasterxml.jackson.annotation.JsonValue;
 public enum ModuleResolutionKind {
 
     CLASSIC(1),
-    NODEJS(2),
-    // TODO : remove incorrect naming
     NODE_JS(2);
 
     private final int value;

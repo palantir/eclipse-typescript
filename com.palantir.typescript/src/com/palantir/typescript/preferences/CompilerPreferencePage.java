@@ -18,6 +18,10 @@ package com.palantir.typescript.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
@@ -30,6 +34,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.google.common.base.Ascii;
+import com.google.common.collect.Sets;
 import com.palantir.typescript.Builders;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.Resources;
@@ -43,6 +48,7 @@ import com.palantir.typescript.services.language.ScriptTarget;
  * The compiler preference page.
  *
  * @author tyleradams
+ * @author lgrignon
  */
 public final class CompilerPreferencePage extends FieldEditorProjectPreferencePage implements IWorkbenchPreferencePage {
 
@@ -302,16 +308,19 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private String[][] createComboFieldValues(Enum[] enums) {
         checkNotNull(enums);
 
-        String[][] fieldValues = new String[enums.length][2];
+        Set<String> alreadyAddedLabels = Sets.newHashSet();
+        List<String[]> fieldValues = new LinkedList<String[]>();
         for (int i = 0; i < enums.length; i++) {
             String key = enums[i].name();
             String resourceKey = Ascii.toLowerCase(key).replace("_", ".");
-
-            fieldValues[i][0] = getResource(resourceKey);
-            fieldValues[i][1] = key;
+            String label = getResource(resourceKey);
+            if (!alreadyAddedLabels.contains(label)) {
+                fieldValues.add(new String [] { label,  key });
+                alreadyAddedLabels.add(label);
+            }
         }
 
-        return fieldValues;
+        return fieldValues.toArray(new String[0][]);
     }
 
     private static String getResource(String key) {

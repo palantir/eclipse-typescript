@@ -25,13 +25,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ScriptTarget {
 
-    ECMASCRIPT3(0),
-    ES3(0),
-    ECMASCRIPT5(1),
-    ES5(1),
-    ECMASCRIPT6(2),
-    ES6(2),
-    ES2015(2);
+    ECMASCRIPT3(0), ECMASCRIPT5(1), ECMASCRIPT6(2);
 
     private final int value;
 
@@ -42,5 +36,13 @@ public enum ScriptTarget {
     @JsonValue
     public int getValue() {
         return this.value;
+    }
+
+    public static ScriptTarget parse(String itemName) {
+        try {
+            return valueOf(itemName);
+        } catch (Exception e) {
+            return ECMASCRIPT3;
+        }
     }
 }

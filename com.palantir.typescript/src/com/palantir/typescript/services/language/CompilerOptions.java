@@ -218,7 +218,7 @@ public final class CompilerOptions {
         compilerOptions.suppressImplicitAnyIndexErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS);
         String target = preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET);
-        compilerOptions.target = ScriptTarget.valueOf(target == null ? null : target.toUpperCase());
+        compilerOptions.target = ScriptTarget.parse(target == null ? null : target.toUpperCase());
 
         // set the output directory or file if it was specified
         String outDir = preferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
