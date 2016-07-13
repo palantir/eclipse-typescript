@@ -462,6 +462,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         map.put(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, "compileOnSave");
         map.put(IPreferenceConstants.COMPILER_DECLARATION, "compilerOptions.declaration");
         map.put(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS, "compilerOptions.experimentalDecorators");
+        map.put(IPreferenceConstants.COMPILER_EMIT_DECORATOR_METADATA, "compilerOptions.emitDecoratorMetadata");
         map.put(IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP, "compilerOptions.inlineSourceMap");
         map.put(IPreferenceConstants.COMPILER_INLINE_SOURCES, "compilerOptions.inlineSource");
         map.put(IPreferenceConstants.COMPILER_JSX, "compilerOptions.jsx");

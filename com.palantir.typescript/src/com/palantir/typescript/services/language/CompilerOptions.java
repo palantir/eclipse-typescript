@@ -215,6 +215,9 @@ public final class CompilerOptions {
         compilerOptions.sourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SOURCE_MAP);
         compilerOptions.suppressExcessPropertyErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
+
+        compilerOptions.emitDecoratorMetadata = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EMIT_DECORATOR_METADATA);
+
         compilerOptions.suppressImplicitAnyIndexErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS);
         String target = preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET);

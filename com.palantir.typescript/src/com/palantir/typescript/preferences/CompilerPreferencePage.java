@@ -57,6 +57,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
     private BooleanFieldEditor experimentalDecoratorsField;
+    private BooleanFieldEditor emitDecoratorMetadataField;
     private BooleanFieldEditor inlineSourceMapField;
     private BooleanFieldEditor inlineSourcesField;
     private ComboFieldEditor jsxField;
@@ -72,6 +73,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor suppressExcessPropertyErrorsField;
     private BooleanFieldEditor suppressImplicitAnyIndexErrorsField;
     private ComboFieldEditor targetField;
+
 
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
@@ -218,6 +220,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             getResource("experimental.decorators"),
             this.getFieldEditorParent());
         this.addField(this.experimentalDecoratorsField);
+
+        this.emitDecoratorMetadataField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_EMIT_DECORATOR_METADATA,
+            getResource("emit.decorator.metadata"),
+            this.getFieldEditorParent());
+        this.addField(this.emitDecoratorMetadataField);
 
         this.compileOnSaveField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,
