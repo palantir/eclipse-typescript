@@ -17,6 +17,7 @@
 package com.palantir.typescript;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.palantir.typescript.TypeScriptPlugin.logError;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +41,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.google.common.base.Charsets;
@@ -136,7 +135,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
         // update all source and exported files in the language service
         Set<FileDelta> allFileDeltas = TypeScriptProjects.getFileDeltas(project, Folders.SOURCE_AND_EXPORTED, delta);
         if (!allFileDeltas.isEmpty()) {
-            this.languageEndpoint.updateFiles(allFileDeltas);
+            this.languageEndpoint.updateFiles(project, allFileDeltas);
         }
 
         // build the modified source files
@@ -261,7 +260,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             }
         }
 
-        this.languageEndpoint.updateFiles(deletedEmittedOutputToSend);
+        this.languageEndpoint.updateFiles(this.getProject(), deletedEmittedOutputToSend);
     }
 
     private void compile(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
@@ -280,10 +279,7 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 try {
                     this.compile(fileName, monitor);
                 } catch (RuntimeException e) {
-                    String errorMessage = "Compilation of '" + fileName + "' failed.";
-                    Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-
-                    TypeScriptPlugin.getDefault().getLog().log(status);
+                    logError("Compilation of '" + fileName + "' failed.", e);
                 }
             }
         }
@@ -314,13 +310,14 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
             // if this output file is going to be referenced by anything, the LanguageEndpoint needs
             // to know about it. we send it back over the bridge because the node side doesn't
             // know the filesystem path of the file and so can't create the FileInfo without this call.
-            if (isProjectReferenced && TypeScriptProjects.isContainedInFolders(project, Folders.EXPORTED, eclipseFile)
+            if (isProjectReferenced
+                    && TypeScriptProjects.isContainedIn(eclipseFile, TypeScriptProjects.getExportedFolders(project))
                     && isDefinitionFile(outputFileName)) {
                 emittedOutputToSend.add(new FileDelta(Delta.ADDED, eclipseFile));
             }
         }
 
-        this.languageEndpoint.updateFiles(emittedOutputToSend);
+        this.languageEndpoint.updateFiles(this.getProject(), emittedOutputToSend);
     }
 
     private boolean isOutputFileSpecified() {

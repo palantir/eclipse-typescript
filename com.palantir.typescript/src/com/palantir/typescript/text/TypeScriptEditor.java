@@ -58,7 +58,6 @@ import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.TypeScriptProjects;
-import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.DefinitionInfo;
 import com.palantir.typescript.services.language.LanguageEndpoint;
@@ -136,7 +135,7 @@ public final class TypeScriptEditor extends TextEditor {
                 IProject project = resource.getProject();
 
                 // use a project-specific language service
-                if (TypeScriptProjects.isContainedInFolders(project, Folders.SOURCE, resource)) {
+                if (TypeScriptProjects.isSourceFile(resource, project)) {
                     String fileName = getFileName(input);
 
                     this.cachedLanguageService = FileLanguageService.create(languageEndpoint, project, fileName);

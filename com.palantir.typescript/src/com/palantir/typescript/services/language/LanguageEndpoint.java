@@ -279,11 +279,12 @@ public final class LanguageEndpoint {
         this.bridge.call(request, Void.class);
     }
 
-    public void updateFiles(Set<FileDelta> fileDeltas) {
+    public void updateFiles(IProject project, Set<FileDelta> fileDeltas) {
         checkNotNull(fileDeltas);
 
+        String projectName = project.getName();
         if (!fileDeltas.isEmpty()) {
-            Request request = new Request(SERVICE, "updateFiles", fileDeltas);
+            Request request = new Request(SERVICE, "updateFiles", projectName, fileDeltas);
 
             this.bridge.call(request, Void.class);
         }
@@ -316,11 +317,12 @@ public final class LanguageEndpoint {
             String projectName = project.getName();
             CompilerOptions compilationSettings = CompilerOptions.fromProject(project);
             List<String> referencedProjectNames = getReferencedProjectNames(project);
-            List<String> exportedFolderNames = TypeScriptProjects.getFolderNames(project, Folders.EXPORTED);
-            List<String> sourceFolderNames = TypeScriptProjects.getFolderNames(project, Folders.SOURCE);
+
+            List<String> exportedFolderNames = TypeScriptProjects.getExportedFolderNames(project);
             Map<String, String> files = getFiles(project);
-            Request request = new Request(SERVICE, "initializeProject", projectName, compilationSettings, referencedProjectNames,
-                exportedFolderNames, sourceFolderNames, files);
+            Request request = new Request(SERVICE, "initializeProject", projectName,
+                compilationSettings, referencedProjectNames,
+                exportedFolderNames, files);
             this.bridge.call(request, Void.class);
         }
     }

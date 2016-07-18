@@ -17,20 +17,22 @@
 package com.palantir.typescript.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.palantir.typescript.TypeScriptPlugin.logError;
+import static com.palantir.typescript.TypeScriptPlugin.logInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.security.MessageDigest;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -39,12 +41,14 @@ import org.osgi.service.prefs.BackingStoreException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.CharStreams;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
+import com.palantir.typescript.TypeScriptProjects;
 
 /**
  * An adapter for {@link PreferenceStore} to allow a preference page to be used as a property page.
@@ -252,8 +256,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
     }
 
     public boolean reloadTsConfigFile() {
-        Status status = new Status(IStatus.INFO, TypeScriptPlugin.ID, "reload tsconfig file");
-        TypeScriptPlugin.getDefault().getLog().log(status);
+        logInfo("reload tsconfig file");
 
         IFile tsConfigFile = null;
         InputStream tsConfigStream = null;
@@ -261,6 +264,10 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         try {
             tsConfigFile = getTsConfigFile();
             if (tsConfigFile.exists()) {
+
+                if (!tsConfigFile.isSynchronized(IResource.DEPTH_ZERO)) {
+                    tsConfigFile.refreshLocal(IResource.DEPTH_ZERO, null);
+                }
 
                 // refresh tsconfig cache infos
                 IEclipsePreferences projectPreferences = this.getProjectPreferences();
@@ -284,9 +291,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
             }
 
         } catch (Exception e) {
-            String errorMessage = "Cannot reload ts config file '" + tsConfigFile + "'";
-            Status errorStatus = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-            TypeScriptPlugin.getDefault().getLog().log(errorStatus);
+            logError("Cannot reload ts config file '" + tsConfigFile + "'", e);
         } finally {
             if (tsConfigStream != null) {
                 try {
@@ -312,9 +317,8 @@ public final class ProjectPreferenceStore extends PreferenceStore {
                 String matchingPreference = TSCONFIG_PATH_TO_PREFERENCE.get(jsonTreePath + tsConfigEntry.getKey());
 
                 String value = tsConfigValueToPreferenceValue(tsConfigEntry.getValue(), matchingPreference);
-                TypeScriptPlugin.getDefault().getLog().log(new Status(IStatus.INFO, TypeScriptPlugin.ID,
-                    "setting preference " + matchingPreference + " to " + value));
-                setValue(matchingPreference, value);
+                logInfo("setting preference " + matchingPreference + " to " + value);
+                this.setValue(matchingPreference, value);
                 projectPreferences.put(matchingPreference, value);
             }
         }
@@ -323,7 +327,12 @@ public final class ProjectPreferenceStore extends PreferenceStore {
     public String tsConfigValueToPreferenceValue(Object tsConfigValue, String matchingPreference) {
         String value = null;
         if (tsConfigValue != null) {
-            value = tsConfigValue.toString();
+
+            if (tsConfigValue instanceof Collection) {
+                value = Joiner.on(TypeScriptProjects.BUILD_PATH_SPEC_SEPARATOR).join((Collection) tsConfigValue);
+            } else {
+                value = tsConfigValue.toString();
+            }
 
             // TODO : awful mapping, we should rename our enums to match standard options / tsconfig values
             if (matchingPreference.equals(IPreferenceConstants.COMPILER_TARGET)) {
@@ -381,9 +390,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
             }
             return sb.toString();
         } catch (Exception e) {
-            String errorMessage = "Cannot sha1 '" + file + "'";
-            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-            TypeScriptPlugin.getDefault().getLog().log(status);
+            logError("Cannot sha1 '" + file + "'", e);
             return null;
         } finally {
             try {
@@ -417,9 +424,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
                 }
 
             } catch (Exception e) {
-                String errorMessage = "Cannot tell if tsconfig file changed '" + tsConfigFile + "'";
-                Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, errorMessage, e);
-                TypeScriptPlugin.getDefault().getLog().log(status);
+                logError("Cannot tell if tsconfig file changed '" + tsConfigFile + "'", e);
             }
         }
 
@@ -459,6 +464,11 @@ public final class ProjectPreferenceStore extends PreferenceStore {
 
     private static BiMap<String, String> createPreferenceToTsConfigPathMap() {
         BiMap<String, String> map = HashBiMap.<String, String> create();
+
+        map.put(IPreferenceConstants.BUILD_PATH_FILES, "files");
+        map.put(IPreferenceConstants.BUILD_PATH_INCLUDE, "include");
+        map.put(IPreferenceConstants.BUILD_PATH_EXCLUDE, "exclude");
+
         map.put(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE, "compileOnSave");
         map.put(IPreferenceConstants.COMPILER_DECLARATION, "compilerOptions.declaration");
         map.put(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS, "compilerOptions.experimentalDecorators");
@@ -480,9 +490,6 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         map.put(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS, "compilerOptions.suppressExcessPropertyErrors");
         map.put(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS, "compilerOptions.suppressImplicitAnyIndexErrors");
         map.put(IPreferenceConstants.COMPILER_TARGET, "compilerOptions.target");
-
-        // TODO : handle files
-        //        map.put(IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER, "compilerOptions.target");
 
         return map;
     }

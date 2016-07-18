@@ -18,6 +18,7 @@ package com.palantir.typescript.search;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.palantir.typescript.TypeScriptPlugin.logError;
 
 import java.util.List;
 
@@ -30,7 +31,6 @@ import org.eclipse.search.ui.ISearchQuery;
 import org.eclipse.search.ui.ISearchResult;
 
 import com.palantir.typescript.EclipseResources;
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.ReferenceEntryEx;
 import com.palantir.typescript.services.language.TextSpan;
 import com.palantir.typescript.text.FileLanguageService;
@@ -75,12 +75,7 @@ public final class SearchQuery implements ISearchQuery {
 
             return Status.OK_STATUS;
         } catch (RuntimeException e) {
-            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
-
-            // log the exception
-            TypeScriptPlugin.getDefault().getLog().log(status);
-
-            return status;
+            return logError(e.getMessage(), e);
         }
     }
 

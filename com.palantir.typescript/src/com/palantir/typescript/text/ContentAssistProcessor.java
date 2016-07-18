@@ -18,11 +18,10 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.palantir.typescript.TypeScriptPlugin.logError;
 
 import java.util.List;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.CompletionProposal;
@@ -39,7 +38,6 @@ import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.CompletionEntryDetails;
 import com.palantir.typescript.services.language.CompletionInfoEx;
 
@@ -85,10 +83,7 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                 this.currentCompletionInfo = this.editor.getLanguageService().getCompletionsAtPosition(offset);
                 this.currentOffset = this.getOffset(offset);
             } catch (RuntimeException e) {
-                Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
-
-                // log the exception
-                TypeScriptPlugin.getDefault().getLog().log(status);
+                logError(e.getMessage(), e);
             }
         }
 
