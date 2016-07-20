@@ -147,7 +147,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
         forceReloadButton.addListener(SWT.Selection, new Listener() {
             @Override
             public void handleEvent(Event e) {
-                boolean loaded = projectPreferenceStore.reloadTsConfigFile();
+                boolean loaded = projectPreferenceStore.getTsConfigPreferences().reloadTsConfigFile();
                 if (!loaded) {
                     String title = Resources.BUNDLE.getString("title.error");
                     String message = Resources.BUNDLE.getString("preferences.tsconfig.loadError");

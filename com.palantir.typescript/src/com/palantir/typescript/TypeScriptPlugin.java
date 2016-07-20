@@ -252,6 +252,10 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
     private final class MyResourceChangeListener implements IResourceChangeListener {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
+            if (event.getResource() == null) {
+                return;
+            }
+
             IResourceDelta delta = event.getDelta();
             Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(Folders.SOURCE_AND_EXPORTED, delta);
 

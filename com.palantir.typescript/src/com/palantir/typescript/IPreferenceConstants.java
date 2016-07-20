@@ -24,11 +24,11 @@ package com.palantir.typescript;
  */
 public interface IPreferenceConstants {
 
+    String BUILD_PATH_EXCLUDE = "build.path.exclude";
     String BUILD_PATH_EXPORTED_FOLDER = "build.path.exportedFolder";
-    String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
     String BUILD_PATH_FILES = "build.path.files";
     String BUILD_PATH_INCLUDE = "build.path.include";
-    String BUILD_PATH_EXCLUDE = "build.path.exclude";
+    String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
 
     String COMPILER_TARGET = "compiler.codeGenTarget";
     String COMPILER_COMPILE_ON_SAVE = "compiler.compileOnSave";

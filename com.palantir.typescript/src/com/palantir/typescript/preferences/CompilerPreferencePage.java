@@ -56,8 +56,8 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
-    private BooleanFieldEditor experimentalDecoratorsField;
     private BooleanFieldEditor emitDecoratorMetadataField;
+    private BooleanFieldEditor experimentalDecoratorsField;
     private BooleanFieldEditor inlineSourceMapField;
     private BooleanFieldEditor inlineSourcesField;
     private ComboFieldEditor jsxField;

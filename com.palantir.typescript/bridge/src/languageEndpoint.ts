@@ -94,6 +94,7 @@ namespace Bridge {
         }
 
         public getDiagnostics(serviceKey: string, fileName: string, semantic: boolean): DiagnosticEx[] {
+            
             var diagnostics = this.languageServices[serviceKey].getSyntacticDiagnostics(fileName);
 
             if (semantic && diagnostics.length === 0) {
