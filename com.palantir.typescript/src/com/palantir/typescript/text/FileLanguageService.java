@@ -144,6 +144,7 @@ public final class FileLanguageService {
 
         languageEndpoint.setFileOpen(fileName, true);
 
+        System.out.println("Creating service for: " + project.getName() + " fileName=" + fileName);
         return new FileLanguageService(languageEndpoint, project.getName(), fileName);
     }
 
@@ -157,6 +158,7 @@ public final class FileLanguageService {
 
         languageEndpoint.setFileOpen(fileName, true);
 
+        System.out.println("Creating service for: " + serviceKey);
         return new FileLanguageService(languageEndpoint, serviceKey, fileName);
     }
 }

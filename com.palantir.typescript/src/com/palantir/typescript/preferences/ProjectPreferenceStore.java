@@ -285,6 +285,10 @@ public final class ProjectPreferenceStore extends PreferenceStore {
                     new TypeReference<Map<String, Object>>() {
                     });
 
+                // resets preferences to default
+                resetTsConfigDefaultPreferences();
+
+                // reads preferences from tsconfig
                 decodeTsConfigEntries("", tsConfigEntries);
 
                 loaded = true;
@@ -303,6 +307,16 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         }
 
         return loaded;
+    }
+
+    private void resetTsConfigDefaultPreferences() {
+        IEclipsePreferences projectPreferences = this.getProjectPreferences();
+        for (String preferenceKey : PREFERENCE_TO_TSCONFIG_PATH.keySet()) {
+            String defaultValue = this.getDefaultString(preferenceKey);
+            this.setValue(preferenceKey, defaultValue);
+            projectPreferences.put(preferenceKey, defaultValue);
+        }
+        System.out.println("tsconfig preferences reset: " + this);
     }
 
     private void decodeTsConfigEntries(String jsonTreePath, Map<String, Object> entries) {
@@ -492,5 +506,17 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         map.put(IPreferenceConstants.COMPILER_TARGET, "compilerOptions.target");
 
         return map;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (String preferenceName : this.preferenceNames()) {
+            builder.append(preferenceName);
+            builder.append("=");
+            builder.append(this.getString(preferenceName));
+            builder.append(" \n");
+        }
+        return getClass().getSimpleName() + ": " + builder;
     }
 }

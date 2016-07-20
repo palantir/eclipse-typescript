@@ -61,7 +61,7 @@ namespace Bridge {
             if (this.fileFilter != null) {
                 fileNames = fileNames.filter(this.fileFilter);
             }
-            
+
             return fileNames;
         }
 

@@ -183,16 +183,21 @@ public final class TypeScriptProjects {
             logInfo("get all source files - folders=" + type + " specs=" + sourcesSpecs);
 
             List<IResource> excludeList = getResourcesFromSpecs(sourcesSpecs.exclude, project);
-            List<IResource> sourcesList = Lists.newLinkedList();
-            sourcesList.addAll(getResourcesFromSpecs(sourcesSpecs.files, project));
-            sourcesList.addAll(getResourcesFromSpecs(sourcesSpecs.include, project));
-            if (sourcesList.isEmpty()) {
-                sourcesList = ImmutableList.<IResource> of(project);
-            }
 
             Set<IFile> allSourceFiles = Sets.newHashSet();
-            for (IResource resource : sourcesList) {
-                collectSourceFiles(resource, excludeList, allSourceFiles);
+
+            // if no files or include defined, defaults to all project's files
+            if (sourcesSpecs.files.isEmpty() && sourcesSpecs.include.isEmpty()) {
+                collectSourceFiles(project, excludeList, allSourceFiles);
+            } else {
+                // files are not affected by exclude
+                for (IResource resource : getResourcesFromSpecs(sourcesSpecs.files, project)) {
+                    collectSourceFiles(resource, ImmutableList.<IResource> of(), allSourceFiles);
+                }
+
+                for (IResource resource : getResourcesFromSpecs(sourcesSpecs.include, project)) {
+                    collectSourceFiles(resource, excludeList, allSourceFiles);
+                }
             }
 
             logInfo("> found " + allSourceFiles.size() + " source files");
@@ -201,13 +206,15 @@ public final class TypeScriptProjects {
         }
 
         private void collectSourceFiles(IResource resource, List<IResource> excludeList, Set<IFile> allSourceFiles) {
-            if (resource.exists() && !isExcluded(resource, excludeList)) {
+            if (resource.exists()) {
                 logInfo("adding " + resource.getProjectRelativePath() + " to sources");
                 if (resource instanceof IFile) {
-                    allSourceFiles.add((IFile) resource);
+                    if (!isExcluded(resource, excludeList)) {
+                        allSourceFiles.add((IFile) resource);
+                    }
                 } else if (resource instanceof IContainer) {
 
-                    TypeScriptFilesCollectorVisitor visitor = new TypeScriptFilesCollectorVisitor();
+                    TypeScriptFilesCollectorVisitor visitor = new TypeScriptFilesCollectorVisitor(excludeList);
                     try {
                         resource.accept(visitor);
                     } catch (CoreException e) {
@@ -219,7 +226,7 @@ public final class TypeScriptProjects {
             }
         }
 
-        private boolean isExcluded(IResource fileOrFolder, List<IResource> excludeList) {
+        private static boolean isExcluded(IResource fileOrFolder, List<IResource> excludeList) {
             if (excludeList.contains(fileOrFolder)) {
                 return true;
             }
@@ -261,6 +268,31 @@ public final class TypeScriptProjects {
             List<String> exclude = PATH_SPLITTER.splitToList(preferencesStore.getString(IPreferenceConstants.BUILD_PATH_EXCLUDE));
 
             return new SourcesSpecs(filesNotEmpty, include, exclude);
+        }
+
+        private static final class TypeScriptFilesCollectorVisitor implements IResourceVisitor {
+
+            private final ImmutableList.Builder<IFile> files;
+            private final List<IResource> excludeList;
+
+            private TypeScriptFilesCollectorVisitor(List<IResource> excludeList) {
+                this.excludeList = excludeList;
+                this.files = ImmutableList.builder();
+            }
+
+            @Override
+            public boolean visit(IResource resource) throws CoreException {
+                if (isExcluded(resource, excludeList)) {
+                    System.out.println(resource.getProjectRelativePath() + " is excluded, stop recursion");
+                    return false;
+                }
+
+                if (isTypeScriptFile(resource)) {
+                    this.files.add((IFile) resource);
+                }
+
+                return true;
+            }
         }
     }
 
@@ -345,24 +377,6 @@ public final class TypeScriptProjects {
                 default:
                     throw new IllegalStateException();
             }
-        }
-    }
-
-    private static final class TypeScriptFilesCollectorVisitor implements IResourceVisitor {
-
-        private final ImmutableList.Builder<IFile> files;
-
-        private TypeScriptFilesCollectorVisitor() {
-            this.files = ImmutableList.builder();
-        }
-
-        @Override
-        public boolean visit(IResource resource) throws CoreException {
-            if (isTypeScriptFile(resource)) {
-                this.files.add((IFile) resource);
-            }
-
-            return true;
         }
     }
 

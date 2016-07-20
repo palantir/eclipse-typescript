@@ -50,7 +50,7 @@ namespace Bridge {
             referencedProjectNames: string[],
             exportedFolderNames: string[],
             files: { [fileName: string]: string }) {
-            
+
             this.cleanProject(projectName);
             this.exportedFolderNames[projectName] = exportedFolderNames;
 
