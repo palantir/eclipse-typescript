@@ -167,6 +167,7 @@ public final class BuildPathPropertyPage extends PropertyPage {
     }
 
     private void updateFieldStates() {
+        sourceFolderField.setEnabled(!useTsConfigCheckButton.getSelection());
         outputFileField.setEnabled(!useTsConfigCheckButton.getSelection());
         outputFolderField.setEnabled(!useTsConfigCheckButton.getSelection());
     }
