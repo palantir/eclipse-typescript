@@ -75,7 +75,7 @@ namespace Bridge {
 
         public getAllTodoComments(projectName: string) {
             var todos: { [fileName: string]: TodoCommentEx[] } = {};
-            Object.keys(this.projectFileInfos[projectName])
+            Object.keys(this.getProjectFileInfos(projectName))
                 .forEach((fileName) => {
                     todos[fileName] = this.getTodoComments(projectName, fileName);
                 });
@@ -85,7 +85,7 @@ namespace Bridge {
         public getAllDiagnostics(projectName: string) {
             var diagnostics: { [fileName: string]: DiagnosticEx[] } = Object.create(null);
 
-            Object.keys(this.projectFileInfos[projectName])
+            Object.keys(this.getProjectFileInfos(projectName))
                 .forEach((fileName) => {
                     diagnostics[fileName] = this.getDiagnostics(projectName, fileName, true);
                 });
@@ -94,7 +94,7 @@ namespace Bridge {
         }
 
         public getDiagnostics(serviceKey: string, fileName: string, semantic: boolean): DiagnosticEx[] {
-            
+
             var diagnostics = this.languageServices[serviceKey].getSyntacticDiagnostics(fileName);
 
             if (semantic && diagnostics.length === 0) {
@@ -277,7 +277,7 @@ namespace Bridge {
                         if (fileInfo != null) {
                             delete this.allFileInfos[fileName];
                             if (fileInfo.getProjectName() != null) {
-                                delete this.projectFileInfos[fileInfo.getProjectName()][fileName];
+                                delete this.getProjectFileInfos(fileInfo.getProjectName())[fileName];
                             }
                         }
                         break;
@@ -305,13 +305,17 @@ namespace Bridge {
         }
 
         private pushFile(projectName: string, fileName: string, contents: string, filePath: string): void {
+            var fileInfo = new FileInfo(contents, filePath, projectName);
+            this.getProjectFileInfos(projectName)[fileName] = fileInfo;
+            this.allFileInfos[fileName] = fileInfo;
+        }
+
+        private getProjectFileInfos(projectName: string): { [fileName: string]: FileInfo }  {
             if (this.projectFileInfos[projectName] == null) {
                 this.projectFileInfos[projectName] = Object.create(null);
             }
-
-            var fileInfo = new FileInfo(contents, filePath, projectName);
-            this.projectFileInfos[projectName][fileName] = fileInfo;
-            this.allFileInfos[fileName] = fileInfo;
+            
+            return this.projectFileInfos[projectName];
         }
 
         private createLanguageService(
@@ -358,7 +362,7 @@ namespace Bridge {
         }
 
         private isSourceFile(projectName: string, fileName: string) {
-            var projectSourceFiles: { [fileName: string]: FileInfo } = this.projectFileInfos[projectName];
+            var projectSourceFiles: { [fileName: string]: FileInfo } = this.getProjectFileInfos(projectName);
             return projectSourceFiles[fileName] != null;
         }
     }

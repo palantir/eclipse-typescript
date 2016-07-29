@@ -181,17 +181,25 @@ public class TypeScriptProjectSources {
             files.addAll(PATH_SPLITTER.splitToList(preferencesStore.getString(IPreferenceConstants.BUILD_PATH_FILES)));
         }
 
-        List<String> filesNotEmpty = Lists.newLinkedList();
-        for (String fileSpec : files) {
-            if (!Strings.isNullOrEmpty(fileSpec)) {
-                filesNotEmpty.add(fileSpec);
-            }
-        }
-
         List<String> include = PATH_SPLITTER.splitToList(preferencesStore.getString(IPreferenceConstants.BUILD_PATH_INCLUDE));
         List<String> exclude = PATH_SPLITTER.splitToList(preferencesStore.getString(IPreferenceConstants.BUILD_PATH_EXCLUDE));
 
-        return new SourcesSpecs(filesNotEmpty, include, exclude);
+        return new SourcesSpecs(cleanSpecs(files), cleanSpecs(include), cleanSpecs(exclude));
+    }
+
+    private List<String> cleanSpecs(List<String> specs) {
+        if (specs.isEmpty()) {
+            return specs;
+        }
+
+        List<String> cleanedSpecs = Lists.newLinkedList();
+        for (String specEntry : specs) {
+            if (!Strings.isNullOrEmpty(specEntry)) {
+                cleanedSpecs.add(specEntry);
+            }
+        }
+
+        return cleanedSpecs;
     }
 
     public static List<IResource> getResourcesFromSpecs(List<String> resourcesSpecs, IProject project) {

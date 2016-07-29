@@ -146,7 +146,12 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
                 sourceFileDeltas = this.getAllSourceFiles(Delta.ADDED);
             }
 
-            this.build(sourceFileDeltas, monitor);
+            IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
+
+            // compile the source files if compile-on-save is enabled
+            if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
+                this.build(sourceFileDeltas, monitor);
+            }
         }
 
         // re-create the markers for projects which reference this one
@@ -161,34 +166,29 @@ public final class TypeScriptBuilder extends IncrementalProjectBuilder {
     }
 
     private void build(Set<FileDelta> fileDeltas, IProgressMonitor monitor) throws CoreException {
-        IPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(this.getProject());
-
         this.deleteAllMarkers();
 
-        // compile the source files if compile-on-save is enabled
-        if (projectPreferenceStore.getBoolean(IPreferenceConstants.COMPILER_COMPILE_ON_SAVE)) {
-            this.ensureOutputFolderExists(monitor);
+        this.ensureOutputFolderExists(monitor);
 
-            if (isOutputFileSpecified()) {
-                String fileName = null;
+        if (isOutputFileSpecified()) {
+            String fileName = null;
 
-                // pick the first non-definition file as the one to "compile" (like a full build)
-                for (FileDelta fileDelta : fileDeltas) {
-                    String deltaFileName = fileDelta.getFileName();
+            // pick the first non-definition file as the one to "compile" (like a full build)
+            for (FileDelta fileDelta : fileDeltas) {
+                String deltaFileName = fileDelta.getFileName();
 
-                    if (!isDefinitionFile(deltaFileName)) {
-                        fileName = deltaFileName;
-                        break;
-                    }
+                if (!isDefinitionFile(deltaFileName)) {
+                    fileName = deltaFileName;
+                    break;
                 }
-
-                if (fileName != null) {
-                    this.compile(fileName, monitor);
-                }
-            } else {
-                this.clean(fileDeltas, monitor);
-                this.compile(fileDeltas, monitor);
             }
+
+            if (fileName != null) {
+                this.compile(fileName, monitor);
+            }
+        } else {
+            this.clean(fileDeltas, monitor);
+            this.compile(fileDeltas, monitor);
         }
 
         // create the problem markers
