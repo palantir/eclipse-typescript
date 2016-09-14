@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -29,6 +30,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 
@@ -46,6 +48,12 @@ import com.palantir.typescript.TypeScriptPlugin;
  * @author lgrignon
  */
 public final class ProjectPreferenceStore extends PreferenceStore {
+
+    private static final List<String> ALWAYS_PROJECT_SPECIFIC_PREFERENCE_NAME = ImmutableList.of(
+        IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER,
+        IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER,
+        IPreferenceConstants.COMPILER_OUT_DIR,
+        IPreferenceConstants.COMPILER_OUT_FILE);
 
     private final IProject project;
     private final IPreferenceStore preferenceStore;
@@ -208,7 +216,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
             }
         }
 
-        if (this.projectSpecificSettings && super.contains(name)) {
+        if (isProjectScopedPreference(name) && super.contains(name)) {
             return;
         }
 
@@ -229,6 +237,10 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         }
     }
 
+    private boolean isProjectScopedPreference(String name) {
+        return this.projectSpecificSettings || ALWAYS_PROJECT_SPECIFIC_PREFERENCE_NAME.contains(name);
+    }
+
     public TsConfigPreferences getTsConfigPreferences() {
         return tsConfigPreferences;
     }
@@ -237,7 +249,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
 
         for (String name : super.preferenceNames()) {
-            if (this.projectSpecificSettings) {
+            if (isProjectScopedPreference(name)) {
                 String value = this.getString(name);
 
                 projectPreferences.put(name, value);
