@@ -24,65 +24,38 @@ import java.util.Set;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
 
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.palantir.typescript.preferences.ProjectPreferenceStore;
 import com.palantir.typescript.services.language.FileDelta;
-import com.palantir.typescript.services.language.FileDelta.Delta;
 
 /**
  * Utilities for dealing with TypeScript projects.
  *
  * @author dcicerone
+ * @author lgrignon
  */
 public final class TypeScriptProjects {
 
-    private static final Splitter PATH_SPLITTER = Splitter.on(';');
-
     public enum Folders {
-        EXPORTED,
-        SOURCE,
-        SOURCE_AND_EXPORTED
+        EXPORTED, SOURCE, SOURCE_AND_EXPORTED
     }
 
     public static Set<IFile> getFiles(IProject project, Folders folders) {
         checkNotNull(folders);
         checkNotNull(project);
 
-        Set<IFile> files = Sets.newHashSet();
+        TypeScriptProjectSources projectSources = new TypeScriptProjectSources(project, folders);
 
-        List<IContainer> containers = getContainers(project, folders);
-        for (IContainer container : containers) {
-            if (container.exists()) {
-                MyResourceVisitor visitor = new MyResourceVisitor();
-
-                try {
-                    container.accept(visitor);
-                } catch (CoreException e) {
-                    throw new RuntimeException(e);
-                }
-
-                files.addAll(visitor.files.build());
-            }
-        }
-
-        return Collections.unmodifiableSet(files);
+        return Collections.unmodifiableSet(projectSources.getAllSourceFiles());
     }
 
     public static Set<FileDelta> getFileDeltas(Folders folders, IResourceDelta delta) {
@@ -103,42 +76,22 @@ public final class TypeScriptProjects {
         checkNotNull(folders);
         checkNotNull(project);
 
-        Set<FileDelta> fileDeltas = Sets.newHashSet();
-
-        List<IContainer> containers = getContainers(project, folders);
-        for (IContainer container : containers) {
-            MyResourceDeltaVisitor visitor = new MyResourceDeltaVisitor(container);
-
-            try {
-                delta.accept(visitor);
-            } catch (CoreException e) {
-                throw new RuntimeException(e);
-            }
-
-            fileDeltas.addAll(visitor.fileDeltas.build());
-        }
-
-        return Collections.unmodifiableSet(fileDeltas);
-    }
-
-    public static List<String> getFolderNames(IProject project, Folders folders) {
-        checkNotNull(project);
-        checkNotNull(folders);
-
-        ImmutableList.Builder<String> folderNames = ImmutableList.builder();
-
-        List<IContainer> containers = getContainers(project, folders);
-        for (IContainer container : containers) {
-            folderNames.add(EclipseResources.getContainerName(container));
-        }
-
-        return folderNames.build();
+        TypeScriptProjectSources projectSources = new TypeScriptProjectSources(project, folders);
+        return Collections.unmodifiableSet(projectSources.getDeltas(delta));
     }
 
     public static IContainer getOutputFolder(IProject project) {
         checkNotNull(project);
 
-        return Iterables.getFirst(getFoldersFromPreference(project, IPreferenceConstants.COMPILER_OUT_DIR), null);
+        ProjectPreferenceStore projectPreferences = new ProjectPreferenceStore(project);
+        String outFolderPath = projectPreferences.getString(IPreferenceConstants.COMPILER_OUT_DIR);
+        IContainer outFolder = null;
+        if (!Strings.isNullOrEmpty(outFolderPath)) {
+            IPath relativeFolderPath = Path.fromPortableString(outFolderPath);
+            outFolder = project.getFolder(relativeFolderPath);
+        }
+
+        return outFolder;
     }
 
     // see Bridge/typescript/src/compiler/emitter.ts, EmitOptions.determineCommonDirectoryPath
@@ -163,83 +116,14 @@ public final class TypeScriptProjects {
         return commonDirectoryPath;
     }
 
-    public static boolean isContainedInFolders(IProject project, Folders folders, IResource resource) {
-        checkNotNull(folders);
-        checkNotNull(project);
-        checkNotNull(resource);
+    public static boolean isSourceFile(IResource resource, IProject project) {
 
-        if (TypeScriptBuilder.isConfigured(project)) {
-            List<IContainer> containers = getContainers(project, folders);
+        TypeScriptProjectSources projectSources = new TypeScriptProjectSources(project, Folders.SOURCE);
 
-            for (IContainer container : containers) {
-                if (isContainedIn(resource, container)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
+        return projectSources.getAllSourceFiles().contains(resource);
     }
 
-    private static List<IContainer> getContainers(IProject project, Folders folders) {
-        checkNotNull(project);
-        checkNotNull(folders);
-
-        ImmutableList.Builder<IContainer> containers = ImmutableList.builder();
-
-        boolean addExported = (folders == Folders.EXPORTED || folders == Folders.SOURCE_AND_EXPORTED);
-        boolean addSource = (folders == Folders.SOURCE || folders == Folders.SOURCE_AND_EXPORTED);
-
-        if (addExported) {
-            containers.addAll(getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER));
-        }
-
-        if (addSource) {
-            List<IContainer> sourceFolders = getFoldersFromPreference(project, IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER);
-
-            // if no source folders are explicitly set, return the entire project
-            if (sourceFolders.isEmpty()) {
-                sourceFolders = ImmutableList.<IContainer> of(project);
-            }
-
-            containers.addAll(sourceFolders);
-        }
-
-        return containers.build();
-    }
-
-    private static List<IContainer> getFoldersFromPreference(IProject project, String preferenceId) {
-        IScopeContext projectScope = new ProjectScope(project);
-        IEclipsePreferences projectPreferences = projectScope.getNode(TypeScriptPlugin.ID);
-        String folderNames = projectPreferences.get(preferenceId, "");
-
-        if (!Strings.isNullOrEmpty(folderNames)) {
-            ImmutableList.Builder<IContainer> folders = ImmutableList.builder();
-
-            for (String folderName : PATH_SPLITTER.splitToList(folderNames)) {
-                IPath relativeFolderPath = Path.fromPortableString(folderName);
-                IFolder folder = project.getFolder(relativeFolderPath);
-
-                folders.add(folder);
-            }
-
-            return folders.build();
-        } else {
-            return ImmutableList.of();
-        }
-    }
-
-    private static boolean isContainedIn(IResource resource, IContainer container) {
-        for (IContainer parent = resource.getParent(); parent != null; parent = parent.getParent()) {
-            if (parent.equals(container)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static boolean isTypeScriptFile(IResource resource) {
+    public static boolean isTypeScriptFile(IResource resource) {
         // needs to be a file
         if (resource.getType() != IResource.FILE) {
             return false;
@@ -250,73 +134,45 @@ public final class TypeScriptProjects {
         return resourceName.endsWith(".ts") || resourceName.endsWith(".tsx");
     }
 
-    private static final class MyResourceDeltaVisitor implements IResourceDeltaVisitor {
-
-        /*
-         * The flags used when the content (or encoding) of a file changes.
-         */
-        private static final int FLAGS = IResourceDelta.CONTENT | IResourceDelta.ENCODING;
-
-        private final ImmutableList.Builder<FileDelta> fileDeltas;
-        private final IContainer container;
-
-        MyResourceDeltaVisitor(IContainer container) {
-            this.fileDeltas = ImmutableList.builder();
-            this.container = container;
-        }
-
-        @Override
-        public boolean visit(IResourceDelta delta) throws CoreException {
-            IResource resource = delta.getResource();
-
-            // check that the resource is a TypeScript file in the source folder
-            if (isTypeScriptFile(resource) && isContainedIn(resource, this.container)) {
-                Delta deltaEnum = this.getDeltaEnum(delta);
-
-                // check that the delta is a change that impacts the contents (or encoding) of the file
-                if (deltaEnum != Delta.CHANGED || (delta.getFlags() & FLAGS) != 0) {
-                    FileDelta fileDelta = new FileDelta(deltaEnum, (IFile) resource);
-
-                    this.fileDeltas.add(fileDelta);
-                }
-            }
-
-            return true;
-        }
-
-        private Delta getDeltaEnum(IResourceDelta delta) {
-            switch (delta.getKind()) {
-                case IResourceDelta.ADDED:
-                    return Delta.ADDED;
-                case IResourceDelta.CHANGED:
-                    return Delta.CHANGED;
-                case IResourceDelta.REMOVED:
-                    return Delta.REMOVED;
-                default:
-                    throw new IllegalStateException();
-            }
-        }
-    }
-
-    private static final class MyResourceVisitor implements IResourceVisitor {
-
-        private final ImmutableList.Builder<IFile> files;
-
-        private MyResourceVisitor() {
-            this.files = ImmutableList.builder();
-        }
-
-        @Override
-        public boolean visit(IResource resource) throws CoreException {
-            if (isTypeScriptFile(resource)) {
-                this.files.add((IFile) resource);
-            }
-
-            return true;
-        }
-    }
-
     private TypeScriptProjects() {
         // prevent instantiation
+    }
+
+    public static List<String> getExportedFolderNames(IProject project) {
+        List<IContainer> exportedFolders = getExportedFolders(project);
+        List<String> folderNames = Lists.newArrayListWithCapacity(exportedFolders.size());
+        for (IContainer folder : exportedFolders) {
+            folderNames.add(EclipseResources.getContainerName(folder));
+        }
+
+        return folderNames;
+    }
+
+    public static List<IContainer> getExportedFolders(IProject project) {
+        ProjectPreferenceStore projectPreferenceStore = new ProjectPreferenceStore(project);
+        List<String> folderPaths = TypeScriptProjectSources.PATH_SPLITTER
+            .splitToList(projectPreferenceStore.getString(IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER));
+        List<IResource> folderResources = TypeScriptProjectSources.getResourcesFromSpecs(folderPaths, project);
+
+        List<IContainer> folders = Lists.newArrayListWithCapacity(folderResources.size());
+        for (IResource folderResource : folderResources) {
+            if (folderResource instanceof IContainer) {
+                folders.add((IContainer) folderResource);
+            }
+        }
+
+        return folders;
+    }
+
+    public static boolean isContainedIn(IResource resource, List<IContainer> containers) {
+        for (IContainer container : containers) {
+            for (IContainer parent = resource.getParent(); parent != null; parent = parent.getParent()) {
+                if (parent.equals(container)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

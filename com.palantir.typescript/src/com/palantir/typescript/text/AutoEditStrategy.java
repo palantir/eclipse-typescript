@@ -18,13 +18,12 @@ package com.palantir.typescript.text;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.palantir.typescript.TypeScriptPlugin.logError;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.DocumentCommand;
@@ -35,7 +34,6 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditorPreferenceConstants;
 
 import com.google.common.base.Strings;
 import com.palantir.typescript.IPreferenceConstants;
-import com.palantir.typescript.TypeScriptPlugin;
 import com.palantir.typescript.services.language.EditorOptions;
 import com.palantir.typescript.services.language.IndentStyle;
 import com.palantir.typescript.services.language.TextSpan;
@@ -179,10 +177,7 @@ public final class AutoEditStrategy implements IAutoEditStrategy {
         try {
             return this.editor.getLanguageService().getIndentationAtPosition(position, options);
         } catch (RuntimeException e) {
-            Status status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, e.getMessage(), e);
-
-            // log the exception
-            TypeScriptPlugin.getDefault().getLog().log(status);
+            logError(e.getMessage(), e);
 
             // fallback to no indentation (its better than the enter key not working)
             return 0;

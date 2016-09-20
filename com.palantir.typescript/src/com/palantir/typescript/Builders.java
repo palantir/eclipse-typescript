@@ -27,6 +27,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,6 +39,38 @@ import com.google.common.collect.ImmutableList;
  * @author rserafin
  */
 public final class Builders {
+
+    /**
+     * Prompts user to rebuild either the project or the whole workspace.
+     *
+     * @param shell
+     *            parent shell
+     * @param onlyProject
+     *            the project to be rebuilt or null if the whole workpsace has to be rebuilt
+     * @return true if user accepted the recompilation
+     */
+    public static boolean promptRecompile(Shell shell, IProject onlyProject) {
+        String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
+        String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
+        String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
+        MessageDialog dialog = new MessageDialog(shell, title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
+        int result = dialog.open();
+
+        boolean process = false;
+        if (result != 1) { // cancel
+            process = true;
+
+            // rebuild the workspace
+            if (result == 2) {
+                if (onlyProject != null) {
+                    Builders.rebuildProject(onlyProject);
+                } else {
+                    Builders.rebuildWorkspace();
+                }
+            }
+        }
+        return process;
+    }
 
     /**
      * Forces a full clean/rebuild of all the workspace project that have the TypeScript nature.

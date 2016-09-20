@@ -24,12 +24,16 @@ namespace Bridge {
         private contents: string;
         private open: boolean;
         private path: string;
+        
+        private projectName: string;
 
-        constructor(contents: string, path: string) {
+        constructor(contents: string, path: string, projectName: string) {
             this.changes = [];
             this.contents = contents;
             this.open = false;
             this.path = path;
+            
+            this.projectName = projectName;
         }
 
         public editContents(offset: number, length: number, text: string): void {
@@ -62,6 +66,10 @@ namespace Bridge {
 
         public getVersion() {
             return this.changes.length.toString(10);
+        }
+
+        public getProjectName() {
+            return this.projectName;
         }
 
         public updateFile(contents: string) {

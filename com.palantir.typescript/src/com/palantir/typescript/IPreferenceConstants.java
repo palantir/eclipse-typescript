@@ -24,7 +24,10 @@ package com.palantir.typescript;
  */
 public interface IPreferenceConstants {
 
+    String BUILD_PATH_EXCLUDE = "build.path.exclude";
     String BUILD_PATH_EXPORTED_FOLDER = "build.path.exportedFolder";
+    String BUILD_PATH_FILES = "build.path.files";
+    String BUILD_PATH_INCLUDE = "build.path.include";
     String BUILD_PATH_SOURCE_FOLDER = "build.path.sourceFolder";
 
     String COMPILER_TARGET = "compiler.codeGenTarget";
@@ -45,6 +48,7 @@ public interface IPreferenceConstants {
     String COMPILER_OUT_DIR = "compiler.outputDirOption";
     String COMPILER_OUT_FILE = "compiler.outputFileOption";
     String COMPILER_REMOVE_COMMENTS = "compiler.removeComments";
+    String COMPILER_EMIT_DECORATOR_METADATA = "compiler.emitDecoratorMetadata";
     String COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS = "compiler.suppressExcessPropertyErrors";
     String COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS = "compiler.suppressImplicitAnyIndexErrors";
 
@@ -70,6 +74,7 @@ public interface IPreferenceConstants {
     String FORMATTER_PLACE_OPEN_BRACE_ON_NEW_LINE_FOR_FUNCTIONS = "formatter.placeOpenBraceOnNewLineForFunctions";
 
     String GENERAL_NODE_PATH = "general.nodePath";
+    String GENERAL_USE_TSCONFIG_FILE = "general.useTsConfigFile";
 
     String SYNTAX_COLORING_COMMENT_COLOR = "syntaxColoring.comment.color";
     String SYNTAX_COLORING_IDENTIFIER_COLOR = "syntaxColoring.identifier.color";
@@ -79,4 +84,7 @@ public interface IPreferenceConstants {
     String SYNTAX_COLORING_PUNCTUATION_COLOR = "syntaxColoring.punctuation.color";
     String SYNTAX_COLORING_REG_EXP_LITERAL_COLOR = "syntaxColoring.regExpLiteral.color";
     String SYNTAX_COLORING_STRING_LITERAL_COLOR = "syntaxColoring.stringLiteral.color";
+
+    String PREFERENCE_STORE_TS_CONFIG_LAST_MODIFICATION_TIME = "preferenceStore.tsConfigLastModTime";
+    String PREFERENCE_STORE_TS_CONFIG_HASH = "preferenceStore.tsConfigHash";
 }

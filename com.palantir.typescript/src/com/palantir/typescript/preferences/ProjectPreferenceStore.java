@@ -20,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
@@ -29,19 +30,34 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.osgi.service.prefs.BackingStoreException;
 
+import com.google.common.collect.ImmutableList;
+import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.TypeScriptPlugin;
 
 /**
  * An adapter for {@link PreferenceStore} to allow a preference page to be used as a property page.
  * <p>
  * Adapted from http://www.eclipse.org/articles/Article-Mutatis-mutandis/overlay-pages.html.
+ * </p>
+ * <p>
+ * In addition, this class is a proxy to project preferences by providing the ability to retrieve
+ * values from the tsconfig.json file.
+ * </p>
  *
  * @author dcicerone
+ * @author lgrignon
  */
 public final class ProjectPreferenceStore extends PreferenceStore {
 
+    private static final List<String> ALWAYS_PROJECT_SPECIFIC_PREFERENCE_NAME = ImmutableList.of(
+        IPreferenceConstants.BUILD_PATH_SOURCE_FOLDER,
+        IPreferenceConstants.BUILD_PATH_EXPORTED_FOLDER,
+        IPreferenceConstants.COMPILER_OUT_DIR,
+        IPreferenceConstants.COMPILER_OUT_FILE);
+
     private final IProject project;
     private final IPreferenceStore preferenceStore;
+    private final TsConfigPreferences tsConfigPreferences;
 
     private boolean projectSpecificSettings;
 
@@ -58,6 +74,7 @@ public final class ProjectPreferenceStore extends PreferenceStore {
 
         this.project = project;
         this.preferenceStore = preferenceStore;
+        this.tsConfigPreferences = new TsConfigPreferences(project);
 
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
         this.projectSpecificSettings = (projectPreferences.get(sentinelPropertyName, null) != null);
@@ -158,6 +175,14 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         this.projectSpecificSettings = projectSpecificSettings;
     }
 
+    public boolean isUsingTsConfigFile() {
+        return getProjectPreferences().getBoolean(IPreferenceConstants.GENERAL_USE_TSCONFIG_FILE, false);
+    }
+
+    public void setUsingTsConfigFile(boolean useTsConfigFile) {
+        getProjectPreferences().putBoolean(IPreferenceConstants.GENERAL_USE_TSCONFIG_FILE, useTsConfigFile);
+    }
+
     @Override
     public void save() throws IOException {
         this.writeProperties();
@@ -181,7 +206,17 @@ public final class ProjectPreferenceStore extends PreferenceStore {
             return;
         }
 
-        if (this.projectSpecificSettings && super.contains(name)) {
+        if (isUsingTsConfigFile() && tsConfigPreferences.isTsConfigPreference(name)) {
+            IEclipsePreferences projectPreferences = this.getProjectPreferences();
+            String value = tsConfigPreferences.getValue(name);
+            if (value == null) {
+                projectPreferences.remove(name);
+            } else {
+                projectPreferences.put(name, value);
+            }
+        }
+
+        if (isProjectScopedPreference(name) && super.contains(name)) {
             return;
         }
 
@@ -202,11 +237,19 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         }
     }
 
+    private boolean isProjectScopedPreference(String name) {
+        return this.projectSpecificSettings || ALWAYS_PROJECT_SPECIFIC_PREFERENCE_NAME.contains(name);
+    }
+
+    public TsConfigPreferences getTsConfigPreferences() {
+        return tsConfigPreferences;
+    }
+
     private void writeProperties() throws IOException {
         IEclipsePreferences projectPreferences = this.getProjectPreferences();
 
         for (String name : super.preferenceNames()) {
-            if (this.projectSpecificSettings) {
+            if (isProjectScopedPreference(name)) {
                 String value = this.getString(name);
 
                 projectPreferences.put(name, value);
@@ -226,5 +269,17 @@ public final class ProjectPreferenceStore extends PreferenceStore {
         IScopeContext projectScope = new ProjectScope(this.project);
 
         return projectScope.getNode(TypeScriptPlugin.ID);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (String preferenceName : this.preferenceNames()) {
+            builder.append(preferenceName);
+            builder.append("=");
+            builder.append(this.getString(preferenceName));
+            builder.append(" \n");
+        }
+        return getClass().getSimpleName() + ": " + builder;
     }
 }

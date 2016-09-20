@@ -18,9 +18,11 @@ package com.palantir.typescript.preferences;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditor;
@@ -32,6 +34,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import com.google.common.base.Ascii;
+import com.google.common.collect.Sets;
 import com.palantir.typescript.Builders;
 import com.palantir.typescript.IPreferenceConstants;
 import com.palantir.typescript.Resources;
@@ -45,6 +48,7 @@ import com.palantir.typescript.services.language.ScriptTarget;
  * The compiler preference page.
  *
  * @author tyleradams
+ * @author lgrignon
  */
 public final class CompilerPreferencePage extends FieldEditorProjectPreferencePage implements IWorkbenchPreferencePage {
 
@@ -52,6 +56,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     private BooleanFieldEditor compileOnSaveField;
     private BooleanFieldEditor declarationField;
+    private BooleanFieldEditor emitDecoratorMetadataField;
     private BooleanFieldEditor experimentalDecoratorsField;
     private BooleanFieldEditor inlineSourceMapField;
     private BooleanFieldEditor inlineSourcesField;
@@ -69,6 +74,7 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private BooleanFieldEditor suppressImplicitAnyIndexErrorsField;
     private ComboFieldEditor targetField;
 
+
     public CompilerPreferencePage() {
         super(FieldEditorPreferencePage.GRID);
     }
@@ -79,32 +85,17 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
 
     @Override
     public boolean performOk() {
-        final boolean process;
+        boolean process = false;
 
         // offer to rebuild the workspace if the compiler preferences were modified
         if (this.compilerPreferencesModified) {
-            String title = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.title");
-            String message = Resources.BUNDLE.getString("preferences.compiler.rebuild.dialog.message");
-            String[] buttonLabels = new String[] { IDialogConstants.NO_LABEL, IDialogConstants.CANCEL_LABEL, IDialogConstants.YES_LABEL };
-            MessageDialog dialog = new MessageDialog(this.getShell(), title, null, message, MessageDialog.QUESTION, buttonLabels, 2);
-            int result = dialog.open();
+            IProject recompiledProject = null;
+            if (this.isPropertyPage()) {
+                recompiledProject = (IProject) this.getElement().getAdapter(IProject.class);
+            }
 
-            if (result == 1) { // cancel
-                process = false;
-            } else {
-                // yes/no
+            if (Builders.promptRecompile(this.getShell(), recompiledProject)) {
                 process = super.performOk();
-
-                // rebuild the workspace
-                if (result == 2) {
-                    if (this.isPropertyPage()) {
-                        IProject project = (IProject) this.getElement().getAdapter(IProject.class);
-
-                        Builders.rebuildProject(project);
-                    } else {
-                        Builders.rebuildWorkspace();
-                    }
-                }
             }
 
             this.compilerPreferencesModified = false;
@@ -230,6 +221,12 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
             this.getFieldEditorParent());
         this.addField(this.experimentalDecoratorsField);
 
+        this.emitDecoratorMetadataField = new BooleanFieldEditor(
+            IPreferenceConstants.COMPILER_EMIT_DECORATOR_METADATA,
+            getResource("emit.decorator.metadata"),
+            this.getFieldEditorParent());
+        this.addField(this.emitDecoratorMetadataField);
+
         this.compileOnSaveField = new BooleanFieldEditor(
             IPreferenceConstants.COMPILER_COMPILE_ON_SAVE,
             getResource("compile.on.save"),
@@ -319,16 +316,19 @@ public final class CompilerPreferencePage extends FieldEditorProjectPreferencePa
     private String[][] createComboFieldValues(Enum[] enums) {
         checkNotNull(enums);
 
-        String[][] fieldValues = new String[enums.length][2];
+        Set<String> alreadyAddedLabels = Sets.newHashSet();
+        List<String[]> fieldValues = new LinkedList<String[]>();
         for (int i = 0; i < enums.length; i++) {
             String key = enums[i].name();
             String resourceKey = Ascii.toLowerCase(key).replace("_", ".");
-
-            fieldValues[i][0] = getResource(resourceKey);
-            fieldValues[i][1] = key;
+            String label = getResource(resourceKey);
+            if (!alreadyAddedLabels.contains(label)) {
+                fieldValues.add(new String[] { label, key });
+                alreadyAddedLabels.add(label);
+            }
         }
 
-        return fieldValues;
+        return fieldValues.toArray(new String[0][]);
     }
 
     private static String getResource(String key) {

@@ -27,12 +27,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum ModuleKind {
 
-    NONE(0),
-    COMMONSJS(1),
-    AMD(2),
-    UMD(3),
-    SYSTEM(4),
-    ES6(5);
+    NONE(0), COMMONSJS(1), AMD(2), UMD(3), SYSTEM(4), ES6(5);
 
     private final int value;
 
@@ -51,14 +46,20 @@ public enum ModuleKind {
     public static ModuleKind parse(String moduleKind) {
         checkNotNull(moduleKind);
 
-        if (moduleKind.equals("ASYNCHRONOUS")) {
-            return AMD;
-        } else if (moduleKind.equals("SYNCHRONOUS")) {
-            return COMMONSJS;
-        } else if (moduleKind.equals("UNSPECIFIED")) {
-            return NONE;
-        } else {
-            return valueOf(moduleKind);
+        try {
+            moduleKind = moduleKind.toUpperCase();
+
+            if (moduleKind.equals("ASYNCHRONOUS")) {
+                return AMD;
+            } else if (moduleKind.equals("SYNCHRONOUS")) {
+                return COMMONSJS;
+            } else if (moduleKind.equals("UNSPECIFIED")) {
+                return NONE;
+            } else {
+                return valueOf(moduleKind);
+            }
+        } catch (Exception e) {
+            return ModuleKind.NONE;
         }
     }
 }

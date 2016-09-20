@@ -199,10 +199,12 @@ public final class CompilerOptions {
         compilerOptions.experimentalDecorators = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EXPERIMENTAL_DECORATORS);
         compilerOptions.inlineSourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCE_MAP);
         compilerOptions.inlineSources = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_INLINE_SOURCES);
-        compilerOptions.jsx = JsxEmit.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_JSX));
-        compilerOptions.module = ModuleKind.parse(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE));
-        compilerOptions.moduleResolution = ModuleResolutionKind
-            .valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_RESOLUTION));
+        String jsxEmit = preferenceStore.getString(IPreferenceConstants.COMPILER_JSX);
+        compilerOptions.jsx = JsxEmit.valueOf(jsxEmit == null ? null : jsxEmit.toUpperCase());
+        String moduleKind = preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE);
+        compilerOptions.module = ModuleKind.parse(moduleKind == null ? null : moduleKind.toUpperCase());
+        String moduleResolution = preferenceStore.getString(IPreferenceConstants.COMPILER_MODULE_RESOLUTION);
+        compilerOptions.moduleResolution = ModuleResolutionKind.valueOf(moduleResolution == null ? null : moduleResolution.toUpperCase());
         compilerOptions.noEmitOnError = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_NO_EMIT_ON_ERROR);
         compilerOptions.noFallthroughCasesInSwitch = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_NO_FALLTHROUGH_CASES_IN_SWITCH);
@@ -213,9 +215,13 @@ public final class CompilerOptions {
         compilerOptions.sourceMap = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_SOURCE_MAP);
         compilerOptions.suppressExcessPropertyErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS);
+
+        compilerOptions.emitDecoratorMetadata = preferenceStore.getBoolean(IPreferenceConstants.COMPILER_EMIT_DECORATOR_METADATA);
+
         compilerOptions.suppressImplicitAnyIndexErrors = preferenceStore
             .getBoolean(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS);
-        compilerOptions.target = ScriptTarget.valueOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET));
+        String target = preferenceStore.getString(IPreferenceConstants.COMPILER_TARGET);
+        compilerOptions.target = ScriptTarget.parse(target == null ? null : target.toUpperCase());
 
         // set the output directory or file if it was specified
         String outDir = preferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);

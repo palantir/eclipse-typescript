@@ -57,7 +57,12 @@ namespace Bridge {
         }
 
         public getScriptFileNames() {
-            return Object.getOwnPropertyNames(this.fileInfos).filter(this.fileFilter);
+            var fileNames: string[] = Object.getOwnPropertyNames(this.fileInfos);
+            if (this.fileFilter != null) {
+                fileNames = fileNames.filter(this.fileFilter);
+            }
+
+            return fileNames;
         }
 
         public getScriptSnapshot(fileName: string) {

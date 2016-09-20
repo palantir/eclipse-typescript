@@ -18,12 +18,16 @@ package com.palantir.typescript;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -33,6 +37,8 @@ import org.osgi.framework.BundleContext;
 import com.google.common.base.Splitter;
 import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.palantir.typescript.TypeScriptProjects.Folders;
 import com.palantir.typescript.services.classifier.Classifier;
 import com.palantir.typescript.services.language.FileDelta;
@@ -162,7 +168,7 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         store.setDefault(IPreferenceConstants.COMPILER_NO_LIB, false);
         store.setDefault(IPreferenceConstants.COMPILER_REMOVE_COMMENTS, false);
         store.setDefault(IPreferenceConstants.COMPILER_SOURCE_MAP, false);
-        store.setDefault(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS,  false);
+        store.setDefault(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS, false);
         store.setDefault(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS, false);
         store.setDefault(IPreferenceConstants.COMPILER_TARGET, ScriptTarget.ECMASCRIPT5.toString());
 
@@ -231,18 +237,51 @@ public final class TypeScriptPlugin extends AbstractUIPlugin {
         return "node";
     }
 
+    public static IStatus logError(String message, Throwable t) {
+        IStatus status = new Status(IStatus.ERROR, TypeScriptPlugin.ID, message, t);
+        TypeScriptPlugin.getDefault().getLog().log(status);
+        return status;
+    }
+
+    public static IStatus logInfo(String message) {
+        IStatus status = new Status(IStatus.INFO, TypeScriptPlugin.ID, message);
+        TypeScriptPlugin.getDefault().getLog().log(status);
+        return status;
+    }
+
     private final class MyResourceChangeListener implements IResourceChangeListener {
         @Override
         public void resourceChanged(IResourceChangeEvent event) {
+            if (event.getResource() == null) {
+                return;
+            }
+
             IResourceDelta delta = event.getDelta();
             Set<FileDelta> fileDeltas = TypeScriptProjects.getFileDeltas(Folders.SOURCE_AND_EXPORTED, delta);
 
-            if (TypeScriptPlugin.this.editorLanguageEndpoint != null) {
-                TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(fileDeltas);
+            Map<IProject, Set<FileDelta>> fileDeltasByProject = Maps.newHashMap();
+
+            for (FileDelta fileDelta : fileDeltas) {
+                IProject project = event.getResource().getProject();
+                if (project != null) {
+                    Set<FileDelta> projectDeltas = fileDeltasByProject.get(project);
+                    if (projectDeltas == null) {
+                        projectDeltas = Sets.newHashSet();
+                        fileDeltasByProject.put(project, projectDeltas);
+                    }
+
+                    projectDeltas.add(fileDelta);
+                }
             }
 
-            if (TypeScriptPlugin.this.reconcilerLanguageEndpoint != null) {
-                TypeScriptPlugin.this.reconcilerLanguageEndpoint.updateFiles(fileDeltas);
+            for (Map.Entry<IProject, Set<FileDelta>> projectDeltas : fileDeltasByProject.entrySet()) {
+                if (TypeScriptPlugin.this.editorLanguageEndpoint != null) {
+                    TypeScriptPlugin.this.editorLanguageEndpoint.updateFiles(projectDeltas.getKey(), projectDeltas.getValue());
+                }
+
+                if (TypeScriptPlugin.this.reconcilerLanguageEndpoint != null) {
+                    TypeScriptPlugin.this.reconcilerLanguageEndpoint.updateFiles(projectDeltas.getKey(), projectDeltas.getValue());
+                }
             }
         }
     }

@@ -23,46 +23,39 @@ namespace Bridge {
 
         private documentRegistry: ts.DocumentRegistry;
         private exportedFolderNames: { [projectName: string]: string[] };
-        private fileInfos: { [fileName: string]: FileInfo };
+        private projectFileInfos: { [projectName: string]: { [fileName: string]: FileInfo } };
+        private allFileInfos: { [fileName: string]: FileInfo };
         private languageServices: { [serviceKey: string]: ts.LanguageService };
-        private sourceFolderNames: { [projectName: string]: string[] };
 
         constructor() {
             this.documentRegistry = ts.createDocumentRegistry();
             this.exportedFolderNames = Object.create(null);
-            this.fileInfos = Object.create(null);
+            this.allFileInfos = Object.create(null);
             this.languageServices = Object.create(null);
-            this.sourceFolderNames = Object.create(null);
+            this.projectFileInfos = Object.create(null);
         }
 
         public cleanProject(projectName: string) {
             if (this.isProjectInitialized(projectName)) {
-                // delete the project's files
-                Object.getOwnPropertyNames(this.fileInfos).forEach((fileName) => {
-                    if (this.isSourceFile(projectName, fileName) || this.isExportedFile(projectName, fileName)) {
-                        delete this.fileInfos[fileName];
-                    }
-                });
 
                 delete this.exportedFolderNames[projectName];
+                delete this.projectFileInfos[projectName];
                 delete this.languageServices[projectName];
-                delete this.sourceFolderNames[projectName];
             }
         }
 
         public initializeProject(
-                projectName: string,
-                compilationSettings: ts.CompilerOptions,
-                referencedProjectNames: string[],
-                exportedFolderNames: string[],
-                sourceFolderNames: string[],
-                files: { [fileName: string]: string }) {
+            projectName: string,
+            compilationSettings: ts.CompilerOptions,
+            referencedProjectNames: string[],
+            exportedFolderNames: string[],
+            files: { [fileName: string]: string }) {
 
             this.cleanProject(projectName);
             this.exportedFolderNames[projectName] = exportedFolderNames;
-            this.sourceFolderNames[projectName] = sourceFolderNames;
+
             this.languageServices[projectName] = this.createProjectLanguageService(projectName, compilationSettings, referencedProjectNames);
-            this.addFiles(files);
+            this.addFiles(projectName, files);
         }
 
         public isProjectInitialized(projectName: string) {
@@ -72,18 +65,17 @@ namespace Bridge {
         public initializeIsolatedLanguageService(serviceKey: string, fileName: string, fileContents: string) {
             this.languageServices[serviceKey] = this.createIsolatedLanguageService(fileName);
 
-            this.fileInfos[fileName] = new FileInfo(fileContents, null);
+            this.allFileInfos[fileName] = new FileInfo(fileContents, null, null);
         }
 
         public closeIsolatedLanguageService(serviceKey: string, fileName: string) {
-            delete this.fileInfos[fileName];
+            delete this.allFileInfos[fileName];
             delete this.languageServices[serviceKey];
         }
 
         public getAllTodoComments(projectName: string) {
             var todos: { [fileName: string]: TodoCommentEx[] } = {};
-            Object.keys(this.fileInfos)
-                .filter((fileName) => this.isSourceFile(projectName, fileName))
+            Object.keys(this.getProjectFileInfos(projectName))
                 .forEach((fileName) => {
                     todos[fileName] = this.getTodoComments(projectName, fileName);
                 });
@@ -93,8 +85,7 @@ namespace Bridge {
         public getAllDiagnostics(projectName: string) {
             var diagnostics: { [fileName: string]: DiagnosticEx[] } = Object.create(null);
 
-            Object.keys(this.fileInfos)
-                .filter((fileName) => this.isSourceFile(projectName, fileName))
+            Object.keys(this.getProjectFileInfos(projectName))
                 .forEach((fileName) => {
                     diagnostics[fileName] = this.getDiagnostics(projectName, fileName, true);
                 });
@@ -103,6 +94,7 @@ namespace Bridge {
         }
 
         public getDiagnostics(serviceKey: string, fileName: string, semantic: boolean): DiagnosticEx[] {
+
             var diagnostics = this.languageServices[serviceKey].getSyntacticDiagnostics(fileName);
 
             if (semantic && diagnostics.length === 0) {
@@ -237,11 +229,11 @@ namespace Bridge {
         }
 
         public editFile(fileName: string, offset: number, length: number, text: string) {
-            this.fileInfos[fileName].editContents(offset, length, text);
+            this.allFileInfos[fileName].editContents(offset, length, text);
         }
 
         public setFileOpen(fileName: string, open: boolean) {
-            var fileInfo = this.fileInfos[fileName];
+            var fileInfo = this.allFileInfos[fileName];
 
             // the file may have been deleted previously, so only process this call if the file exists
             if (fileInfo != null) {
@@ -250,21 +242,21 @@ namespace Bridge {
         }
 
         public setLibContents(libContents: string, libES6Contents: string) {
-            var libFileInfo = new FileInfo(libContents, null);
-            this.fileInfos[LIB_FILE_NAME] = libFileInfo;
+            var libFileInfo = new FileInfo(libContents, null, null);
+            this.allFileInfos[LIB_FILE_NAME] = libFileInfo;
 
-            var libES6FileInfo = new FileInfo(libES6Contents, null);
-            this.fileInfos[LIB_ES6_FILE_NAME] = libES6FileInfo;
+            var libES6FileInfo = new FileInfo(libES6Contents, null, null);
+            this.allFileInfos[LIB_ES6_FILE_NAME] = libES6FileInfo;
         }
 
-        public updateFiles(deltas: IFileDelta[]) {
+        public updateFiles(projectName: string, deltas: IFileDelta[]) {
             deltas.forEach((delta) => {
                 var fileName = delta.fileName;
 
                 switch (delta.delta) {
                     case "ADDED":
                     case "CHANGED":
-                        var fileInfo = this.fileInfos[fileName];
+                        var fileInfo = this.allFileInfos[fileName];
 
                         if (fileInfo !== undefined) {
                             // only update files not currently open in an editor
@@ -277,19 +269,23 @@ namespace Bridge {
                             var filePath = delta.filePath;
                             var contents = readFileContents(filePath);
 
-                            fileInfo = new FileInfo(contents, filePath);
-
-                            this.fileInfos[fileName] = fileInfo;
+                            this.pushFile(projectName, fileName, contents, filePath);
                         }
                         break;
                     case "REMOVED":
-                        delete this.fileInfos[fileName];
+                        var fileInfo: FileInfo = this.allFileInfos[fileName];
+                        if (fileInfo != null) {
+                            delete this.allFileInfos[fileName];
+                            if (fileInfo.getProjectName() != null) {
+                                delete this.getProjectFileInfos(fileInfo.getProjectName())[fileName];
+                            }
+                        }
                         break;
                 }
             });
         }
 
-        private addFiles(files: { [fileName: string]: string }) {
+        private addFiles(projectName: string, files: { [fileName: string]: string }) {
             for (var fileName in files) {
                 if (files.hasOwnProperty(fileName)) {
                     var filePath = files[fileName];
@@ -303,14 +299,29 @@ namespace Bridge {
                     }
 
                     // cache the file
-                    var fileInfo = new FileInfo(contents, filePath);
-                    this.fileInfos[fileName] = fileInfo;
+                    this.pushFile(projectName, fileName, contents, filePath);
                 }
             }
         }
 
-        private createLanguageService(compilationSettings: ts.CompilerOptions, fileFilter: (fileName: string) => boolean) {
-            var host = new LanguageServiceHost(compilationSettings, fileFilter, this.fileInfos);
+        private pushFile(projectName: string, fileName: string, contents: string, filePath: string): void {
+            var fileInfo = new FileInfo(contents, filePath, projectName);
+            this.getProjectFileInfos(projectName)[fileName] = fileInfo;
+            this.allFileInfos[fileName] = fileInfo;
+        }
+
+        private getProjectFileInfos(projectName: string): { [fileName: string]: FileInfo }  {
+            if (this.projectFileInfos[projectName] == null) {
+                this.projectFileInfos[projectName] = Object.create(null);
+            }
+            
+            return this.projectFileInfos[projectName];
+        }
+
+        private createLanguageService(
+            compilationSettings: ts.CompilerOptions,
+            fileFilter: (fileName: string) => boolean) {
+            var host = new LanguageServiceHost(compilationSettings, fileFilter, this.allFileInfos);
 
             return ts.createLanguageService(host, this.documentRegistry);
         }
@@ -351,9 +362,8 @@ namespace Bridge {
         }
 
         private isSourceFile(projectName: string, fileName: string) {
-            return this.sourceFolderNames[projectName].some((sourceFolderName) => {
-                return folderContains(sourceFolderName, fileName);
-            });
+            var projectSourceFiles: { [fileName: string]: FileInfo } = this.getProjectFileInfos(projectName);
+            return projectSourceFiles[fileName] != null;
         }
     }
 
