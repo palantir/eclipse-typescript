@@ -36,7 +36,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 ### Update Typescript
 * Clone Typescript into a sibling folder
 * Run `npm install` in the Typescript project
-* Run `npm install dos2unix jake`
+* Run `npm install -g dos2unix jake`
 * Update Typescript branch in `./scripts/updateTypeScript.sh`
 * Run `./scripts/updateTypeScript.sh`
 
