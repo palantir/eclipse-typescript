@@ -31,3 +31,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 * Eclipse Kepler (4.3) and Luna (4.4) are supported
 * Eclipse must be running via Java 6+
 * [Wiki](https://github.com/palantir/eclipse-typescript/wiki) (contains information about developing the plug-in)
+
+## Test Development
+* run `maven package`
+* Install zip in Eclipse following `Install New Software...` -> `Add...` -> `Archive...`
