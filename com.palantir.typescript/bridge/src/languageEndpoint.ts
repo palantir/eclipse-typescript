@@ -120,7 +120,7 @@ namespace Bridge {
             var references = languageService.getReferencesAtPosition(fileName, position);
 
             return references.map((reference) => {
-                var sourceFile = languageService.getSourceFile(reference.fileName);
+                var sourceFile = languageService.getProgram().getSourceFile(reference.fileName);
                 var lineNumber = sourceFile.getLineAndCharacterOfPosition(reference.textSpan.start).line;
                 var lineStart = sourceFile.getPositionOfLineAndCharacter(lineNumber, 0);
                 var lineEnd = sourceFile.getPositionOfLineAndCharacter(lineNumber + 1, 0);
@@ -213,7 +213,7 @@ namespace Bridge {
 
             var todos = this.languageServices[serviceKey].getTodoComments(filename, descriptors);
             if (todos.length > 0) {
-                var sourceFile = this.languageServices[serviceKey].getSourceFile(filename);
+                var sourceFile = this.languageServices[serviceKey].getProgram().getSourceFile(filename);
 
                 return todos.map((todo) => {
                     return {
@@ -314,7 +314,7 @@ namespace Bridge {
             if (this.projectFileInfos[projectName] == null) {
                 this.projectFileInfos[projectName] = Object.create(null);
             }
-            
+
             return this.projectFileInfos[projectName];
         }
 
