@@ -66,8 +66,10 @@ public final class JSDocTagInfo {
 
         for (JSDocTagInfo part : parts) {
             displayText.append(part.getName());
-            displayText.append(" ");
-            displayText.append(part.getText());
+            if(part.getText() != null && part.getText().trim().length() > 0) {
+                displayText.append(" ");
+                displayText.append(part.getText());
+            }
             displayText.append(StandardSystemProperty.LINE_SEPARATOR.value());
         }
 
