@@ -36,7 +36,7 @@ public final class QuickInfo {
     private final TextSpan textSpan;
     private final ImmutableList<SymbolDisplayPart> displayParts;
     private final ImmutableList<SymbolDisplayPart> documentation;
-    private final ImmutableList<SymbolDisplayPart> tags;
+    private final ImmutableList<JSDocTagInfo> tags;
 
     public QuickInfo(
             @JsonProperty("kind") ScriptElementKind kind,
@@ -44,7 +44,7 @@ public final class QuickInfo {
             @JsonProperty("textSpan") TextSpan textSpan,
             @JsonProperty("displayParts") List<SymbolDisplayPart> displayParts,
             @JsonProperty("documentation") List<SymbolDisplayPart> documentation,
-            @JsonProperty("tags") List<SymbolDisplayPart> tags) {
+            @JsonProperty("tags") List<JSDocTagInfo> tags) {
         checkNotNull(kind);
         checkNotNull(kindModifiers);
         checkNotNull(textSpan);
@@ -82,8 +82,12 @@ public final class QuickInfo {
         return this.documentation;
     }
 
-    public List<SymbolDisplayPart> getTags() {
+    public List<JSDocTagInfo> getTags() {
         return this.tags;
+    }
+
+    public String getTagsText() {
+        return JSDocTagInfo.getText(this.tags);
     }
 
     public String getDocumentationText() {
