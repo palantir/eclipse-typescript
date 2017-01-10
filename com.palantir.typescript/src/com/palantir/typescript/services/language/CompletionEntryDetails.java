@@ -36,6 +36,7 @@ public final class CompletionEntryDetails {
     private ImmutableList<ScriptElementKindModifier> kindModifiers;
     private ImmutableList<SymbolDisplayPart> displayParts;
     private ImmutableList<SymbolDisplayPart> documentation;
+    private ImmutableList<SymbolDisplayPart> tags;
 
     public CompletionEntryDetails(
             @JsonProperty("name") String name,
@@ -74,6 +75,10 @@ public final class CompletionEntryDetails {
         return SymbolDisplayPart.getText(this.documentation);
     }
 
+    public String getTags() {
+        return SymbolDisplayPart.getText(this.tags);
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
@@ -82,6 +87,7 @@ public final class CompletionEntryDetails {
             .add("kindModifiers", this.kindModifiers)
             .add("displayParts", this.displayParts)
             .add("documentation", this.documentation)
+            .add("tags", this.tags)
             .toString();
     }
 
