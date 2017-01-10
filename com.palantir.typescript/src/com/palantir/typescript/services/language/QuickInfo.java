@@ -36,13 +36,15 @@ public final class QuickInfo {
     private final TextSpan textSpan;
     private final ImmutableList<SymbolDisplayPart> displayParts;
     private final ImmutableList<SymbolDisplayPart> documentation;
+    private final ImmutableList<SymbolDisplayPart> tags;
 
     public QuickInfo(
             @JsonProperty("kind") ScriptElementKind kind,
             @JsonProperty("kindModifiers") String kindModifiers,
             @JsonProperty("textSpan") TextSpan textSpan,
             @JsonProperty("displayParts") List<SymbolDisplayPart> displayParts,
-            @JsonProperty("documentation") List<SymbolDisplayPart> documentation) {
+            @JsonProperty("documentation") List<SymbolDisplayPart> documentation,
+            @JsonProperty("tags") List<SymbolDisplayPart> tags) {
         checkNotNull(kind);
         checkNotNull(kindModifiers);
         checkNotNull(textSpan);
@@ -53,6 +55,7 @@ public final class QuickInfo {
         this.textSpan = textSpan;
         this.displayParts = ImmutableList.copyOf(displayParts);
         this.documentation = documentation != null ? ImmutableList.copyOf(documentation) : ImmutableList.<SymbolDisplayPart> of();
+        this.tags = ImmutableList.copyOf(tags);
     }
 
     public ScriptElementKind getKind() {
@@ -79,6 +82,10 @@ public final class QuickInfo {
         return this.documentation;
     }
 
+    public List<SymbolDisplayPart> getTags() {
+        return this.tags;
+    }
+
     public String getDocumentationText() {
         return SymbolDisplayPart.getText(this.documentation);
     }
@@ -91,6 +98,7 @@ public final class QuickInfo {
             .add("textSpan", this.textSpan)
             .add("displayParts", this.displayParts)
             .add("documentation", this.documentation)
+            .add("tags", this.tags)
             .toString();
     }
 }

@@ -43,7 +43,8 @@ public final class CompletionEntryDetails {
             @JsonProperty("kind") ScriptElementKind kind,
             @JsonProperty("kindModifiers") String kindModifiers,
             @JsonProperty("displayParts") List<SymbolDisplayPart> displayParts,
-            @JsonProperty("documentation") List<SymbolDisplayPart> documentation) {
+            @JsonProperty("documentation") List<SymbolDisplayPart> documentation,
+            @JsonProperty("tags") List<SymbolDisplayPart> tags) {
         checkNotNull(name);
         checkNotNull(kind);
         checkNotNull(kindModifiers);
@@ -53,6 +54,7 @@ public final class CompletionEntryDetails {
         this.kindModifiers = ScriptElementKindModifier.parseList(kindModifiers);
         this.displayParts = ImmutableList.copyOf(displayParts);
         this.documentation = ImmutableList.copyOf(documentation);
+        this.tags = ImmutableList.copyOf(tags);
     }
 
     public String getName() {
