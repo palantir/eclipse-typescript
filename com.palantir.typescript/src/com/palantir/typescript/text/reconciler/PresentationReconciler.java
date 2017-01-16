@@ -118,10 +118,12 @@ public final class PresentationReconciler implements IPresentationReconciler {
      */
     private void processEvent(TextEvent event) {
         IRegion damagedRegion = this.getDamagedRegion(event);
-        EndOfLineState lastDamagedLexState = this.updateFinalLexStates(event, damagedRegion);
-        TextPresentation presentation = this.createPresentation(damagedRegion, lastDamagedLexState);
+        if(damagedRegion != null) {
+            EndOfLineState lastDamagedLexState = this.updateFinalLexStates(event, damagedRegion);
+            TextPresentation presentation = this.createPresentation(damagedRegion, lastDamagedLexState);
 
-        this.viewer.changeTextPresentation(presentation, false);
+            this.viewer.changeTextPresentation(presentation, false);
+        }
     }
 
     /**
@@ -129,6 +131,9 @@ public final class PresentationReconciler implements IPresentationReconciler {
      */
     private IRegion getDamagedRegion(TextEvent event) {
         IDocument document = this.viewer.getDocument();
+        if(document == null) {
+            return null;
+        }
         int documentLength = document.getLength();
         int offset = event.getOffset();
         int length = event.getLength();

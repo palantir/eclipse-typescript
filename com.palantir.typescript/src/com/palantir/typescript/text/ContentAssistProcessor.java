@@ -35,6 +35,7 @@ import org.eclipse.jface.text.contentassist.IContextInformationValidator;
 import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.CharMatcher;
+import com.google.common.base.StandardSystemProperty;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.palantir.typescript.Images;
@@ -112,9 +113,8 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
                     Image image = Images.getImage(entry.getKind(), entry.getKindModifiers());
                     String displayString = entry.getName() + " " + entry.getDisplayParts();
                     IContextInformation contextInformation = null;
-                    String additionalProposalInfo = entry.getDocumentation();
                     CompletionProposal proposal = new CompletionProposal(replacementString, replacementOffset, replacementLength,
-                        cursorPosition, image, displayString, contextInformation, additionalProposalInfo);
+                        cursorPosition, image, displayString, contextInformation, getAdditionalInfo(entry));
 
                     proposals.add(proposal);
                 }
@@ -157,6 +157,17 @@ public final class ContentAssistProcessor implements ICompletionListener, IConte
 
     @Override
     public void selectionChanged(ICompletionProposal proposal, boolean smartToggle) {
+    }
+
+    private String getAdditionalInfo(CompletionEntryDetails entry) {
+
+        StringBuilder info = new StringBuilder(entry.getDocumentation());
+        if(info.length() > 0) {
+            info.append(StandardSystemProperty.LINE_SEPARATOR.value());
+        }
+        info.append(entry.getTags());
+
+        return info.toString();
     }
 
     private int getOffset(int offset) {

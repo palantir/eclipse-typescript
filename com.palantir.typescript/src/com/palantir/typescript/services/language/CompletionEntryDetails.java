@@ -36,13 +36,15 @@ public final class CompletionEntryDetails {
     private ImmutableList<ScriptElementKindModifier> kindModifiers;
     private ImmutableList<SymbolDisplayPart> displayParts;
     private ImmutableList<SymbolDisplayPart> documentation;
+    private ImmutableList<JSDocTagInfo> tags;
 
     public CompletionEntryDetails(
             @JsonProperty("name") String name,
             @JsonProperty("kind") ScriptElementKind kind,
             @JsonProperty("kindModifiers") String kindModifiers,
             @JsonProperty("displayParts") List<SymbolDisplayPart> displayParts,
-            @JsonProperty("documentation") List<SymbolDisplayPart> documentation) {
+            @JsonProperty("documentation") List<SymbolDisplayPart> documentation,
+            @JsonProperty("tags") List<JSDocTagInfo> tags) {
         checkNotNull(name);
         checkNotNull(kind);
         checkNotNull(kindModifiers);
@@ -52,6 +54,7 @@ public final class CompletionEntryDetails {
         this.kindModifiers = ScriptElementKindModifier.parseList(kindModifiers);
         this.displayParts = ImmutableList.copyOf(displayParts);
         this.documentation = ImmutableList.copyOf(documentation);
+        this.tags = ImmutableList.copyOf(tags);
     }
 
     public String getName() {
@@ -74,6 +77,10 @@ public final class CompletionEntryDetails {
         return SymbolDisplayPart.getText(this.documentation);
     }
 
+    public String getTags() {
+        return JSDocTagInfo.getText(this.tags);
+    }
+
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
@@ -82,6 +89,7 @@ public final class CompletionEntryDetails {
             .add("kindModifiers", this.kindModifiers)
             .add("displayParts", this.displayParts)
             .add("documentation", this.documentation)
+            .add("tags", this.tags)
             .toString();
     }
 
