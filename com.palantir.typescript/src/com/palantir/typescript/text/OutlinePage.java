@@ -191,6 +191,11 @@ public final class OutlinePage extends ContentOutlinePage {
 
         private TreeItem findBestMatch(TreeItem[] treeItems, int offset, TreeItem bestItem, int bestSpanLength) {
             for (TreeItem treeItem : treeItems) {
+
+                if ("<global>".equals(treeItem.getText())) {
+                    continue;
+                }
+
                 NavigationBarItem navigateToItem = (NavigationBarItem) treeItem.getData();
 
                 if (navigateToItem != null) {
