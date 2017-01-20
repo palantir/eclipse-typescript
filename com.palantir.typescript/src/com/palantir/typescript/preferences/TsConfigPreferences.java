@@ -67,7 +67,7 @@ public final class TsConfigPreferences {
         "COMMONJS", "COMMONSJS", "ES2015", "ES6");
 
     private static final Map<String, String> TSCONFIG_MODULE_RESOLUTION_MAPPING = ImmutableMap.of(
-        "NODEJS", "NODE_JS");
+        "NODE", "NODE_JS");
 
     private final IProject project;
     private Map<String, String> preferenceValues;
