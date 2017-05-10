@@ -20,6 +20,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFile;
@@ -157,16 +159,27 @@ public final class TypeScriptEditor extends TextEditor {
     public void init(IEditorSite site, IEditorInput input) throws PartInitException {
         super.init(site, input);
 
+        this.characterPairMatcher = createCharacterPairMatcher();
         if (input instanceof IPathEditorInput) {
             IResource resource = ResourceUtil.getResource(input);
             IProject project = resource.getProject();
 
+            List<IPreferenceStore> storeList = new ArrayList<IPreferenceStore>();
+            try {
+                Class<?> sseUI = Class.forName("org.eclipse.wst.sse.ui.internal.SSEUIPlugin");
+                Object sseUIPlugin = sseUI.getMethod("getDefault").invoke(null);
+                IPreferenceStore sseStore = (IPreferenceStore)sseUIPlugin.getClass().getMethod("getPreferenceStore").invoke(sseUIPlugin);
+                storeList.add(sseStore);
+            } catch(Exception e) {
             // set a project-specific preference store
-            ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
-                    new ProjectPreferenceStore(project),
-                    EditorsUI.getPreferenceStore(),
-                    PlatformUI.getPreferenceStore()
-            });
+            }
+
+            storeList.add(TypeScriptPlugin.getDefault().getPreferenceStore());
+            storeList.add(new ProjectPreferenceStore(project));
+            storeList.add(EditorsUI.getPreferenceStore());
+            storeList.add(PlatformUI.getPreferenceStore());
+
+            ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(storeList.toArray(new IPreferenceStore[]{}));
             this.setPreferenceStore(chainedPreferenceStore);
         }
     }
@@ -288,21 +301,10 @@ public final class TypeScriptEditor extends TextEditor {
     }
 
     @Override
-    protected void initializeEditor() {
-        super.initializeEditor();
 
-        this.characterPairMatcher = createCharacterPairMatcher();
 
         // set the preference store
-        ChainedPreferenceStore chainedPreferenceStore = new ChainedPreferenceStore(new IPreferenceStore[] {
-                TypeScriptPlugin.getDefault().getPreferenceStore(),
-                EditorsUI.getPreferenceStore(),
-                PlatformUI.getPreferenceStore()
-        });
-        this.setPreferenceStore(chainedPreferenceStore);
-    }
 
-    @Override
     protected void initializeKeyBindingScopes() {
         this.setKeyBindingScopes(new String[] {
                 "com.palantir.typescript.text.typeScriptEditorScope",

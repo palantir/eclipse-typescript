@@ -51,6 +51,12 @@ public interface IPreferenceConstants {
     String COMPILER_EMIT_DECORATOR_METADATA = "compiler.emitDecoratorMetadata";
     String COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS = "compiler.suppressExcessPropertyErrors";
     String COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS = "compiler.suppressImplicitAnyIndexErrors";
+    String COMPILER_TYPES = "compiler.types";
+    String COMPILER_TYPE_ROOTS = "compiler.typeRoots";
+    String COMPILER_BASE_URL = "compiler.baseUrl";
+    String COMPILER_PATHS = "compiler.paths";
+    String COMPILER_ALLOW_SYNTHETIC = "compiler.allowSyntheticDefaultImports";
+
 
     String CONTENT_ASSIST_AUTO_ACTIVATION_DELAY = "contentAssist.autoActivationDelay";
     String CONTENT_ASSIST_AUTO_ACTIVATION_ENABLED = "contentAssist.autoActivationEnabled";

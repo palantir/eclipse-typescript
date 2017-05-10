@@ -67,10 +67,10 @@ public final class TsConfigPreferences {
         "COMMONJS", "COMMONSJS", "ES2015", "ES6");
 
     private static final Map<String, String> TSCONFIG_MODULE_RESOLUTION_MAPPING = ImmutableMap.of(
-        "NODEJS", "NODE_JS");
+        "NODE", "NODE_JS");
 
     private final IProject project;
-    private Map<String, String> preferenceValues;
+    private Map<String, Object> preferenceValues;
 
     public TsConfigPreferences(IProject project) {
         checkNotNull(project);
@@ -78,7 +78,7 @@ public final class TsConfigPreferences {
         this.project = project;
     }
 
-    public synchronized Map<String, String> getPreferenceValues() {
+    public synchronized Map<String, Object> getPreferenceValues() {
         if (preferenceValues == null || didTsConfigFileChanged()) {
             reloadTsConfigFile();
         }
@@ -86,7 +86,7 @@ public final class TsConfigPreferences {
         return Collections.unmodifiableMap(preferenceValues);
     }
 
-    public String getValue(String preferenceName) {
+    public Object getValue(String preferenceName) {
         return getPreferenceValues().get(preferenceName);
     }
 
@@ -166,16 +166,19 @@ public final class TsConfigPreferences {
     private void decodeTsConfigEntries(String jsonTreePath, Map<String, Object> entries) {
 
         for (Map.Entry<String, Object> tsConfigEntry : entries.entrySet()) {
-            if (tsConfigEntry.getValue() instanceof Map) {
-                decodeTsConfigEntries(jsonTreePath + tsConfigEntry.getKey() + ".", (Map) tsConfigEntry.getValue());
-            } else if (isSupportedTsConfigPath(jsonTreePath + tsConfigEntry.getKey())) {
+            if (isSupportedTsConfigPath(jsonTreePath + tsConfigEntry.getKey())) {
 
                 String matchingPreference = TSCONFIG_PATH_TO_PREFERENCE.get(jsonTreePath + tsConfigEntry.getKey());
 
-                String value = tsConfigValueToPreferenceValue(tsConfigEntry.getValue(), matchingPreference);
-                logInfo("setting preference " + matchingPreference + " to " + value);
+                if(tsConfigEntry.getValue() instanceof Map) {
+                    this.preferenceValues.put(matchingPreference, tsConfigEntry.getValue());
+                } else {
+                    String value = tsConfigValueToPreferenceValue(tsConfigEntry.getValue(), matchingPreference);
 
-                this.preferenceValues.put(matchingPreference, value);
+                    this.preferenceValues.put(matchingPreference, value);
+                }
+            } else if (tsConfigEntry.getValue() instanceof Map) {
+                decodeTsConfigEntries(jsonTreePath + tsConfigEntry.getKey() + ".", (Map) tsConfigEntry.getValue());
             }
         }
     }
@@ -284,6 +287,10 @@ public final class TsConfigPreferences {
         map.put(IPreferenceConstants.COMPILER_SUPPRESS_EXCESS_PROPERTY_ERRORS, "compilerOptions.suppressExcessPropertyErrors");
         map.put(IPreferenceConstants.COMPILER_SUPPRESS_IMPLICIT_ANY_INDEX_ERRORS, "compilerOptions.suppressImplicitAnyIndexErrors");
         map.put(IPreferenceConstants.COMPILER_TARGET, "compilerOptions.target");
+        map.put(IPreferenceConstants.COMPILER_TYPES, "compilerOptions.types");
+        map.put(IPreferenceConstants.COMPILER_TYPE_ROOTS, "compilerOptions.typeRoots");
+        map.put(IPreferenceConstants.COMPILER_BASE_URL, "compilerOptions.baseUrl");
+        map.put(IPreferenceConstants.COMPILER_PATHS, "compilerOptions.paths");
 
         return map;
     }

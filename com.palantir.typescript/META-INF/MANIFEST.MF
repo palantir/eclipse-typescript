@@ -3,7 +3,7 @@ Bundle-Localization: plugin
 Bundle-ManifestVersion: 2
 Bundle-Name: TypeScript
 Bundle-SymbolicName: com.palantir.typescript;singleton:=true
-Bundle-Version: 2.1.0.qualifier
+Bundle-Version: 2.3.2.qualifier
 Bundle-Activator: com.palantir.typescript.TypeScriptPlugin
 Bundle-Vendor: Palantir Technologies
 Require-Bundle: org.eclipse.compare,
@@ -19,7 +19,7 @@ Require-Bundle: org.eclipse.compare,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
  org.eclipse.ui.workbench.texteditor
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: lib/guava-19.0.jar,
  .,

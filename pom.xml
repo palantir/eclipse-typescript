@@ -19,7 +19,7 @@
 
   <groupId>com.palantir</groupId>
   <artifactId>parent</artifactId>
-  <version>2.1.0.qualifier</version>
+  <version>2.3.2</version>
   <packaging>pom</packaging>
 
   <modules>
@@ -29,17 +29,17 @@
   </modules>
 
   <properties>
-    <tycho.version>0.18.1</tycho.version>
-    <tycho-extras.version>0.18.1</tycho-extras.version>
+    <tycho.version>0.26.0</tycho.version>
+    <tycho-extras.version>0.26.0</tycho-extras.version>
 
-    <kepler-repo.url>http://download.eclipse.org/releases/kepler</kepler-repo.url>
+    <mars-repo.url>http://download.eclipse.org/releases/mars</mars-repo.url>
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
   </properties>
 
   <repositories>
     <repository>
-      <id>kepler</id>
-      <url>${kepler-repo.url}</url>
+      <id>mars</id>
+      <url>${mars-repo.url}</url>
       <layout>p2</layout>
     </repository>
   </repositories>
@@ -146,10 +146,11 @@
           </dependencies>
           <configuration>
             <strictBinIncludes>false</strictBinIncludes>
+            <strictVersions>false</strictVersions>
             <format>'v'yyyyMMdd-HHmm</format>
             <timestampProvider>jgit</timestampProvider>
-            <jgit.ignore>
-            </jgit.ignore>
+            <jgit.ignore></jgit.ignore>
+            <jgit.dirtyWorkingTree>warning</jgit.dirtyWorkingTree>
           </configuration>
         </plugin>
         <plugin>
