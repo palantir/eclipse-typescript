@@ -248,7 +248,10 @@ public final class CompilerOptions {
         compilerOptions.typeRoots = ImmutableList.copyOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TYPE_ROOTS).split("" + TypeScriptProjectSources.BUILD_PATH_SPEC_SEPARATOR));
         compilerOptions.baseUrl = preferenceStore.getString(IPreferenceConstants.COMPILER_BASE_URL);
         if(preferenceStore.isUsingTsConfigFile()) {
-            compilerOptions.paths = ImmutableMap.copyOf((Map)preferenceStore.getTsConfigPreferences().getValue(IPreferenceConstants.COMPILER_PATHS));
+            Map paths = (Map)preferenceStore.getTsConfigPreferences().getValue(IPreferenceConstants.COMPILER_PATHS);
+            if(paths != null) {
+                compilerOptions.paths = ImmutableMap.copyOf((Map)preferenceStore.getTsConfigPreferences().getValue(IPreferenceConstants.COMPILER_PATHS));
+            }
         }
 
         // get the eclipse name for the output directory
