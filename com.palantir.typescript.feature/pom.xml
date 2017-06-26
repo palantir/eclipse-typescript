@@ -21,7 +21,7 @@
     <relativePath>../pom.xml</relativePath>
     <groupId>com.palantir</groupId>
     <artifactId>parent</artifactId>
-    <version>2.3.2</version>
+    <version>2.3.4</version>
   </parent>
 
   <artifactId>com.palantir.typescript.feature</artifactId>
