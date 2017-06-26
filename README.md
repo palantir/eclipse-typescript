@@ -41,5 +41,7 @@ An Eclipse plug-in for developing in the TypeScript language.
 * Run `./scripts/updateTypeScript.sh`
 
 ### Build and Test
+* Run `npm install`
+* Run `grunt`
 * Run `maven package`
 * Install zip in Eclipse following `Install New Software...` -> `Add...` -> `Archive...`
