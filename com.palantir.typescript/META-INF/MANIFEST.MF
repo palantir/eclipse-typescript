@@ -3,7 +3,7 @@ Bundle-Localization: plugin
 Bundle-ManifestVersion: 2
 Bundle-Name: TypeScript
 Bundle-SymbolicName: com.palantir.typescript;singleton:=true
-Bundle-Version: 2.3.4.qualifier
+Bundle-Version: 2.5.3.qualifier
 Bundle-Activator: com.palantir.typescript.TypeScriptPlugin
 Bundle-Vendor: Palantir Technologies
 Require-Bundle: org.eclipse.compare,
