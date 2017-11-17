@@ -28,19 +28,23 @@ An Eclipse plug-in for developing in the TypeScript language.
 * toggle comments
 
 ## Additional Information
-* Eclipse Kepler (4.3) and Luna (4.4) are supported
-* Eclipse must be running via Java 6+
+* Eclipse Luna (4.4) Neon (4.5) Oxygen (4.6)
+* Eclipse must be running via Java 8+
 * [Wiki](https://github.com/palantir/eclipse-typescript/wiki) (contains information about developing the plug-in)
 
 ## Development
 ### Update Typescript
+* For 100% working result, If your not in Linux use Cygwin shell (download dos2unix).
 * Clone Typescript into a sibling folder
+* Manually checkout latest branch. This is simpler and 100% sure.
 * Run `npm install` in the Typescript project
 * Run `npm install -g dos2unix jake`
-* Update Typescript branch in `./scripts/updateTypeScript.sh`
-* Run `./scripts/updateTypeScript.sh`
+* In script directory Run `./updateTypeScript.sh`
 
-### Build and Test
+### now build Eclipse plugin and Test
+* Update package.json for new version.
+* Run `mvn versions:set -DnewVersion=x.x.x -DgenerateBackupPoms=false -U`
+* Run `update_version.sh old_version new_version` This is to change all version ".qualifier"
 * Run `npm install`
 * Run `grunt`
 * Run `maven package`

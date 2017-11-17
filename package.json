@@ -1,6 +1,6 @@
 {
   "name": "eclipse-typescript",
-  "version": "2.5.3",
+  "version": "2.6.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/palantir/eclipse-typescript.git"
@@ -9,7 +9,7 @@
     "grunt": "1.0.1",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-ts": "6.0.0-beta.16",
-    "typescript": "2.5.3"
+    "grunt-ts": "6.0.0-beta.17",
+    "typescript": "2.6.1"
   }
 }
