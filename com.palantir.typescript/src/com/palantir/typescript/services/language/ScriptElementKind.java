@@ -60,7 +60,7 @@ public enum ScriptElementKind {
     // var v(..
     VARIABLE_ELEMENT("var"),
 
-    // Inside function
+    // Inside function 
     LOCAL_VARIABLE_ELEMENT("local var"),
 
     // Inside module and script only
