@@ -47,5 +47,5 @@ An Eclipse plug-in for developing in the TypeScript language.
 * Run `update_version.sh old_version new_version` This is to change all version ".qualifier"
 * Run `npm install`
 * Run `grunt`
-* Run `maven package`
+* Run `mvn package`
 * Install zip in Eclipse following `Install New Software...` -> `Add...` -> `Archive...`
