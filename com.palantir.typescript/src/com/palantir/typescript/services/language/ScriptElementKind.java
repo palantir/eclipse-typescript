@@ -53,6 +53,9 @@ public enum ScriptElementKind {
     // enum E
     ENUM_ELEMENT("enum"),
 
+	// enum member
+    ENUM_MEMBER("enum member"),
+	
     // Inside module and script only
     // var v(..
     VARIABLE_ELEMENT("var"),
@@ -103,8 +106,14 @@ public enum ScriptElementKind {
 
     CONST_ELEMENT("const"),
 
-    LET_ELEMENT("let");
-
+    LET_ELEMENT("let"),
+	
+	DIRECTORY("directory"),
+	
+	EXTERNAL_MODULE_NAME("external module name"),
+	
+	JSX_ATTRIBUTE("JSX attribute");
+	
     private final String value;
 
     ScriptElementKind(String value) {
