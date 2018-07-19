@@ -158,9 +158,34 @@ namespace Bridge {
                     return true;
                 });
 
+                //Update typescript 2.6.x https://github.com/Microsoft/TypeScript/pull/19507#issuecomment-340600363
+                var settings: ts.FormatCodeSettings = {
+                    baseIndentSize: 4,
+                    indentSize: 4,
+                    tabSize: 4,
+                    newLineCharacter: '\n',
+                    convertTabsToSpaces: true,
+                    indentStyle: ts.IndentStyle.Block,
+                    insertSpaceAfterCommaDelimiter: true,
+                    insertSpaceAfterSemicolonInForStatements: true,
+                    insertSpaceBeforeAndAfterBinaryOperators: true,
+                    insertSpaceAfterConstructor: false,
+                    insertSpaceAfterKeywordsInControlFlowStatements: true,
+                    insertSpaceAfterFunctionKeywordForAnonymousFunctions: false,
+                    insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis: false,
+                    insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets: false,
+                    insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces: true,
+                    insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces: false,
+                    insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces: true,
+                    insertSpaceAfterTypeAssertion: true,
+                    insertSpaceBeforeFunctionParenthesis: false,
+                    placeOpenBraceOnNewLineForFunctions: false,
+                    placeOpenBraceOnNewLineForControlBlocks: false
+                }
+
                 // get the details for each entry
                 var detailEntries = filteredEntries.map((entry) => {
-                    return this.languageServices[serviceKey].getCompletionEntryDetails(fileName, position, entry.name);
+                    return this.languageServices[serviceKey].getCompletionEntryDetails(fileName, position, entry.name, settings, undefined);
                 });
 
                 // remove null entries

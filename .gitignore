@@ -5,3 +5,6 @@ target/
 
 /com.palantir.typescript/bin/
 /com.palantir.typescript/bridge/build/
+
+TypeScript/*
+updatesite

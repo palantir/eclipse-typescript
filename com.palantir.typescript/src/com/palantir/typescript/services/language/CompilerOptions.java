@@ -18,14 +18,19 @@ package com.palantir.typescript.services.language;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
-import org.eclipse.jface.preference.IPreferenceStore;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.palantir.typescript.EclipseResources;
 import com.palantir.typescript.IPreferenceConstants;
+import com.palantir.typescript.TypeScriptProjectSources;
 import com.palantir.typescript.preferences.ProjectPreferenceStore;
 
 /**
@@ -185,13 +190,25 @@ public final class CompilerOptions {
     @JsonProperty("watch")
     private Boolean watch;
 
+    @JsonProperty("types")
+    private ImmutableList<String> types;
+
+    @JsonProperty("typeRoots")
+    private ImmutableList<String> typeRoots;
+
+    @JsonProperty("baseUrl")
+    private String baseUrl;
+
+    @JsonProperty("paths")
+    private ImmutableMap<String, List<String>> paths;
+
     private CompilerOptions() {
     }
 
     public static CompilerOptions fromProject(IProject project) {
         checkNotNull(project);
 
-        IPreferenceStore preferenceStore = new ProjectPreferenceStore(project);
+        ProjectPreferenceStore preferenceStore = new ProjectPreferenceStore(project);
 
         // create the compiler options from the preferences
         CompilerOptions compilerOptions = new CompilerOptions();
@@ -226,6 +243,16 @@ public final class CompilerOptions {
         // set the output directory or file if it was specified
         String outDir = preferenceStore.getString(IPreferenceConstants.COMPILER_OUT_DIR);
         String outFile = preferenceStore.getString(IPreferenceConstants.COMPILER_OUT_FILE);
+
+        compilerOptions.types = ImmutableList.copyOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TYPES).split("" + TypeScriptProjectSources.BUILD_PATH_SPEC_SEPARATOR));
+        compilerOptions.typeRoots = ImmutableList.copyOf(preferenceStore.getString(IPreferenceConstants.COMPILER_TYPE_ROOTS).split("" + TypeScriptProjectSources.BUILD_PATH_SPEC_SEPARATOR));
+        compilerOptions.baseUrl = preferenceStore.getString(IPreferenceConstants.COMPILER_BASE_URL);
+        if(preferenceStore.isUsingTsConfigFile()) {
+            Map paths = (Map)preferenceStore.getTsConfigPreferences().getValue(IPreferenceConstants.COMPILER_PATHS);
+            if(paths != null) {
+                compilerOptions.paths = ImmutableMap.copyOf((Map)preferenceStore.getTsConfigPreferences().getValue(IPreferenceConstants.COMPILER_PATHS));
+            }
+        }
 
         // get the eclipse name for the output directory
         String outputFolderName = null;

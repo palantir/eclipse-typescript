@@ -208,11 +208,11 @@ public final class ProjectPreferenceStore extends PreferenceStore {
 
         if (isUsingTsConfigFile() && tsConfigPreferences.isTsConfigPreference(name)) {
             IEclipsePreferences projectPreferences = this.getProjectPreferences();
-            String value = tsConfigPreferences.getValue(name);
+            Object value = tsConfigPreferences.getValue(name);
             if (value == null) {
                 projectPreferences.remove(name);
-            } else {
-                projectPreferences.put(name, value);
+            } else if(value instanceof String) {
+                projectPreferences.put(name, (String)value);
             }
         }
 

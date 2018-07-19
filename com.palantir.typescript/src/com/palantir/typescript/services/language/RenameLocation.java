@@ -32,15 +32,19 @@ public final class RenameLocation {
 
     private final String fileName;
     private final TextSpan textSpan;
+	private final Boolean isDefinition;
 
     public RenameLocation(
             @JsonProperty("fileName") String fileName,
-            @JsonProperty("textSpan") TextSpan textSpan) {
+            @JsonProperty("textSpan") TextSpan textSpan,
+            @JsonProperty("isDefinition") Boolean isDefinition) {
         checkNotNull(fileName);
         checkNotNull(textSpan);
-
+        checkNotNull(isDefinition);
+		
         this.fileName = fileName;
         this.textSpan = textSpan;
+		this.isDefinition = isDefinition;
     }
 
     public String getFileName() {
@@ -50,12 +54,17 @@ public final class RenameLocation {
     public TextSpan getTextSpan() {
         return this.textSpan;
     }
+	
+    public Boolean isDefinition() {
+        return this.isDefinition;
+    }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
             .add("fileName", this.fileName)
             .add("textSpan", this.textSpan)
+            .add("isDefinition", this.isDefinition)
             .toString();
     }
 }

@@ -5,8 +5,8 @@ set -e
 # update the TypeScript code and build
 (
   cd ../TypeScript
-  git fetch
-  git checkout origin/release-2.1
+  #  git fetch
+  # git checkout origin/release-2.3
   rm -rf built/local
   jake clean
   jake local
@@ -32,3 +32,5 @@ dos2unix $(dirname $0)/../com.palantir.typescript/bridge/lib/typescriptServices.
 dos2unix $(dirname $0)/../com.palantir.typescript/bridge/typings/typescriptServices.d.ts
 dos2unix $(dirname $0)/../com.palantir.typescript/src/com/palantir/typescript/services/language/lib.d.ts
 dos2unix $(dirname $0)/../com.palantir.typescript/src/com/palantir/typescript/services/language/lib.es6.d.ts
+
+read -p "Press enter to continue"
