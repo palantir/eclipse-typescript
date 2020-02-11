@@ -194,7 +194,7 @@
             <baselineReplace>none</baselineReplace>
             <baselineRepositories>
               <repository>
-                <url>http://download.eclipse.org/eclipse/updates/4.3</url>
+                <url>https://download.eclipse.org/eclipse/updates/4.3</url>
               </repository>
             </baselineRepositories>
           </configuration>
